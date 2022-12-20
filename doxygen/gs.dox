@@ -8,11 +8,12 @@ The YouTube Video <a class="extern" target="_blank" href="https://youtu.be/O7ER6
 
 @image html  gs-video.jpg
 @image latex gs-video.jpg width=4.5in
-@caption{Video: Getting Started with QP&trade; Real-Time Embedded Framework}
+@caption{[Video: Getting Started with QP&trade; Real-Time Embedded Framework](https://youtu.be/O7ER6_VqIH0)}
+<br>
 
 @note
 @htmlonly
-<a href="modules.html" title="QP Cert-Pack"><img src="cert-pack.png" style="float:right; margin:0 20px 20px 0;"></img></a>
+<a href="cert.html" title="QP Cert-Pack"><img src="img/cert-pack.png" style="float:right; margin:0 20px 20px 0;"></img></a>
 @endhtmlonly
 Information about the QP/C functionality, architecture, design, and other aspects is provided in the [Certification Package](modules.html):
 - @ref srs &mdash; QP/C functionality
@@ -35,7 +36,8 @@ The most recommended way of obtaining QP&trade;/C&trade; is by downloading the @
 
 @image html  qp-bundle.png
 @image latex qp-bundle.png width=1.5in
-@caption{QP-bundle Downloads}
+@caption{@webref{#Downloads, QP-bundle&trade; downloads}}
+<br>
 
 @note
 @htmlonly
@@ -243,10 +245,11 @@ While the system clock tick is very useful, it also has the unfortunate side eff
 
 
 @image html  exa_low-power_tick.png
-@image latex exa_low-power_tick.png width=6.0in
+@image latex exa_low-power_tick.png width=5.5in
 @caption{Additional power dissipation caused by the system clock tick}
 
 @subsection arm-cm_low_power_tickless The "Tickless Mode"
+
 Some real-time kernels use the low-power optimization called the "tickless mode" (a.k.a. "tick supression" or "dynamic tick"). In this mode, instead of indiscriminately making the clock tick fire with a fixed period, the kernel adjusts the clock ticks *dynamically*, as needed. Specifically, after each clock tick the kernel re-calculates the time for the next clock tick and then sets the clock tick interrupt for the earliest timeout it has to wait for. So for example, if the shortest wait the kernel has to attend to is 300 milliseconds into the future, then the clock interrupt will be set for 300 milliseconds.
 
 This approach maximizes the amount of time the processor can remain asleep, but requires the kernel to perform the additional work to calculate the dynamic tick intervals and to program them into the hardware. This additional bookkeeping adds complexity to the kernel, is often non-deterministic and, most importantly, extends the time CPU spends in the high-power active mode and thus eliminates some of the power gains the "tickless mode" was supposed to bring.
@@ -255,6 +258,7 @@ Also, the "tickless mode" requires a more capable hardware timer that must be ab
 
 
 @subsection arm-cm_low_power_multiple Multiple Tick Rates
+
 For the reasons just mentioned, the QP&trade; Real-Time Embedded Frameworks don't provide the "tickless mode". Instead, the QP&trade; frameworks support **multiple clock tick rates**, which can be turned on and off, as needed. The QP&trade; frameworks also provide methods for finding out *when* a given clock tick rate is not used, which allows the idle callback inside the application to shut down the given clock tick rate and also to decide which sleep mode to use for the CPU and the peripherals.
 
 The support for multiple static clock tick rates is much *simpler* than the "dynamic tick", and essentially does not increase the complexity of the kernel (because the same code for the single tick rate can handle other tick rates the same way). Also, multiple static tick rates require much simpler hardware timers, which can be clocked specifically to the desired frequency and don't need particularly wide dynamic range. For example, 16-bit timers or even 8-bit timers are completely adequate.
@@ -265,6 +269,7 @@ Yet the *multiple clock rates* can deliver similar low-power operation for the s
 @section arm-cm_low_power_app The Low-Power Example Application
 The low-power example is located in QP/C and QP/C++ distributions, in the directory with the following structure:
 
+<br>
 @code{.c}
  qpc|qpcpp/                   // QP/C/C++ installation directory
   +-examples/                 // QP/C/C++ examples directory (application)
@@ -318,6 +323,7 @@ Actually, the **Red-LED** is also turned off for very brief moments, but this is
 
 The behavior just described is designed for the slow human interaction with the application. However, for more precise measurements with a logic analyzer, it is more convenient to speed up the application by factor of 100. This speed up can be achieved by editing the `bsp.h` header file:
 
+<br>
 @code{.c}
 /* The following ticks-per-second constants determine the speed of the app.
 * The default (#if 1) is the SLOW speed for humans to see the blinking.
@@ -369,6 +375,7 @@ The versions of this low-power example for the **QK** and **QV** kernels use two
 @subsection arm-cm_low_power_xt Extended Thread (QXK)
 The version of this low-power example for the **QXK** kernel uses one active object **Blinky0** (with the state machine shown above), but instead of the Blinky1 active object, the QXK version uses an eXtended thread (::QXThread) called **XBlinky1**, with the code shown below:
 
+<br>
 @code{.c}
     #include "qpc.h"
     #include "low_power.h"
@@ -422,6 +429,7 @@ The version of this low-power example for the **QXK** kernel uses one active obj
 @subsection arm-cm_low_power_idle The Idle Callback (QK/QXK)
 The most important functionality in this low-power example is implemented in the **idle callback** located in the BSP (Board Support Package). The idle callback QK_onIdle() for the preemptive QK kernel and the idle callback QXK_onIdle() for the QXK kernel are almost identical and are explained in this section.
 
+<br>
 @code{.c}
 [0] void QXK_onIdle(void) {
 
@@ -486,6 +494,7 @@ The QF_noTimeEvtsActiveX() function is designed to be called from a critical sec
 @subsection arm-cm_low_power_idle-qv The Idle Callback (QV)
 The idle callback QV_onIdle() for the cooperative QV kernel is slightly different, because it is called with interrupts **disabled**. The following listing shows the complete QV_onIdle() callback, with the most important points explained in the section below:
 
+<br>
 @code{.c}
 [0] void QV_onIdle(void) { /* NOTE: called with interrupts DISABLED */
 

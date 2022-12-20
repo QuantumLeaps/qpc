@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on TM4C123, QUTEST, GNU-ARM
-# Last Updated for Version: 7.1.0
-# Date of the Last Update:  2022-08-20
+# Last Updated for Version: 7.2.0
+# Date of the Last Update:  2022-12-21
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -108,7 +108,7 @@ C_SRCS := \
 CPP_SRCS :=
 
 OUTPUT    := $(PROJECT)
-LD_SCRIPT := $(TARGET_DIR)\qutest.ld
+LD_SCRIPT := $(TARGET_DIR)/qutest.ld
 
 QP_SRCS := \
 	qep_hsm.c \
@@ -191,8 +191,6 @@ ifeq ("$(wildcard $(QUTEST))","")
 QUTEST := python3 $(QTOOLS)/qutest/qutest.py
 endif
 
-TESTS  := *.py
-
 #-----------------------------------------------------------------------------
 # build options
 #
@@ -265,7 +263,7 @@ flash :
 	@echo Reset the board MANUALLY!
 
 run : $(TARGET_BIN)
-	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+	$(QUTEST) -q$(QSPY) -l$(LOG) -o$(OPT) -- $(TESTS)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@
@@ -282,14 +280,22 @@ $(BIN_DIR)/%.o : %.c
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) $< -o $@
 
-.PHONY : clean show
-
-# include dependency files only if our goal depends on their existence
+# create BIN_DIR and include dependencies only if needed
 ifneq ($(MAKECMDGOALS),clean)
   ifneq ($(MAKECMDGOALS),show)
+     ifneq ($(MAKECMDGOALS),debug)
+ifeq ("$(wildcard $(BIN_DIR))","")
+$(shell $(MKDIR) $(BIN_DIR))
+endif
 -include $(C_DEPS_EXT) $(CPP_DEPS_EXT)
+     endif
   endif
 endif
+
+debug :
+	$(QUTEST) -edebug -q$(QSPY) -l$(LOG) -o$(OPT) -- $(TESTS)
+
+.PHONY : clean show
 
 clean :
 	-$(RM) $(BIN_DIR)/*.o \
@@ -300,6 +306,7 @@ clean :
 
 show :
 	@echo PROJECT      = $(PROJECT)
+	@echo MAKECMDGOALS = $(MAKECMDGOALS)
 	@echo TESTS        = $(TESTS)
 	@echo TARGET_ELF   = $(TARGET_ELF)
 	@echo CONF         = $(CONF)
@@ -318,5 +325,6 @@ show :
 	@echo QTOOLS       = $(QTOOLS)
 	@echo HOST         = $(HOST)
 	@echo QUTEST       = $(QUTEST)
+	@echo FLASH        = $(FLASH)
 	@echo TESTS        = $(TESTS)
 

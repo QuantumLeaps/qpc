@@ -23,38 +23,30 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-11-14
-* @version Last updated for: @ref qpc_7_1_3
+* @date Last updated on: 2022-10-02
+* @version Last updated for: @ref qpc_7_1_2
 *
 * @file
-* @brief "QUIT" QP Unit Internal Test
+* @brief QK/C sample port with all configurable options
 */
-#ifndef QUIT_H
-#define QUIT_H
+#ifndef QK_PORT_H_
+#define QK_PORT_H_
 
-/* macro to verify an expectation */
-#define VERIFY(cond_) \
-    ((cond_) ? (void)0 : QUIT_fail_(#cond_, &Q_this_module_[0], __LINE__))
+/* QK interrupt entry and exit... */
+#define QK_ISR_ENTRY()    (++QF_intNest_)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define QK_ISR_EXIT()     do {    \
+    --QF_intNest_;                \
+    if (QF_intNest_ == 0U) {      \
+        if (QK_sched_() != 0U) {  \
+            QK_activate_();       \
+        }                         \
+    }                             \
+    else {                        \
+        Q_ERROR();                \
+    }                             \
+} while (false)
 
-void TEST(char const *title);
-void QUIT_fail_(char const *cond, char const *module, int line);
-void onRunTests(void); /* user-defined callback to run the tests */
+#include "qk.h"  /* QK platform-independent public interface */
 
-#include "qf_port.h"   /* QF/C port from the port directory */
-#include "qassert.h"   /* QP embedded systems-friendly assertions */
-
-#ifdef Q_SPY /* software tracing enabled? */
-#include "qs_port.h"   /* QS/C port from the port directory */
-#else
-#include "qs_dummy.h"  /* QS/C dummy (inactive) interface */
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* QUIT_H */
+#endif /* QK_PORT_H_ */

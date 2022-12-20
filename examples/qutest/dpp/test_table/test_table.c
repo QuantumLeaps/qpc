@@ -59,7 +59,6 @@ int main(int argc, char *argv[]) {
     QF_init();    /* initialize the framework and the underlying RT kernel */
     BSP_init(argc, argv); /* initialize the Board Support Package */
 
-
     QS_OBJ_DICTIONARY(&Philo_inst[0]);
     QS_OBJ_DICTIONARY(&Philo_inst[1]);
     QS_OBJ_DICTIONARY(&Philo_inst[2]);

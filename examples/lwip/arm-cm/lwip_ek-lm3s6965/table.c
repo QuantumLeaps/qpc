@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example with lwIP and direct screen output
-* Last updated for version 6.9.3
-* Last updated on  2021-03-03
+* Last updated for version 7.2.0
+* Last updated on  2022-12-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -116,7 +116,6 @@ QState Table_initial(Table *me, QEvt const *e) {
     QActive_subscribe((QActive *)me, DISPLAY_UDP_SIG);
 
     QS_OBJ_DICTIONARY(&l_table);
-    QS_FUN_DICTIONARY(&QHsm_top);
     QS_FUN_DICTIONARY(&Table_initial);
     QS_FUN_DICTIONARY(&Table_serving);
 

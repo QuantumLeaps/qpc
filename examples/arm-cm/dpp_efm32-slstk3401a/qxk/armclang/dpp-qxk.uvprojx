@@ -1677,7 +1677,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY QXK_ON_CONTEXT_SW QXK_USE_IRQ_HANDLER=CRYPTO_IRQHandler QXK_USE_IRQ_NUM=25
+              <Define>Q_SPY QF_ON_CONTEXT_SW QXK_USE_IRQ_HANDLER=CRYPTO_IRQHandler QXK_USE_IRQ_NUM=25
 </Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>

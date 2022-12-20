@@ -217,10 +217,7 @@ void BSP_init(void) {
     __HAL_FLASH_ART_ENABLE();
 #endif /* ART_ACCLERATOR_ENABLE */
 
-    /* Explictily Disable the automatic FPU state preservation as well as
-    * the FPU lazy stacking
-    */
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
+    /* NOTE The VFP (Floating Point Unit) unit is configured by EROS */
 
     /* Configure the LEDs */
     BSP_LED_Init(LED1);

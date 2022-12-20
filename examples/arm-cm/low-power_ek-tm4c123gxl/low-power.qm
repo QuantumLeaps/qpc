@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.2" links="1">
+<model version="5.2.4" links="1">
  <documentation>Low-Power example with multiple clock rates</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>

@@ -139,7 +139,8 @@ This example implements the @ref blinky "Blinky sample application" on the EK-TM
 
 The Blinky example is located in the directory <span class="img folder">qpc/examples/arm-cm/blinky_ek-tm4c123gxl</span>, which is organized as follows:
 
-@code{c}
+<br>
+@code{.c}
  qpc/                         // QP/C installation directory
   +-examples/                 // QP/C examples directory (application)
   | +-arm-cm/                 // QP/C examples for ARM Cortex-M
@@ -275,7 +276,8 @@ This example implements the @ref dpp "Dining Philosophers Problem" sample applic
 
 The DPP example is located in the directory <span class="img folder">qpc/examples/arm-cm/dpp_ek-tm4c123gxl</span>, which is organized as follows:
 
-@code{c}
+<br>
+@code{.c}
  qpc/                      // QP/C installation directory
   +-examples/              // QP/C examples directory (applications)
   | +-arm-cm/              // QP/C examples for ARM Cortex-M
@@ -372,7 +374,8 @@ The application also demonstrates <a href="https://www.state-machine.com/qtools/
 
 The DPP example is located in the directory <span class="img folder">qpc/examples/arm-cm/dpp_efm32-slstk3401a</span> and includes versions for @ref srs_qv "cooperative QV kernel", the  @ref srs_qk "preemptive QK kernel", and the @ref srs_qxk "preemptive dual mode QXK RTOS kernel"  each provided for the ARM-KEIL, GNU-ARM, and IAR-ARM. The following annotated directory listing describes the contents of the example folder:
 
-@code{c}
+<br>
+@code{.c}
  qpc/                      // QP/C installation directory
   +-examples/              // QP/C examples directory (application)
   | +-arm-cm/              // QP/C examples for ARM Cortex-M

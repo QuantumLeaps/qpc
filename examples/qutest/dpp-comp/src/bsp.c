@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, BSP for QUTest
-* Last updated for: @ref qpc_7_0_0
-* Date of the Last Update:  2022-02-17
+* Last Updated for Version: 7.2.0
+* Date of the Last Update:  2022-12-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -51,7 +51,6 @@ void BSP_init(int argc, char **argv) {
     QS_FUN_DICTIONARY(&BSP_displayPhilStat);
     QS_FUN_DICTIONARY(&BSP_random);
     QS_FUN_DICTIONARY(&BSP_randomSeed);
-    QS_FUN_DICTIONARY(&QHsm_top);
 
     /* global signals */
     QS_SIG_DICTIONARY(DONE_SIG,      (void *)0);

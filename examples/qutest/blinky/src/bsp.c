@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: "Blinky" example, Win32 API
-* Last updated for version 6.2.0
-* Last updated on  2018-05-21
+* Last Updated for Version: 7.2.0
+* Date of the Last Update:  2022-12-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -43,7 +43,6 @@ enum {
 
 /*..........................................................................*/
 void BSP_init() {
-    QS_FUN_DICTIONARY(&QHsm_top);
     QS_USR_DICTIONARY(LED);
 }
 /*..........................................................................*/

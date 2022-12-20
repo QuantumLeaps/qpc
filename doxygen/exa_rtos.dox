@@ -425,7 +425,7 @@ The "Blinky" example blinks an on-board LED once per second. The blinking is don
 [3]  west build -b <board>
 [3a] west build -b nucleo_h743zi
 [3b] west build -b nucleo_l053r8
-~~~
+...
 
 [4] west flush
 @endverbatim
@@ -508,7 +508,7 @@ DPP example with multiple active objects.
 [3]  west build -b <board>
 [3a] west build -b nucleo_h743zi
 [3b] west build -b nucleo_l053r8
-~~~
+...
 
 [4] west flush
 @endverbatim
@@ -604,7 +604,7 @@ qspy -c /dev/ttyACM0
 @endverbatim
 
 
-@subsection @section zephyr_dpp-qs-output QSPY Output Example
+@subsection zephyr_dpp-qs-output QSPY Output Example
 After resetting the board, you should see output similar to the following:
 @verbatim
 ########## Trg-RST  QP-Ver=701,Build=220810_150847

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EK-TM4C123GXL board, ThreadX kernel
-* Last updated for version 7.1.3
-* Last updated on  2022-10-18
+* Last updated for version 7.2.0
+* Last updated on  2022-12-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -97,32 +97,154 @@ void UART0_IRQHandler(void) {
 void UART0_IRQHandler(void) {}
 #endif
 
+/* MPU setup for TM4C123GXL MCU */
+static void TM4C123GXL_MPU_setup(void) {
+    /* The following MPU configuration contains the general TM4C memory map.
+    *
+    * Please note that the actual TM4C MCUs provide much less Flash and SRAM
+    * than the maximums configured here. This means that actual MCUs have
+    * unmapped memory regions (e.g., beyond the actual SRAM). Attempts to
+    * access these regions causes the HardFault exception, which is the
+    * desired behavior.
+    */
+    static struct {
+        uint32_t rbar;
+        uint32_t rasr;
+    } const mpu_setup[] = {
+        { /* region #0: Flash: base=0x0000'0000, size=512M=2^(28+1) */
+          0x00000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 0U), /* region #0 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(18+1) region */
+              | (0x6U << MPU_RASR_AP_Pos)   /* PA:ro/UA:ro */
+              | (1U << MPU_RASR_C_Pos)      /* C=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #1: SRAM: base=0x2000'0000, size=512M=2^(28+1) */
+          0x20000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 1U), /* region #1 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_C_Pos)      /* C=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        /* region #3: (not configured) */
+        { MPU_RBAR_VALID_Msk | (MPU_RBAR_REGION_Msk & 2U), 0U },
+
+        { /* region #3: Peripherals: base=0x4000'0000, size=512M=2^(28+1) */
+          0x40000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 3U), /* region #3 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #4: Priv. Periph: base=0xE000'0000, size=512M=2^(28+1) */
+          0xE0000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 4U), /* region #4 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #5: Ext RAM: base=0x6000'0000, size=1G=2^(29+1) */
+          0x60000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 5U), /* region #5 */
+          (29U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #6: Ext Dev: base=0xA000'0000, size=1G=2^(29+1) */
+          0xA0000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 6U), /* region #6 */
+          (29U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #7: NULL-pointer: base=0x000'0000, size=512B */
+          0x00000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 7U), /* region #7 */
+          (8U << MPU_RASR_SIZE_Pos)         /* 2^(8+1)=512B region */
+              | (0x0U << MPU_RASR_AP_Pos)   /* PA:na/UA:na */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+    };
+
+    /* enable the MemManage_Handler for MPU exception */
+    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
+
+    __DSB();
+    MPU->CTRL = 0U; /* disable the MPU */
+    for (uint_fast8_t n = 0U; n < Q_DIM(mpu_setup); ++n) {
+        MPU->RBAR = mpu_setup[n].rbar;
+        MPU->RASR = mpu_setup[n].rasr;
+    }
+    MPU->CTRL = MPU_CTRL_ENABLE_Msk;        /* enable the MPU */
+    __ISB();
+    __DSB();
+}
+
 /*..........................................................................*/
 void BSP_init(void) {
+    /* setup the MPU... */
+    TM4C123GXL_MPU_setup();
+
     /* NOTE: SystemInit() already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
     SystemCoreClockUpdate();
 
-    /* Explictily Disable the automatic FPU state preservation as well as
-    * the FPU lazy stacking
-    */
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
+    /* NOTE The VFP (Floating Point Unit) unit is configured by the RTOS */
 
     /* enable clock for to the peripherals used by this application... */
-    SYSCTL->RCGCGPIO |= (1U << 5); /* enable Run mode for GPIOF */
+    SYSCTL->RCGCGPIO  |= (1U << 5); /* enable Run mode for GPIOF */
+    SYSCTL->GPIOHBCTL |= (1U << 5); /* enable AHB for GPIOF */
+    __ISB();
+    __DSB();
 
-    /* configure the LEDs and push buttons */
-    GPIOF->DIR |= (LED_RED | LED_GREEN | LED_BLUE); /* set as output */
-    GPIOF->DEN |= (LED_RED | LED_GREEN | LED_BLUE); /* digital enable */
-    GPIOF->DATA_Bits[LED_RED]   = 0U; /* turn the LED off */
-    GPIOF->DATA_Bits[LED_GREEN] = 0U; /* turn the LED off */
-    GPIOF->DATA_Bits[LED_BLUE]  = 0U; /* turn the LED off */
+    /* configure LEDs (digital output) */
+    GPIOF_AHB->DIR |= (LED_RED | LED_BLUE | LED_GREEN);
+    GPIOF_AHB->DEN |= (LED_RED | LED_BLUE | LED_GREEN);
+    GPIOF_AHB->DATA_Bits[LED_RED | LED_BLUE | LED_GREEN] = 0U;
 
-    /* configure the User Switches */
-    GPIOF->DIR &= ~(BTN_SW1 | BTN_SW2); /*  set direction: input */
-    ROM_GPIOPadConfigSet(GPIOF_BASE, (BTN_SW1 | BTN_SW2),
-                         GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+    /* configure switches... */
+
+    /* unlock access to the SW2 pin because it is PROTECTED */
+    GPIOF_AHB->LOCK = 0x4C4F434BU; /* unlock GPIOCR register for SW2 */
+    /* commit the write (cast const away) */
+    *(uint32_t volatile *)&GPIOF_AHB->CR = 0x01U;
+
+    GPIOF_AHB->DIR &= ~(BTN_SW1 | BTN_SW2); /* input */
+    GPIOF_AHB->DEN |= (BTN_SW1 | BTN_SW2); /* digital enable */
+    GPIOF_AHB->PUR |= (BTN_SW1 | BTN_SW2); /* pull-up resistor enable */
+
+    *(uint32_t volatile *)&GPIOF_AHB->CR = 0x00U;
+    GPIOF_AHB->LOCK = 0x0; /* lock GPIOCR register for SW2 */
 
     /* seed the random number generator */
     BSP_randomSeed(1234U);
@@ -142,7 +264,7 @@ void BSP_init(void) {
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
-    GPIOF->DATA_Bits[LED_GREEN] = ((stat[0] == 'e') ? LED_GREEN : 0U);
+    GPIOF_AHB->DATA_Bits[LED_GREEN] = ((stat[0] == 'e') ? LED_GREEN : 0U);
 
     QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
@@ -151,7 +273,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
-    GPIOF->DATA_Bits[LED_BLUE] = ((paused != 0U) ? LED_BLUE : 0U);
+    GPIOF_AHB->DATA_Bits[LED_BLUE] = ((paused != 0U) ? LED_BLUE : 0U);
 
     QS_BEGIN_ID(PAUSED_STAT, 0U) /* app-specific record */
         QS_U8(1, paused);  /* Paused status */
@@ -245,7 +367,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 
 #ifndef NDEBUG
     /* light up all LEDs */
-    GPIOF->DATA_Bits[LED_GREEN | LED_RED | LED_BLUE] = 0xFFU;
+    GPIOF_AHB->DATA_Bits[LED_GREEN | LED_RED | LED_BLUE] = 0xFFU;
     /* for debugging, hang on in an endless loop... */
     for (;;) {
     }

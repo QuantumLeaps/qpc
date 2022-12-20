@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-10-02
-* @version Last updated for: @ref qpc_7_1_2
+* @date Last updated on: 2022-12-13
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QK/C port example for a generic C compiler.
@@ -35,7 +35,7 @@
 /****************************************************************************/
 
 /*! enable the context-switch callback */
-#define QK_ON_CONTEXT_SW 1
+#define QF_ON_CONTEXT_SW   1
 
 /*! determination if the code executes in the ISR context (ARM Cortex-M) */
 #define QK_ISR_CONTEXT_() (get_IPSR() != 0U)

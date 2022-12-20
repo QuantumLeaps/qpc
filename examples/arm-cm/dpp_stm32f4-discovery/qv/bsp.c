@@ -148,30 +148,7 @@ void BSP_init(void) {
     */
     SystemCoreClockUpdate();
 
-    /* configure the FPU usage by choosing one of the options... */
-#if 1
-    /* OPTION 1:
-    * Use the automatic FPU state preservation and the FPU lazy stacking.
-    *
-    * NOTE:
-    * Use the following setting when FPU is used in more than one task or
-    * in any ISRs. This setting is the safest and recommended, but requires
-    * extra stack space and CPU cycles.
-    */
-    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
-#else
-    /* OPTION 2:
-    * Do NOT to use the automatic FPU state preservation and
-    * do NOT to use the FPU lazy stacking.
-    *
-    * NOTE:
-    * Use the following setting when FPU is used in ONE task only and not
-    * in any ISR. This setting is very efficient, but if more than one task
-    * (or ISR) start using the FPU, this can lead to corruption of the
-    * FPU registers. This option should be used with CAUTION.
-    */
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
-#endif
+    /* NOTE The VFP (hardware Floating Point) unit is configured by QV-port */
 
     /* Initialize thr port for the LEDs */
     RCC_AHB1PeriphClockCmd(LED_GPIO_CLK , ENABLE);

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 7.1.3
-# Last updated on  2022-11-13
+# Last Updated for Version: 7.2.0
+# Date of the Last Update:  2022-12-21
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -35,7 +35,7 @@
 # examples of invoking this Makefile:
 # make         # make and run the Python tests in the current directory
 # make TESTS=test*.py  # make and run the selected tests in the curr. dir.
-# make HOST=localhost:7705 # connect to host:port
+# make QSPY=localhost:7705 # connect to QSPY at host:udp_port:tcp_port
 # make norun   # only make but not run the tests
 # make clean   # cleanup the build
 # make debug   # only run tests in DEBUG mode
@@ -153,8 +153,6 @@ ifeq ("$(wildcard $(QUTEST))","")
 QUTEST := python3 $(QTOOLS)/qutest/qutest.py
 endif
 
-TESTS  := *.py
-
 #-----------------------------------------------------------------------------
 # basic utilities (depends on the OS this Makefile runs on):
 #
@@ -222,7 +220,7 @@ $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_EXE)
-	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+	$(QUTEST) -e$(TARGET_EXE) -q$(QSPY) -l$(LOG) -o$(OPT) -- $(TESTS)
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
@@ -249,7 +247,7 @@ endif
 endif
 
 debug :
-	$(QUTEST) $(TESTS) DEBUG $(HOST)
+	$(QUTEST) -edebug -q$(QSPY) -l$(LOG) -o$(OPT) -- $(TESTS)
 
 clean :
 	-$(RM) $(BIN_DIR)/*.*

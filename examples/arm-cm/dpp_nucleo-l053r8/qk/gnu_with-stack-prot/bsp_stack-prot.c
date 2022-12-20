@@ -62,7 +62,7 @@ static uint32_t l_rnd;  /* random seed */
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,
-        ON_CONTEXT_SW
+        CONTEXT_SW
     };
 
 #endif
@@ -158,7 +158,7 @@ void BSP_init(void) {
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_USR_DICTIONARY(PHILO_STAT);
-    QS_USR_DICTIONARY(ON_CONTEXT_SW);
+    QS_USR_DICTIONARY(CONTEXT_SW);
 
     /* setup the QS filters... */
     QS_GLB_FILTER(QS_SM_RECORDS);
@@ -242,19 +242,19 @@ void QF_onStartup(void) {
 void QF_onCleanup(void) {
 }
 /*..........................................................................*/
-#ifdef QK_ON_CONTEXT_SW
+#ifdef QF_ON_CONTEXT_SW
 /* NOTE: the context-switch callback is called with interrupts DISABLED */
 void QK_onContextSw(QActive *prev, QActive *next) {
     (void)prev;
     if (next != (QActive *)0) {
         //_impure_ptr = next->thread; /* switch to next TLS */
     }
-    QS_BEGIN_NOCRIT(ON_CONTEXT_SW, 0U) /* no critical section! */
+    QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
         QS_OBJ(prev);
         QS_OBJ(next);
     QS_END_NOCRIT()
 }
-#endif /* QK_ON_CONTEXT_SW */
+#endif /* QF_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QK_onIdle(void) { /* called with interrupts enabled */
 

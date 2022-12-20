@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 7.1.3
-# Last updated on  2022-11-13
+# Last updated for version 7.2.0
+# Last updated on  2022-12-14
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -57,11 +57,11 @@ PROJECT := test_blinky
 
 # list of all source directories used by this project
 VPATH := . \
-	../src
+../src
 
 # list of all include directories needed by this project
 INCLUDES := -I. \
-	-I../src
+-I../src
 
 # location of the QP/C framework (if not provided in an env. variable)
 ifeq ($(QPC),)
@@ -79,8 +79,8 @@ endif
 
 # C source files...
 C_SRCS := \
-	bsp.c \
-	blinky.c \
+bsp.c \
+blinky.c \
 	test_blinky.c
 
 # C++ source files...
@@ -96,8 +96,8 @@ DEFINES  :=
 # add QP/C framework:
 #
 C_SRCS += \
-	qep_hsm.c \
-	qep_msm.c \
+qep_hsm.c \
+qep_msm.c \
 	qf_act.c \
 	qf_actq.c \
 	qf_defer.c \
@@ -155,22 +155,20 @@ ifeq ("$(wildcard $(QUTEST))","")
 QUTEST := python3 $(QTOOLS)/qutest/qutest.py
 endif
 
-TESTS  := *.py
-
 #-----------------------------------------------------------------------------
 # basic utilities (depends on the OS this Makefile runs on):
 #
 ifeq ($(OS),Windows_NT)
-	MKDIR      := mkdir
-	RM         := rm
+MKDIR      := mkdir
+RM         := rm
 	TARGET_EXT := .exe
 else ifeq ($(OSTYPE),cygwin)
-	MKDIR      := mkdir -p
-	RM         := rm -f
+MKDIR      := mkdir -p
+RM         := rm -f
 	TARGET_EXT := .exe
 else
-	MKDIR      := mkdir -p
-	RM         := rm -f
+MKDIR      := mkdir -p
+RM         := rm -f
 	TARGET_EXT :=
 endif
 
@@ -180,19 +178,19 @@ endif
 BIN_DIR := build
 
 CFLAGS  := -c -g -O -fno-pie -std=c11 -pedantic -Wall -Wextra -W \
-	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
+$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
 CPPFLAGS := -c -g -O -fno-pie -std=c++11 -pedantic -Wall -Wextra \
-	-fno-rtti -fno-exceptions \
-	$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
+-fno-rtti -fno-exceptions \
+$(INCLUDES) $(DEFINES) -DQ_SPY -DQ_UTEST -DQ_HOST
 
 ifndef GCC_OLD
-	LINKFLAGS := -no-pie
+LINKFLAGS := -no-pie
 endif
 
 ifdef GCOV
-	CFLAGS    += -fprofile-arcs -ftest-coverage
-	CPPFLAGS  += -fprofile-arcs -ftest-coverage
+CFLAGS    += -fprofile-arcs -ftest-coverage
+CPPFLAGS  += -fprofile-arcs -ftest-coverage
 	LINKFLAGS += -lgcov --coverage
 endif
 
@@ -224,7 +222,7 @@ $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_EXE)
-	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+	$(QUTEST) -e$(TARGET_EXE) -q$(QSPY) -l$(LOG) -o$(OPT) -- $(TESTS)
 
 $(BIN_DIR)/%.d : %.cpp
 	$(CPP) -MM -MT $(@:.d=.o) $(CPPFLAGS) $< > $@
@@ -251,7 +249,7 @@ endif
 endif
 
 debug :
-	$(QUTEST) $(TESTS) DEBUG $(HOST)
+	$(QUTEST) -edebug -q$(QSPY) -l$(LOG) -o$(OPT) -- $(TESTS)
 
 clean :
 	-$(RM) $(BIN_DIR)/*.*

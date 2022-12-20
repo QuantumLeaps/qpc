@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-L053R8 board, QUTEST, GNU-ARM
-# Last Updated for Version: 7.1.0
-# Date of the Last Update:  2022-08-20
+# Last Updated for Version: 7.2.0
+# Date of the Last Update:  2022-12-21
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -167,11 +167,11 @@ LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 #-----------------------------------------------------------------------------
-# NOTE: The following symbol USB assumes that the NUCLEO board
+# NOTE: The symbol USB must be provided for the NUCLEO board
 # has enumerated as USB drive f:
 #
 ifeq ($(USB),)
-USB := f:
+$(error USB drive not provided for the NUCLEO board.)
 endif
 
 ##############################################################################
@@ -191,8 +191,6 @@ SLEEP := sleep
 ifeq ("$(wildcard $(QUTEST))","")
 QUTEST := python3 $(QTOOLS)/qutest/qutest.py
 endif
-
-TESTS  := *.py
 
 #-----------------------------------------------------------------------------
 # build options
@@ -262,7 +260,7 @@ flash :
 	$(CP) $(TARGET_BIN) $(USB)
 
 run : $(TARGET_BIN)
-	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+	$(QUTEST) -q$(QSPY) -l$(LOG) -o$(OPT) -- $(TESTS)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@

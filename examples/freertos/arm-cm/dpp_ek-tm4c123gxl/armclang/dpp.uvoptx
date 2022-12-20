@@ -143,7 +143,56 @@
           <Name>-U0E2006F4 -O4622 -S4 -FO61</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>321</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>1050</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\..\..\..\..\3rd_party\ek-tm4c123gxl\arm\startup_TM4C123GH6PM.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\dpp\../../../../../3rd_party/ek-tm4c123gxl/arm/startup_TM4C123GH6PM.s\321</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>333</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>1056</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\..\..\..\..\3rd_party\ek-tm4c123gxl\arm\startup_TM4C123GH6PM.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\dpp\../../../../../3rd_party/ek-tm4c123gxl/arm/startup_TM4C123GH6PM.s\333</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>267</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>8136</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\..\..\..\..\3rd_party\FreeRTOS\Source\portable\GCC\ARM_CM4F\port.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\dpp\../../../../../3rd_party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c\267</Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>

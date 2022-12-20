@@ -59,7 +59,6 @@ static uint32_t l_rnd;  /* random seed */
 
     enum AppRecords { /* application-specific trace records */
         PHILO_STAT = QS_USER,
-        ON_CONTEXT_SW
     };
 
 #endif
@@ -182,7 +181,6 @@ void BSP_init(void) {
     }
     QS_OBJ_DICTIONARY(&l_tickHook);
     QS_USR_DICTIONARY(PHILO_STAT);
-    QS_USR_DICTIONARY(ON_CONTEXT_SW);
 
     /* setup the QS filters... */
     QS_GLB_FILTER(QS_SM_RECORDS);

@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-02-25
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-12-25
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief DPP example
@@ -34,6 +34,9 @@
 #include "bsp.h"
 
 Q_DEFINE_THIS_FILE
+
+/*..........................................................................*/
+QTicker ticker0; /* global ticker0 AO */
 
 /*..........................................................................*/
 int main() {
@@ -54,22 +57,29 @@ int main() {
     /* start the active objects... */
     Philo_ctor(); /* instantiate all Philosopher active objects */
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
-        QACTIVE_START(AO_Philo[n],           /* AO to start */
-                      n + 1U,                /* QP priority of the AO */
-                      philoQueueSto[n],      /* event queue storage */
-                      Q_DIM(philoQueueSto[n]), /* queue length [events] */
-                      (void *)0,             /* stack storage (not used) */
-                      0U,                    /* size of the stack [bytes] */
-                      (QEvt *)0);            /* initialization event */
+        QACTIVE_START(AO_Philo[n], /* AO to start */
+            n + 1U,                /* QP priority of the AO */
+            philoQueueSto[n],      /* event queue storage */
+            Q_DIM(philoQueueSto[n]), /* queue length [events] */
+            (void *)0,             /* stack storage (not used) */
+            0U,                    /* size of the stack [bytes] */
+            (void *)0);            /* initialization param */
     }
+
+    /* example of prioritizing the Ticker0 active object */
+    QTicker_ctor(&ticker0, 0U); /* ticker AO for tick rate 0 */
+    QACTIVE_START(&ticker0.super, N_PHILO + 1U,
+                  0, 0, 0, 0, 0); /* not used */
+    QS_LOC_FILTER(-ticker0.super.prio); /* don't trace ticker0 */
+
     Table_ctor(); /* instantiate the Table active object */
-    QACTIVE_START(AO_Table,                  /* AO to start */
-                  N_PHILO + 1U,              /* QP priority of the AO */
-                  tableQueueSto,             /* event queue storage */
-                  Q_DIM(tableQueueSto),      /* queue length [events] */
-                  (void *)0,                 /* stack storage (not used) */
-                  0U,                        /* size of the stack [bytes] */
-                  (QEvt *)0);                /* initialization event */
+    QACTIVE_START(AO_Table,        /* AO to start */
+        N_PHILO + 2U,              /* QP priority of the AO */
+        tableQueueSto,             /* event queue storage */
+        Q_DIM(tableQueueSto),      /* queue length [events] */
+        (void *)0,                 /* stack storage (not used) */
+        0U,                        /* size of the stack [bytes] */
+        (void *)0);                /* initialization param */
 
     return QF_run(); /* run the QF application */
 }

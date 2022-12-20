@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-12
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-12-18
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QV/C port to ARM Cortex-M, IAR-ARM toolset
@@ -32,7 +32,7 @@
 #ifndef QV_PORT_H
 #define QV_PORT_H
 
-#if (__CORE__ == __ARM6M__) /* Cortex-M0/M0+/M1 ? */
+#if (__ARM_ARCH == 6) /* ARMv6-M? */
 
     /* macro to put the CPU to sleep inside QV_onIdle() */
     #define QV_CPU_SLEEP() do { \
@@ -42,7 +42,7 @@
 
     #define QV_ARM_ERRATUM_838869() ((void)0)
 
-#else /* Cortex-M3/M4/M7(v7-M) */
+#else /* ARMv7-M or higher */
 
     /* macro to put the CPU to sleep inside QV_onIdle() */
     #define QV_CPU_SLEEP() do { \
@@ -52,10 +52,6 @@
         QF_PRIMASK_ENABLE();    \
     } while (false)
 
-    /* initialization of the QV kernel for Cortex-M3/M4/M4F */
-    #define QV_INIT() QV_init()
-    void QV_init(void);
-
     /* The following macro implements the recommended workaround for the
     * ARM Erratum 838869. Specifically, for Cortex-M3/M4/M7 the DSB
     * (memory barrier) instruction needs to be added before exiting an ISR.
@@ -63,6 +59,17 @@
     */
     #define QV_ARM_ERRATUM_838869() __DSB()
 
+#endif
+
+/* initialization of the QV kernel */
+#define QV_INIT()  QV_init()
+void QV_init(void);
+
+#if (__ARM_FP != 0) /* if VFP available... */
+/* When the FPU is configured, clear the FPCA bit in the CONTROL register
+* to prevent wasting the stack space for the FPU context.
+*/
+#define QV_START()  __set_CONTROL(0U)
 #endif
 
 #include "qv.h" /* QV platform-independent public interface */

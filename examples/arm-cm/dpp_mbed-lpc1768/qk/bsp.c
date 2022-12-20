@@ -132,6 +132,22 @@ void EINT0_IRQHandler(void) {
 
 /* BSP functions ===========================================================*/
 void BSP_init(void) {
+    /* enable the MemManage_Handler for MPU exception */
+    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
+
+    /* Configure the MPU to prevent NULL-pointer dereferencing ... */
+    MPU->RBAR = 0x0U                          /* base address */
+                | MPU_RBAR_VALID_Msk          /* valid region */
+                | (MPU_RBAR_REGION_Msk & 7U); /* region 7 */
+    MPU->RASR = (7U << MPU_RASR_SIZE_Pos)     /* 2**(7+1) region */
+                | (0x0U << MPU_RASR_AP_Pos)   /* no access */
+                | MPU_RASR_ENABLE_Msk;        /* region enable */
+
+    MPU->CTRL = MPU_CTRL_PRIVDEFENA_Msk       /* enable background region */
+                | MPU_CTRL_ENABLE_Msk;        /* enable the MPU */
+    __ISB();
+    __DSB();
+
     /* NOTE: SystemInit() has been already called from the startup code
     *  but SystemCoreClock needs to be updated
     */

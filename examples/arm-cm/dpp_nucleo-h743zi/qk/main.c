@@ -1,41 +1,42 @@
-/*****************************************************************************
-* Product: DPP example
-* Last updated for version 7.1.1
-* Last updated on  2022-09-22
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
+/*============================================================================
+* QP/C Real-Time Embedded Framework (RTEF)
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
+* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 *
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
+* This software is dual-licensed under the terms of the open source GNU
+* General Public License version 3 (or any later version), or alternatively,
+* under the terms of one of the closed source Quantum Leaps commercial
+* licenses.
 *
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
+* The terms of the open source GNU General Public License version 3
+* can be found at: <www.gnu.org/licenses/gpl-3.0>
 *
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
+* The terms of the closed source Quantum Leaps commercial licenses
+* can be found at: <www.state-machine.com/licensing>
+*
+* Redistributions in source code must retain this top-level comment block.
+* Plagiarizing this software to sidestep the license obligations is illegal.
 *
 * Contact information:
-* <www.state-machine.com/licensing>
+* <www.state-machine.com>
 * <info@state-machine.com>
-*****************************************************************************/
+============================================================================*/
+/*!
+* @date Last updated on: 2022-12-25
+* @version Last updated for: @ref qpc_7_2_0
+*
+* @file
+* @brief DPP example
+*/
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
 
 Q_DEFINE_THIS_FILE
+
+/*..........................................................................*/
+QTicker ticker0; /* global ticker0 AO */
 
 /*..........................................................................*/
 int main() {
@@ -64,9 +65,16 @@ int main() {
             0U,                    /* size of the stack [bytes] */
             (void *)0);            /* initialization param */
     }
+
+    /* example of prioritizing the Ticker0 active object */
+    QTicker_ctor(&ticker0, 0U); /* ticker AO for tick rate 0 */
+    QACTIVE_START(&ticker0.super, N_PHILO + 1U,
+                  0, 0, 0, 0, 0); /* not used */
+    QS_LOC_FILTER(-ticker0.super.prio); /* don't trace ticker0 */
+
     Table_ctor(); /* instantiate the Table active object */
     QACTIVE_START(AO_Table,        /* AO to start */
-        N_PHILO + 1U,              /* QF-prio/pre-thre. */
+        N_PHILO + 2U,              /* QF-prio/pre-thre. */
         tableQueueSto,             /* event queue storage */
         Q_DIM(tableQueueSto),      /* queue length [events] */
         (void *)0,                 /* stack storage (not used) */

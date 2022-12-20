@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on EMF32-SLSTK3401A, QXK kernel, GNU-ARM
-# Last Updated for Version: 7.0.2
-# Date of the Last Update:  2022-08-18
+# Last Updated for Version: 7.2.0
+# Date of the Last Update:  2022-12-13
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -142,7 +142,7 @@ LIBS      :=
 
 # defines
 DEFINES   := -DEFM32PG1B200F256GM48=1 \
-	-DQXK_ON_CONTEXT_SW \
+	-DQF_ON_CONTEXT_SW \
 	-DQXK_USE_IRQ_HANDLER=CRYPTO_IRQHandler \
 	-DQXK_USE_IRQ_NUM=25
 

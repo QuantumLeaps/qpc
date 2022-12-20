@@ -36,7 +36,7 @@
 #define QF_MAX_TICK_RATE        2U
 
 /* QF interrupt disable/enable and log2()... */
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1(v6-M, v6S-M)? */
+#if (__ARM_ARCH == 6) /* ARMv6-M, v6S-M)? */
 
     /* The maximum number of active objects in the application, see NOTE1 */
     #define QF_MAX_ACTIVE       16U
@@ -56,7 +56,7 @@
     /* hand-optimized LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M) */
     #define QF_LOG2(n_) QF_qlog2((uint32_t)(n_))
 
-#else /* Cortex-M3/M4/M7 */
+#else /* ARMv7-M and higher */
 
     /* The maximum number of active objects in the application, see NOTE1 */
     #define QF_MAX_ACTIVE       32U

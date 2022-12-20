@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Purpose: Fixture for QUTEST self-test
-* Last Updated for Version: 6.9.3
-* Date of the Last Update:  2021-05-31
+* Last Updated for Version: 7.2.0
+* Date of the Last Update:  2022-12-07
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -39,15 +39,23 @@ Q_DEFINE_THIS_MODULE("test_qutest")
 static uint8_t buffer[100];
 static uint32_t myFun(void);
 
-enum {
+enum UsrEnum {
     FIXTURE_SETUP = QS_USER,
     FIXTURE_TEARDOWN,
-    COMMAND_A,
-    COMMAND_B,
-    COMMAND_X,
-    COMMAND_Y,
-    COMMAND_Z,
-    MY_RECORD,
+    COMMAND,
+};
+
+enum CmdEnum {
+    CMD_A,
+    CMD_B,
+    CMD_C,
+    CMD_X,
+    CMD_Y,
+    CMD_Z
+};
+
+enum UsrSig {
+    MYSIG_SIG = Q_USER_SIG,
 };
 
 /*--------------------------------------------------------------------------*/
@@ -64,15 +72,18 @@ int main(int argc, char *argv[]) {
     /* dictionaries... */
     QS_OBJ_DICTIONARY(buffer);
     QS_FUN_DICTIONARY(&myFun);
+    QS_SIG_DICTIONARY(MYSIG_SIG, (void *)0);
 
     QS_USR_DICTIONARY(FIXTURE_SETUP);
     QS_USR_DICTIONARY(FIXTURE_TEARDOWN);
-    QS_USR_DICTIONARY(COMMAND_A);
-    QS_USR_DICTIONARY(COMMAND_B);
-    QS_USR_DICTIONARY(COMMAND_X);
-    QS_USR_DICTIONARY(COMMAND_Y);
-    QS_USR_DICTIONARY(COMMAND_Z);
-    QS_USR_DICTIONARY(MY_RECORD);
+    QS_USR_DICTIONARY(COMMAND);
+
+    QS_ENUM_DICTIONARY(CMD_A, QS_CMD);
+    QS_ENUM_DICTIONARY(CMD_B, QS_CMD);
+    QS_ENUM_DICTIONARY(CMD_C, QS_CMD);
+    QS_ENUM_DICTIONARY(CMD_X, QS_CMD);
+    QS_ENUM_DICTIONARY(CMD_Y, QS_CMD);
+    QS_ENUM_DICTIONARY(CMD_Z, QS_CMD);
 
     return QF_run(); /* run the tests */
 }
@@ -93,20 +104,18 @@ void QS_onTestTeardown(void) {
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    (void)param1;
-    (void)param2;
-    (void)param3;
-
     switch (cmdId) {
-        case COMMAND_A: {
+        case CMD_A: {
             Q_ASSERT_ID(100, param1 != 0U);
-            QS_BEGIN_ID(COMMAND_A, 0U) /* app-specific record */
+            QS_BEGIN_ID(COMMAND, 0U) /* app-specific record */
+                QS_ENUM(QS_CMD, cmdId);
                 QS_U32(0, param1);
             QS_END()
             break;
         }
-        case COMMAND_B: {
-            QS_BEGIN_ID(COMMAND_B, 0U) /* app-specific record */
+        case CMD_B: {
+            QS_BEGIN_ID(COMMAND, 0U) /* app-specific record */
+                QS_ENUM(QS_CMD, cmdId);
                 QS_U8(0, param1);
                 QS_STR("BAR");
                 QS_U16(0, param2);
@@ -116,26 +125,54 @@ void QS_onCommand(uint8_t cmdId,
             QS_END()
             break;
         }
-        case COMMAND_X: {
+        case CMD_C: {
+            /* all supported data elements */
+            QS_BEGIN_ID(COMMAND, 0U) /* app-specific record */
+                QS_ENUM(QS_CMD, cmdId);
+                QS_I8(10,  param1);
+                QS_U8(10,  param1);
+                QS_I16(10, param2);
+                QS_U16(10, param2);
+                QS_I32(10, param3);
+                QS_U32(10, param3);
+            QS_END()
+            QS_BEGIN_ID(COMMAND, 0U) /* app-specific record */
+                QS_I64(10, param3);
+                QS_U64(10, param3);
+                QS_F32(param1, -6.02214076E23);
+                QS_F64(param1, -6.02214076E23);
+            QS_END()
+            QS_BEGIN_ID(COMMAND, 0U) /* app-specific record */
+                QS_OBJ(buffer);
+                QS_FUN(&myFun);
+                QS_SIG(MYSIG_SIG, (void *)0);
+                QS_MEM(&buffer[6], 16);
+            QS_END()
+            break;
+        }
+        case CMD_X: {
             uint32_t x = myFun();
-            QS_BEGIN_ID(COMMAND_X, 0U) /* app-specific record */
+            QS_BEGIN_ID(COMMAND, 0U) /* app-specific record */
+                QS_ENUM(QS_CMD, cmdId);
                 QS_U32(0, x);
                 /* ... */
             QS_END()
             break;
         }
-        case COMMAND_Y: {
-            QS_BEGIN_ID(COMMAND_Y, 0U) /* application-specific record */
+        case CMD_Y: {
+            QS_BEGIN_ID(COMMAND, 0U) /* application-specific record */
+                QS_ENUM(QS_CMD, cmdId);
                 QS_FUN(&myFun);
                 QS_MEM(buffer, param1);
                 QS_STR((char const *)&buffer[33]);
             QS_END()
             break;
         }
-        case COMMAND_Z: {
+        case CMD_Z: {
             float32_t f32 = (float32_t)((int32_t)param2/(float32_t)param3);
             float64_t f64 = -6.02214076E23;
-            QS_BEGIN_ID(COMMAND_Z, 0U) /* app-specific record */
+            QS_BEGIN_ID(COMMAND, 0U) /* app-specific record */
+                QS_ENUM(QS_CMD, cmdId);
                 QS_F32(param1, f32);
                 QS_F64(param1, f64);
             QS_END()
@@ -159,10 +196,10 @@ void QS_onTestEvt(QEvt *e) {
 void QS_onTestPost(void const *sender, QActive *recipient,
                    QEvt const *e, bool status)
 {
-    (void)sender;
-    (void)recipient;
-    (void)e;
-    (void)status;
+    Q_UNUSED_PAR(sender);
+    Q_UNUSED_PAR(recipient);
+    Q_UNUSED_PAR(e);
+    Q_UNUSED_PAR(status);
 }
 
 /*--------------------------------------------------------------------------*/

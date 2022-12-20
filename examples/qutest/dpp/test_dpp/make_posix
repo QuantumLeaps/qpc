@@ -219,7 +219,7 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 test :
-	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+	$(QUTEST) -q$(QSPY) -l$(LOG) -o$(OPT) -- $(TESTS)
 clean :
 	-$(RM) $(BIN_DIR)/*.o \
 	$(BIN_DIR)/*.d \

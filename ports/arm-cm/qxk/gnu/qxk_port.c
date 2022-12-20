@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-10-04
-* @version Last updated for: @ref qpc_7_1_2
+* @date Last updated on: 2022-12-18
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QXK/C port to ARM Cortex-M, GNU-ARM toolset
@@ -45,18 +45,19 @@ void QXK_USE_IRQ_HANDLER(void);
 void NMI_Handler(void);
 #endif
 
-#define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
-#define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
-#define NVIC_EN      ((uint32_t volatile *)0xE000E100)
-#define NVIC_IP      ((uint8_t  volatile *)0xE000E400)
+#define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004U)
+#define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14U)
+#define NVIC_EN      ((uint32_t volatile *)0xE000E100U)
+#define NVIC_IP      ((uint8_t  volatile *)0xE000E400U)
+#define FPU_FPCCR   *((uint32_t volatile *)0xE000EF34U)
 #define NVIC_PEND    0xE000E200
 #define NVIC_ICSR    0xE000ED04
 
-/*
-* Initialize the exception priorities and IRQ priorities to safe values.
+/*..........................................................................*/
+/* Initialize the exception priorities and IRQ priorities to safe values.
 *
 * Description:
-* On Cortex-M3/M4/M7, this QXK port disables interrupts by means of the
+* On ARMv7-M or higher, this QXK port disables interrupts by means of the
 * BASEPRI register. However, this method cannot disable interrupt
 * priority zero, which is the default for all interrupts out of reset.
 * The following code changes the SysTick priority and all IRQ priorities
@@ -70,39 +71,45 @@ void NMI_Handler(void);
 */
 void QXK_init(void) {
 
-#if (__ARM_ARCH != 6) /* if ARMv7-M or higher... */
+#if (__ARM_ARCH != 6)   /*--------- if ARMv7-M and higher... */
 
     /* set exception priorities to QF_BASEPRI...
     * SCB_SYSPRI1: Usage-fault, Bus-fault, Memory-fault
     */
     SCB_SYSPRI[1] = (SCB_SYSPRI[1]
-        | (QF_BASEPRI << 16) | (QF_BASEPRI << 8) | QF_BASEPRI);
+        | (QF_BASEPRI << 16U) | (QF_BASEPRI << 8U) | QF_BASEPRI);
 
     /* SCB_SYSPRI2: SVCall */
-    SCB_SYSPRI[2] = (SCB_SYSPRI[2] | (QF_BASEPRI << 24));
+    SCB_SYSPRI[2] = (SCB_SYSPRI[2] | (QF_BASEPRI << 24U));
 
     /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
     SCB_SYSPRI[3] = (SCB_SYSPRI[3]
-        | (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI);
+        | (QF_BASEPRI << 24U) | (QF_BASEPRI << 16U) | QF_BASEPRI);
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
-    uint8_t nprio = (8U + ((*SCnSCB_ICTR & 0x7U) << 3U))*4;
+    uint8_t nprio = (8U + ((*SCnSCB_ICTR & 0x7U) << 3U)) * 4U;
     for (uint8_t n = 0U; n < nprio; ++n) {
         NVIC_IP[n] = QF_BASEPRI;
     }
 
-#endif /* ARMv7-M or higher */
+#endif                  /*--------- ARMv7-M or higher */
 
     /* SCB_SYSPRI3: PendSV set to priority 0xFF (lowest) */
     SCB_SYSPRI[3] = (SCB_SYSPRI[3] | (0xFFU << 16U));
 
-#ifdef QXK_USE_IRQ_NUM
+#ifdef QXK_USE_IRQ_NUM   /*--------- QXK IRQ specified? */
     /* The QXK port is configured to use a given ARM Cortex-M IRQ #
     * to return to thread mode (default is to use the NMI exception)
     */
     NVIC_IP[QXK_USE_IRQ_NUM] = 0U; /* priority 0 (highest) */
     NVIC_EN[QXK_USE_IRQ_NUM / 32U] = (1U << (QXK_USE_IRQ_NUM % 32U));
-#endif
+#endif                  /*--------- QXK IRQ specified */
+
+#if (__ARM_FP != 0)     /*--------- if VFP available... */
+    /* configure the FPU for QK */
+    FPU_FPCCR |= (1U << 30U)    /* automatic FPU state preservation (ASPEN) */
+                 | (1U << 31U); /* lazy stacking (LSPEN) */
+#endif                  /*--------- VFP available */
 }
 
 /*==========================================================================*/
@@ -368,14 +375,14 @@ __asm volatile (
     "  STR     r0,[r3,#" STRINGIFY(QXK_CURR) "]\n" /* QXK_attr_.curr := 0 */
     "  STR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* QXK_attr_.next := 0 */
 
-#if defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW)
+#if defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
     "  MOV     r0,#0            \n" /* r0 := 0 (next is basic) */
     "  PUSH    {r3,lr}          \n" /* save QXK_attr_ + exception lr */
     "  LDR     r3,=QXK_contextSw \n"
     "  BLX     r3               \n" /* call QXK_contextSw() */
     "  POP     {r0,r1}          \n" /* restore the aligner + lr into r1 */
     "  MOV     lr,r1            \n" /* restore the exception lr */
-#endif /* defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW) */
+#endif /* defined(Q_SPY) || defined(QF_ON_CONTEXT_SW) */
 
     /* re-enable interrupts and return from PendSV */
     "PendSV_return:             \n"
@@ -441,7 +448,7 @@ __asm volatile (
     * r12 -> QXK_attr_.next / basic-thread
     */
     "PendSV_restore_ex:         \n"
-#if defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW)
+#if defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
     "  MOV     r0,r12           \n" /* r0 := next */
     "  PUSH    {r3,lr}          \n" /* save QXK_attr_ + exception lr */
     "  LDR     r3,=QXK_contextSw \n"
@@ -453,7 +460,7 @@ __asm volatile (
     /* restore the AAPCS-clobbered registers after a functin call...  */
     "  LDR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" /* r0 := QXK_attr_.next */
     "  LDR     r2,[r0,#" STRINGIFY(QACTIVE_OSOBJ) "]\n" /* r2 := QXK_attr_.curr->osObject */
-#endif /* defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW) */
+#endif /* defined(Q_SPY) || defined(QF_ON_CONTEXT_SW) */
 
     "  STR     r0,[r3,#" STRINGIFY(QXK_CURR) "]\n" /* QXK_attr_.curr := r0 (QXK_attr_.next) */
     "  MOV     r0,#0            \n"
@@ -506,7 +513,7 @@ __asm volatile (
 * NOTE: QXK_thread_ret does not execute in the PendSV context!
 * NOTE: QXK_thread_ret is entered with interrupts DISABLED.
 */
-__attribute__ ((naked, optimize("-fno-stack-protector")))
+__attribute__ ((naked, used, optimize("-fno-stack-protector")))
 void QXK_thread_ret(void) {
 __asm volatile (
 
@@ -597,12 +604,12 @@ __asm volatile (
 /*==========================================================================*/
 #if (__ARM_ARCH == 6) /* if ARMv6-M... */
 
-/* hand-optimized quick LOG2 in assembly (No CLZ instruction in ARMv6-M) */
+/* hand-optimized quick LOG2 in assembly (no CLZ instruction in ARMv6-M) */
 /*
 * NOTE:
 * The inline GNU assembler does not accept mnemonics MOVS, LSRS and ADDS,
-* but for Cortex-M0/M0+/M1 the mnemonics MOV, LSR and ADD always set the
-* condition flags in the PSR.
+* but for ARMv6-M the mnemonics MOV, LSR and ADD always set the condition
+* flags in the PSR.
 */
 __attribute__ ((naked, optimize("-fno-stack-protector")))
 uint_fast8_t QF_qlog2(uint32_t x) {
@@ -638,3 +645,4 @@ __asm volatile (
 }
 
 #endif /* ARMv6-M */
+

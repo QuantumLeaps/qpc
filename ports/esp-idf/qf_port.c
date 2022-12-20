@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-11-22
-* @version Last updated for: @ref qpc_7_1_3
+* @date Last updated on: 2022-12-20
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
@@ -616,7 +616,7 @@ void IRAM_ATTR QMPool_putFromISR(QMPool * const me, void *b,
     * the block pointer must be from this pool.
     */
     Q_REQUIRE_ID(900, (me->nFree < me->nTot)
-                      && QF_PTR_RANGE_(b, me->start, me->end));
+                      && (me->start <= b) && (b <= me->end));
 
     (void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
 
@@ -668,7 +668,7 @@ void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin,
             * when the client code writes past the memory block, thus
             * corrupting the next block.
             */
-            Q_ASSERT_ID(930, QF_PTR_RANGE_(fb_next, me->start, me->end));
+            Q_ASSERT_ID(930, (me->start <= fb_next) && (fb_next <= me->end));
 
             /* is the number of free blocks the new minimum so far? */
             if (me->nMin > me->nFree) {
