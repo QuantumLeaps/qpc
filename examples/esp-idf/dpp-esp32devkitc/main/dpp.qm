@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.1" links="1">
+<model version="5.2.4" links="1">
  <documentation>Dining Philosopher Problem example
 NOTE: Requries QP5.</documentation>
  <!--${qpc}-->
@@ -146,18 +146,12 @@ Q_ASSERT(Q_EVT_CAST(TableEvt)-&gt;philoNum != PHILO_ID(me));</action>
    <!--${AOs::Table::isHungry[N_PHILO]}-->
    <attribute name="isHungry[N_PHILO]" type="uint8_t" visibility="0x02" properties="0x00"/>
    <!--${AOs::Table::SM}-->
-   <statechart properties="0x01">
+   <statechart properties="0x03">
     <!--${AOs::Table::SM::initial}-->
     <initial target="../1/2">
-     <action>uint8_t n;
-(void)par; /* unused parameter */
+     <action>(void)par; /* unused parameter */
 
 QS_OBJ_DICTIONARY(&amp;l_table);
-QS_FUN_DICTIONARY(&amp;QHsm_top);
-QS_FUN_DICTIONARY(&amp;Table_initial);
-QS_FUN_DICTIONARY(&amp;Table_active);
-QS_FUN_DICTIONARY(&amp;Table_serving);
-QS_FUN_DICTIONARY(&amp;Table_paused);
 
 QS_SIG_DICTIONARY(DONE_SIG,      (void *)0); /* global signals */
 QS_SIG_DICTIONARY(EAT_SIG,       (void *)0);
@@ -172,7 +166,7 @@ QActive_subscribe(&amp;me-&gt;super, PAUSE_SIG);
 QActive_subscribe(&amp;me-&gt;super, SERVE_SIG);
 QActive_subscribe(&amp;me-&gt;super, TEST_SIG);
 
-for (n = 0U; n &lt; N_PHILO; ++n) {
+for (uint8_t n = 0U; n &lt; N_PHILO; ++n) {
     me-&gt;fork[n] = FREE;
     me-&gt;isHungry[n] = 0U;
     ESP_LOGI(TAG, &quot;Philo%d thinking&quot;, n);

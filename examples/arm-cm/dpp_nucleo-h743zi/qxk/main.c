@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-02-25
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-12-25
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief DPP example
@@ -68,7 +68,7 @@ int main() {
                   Q_DIM(test1QueueSto),      /* message length [events] */
                   test1StackSto,             /* stack storage */
                   sizeof(test1StackSto),     /* stack size [bytes] */
-                  (QEvt *)0);                /* initialization event */
+                  (void *)0);                /* initialization param */
 
     /* NOTE: leave priority 2 free for a mutex */
 
@@ -81,14 +81,14 @@ int main() {
                       Q_DIM(philoQueueSto[n]), /* queue length [events] */
                       (void *)0,             /* stack storage (not used) */
                       0U,                    /* size of the stack [bytes] */
-                      (QEvt *)0);            /* initialization event */
+                      (void *)0);            /* initialization param */
     }
 
     /* example of prioritizing the Ticker0 active object */
     QTicker_ctor(&ticker0, 0U); /* ticker AO for tick rate 0 */
     QACTIVE_START(&ticker0.super, N_PHILO + 3U,
                   0, 0, 0, 0, 0); /* not used */
-      QS_LOC_FILTER(-ticker0.super.prio); /* don't trace ticker0 */
+    QS_LOC_FILTER(-ticker0.super.prio); /* don't trace ticker0 */
 
     /* NOTE: leave priority (N_PHILO + 4) free for mutex */
 
@@ -99,7 +99,7 @@ int main() {
                   Q_DIM(test2QueueSto),      /* message length [events] */
                   test2StackSto,             /* stack storage */
                   sizeof(test2StackSto),     /* stack size [bytes] */
-                  (QEvt *)0);                /* initialization event */
+                  (void *)0);                /* initialization param */
 
     /* NOTE: leave priority (N_PHILO + 6) free for mutex */
 
@@ -110,7 +110,7 @@ int main() {
                   Q_DIM(tableQueueSto),      /* queue length [events] */
                   (void *)0,                 /* stack storage (not used) */
                   0U,                        /* size of the stack [bytes] */
-                  (QEvt *)0);                /* initialization event */
+                  (void *)0);                /* initialization param */
 
     return QF_run(); /* run the QF application */
 }

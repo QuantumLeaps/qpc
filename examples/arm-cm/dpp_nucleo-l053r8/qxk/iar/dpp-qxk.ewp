@@ -2318,7 +2318,7 @@
                 <option>
                     <name>CCDefines</name>
                     <state>Q_SPY</state>
-                    <state>QXK_ON_CONTEXT_SW</state>
+                    <state>QF_ON_CONTEXT_SW</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>

@@ -104,10 +104,7 @@ void BSP_init(void) {
                        SYSCTL_XTAL_16MHZ);
     SystemCoreClock = XTAL_HZ;
 
-    /* FPU ( Floating Point Unit) configuration for QXK
-    * Use the automatic FPU state preservation and the FPU lazy stacking.
-    */
-    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
+    /* NOTE The VFP (Floating Point Unit) unit is configured by QXK-port */
 
     /* configure Timer0, but don't enable the interrupt just yet */
     SYSCTL->RCGCTIMER |= (1U << 0);  /* enable Run mode for Timer0 */

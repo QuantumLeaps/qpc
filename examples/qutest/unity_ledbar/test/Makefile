@@ -1,6 +1,6 @@
 ##############################################################################
 # Makefile for the Unity test harness v2.5.2, for Windows, Linux, MacOS
-# Last updated for version 7.1.3
+# Last updated for version 7.2.0
 # Last updated on  2022-11-13
 #
 #                    Q u a n t u m  L e a P s
@@ -211,6 +211,7 @@ endif
      endif
   endif
 endif
+
 
 clean :
 	-$(RM) $(BIN_DIR)/*.o \

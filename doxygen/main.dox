@@ -8,7 +8,7 @@
 <a target="_blank" href="https://github.com/QuantumLeaps/qpc" title="QP/C on GitHub"><img class="right" src="img/logo_github.png"></a>
 @endif
 @image{inline} latex logo_github.png width=1in
-To check what's new in QP&trade;/C, please see @ref history "QP/C Revision History". You can also get the latest **QP&trade;/C code**, with the recent enhancements and bug fixes, from the <a class="extern" target="_blank" href="https://github.com/QuantumLeaps/qpc"><strong>GitHub QP&trade;/C repository</strong></a>.
+To check what's new in QP&trade;/C, please see @ref history "Design History File". You can also get the latest **QP&trade;/C code**, with the recent enhancements and bug fixes, from the <a class="extern" target="_blank" href="https://github.com/QuantumLeaps/qpc"><strong>GitHub QP&trade;/C repository</strong></a>.
 <div style="clear:both"></div>
 
 
@@ -21,7 +21,7 @@ The main objectives of the QP/C RTEF are:
 
 - to provide a modern, event-driven model of concurrency based on the best practices of concurrent programming  collectively known as the @webref{active-object, Active Object (Actor) model of computation}, which is inherently *safer* than the traditional "shared-state concurrency, mutual-exclusion, and blocking" approach based on a conventional Real-Time Operating System (RTOS);
 
-- to provide an efficient, @ref tr "bidirectionally traceable" implementation of @webref{fsm#HSM, Hierarchical State Machines} for specifying the internal behavior of Active Objects;
+- to provide an efficient, @ref cert_tr "bidirectionally traceable" implementation of @webref{fsm#HSM, Hierarchical State Machines} for specifying the internal behavior of Active Objects;
 
 - to provide a *higher-level of abstraction* closer to the problem domain than the "naked" RTOS threads;
 
@@ -73,7 +73,7 @@ QP/C can also work with many traditional @ref exa_rtos "Real-Time Operating Syst
 
 
 @subsection over_trace Traceability
-QP&trade;/C offers unprecedented, bidirectional @ref tr "traceability" among all work artifacts, which gives teams full visibility from requirements through architecture, design, source code, tests, and back again.
+QP&trade;/C offers unprecedented, bidirectional @ref cert_tr "traceability" among all work artifacts, which gives teams full visibility from requirements through architecture, design, source code, tests, and back again.
 
 
 @subsection over_popular Popularity &amp; Maturity

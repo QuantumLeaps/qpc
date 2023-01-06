@@ -49,7 +49,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\uvision_emf32\</OutputDirectory>
-          <OutputName>test</OutputName>
+          <OutputName>test_fixture</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
@@ -72,7 +72,7 @@
           <BeforeMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>cmd /c "del .\uvision_em32\qstamp.o"</UserProg1Name>
+            <UserProg1Name>cmd /c "del .\uvision_emf32\qstamp.o"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -82,7 +82,7 @@
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>fromelf --bin --output .\uvision_em32\test.bin .\uvision_em32\test.axf</UserProg1Name>
+            <UserProg1Name>fromelf --bin --output .\uvision_emf32\test_fixture.bin .\uvision_emf32\test_fixture.axf</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>1</Optim>
+            <Optim>0</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -337,9 +337,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY, Q_UTEST=0</Define>
+              <Define>Q_SPY,Q_UTEST=0,QF_ON_CONTEXT_SW</Define>
               <Undefine></Undefine>
-              <IncludePath>.;..\..\..\include;..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\3rd_party\efm32pg1b</IncludePath>
+              <IncludePath>.;..\..\..\include;..\..\..\ports\arm-cm\qk\armclang;..\..\..\3rd_party\CMSIS\Include;..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -394,9 +394,9 @@
               <FilePath>.\bsp_efm32.c</FilePath>
             </File>
             <File>
-              <FileName>test_pts.c</FileName>
+              <FileName>test_sched.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\test_pts.c</FilePath>
+              <FilePath>.\test_sched.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -406,37 +406,37 @@
             <File>
               <FileName>startup_efm32pg1b.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\3rd_party\efm32pg1b\arm\startup_efm32pg1b.s</FilePath>
+              <FilePath>..\..\..\3rd_party\efm32pg1b\arm\startup_efm32pg1b.s</FilePath>
             </File>
             <File>
               <FileName>em_cmu.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\3rd_party\efm32pg1b\em_cmu.c</FilePath>
+              <FilePath>..\..\..\3rd_party\efm32pg1b\em_cmu.c</FilePath>
             </File>
             <File>
               <FileName>em_emu.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\3rd_party\efm32pg1b\em_emu.c</FilePath>
+              <FilePath>..\..\..\3rd_party\efm32pg1b\em_emu.c</FilePath>
             </File>
             <File>
               <FileName>em_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\3rd_party\efm32pg1b\em_gpio.c</FilePath>
+              <FilePath>..\..\..\3rd_party\efm32pg1b\em_gpio.c</FilePath>
             </File>
             <File>
               <FileName>system_efm32pg1b.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\3rd_party\efm32pg1b\system_efm32pg1b.c</FilePath>
+              <FilePath>..\..\..\3rd_party\efm32pg1b\system_efm32pg1b.c</FilePath>
             </File>
             <File>
               <FileName>em_system.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\3rd_party\efm32pg1b\em_system.c</FilePath>
+              <FilePath>..\..\..\3rd_party\efm32pg1b\em_system.c</FilePath>
             </File>
             <File>
               <FileName>em_usart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\3rd_party\efm32pg1b\em_usart.c</FilePath>
+              <FilePath>..\..\..\3rd_party\efm32pg1b\em_usart.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -502,11 +502,6 @@
               <FileName>qf_time.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\src\qf\qf_time.c</FilePath>
-            </File>
-            <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\include\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>qk.c</FileName>
@@ -577,6 +572,11 @@
               <FileName>qutest.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\src\qs\qutest.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>

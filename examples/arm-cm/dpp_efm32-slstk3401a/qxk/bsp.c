@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EFM32-SLSTK3401A board, preemptive QXK kernel
-* Last updated for version 7.1.0
-* Last updated on  2022-08-28
+* Last updated for version 7.2.0
+* Last updated on  2022-12-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -206,8 +206,6 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(CONTEXT_SW);
     QS_USR_DICTIONARY(COMMAND_STAT);
 
-    QS_FUN_DICTIONARY(&QHsm_top);
-
     /* setup the QS filters... */
     QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
     QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
@@ -310,9 +308,9 @@ void QF_onStartup(void) {
 void QF_onCleanup(void) {
 }
 /*..........................................................................*/
-#ifdef QXK_ON_CONTEXT_SW
+#ifdef QF_ON_CONTEXT_SW
 /* NOTE: the context-switch callback is called with interrupts DISABLED */
-void QXK_onContextSw(QActive *prev, QActive *next) {
+void QF_onContextSw(QActive *prev, QActive *next) {
     (void)prev;
     if (next != (QActive *)0) {
         //_impure_ptr = next->thread; /* switch to next TLS */
@@ -322,7 +320,7 @@ void QXK_onContextSw(QActive *prev, QActive *next) {
         QS_OBJ(next);
     QS_END_NOCRIT()
 }
-#endif /* QXK_ON_CONTEXT_SW */
+#endif /* QF_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QXK_onIdle(void) {
     float volatile x;
@@ -334,7 +332,7 @@ void QXK_onIdle(void) {
     GPIO->P[LED_PORT].DOUT &= ~(1U << LED1_PIN);
     QF_INT_ENABLE();
 */
-    /* Some flating point code is to exercise the VFP... */
+    /* Some floating point code is to exercise the VFP... */
     x = 1.73205F;
     x = x * 1.73205F;
 

@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: lwIP-Manager Active Object
-* Last updated for version 7.0.1
-* Last updated on  2022-06-06
+* Last updated for version 7.2.0
+* Last updated on  2022-12-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -167,7 +167,6 @@ QState LwIPMgr_initial(LwIPMgr *me, QEvt const *e) {
 
     QS_OBJ_DICTIONARY(&l_lwIPMgr);
     QS_OBJ_DICTIONARY(&l_lwIPMgr.te_LWIP_SLOW_TICK);
-    QS_FUN_DICTIONARY(&QHsm_top);
     QS_FUN_DICTIONARY(&LwIPMgr_initial);
     QS_FUN_DICTIONARY(&LwIPMgr_running);
 

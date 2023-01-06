@@ -30,7 +30,6 @@ void MyAO_ctor(void) {
 static QState MyAO_initial(MyAO * const me, QEvt const * const e) {
     (void)e; /* unused parameter */
 
-    QS_FUN_DICTIONARY(&QHsm_top);
     QS_FUN_DICTIONARY(&MyAO_initial);
     QS_FUN_DICTIONARY(&MyAO_active);
 

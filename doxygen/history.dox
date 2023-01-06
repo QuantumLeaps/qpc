@@ -1,4 +1,4 @@
-/*! @page history Design History File
+/*! @page history Design History File (DHF)
 
 @image html  qcp_banner.jpg
 @image latex qcp_banner.jpg width=6.5in
@@ -6,11 +6,63 @@
 @remark
 This document is part of the @webref{products/qp#CERT,QP Certification Pack}, which has been specifically designed to aid companies in **safety certification** of their software based on the QP real-time embedded frameworks.
 
+@section qpc_7_2_0 Version 7.2.0, 2023-01-06
+__QP/C Source Code:__
+- Added "enumeration dictionaries" for QS software tracing (see QS_ENUM_DICTIONARY())
+- Introduced common callback `QF_onContextSw()` used in all built-in kernels (QV, QK, QXK). This callback is enabled by the macro #QF_ON_CONTEXT_SW.
+- Removed callback `QK_onContextSW()` and macro QK_ON_CONTEXT_SW and replaced with `QF_onContextSw()`/#QF_ON_CONTEXT_SW.
+- Removed callback `QXK_onContextSW()` and macro QXK_ON_CONTEXT_SW and replaced with `QF_onContextSw()`/#QF_ON_CONTEXT_SW.
+- Added callback `QF_onContextSW()` and macro #QF_ON_CONTEXT_SW to the QV kernel.
+- added configuration macro #QS_CTR_SIZE to determine the size of the type ::QSCtr (see also [feature#195](https://sourceforge.net/p/qpc/feature-requests/195))
+- Removed backwards-compatibility with QP 5.4.0 or older. This includes removing workarounds for `QFsm`, `QFsm_ctor()`, `Q_IGNORED()`.
+- Modified QMsm_childStateObj() implementation to correctly handle submachine states (see also [bug#316](https://sourceforge.net/p/qpc/bugs/316))
+- Added automatic generation of the QS function dictionary for the QHsm_top() state handler function. This happens only once on the first call to QHSM_INIT().
 
-@section qpc_7_1_3 Version 7.1.3, 2022-11-18
+@note
+It is no longer necessary to generate QS function dictionary for QHsm_top() in the application (although it is still allowed, but wasteful).
+
+__Ports:__
+- `ports/arm-cm` added setup of the FPU (if configured) to all build-in kernels (QV, QK, QXK) and toolchains (ARMCLANG, GNU-ARM, IAR).
+- `ports/arm-cm` all ports now clear the FPCA bit in the CONTROL register (if FPU configured) right before starting the interrupts. That potentially saves the stack space (MSP) for the automatically reserved FPU context.
+
+@note
+This change means that the applications no longer need to setup the FPU, which was done typically in the BSP.
+
+- `ports/posix` added configuration macro #QS_CTR_SIZE 4U, to allow QS trace buffers > 64KB (see also [feature#195](https://sourceforge.net/p/qpc/feature-requests/195))
+- `ports/win32` added configuration macro #QS_CTR_SIZE 4U, to allow QS trace buffers > 64KB (see also [feature#195](https://sourceforge.net/p/qpc/feature-requests/195))
+- `ports/esp-idf` fixed compilation error caused by obsolete macro `QF_PTR_RANGE_()`
+- `ports/sample` added a sample QP/C port for reference and documentation of all available configuration options.
+- `zephyr` updated `qf_port.h` to include `<zephyr/kernel.h>` rather than `<zephyr/zephyr.h>` (see also [bug#321](https://sourceforge.net/p/qpc/bugs/321))
+
+
+__Examples:__
+- examples for QV: added callback `QF_onContextSw()`
+- exampels for QK, QXK: replaced callbacks `QK_onContextSw()/QXK_onContextSw()` with `QF_onContextSw()`
+- `examples/arm-cm` removed setting up the FPU from the BSPs (the FPU is now setup in the ports).
+- `examples/arm-cm` added setting up the MPU (Memory Protection Unit) to catch [NULL-pointer dereferencing](https://www.state-machine.com/null-pointer-protection-with-arm-cortex-m-mpu) and other incorrect memory access.
+
+
+__Testing:__
+- changed the QUTest assertion handler Q_onAssert() to reset the target rather than wait for user commands. This allows proper assertion handling even inside exception handlers, where the target really cannot handle interrupts (which were needed for reception of commands). This change matches the updated policy of **assertion failures** in [QUTest 7.2.0](https://www.state-machine.com/qtools/history.html#qtools_7_2_0).
+- examples for QUTest (`examples/qutest` and `test` directories): adjusted makefiels to invoke the `qutest.py` utility with the new [command-line parameters](https://www.state-machine.com/qtools/qutest_use.html#qutest_command).
+- modified the test fixtures to use "enum dictionaries" for commands
+- added example `examples/qutest/start_seq` that demonstrates testing of start sequences.
+
 
 __Bug Fixes:__
-- This release fixes [bug#317](https://sourceforge.net/p/qpc/bugs/317) in QK kernel
+- [bug#315 QSignal defined incorrectly when #Q_SIGNAL_SIZE==4U](https://sourceforge.net/p/qpc/bugs/315)
+- [bug#316 Using History with Submachines does not work](https://sourceforge.net/p/qpc/bugs/316)
+- [bug#321 zephyr port build error](https://sourceforge.net/p/qpc/bugs/321)
+
+- [bug#325 QSpy shows Sig=NULL if #Q_EVT_CTOR is used](https://sourceforge.net/p/qpc/bugs/325)
+
+__Feature Requests:__
+- [feature#195 allow > 64K QS trace buffer on target](https://sourceforge.net/p/qpc/feature-requests/195). This is configurable by setting the macro #QS_CTR_SIZE.
+
+
+@section qpc_7_1_3 Version 7.1.3, 2022-11-18
+__Bug Fixes:__
+- [bug#317 QK works incorrectly in QP/C/C++ 7.1.2](https://sourceforge.net/p/qpc/bugs/317)
 
 __Source__
 - The file `qstamp.c` has been copied from the `include/` folder to `src/qs/`. This makes it easier to build SPY configuration. (The file `qstamp.c` has been left in the `include/` folder for backwards compatibility).
@@ -164,7 +216,7 @@ __Modified QP/C ports:__
 - removed unused `ARM_ARCH` symbol from Makefiles for GNU-ARM
 - fixed the following bugs in QXK port to ARM Cortex-M
   + [bug#305 Floating-point context corruption in QXK](https://sourceforge.net/p/qpc/bugs/305)
-  + [bug#306 QXK_ON_CONTEXT_SW option is not compatible with soft-float](https://sourceforge.net/p/qpc/bugs/306)
+  + [bug#306 #QF_ON_CONTEXT_SW option is not compatible with soft-float](https://sourceforge.net/p/qpc/bugs/306)
 
 __Removed QP/C ports:__
 - removed QP/C port to PIC24/dsPIC with XC16 (not compatible with C99)
@@ -882,7 +934,7 @@ Also, this release adds assertions to the QXK code, which ensure that any availa
 
 Also, this release adds protection in the IRQ priorities initialization in QK/QV/QXK for ARM Cortex-M3/M4/M7, so that the number of IRQs is extracted from bits 0-2 of the ICTR register (INTLINESNUM).
 
-Finally, this release consistently changes all example projects (for all toolchains) to use the **src/** directory for QP/C source code, instead of the **source/** directory. The source/ directory is now truly obsolete, but is still provided in this release for backwards compatibility with user projects.
+Finally, this release consistently changes all example projects (for all toolchains) to use the **src** directory for QP/C source code, instead of the **source** directory. The source/ directory is now truly obsolete, but is still provided in this release for backwards compatibility with user projects.
 
 
 @section qpc_5_9_5 Version 5.9.5, 2017-07-20

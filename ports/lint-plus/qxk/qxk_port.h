@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-29
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-12-13
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QXK/C port example for a generic C99 compiler.
@@ -41,10 +41,10 @@
 #define QXK_ISR_CONTEXT_() (getSR() != 0U)
 
 /*! activate the context-switch callback */
-#define QXK_ON_CONTEXT_SW 1
+#define QF_ON_CONTEXT_SW   1
 
 /*! trigger context switch (used internally in QXK only) */
-#define QXK_CONTEXT_SWITCH_() (trigSWI())
+#define QXK_CONTEXT_SWITCH_() (trigPendSV())
 
 /* QXK interrupt entry and exit... */
 /*! Define the ISR entry sequence, if the compiler supports writing
@@ -76,7 +76,7 @@
 } while (false)
 
 uint32_t getSR(void);
-void trigSWI(void);
+void trigPendSV(void);
 
 #include "qxk.h" /* QXK platform-independent public interface */
 

@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-12
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2022-12-19
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QS/C QUTest port for Win32
@@ -63,7 +63,7 @@
 #define QS_TX_SIZE     (8*1024)
 #define QS_RX_SIZE     (2*1024)
 #define QS_TX_CHUNK    QS_TX_SIZE
-#define QS_TIMEOUT_MS  10
+#define QS_TIMEOUT_MS  10U
 
 /* local variables .........................................................*/
 static SOCKET l_sock = INVALID_SOCKET;
@@ -113,6 +113,8 @@ uint8_t QS_onStartup(void const *arg) {
     if (*src == ':') {
         serviceName = src + 1;
     }
+    //printf("<TARGET> Connecting to QSPY on Host=%s:%s...\n",
+    //       hostName, serviceName);
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
@@ -164,6 +166,9 @@ uint8_t QS_onStartup(void const *arg) {
     sockopt_bool = TRUE;
     setsockopt(l_sock, SOL_SOCKET, SO_DONTLINGER,
                (const char *)&sockopt_bool, sizeof(sockopt_bool));
+
+    //PRINTF_S("<TARGET> Connected to QSPY at Host=%s:%d\n",
+    //       hostName, port_remote);
     QS_onFlush();
 
     return 1U; /* success */
@@ -173,29 +178,29 @@ error:
 }
 /*..........................................................................*/
 void QS_onCleanup(void) {
+    Sleep(QS_TIMEOUT_MS * 10U); /* allow the last QS output to come out */
     if (l_sock != INVALID_SOCKET) {
         closesocket(l_sock);
         l_sock = INVALID_SOCKET;
     }
     WSACleanup();
-    /*PRINTF_S("<TARGET> Disconnected from QSPY\n");*/
+    //PRINTF_S("\n%s\n", "QS_onCleanup");
 }
 /*..........................................................................*/
 void QS_onReset(void) {
     QS_onCleanup();
+    //PRINTF_S("\n%s\n", "QS_onReset");
     exit(0);
 }
 /*..........................................................................*/
 void QS_onFlush(void) {
-    uint16_t nBytes;
-    uint8_t const *data;
-
     if (l_sock == INVALID_SOCKET) { /* socket NOT initialized? */
         FPRINTF_S(stderr, "<TARGET> ERROR   %s\n", "invalid TCP socket");
         return;
     }
 
-    nBytes = QS_TX_CHUNK;
+    uint16_t nBytes = QS_TX_CHUNK;
+    uint8_t const *data;
     while ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
         for (;;) { /* for-ever until break or return */
             int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
@@ -215,6 +220,7 @@ void QS_onFlush(void) {
             }
             else if (nSent < (int)nBytes) { /* sent fewer than requested? */
                 Sleep(QS_TIMEOUT_MS); /* sleep for the timeout */
+
                 /* adjust the data and loop back to send() the rest */
                 data   += nSent;
                 nBytes -= (uint16_t)nSent;
@@ -237,13 +243,11 @@ void QS_onTestLoop() {
         struct timeval timeout = {
             (long)0, (long)(QS_TIMEOUT_MS * 1000)
         };
-        int status;
-        wint_t ch;
 
         FD_SET(l_sock, &readSet);
 
         /* selective, timed blocking on the TCP/IP socket... */
-        status = select(0, &readSet, (fd_set *)0, (fd_set *)0, &timeout);
+        int status = select(0, &readSet, (fd_set *)0, (fd_set *)0, &timeout);
         if (status == SOCKET_ERROR) {
             FPRINTF_S(stderr,
                 "<TARGET> ERROR socket select,WSAErr=%d",
@@ -261,10 +265,9 @@ void QS_onTestLoop() {
             }
         }
 
-        /* flush the QS TX buffer */
         QS_onFlush();
 
-        ch = 0;
+        wint_t ch = 0;
         while (_kbhit()) { /* any key pressed? */
             ch = _getwch();
         }

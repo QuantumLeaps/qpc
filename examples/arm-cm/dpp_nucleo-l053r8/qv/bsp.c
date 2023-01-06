@@ -1,7 +1,7 @@
-/*****************************************************************************
+/*============================================================================
 * Product: DPP example, NUCLEO-L053R8 board, cooperative QV kernel
-* Last updated for version 6.9.3
-* Last updated on  2021-03-03
+* Last updated for version 7.2.0
+* Last updated on  2022-12-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -30,7 +30,7 @@
 * Contact information:
 * <www.state-machine.com/licensing>
 * <info@state-machine.com>
-*****************************************************************************/
+============================================================================*/
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
@@ -57,7 +57,8 @@ static uint32_t l_rnd;  /* random seed */
     static QSpyId const l_SysTick_Handler = { 0U };
 
     enum AppRecords { /* application-specific trace records */
-        PHILO_STAT = QS_USER
+        PHILO_STAT = QS_USER,
+        CONTEXT_SW,
     };
 
 #endif
@@ -130,7 +131,128 @@ void USART2_IRQHandler(void) { /* used in QS-RX (kernel UNAWARE interrutp) */
 #endif
 
 /* BSP functions ===========================================================*/
+/*..........................................................................*/
+/* MPU setup for STM32L053R8 MCU */
+static void STM32L053R8_MPU_setup(void) {
+    /* The following MPU configuration contains the general STM32 memory model
+    * as described in the ST AppNote AN4838 "Managing memory protection unit
+    * in STM32 MCUs", Figure 2. Cortex-M0+/M3/M4/M7 processor memory map.
+    *
+    * Please note that the actual STM32 MCUs provide much less Flash and SRAM
+    * than the maximums configured here. This means that actual MCUs have
+    * unmapped memory regions (e.g., beyond the actual SRAM). Attempts to
+    * access these regions causes the HardFault exception, which is the
+    * desired behavior.
+    */
+    static struct {
+        uint32_t rbar;
+        uint32_t rasr;
+    } const mpu_setup[] = {
+
+        { /* region #0: Flash: base=0x0000'0000, size=512M=2^(28+1) */
+          0x00000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 0U), /* region #0 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(18+1) region */
+              | (0x6U << MPU_RASR_AP_Pos)   /* PA:ro/UA:ro */
+              | (1U << MPU_RASR_C_Pos)      /* C=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #1: SRAM: base=0x2000'0000, size=512M=2^(28+1) */
+          0x20000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 1U), /* region #1 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_C_Pos)      /* C=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        /* region #3: (not configured) */
+        { MPU_RBAR_VALID_Msk | (MPU_RBAR_REGION_Msk & 2U), 0U },
+
+        { /* region #3: Peripherals: base=0x4000'0000, size=512M=2^(28+1) */
+          0x40000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 3U), /* region #3 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #4: Priv. Periph: base=0xE000'0000, size=512M=2^(28+1) */
+          0xE0000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 4U), /* region #4 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #5: Ext RAM: base=0x6000'0000, size=1G=2^(29+1) */
+          0x60000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 5U), /* region #5 */
+          (29U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #6: Ext Dev: base=0xA000'0000, size=1G=2^(29+1) */
+          0xA0000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 6U), /* region #6 */
+          (29U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #7: NULL-pointer: base=0x000'0000, size=128M=2^(26+1) */
+          /* NOTE: this region extends to  0x080'0000, which is where
+          * the ROM is re-mapped by STM32
+          */
+          0x00000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 7U), /* region #7 */
+          (26U << MPU_RASR_SIZE_Pos)        /* 2^(26+1)=128M region */
+              | (0x0U << MPU_RASR_AP_Pos)   /* PA:na/UA:na */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+    };
+
+    __DSB();
+    MPU->CTRL = 0U; /* disable the MPU */
+    for (uint_fast8_t n = 0U; n < Q_DIM(mpu_setup); ++n) {
+        MPU->RBAR = mpu_setup[n].rbar;
+        MPU->RASR = mpu_setup[n].rasr;
+    }
+    MPU->CTRL = MPU_CTRL_PRIVDEFENA_Msk     /* enable background region */
+                | MPU_CTRL_ENABLE_Msk;      /* enable the MPU */
+    __ISB();
+    __DSB();
+}
+/*..........................................................................*/
 void BSP_init(void) {
+    /* setup the MPU... */
+    STM32L053R8_MPU_setup();
+
     /* NOTE: SystemInit() has been already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
@@ -164,10 +286,11 @@ void BSP_init(void) {
     }
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(CONTEXT_SW);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QS_SM_RECORDS);
-    QS_GLB_FILTER(QS_UA_RECORDS);
+    QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
+    QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
 }
 /*..........................................................................*/
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
@@ -230,15 +353,10 @@ void QF_onStartup(void) {
     /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
-    /* set priorities of ALL ISRs used in the system, see NOTE00
-    *
-    * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-    * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-    */
-    NVIC_SetPriority(USART2_IRQn,    0U); /* kernel UNAWARE interrupt */
-    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
-    NVIC_SetPriority(EXTI0_1_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 2U);
+    /* set priorities of ALL ISRs used in the system */
+    NVIC_SetPriority(USART2_IRQn,    0);
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 0U);
+    NVIC_SetPriority(EXTI0_1_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
     /* ... */
 
     /* enable IRQs... */
@@ -250,6 +368,16 @@ void QF_onStartup(void) {
 /*..........................................................................*/
 void QF_onCleanup(void) {
 }
+/*..........................................................................*/
+#ifdef QF_ON_CONTEXT_SW
+/* NOTE: the context-switch callback is called with interrupts DISABLED */
+void QF_onContextSw(QActive *prev, QActive *next) {
+    QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
+        QS_OBJ(prev);
+        QS_OBJ(next);
+    QS_END_NOCRIT()
+}
+#endif /* QF_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QV_onIdle(void) {  /* called with interrupts disabled, see NOTE01 */
 
@@ -323,7 +451,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsBuf[1024]; /* buffer for Quantum Spy */
+    static uint8_t qsBuf[2*1024]; /* buffer for Quantum Spy */
     static uint8_t qsRxBuf[256];  /* buffer for QS-RX channel */
 
     (void)arg; /* avoid the "unused parameter" compiler warning */
@@ -378,7 +506,7 @@ void QS_onFlush(void) {
         QF_INT_ENABLE();
         while ((USART2->ISR & (1U << 7)) == 0U) { /* while TXE not empty */
         }
-        USART2->TDR  = (b & 0xFFU);  /* put into the DR register */
+        USART2->TDR = (b & 0xFFU);  /* put into the DR register */
         QF_INT_DISABLE();
     }
     QF_INT_ENABLE();
@@ -403,23 +531,6 @@ void QS_onCommand(uint8_t cmdId,
 /*--------------------------------------------------------------------------*/
 
 /*****************************************************************************
-* NOTE00:
-* The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
-* ISR priority that is disabled by the QF framework. The value is suitable
-* for the NVIC_SetPriority() CMSIS function.
-*
-* Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
-* with the numerical values of priorities equal or higher than
-* QF_AWARE_ISR_CMSIS_PRI) are allowed to call any QF services. These ISRs
-* are "QF-aware".
-*
-* Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
-* level (i.e., with the numerical values of priorities less than
-* QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
-* Such "QF-unaware" ISRs cannot call any QF services. The only mechanism
-* by which a "QF-unaware" ISR can communicate with the QF framework is by
-* triggering a "QF-aware" ISR, which can post/publish events.
-*
 * NOTE01:
 * The QV_onIdle() callback is called with interrupts disabled, because the
 * determination of the idle condition might change by any interrupt posting

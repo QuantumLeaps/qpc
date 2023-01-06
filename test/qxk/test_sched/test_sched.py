@@ -1,21 +1,31 @@
 # test-script for QUTest unit testing harness
 # see https://www.state-machine.com/qtools/qutest.html/qutest.html
 
+note('''
+This test group verifies the preemption scenarios
+in the QXK preemptive kernel
+''')
+
 # preamble
 def on_reset():
     expect_pause()
+    # don't call continue_test() yet
+    # this will be done by the individual tests
+    # after they poke the priorities of threads
 
-test("extened->basic")
+scenario("extened->basic")
+# given...
 current_obj(OBJ_AP, "pspecB")
 poke(0, 2, pack("<HHH", 4, 0, 0))
 current_obj(OBJ_AP, "pspecX")
 poke(0, 2, pack("<HHH", 1, 0, 0))
 continue_test()
 expect_run()
-#----
+# when...
 glb_filter(GRP_SC, GRP_UA)
 current_obj(OBJ_AO, "thrX[0]")
 post("TEST0_SIG")
+# then...
 expect("@timestamp Sch-Next Pri=0->1")
 expect("@timestamp CONTEXT_SW NULL thrX[0]")
 expect("@timestamp TRACE_MSG thrX[0] TEST0 1of2")
@@ -39,17 +49,20 @@ expect("@timestamp Sch-Idle Pri=1->0")
 expect("@timestamp CONTEXT_SW thrX[0] NULL")
 expect("@timestamp Trg-Done QS_RX_EVENT")
 
-test("extended->extened->basic")
+
+scenario("extended->extened->basic")
+# given...
 current_obj(OBJ_AP, "pspecB")
 poke(0, 2, pack("<HHH", 1, 2, 3))
 current_obj(OBJ_AP, "pspecX")
 poke(0, 2, pack("<HHH", 4, 5, 0))
 continue_test()
 expect_run()
-#----
+# when...
 glb_filter(GRP_SC, GRP_UA)
 current_obj(OBJ_AO, "thrX[0]")
 post("TEST0_SIG")
+# then...
 expect("@timestamp Sch-Next Pri=0->4")
 expect("@timestamp CONTEXT_SW NULL thrX[0]")
 expect("@timestamp TRACE_MSG thrX[0] TEST0 1of2")
@@ -94,17 +107,19 @@ expect("@timestamp CONTEXT_SW aoB[0] NULL")
 expect("@timestamp Trg-Done QS_RX_EVENT")
 
 
-test("extened->basic->extended")
+scenario("extened->basic->extended")
+# given...
 current_obj(OBJ_AP, "pspecB")
 poke(0, 2, pack("<HHH", 4, 0, 0))
 current_obj(OBJ_AP, "pspecX")
 poke(0, 2, pack("<HHH", 1, 5, 0))
 continue_test()
 expect_run()
-#----
+# when...
 glb_filter(GRP_SC, GRP_UA)
 current_obj(OBJ_AO, "thrX[0]")
 post("TEST0_SIG")
+# then...
 expect("@timestamp Sch-Next Pri=0->1")
 expect("@timestamp CONTEXT_SW NULL thrX[0]")
 expect("@timestamp TRACE_MSG thrX[0] TEST0 1of2")

@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-10-19
-* @version Last updated for: @ref qpc_7_1_3
+* @date Last updated on: 2022-12-27
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
@@ -132,11 +132,11 @@ void IRAM_ATTR QTimeEvt_tickFromISR_(uint_fast8_t const tickRate,
 
     #define Q_NEW_FROM_ISR(evtT_, sig_, ...)                  \
         (evtT_##_ctor((evtT_ *)QF_newXFromISR_(sizeof(evtT_), \
-                      QF_NO_MARGIN, 0), (sig_), ##__VA_ARGS__))
+                      QF_NO_MARGIN, (sig_)), (sig_), ##__VA_ARGS__))
 
     #define Q_NEW_X_FROM_ISR(e_, evtT_, margin_, sig_, ...) do { \
         (e_) = (evtT_ *)QF_newXFromISR_(sizeof(evtT_),           \
-                                 (margin_), 0);                  \
+                                 (margin_), (sig_));             \
         if ((e_) != (evtT_ *)0) {                                \
             evtT_##_ctor((e_), (sig_), ##__VA_ARGS__);           \
         }                                                        \

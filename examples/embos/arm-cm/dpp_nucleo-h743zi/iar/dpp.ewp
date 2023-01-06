@@ -2332,7 +2332,7 @@
                 <option>
                     <name>CCDefines</name>
                     <state>Q_SPY</state>
-                    <state>QK_ON_CONTEXT_SW</state>
+                    <state>QF_ON_CONTEXT_SW</state>
                     <state>STM32H743xx</state>
                     <state>USE_HAL_DRIVER</state>
                     <state>USE_STM32H7XX_NUCLEO_144</state>

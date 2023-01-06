@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-02-25
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-12-18
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief DPP example, NUCLEO-H743ZIE board, preemptive QK kernel
@@ -61,7 +61,7 @@ static uint32_t l_rnd; /* random seed */
         PHILO_STAT = QS_USER,
         PAUSED_STAT,
         COMMAND_STAT,
-        CONTEXT_SW
+        CONTEXT_SW,
     };
 
 #endif
@@ -85,7 +85,8 @@ void SysTick_Handler(void) {
     }
 #endif
 
-    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    //QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    QACTIVE_POST(&ticker0.super, 0, &l_SysTick_Handler); /* post to ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
@@ -129,8 +130,63 @@ void USART3_IRQHandler(void) {
 }
 #endif
 
+/* BSP functions ===========================================================*/
+/*..........................................................................*/
+/* MPU setup for STM32H743ZI MCU */
+static void STM32H743ZI_MPU_setup(void) {
+    /* The following MPU configuration contains just a generic ROM
+    * region (with read-only access) and NULL-pointer protection region.
+    * Otherwise, the MPU will fall back on the background region (PRIVDEFENA).
+    */
+    static struct {
+        uint32_t rbar;
+        uint32_t rasr;
+    } const mpu_setup[] = {
+
+        { /* region #0: Flash: base=0x0000'0000, size=512M=2^(28+1) */
+          0x00000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 0U), /* region #0 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(18+1) region */
+              | (0x6U << MPU_RASR_AP_Pos)   /* PA:ro/UA:ro */
+              | (1U << MPU_RASR_C_Pos)      /* C=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #7: NULL-pointer: base=0x000'0000, size=128M=2^(26+1) */
+          /* NOTE: this region extends to  0x080'0000, which is where
+          * the ROM is re-mapped by STM32
+          */
+          0x00000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 7U), /* region #7 */
+          (26U << MPU_RASR_SIZE_Pos)        /* 2^(26+1)=128M region */
+              | (0x0U << MPU_RASR_AP_Pos)   /* PA:na/UA:na */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+    };
+
+    /* enable the MemManage_Handler for MPU exception */
+    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
+
+    __DSB();
+    MPU->CTRL = 0U; /* disable the MPU */
+    for (uint_fast8_t n = 0U; n < Q_DIM(mpu_setup); ++n) {
+        MPU->RBAR = mpu_setup[n].rbar;
+        MPU->RASR = mpu_setup[n].rasr;
+    }
+    MPU->CTRL = MPU_CTRL_ENABLE_Msk         /* enable the MPU */
+                | MPU_CTRL_PRIVDEFENA_Msk;  /* enable background region */
+    __ISB();
+    __DSB();
+}
+
 /*..........................................................................*/
 void BSP_init(void) {
+    /* setup the MPU... */
+    STM32H743ZI_MPU_setup();
+
     /* NOTE: SystemInit() has been already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
@@ -167,6 +223,7 @@ void BSP_init(void) {
     QS_OBJ_DICTIONARY(AO_Philo[2]);
     QS_OBJ_DICTIONARY(AO_Philo[3]);
     QS_OBJ_DICTIONARY(AO_Philo[4]);
+    QS_OBJ_DICTIONARY(&ticker0);
 
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_USR_DICTIONARY(PHILO_STAT);
@@ -175,8 +232,8 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(CONTEXT_SW);
 
     /* setup the QS filters... */
-    QS_GLB_FILTER(QS_SM_RECORDS);
-    QS_GLB_FILTER(QS_UA_RECORDS);
+    QS_GLB_FILTER(QS_ALL_RECORDS); /* all records */
+    QS_GLB_FILTER(-QS_QF_TICK);    /* exclude the clock tick */
 }
 /*..........................................................................*/
 void BSP_ledOn(void) {
@@ -238,18 +295,15 @@ void BSP_terminate(int16_t result) {
 
 /*..........................................................................*/
 void QF_onStartup(void) {
-    /* assing all priority bits for preemption-prio. and none to sub-prio. */
+    /* assign all priority bits for preemption-prio. and none to sub-prio.
+    * NOTE: this might have been changed by STM32Cube.
+    */
     NVIC_SetPriorityGrouping(0U);
 
     /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
-    /* set priorities of ALL ISRs used in the system, see NOTE1
-    *
-    * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-    * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-    */
+    /* set priorities of ALL ISRs used in the system, see NOTE1 */
     NVIC_SetPriority(USART3_IRQn,  0U); /* kernel unaware interrupt */
     NVIC_SetPriority(SysTick_IRQn, QF_AWARE_ISR_CMSIS_PRI);
     /* ... */
@@ -262,21 +316,19 @@ void QF_onStartup(void) {
 /*..........................................................................*/
 void QF_onCleanup(void) {
 }
-
 /*..........................................................................*/
-#ifdef QK_ON_CONTEXT_SW
+#ifdef QF_ON_CONTEXT_SW
 /* NOTE: the context-switch callback is called with interrupts DISABLED */
-void QK_onContextSw(QActive *prev, QActive *next) {
-    (void)prev;
-    if (next != (QActive *)0) {
-        //_impure_ptr = next->thread; /* switch to next TLS */
+void QF_onContextSw(QActive *prev, QActive *next) {
+    if ((prev != &ticker0.super) && (next != &ticker0.super)) {
+        QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
+            QS_OBJ(prev);
+            QS_OBJ(next);
+        QS_END_NOCRIT()
     }
-    QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
-        QS_OBJ(prev);
-        QS_OBJ(next);
-    QS_END_NOCRIT()
 }
-#endif /* QK_ON_CONTEXT_SW */
+#endif /* QF_ON_CONTEXT_SW */
+
 /*..........................................................................*/
 void QK_onIdle(void) {
     /* toggle the User LED on and then off, see NOTE2 */
@@ -345,7 +397,7 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 /*..........................................................................*/
 uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsTxBuf[2*1024]; /* buffer for QS-TX channel */
-    static uint8_t qsRxBuf[100];    /* buffer for QS-RX channel */
+    static uint8_t qsRxBuf[256];    /* buffer for QS-RX channel */
 
     QS_initBuf  (qsTxBuf, sizeof(qsTxBuf));
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
@@ -407,22 +459,15 @@ void QS_onReset(void) {
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    void assert_failed(char const *module, int loc);
-    (void)cmdId;
-    (void)param1;
-    (void)param2;
-    (void)param3;
+    Q_UNUSED_PAR(cmdId);
+    Q_UNUSED_PAR(param1);
+    Q_UNUSED_PAR(param2);
+    Q_UNUSED_PAR(param3);
+
     QS_BEGIN_ID(COMMAND_STAT, 0U) /* app-specific record */
         QS_U8(2, cmdId);
         QS_U32(8, param1);
     QS_END()
-
-    if (cmdId == 10U) {
-        Q_ERROR();
-    }
-    else if (cmdId == 11U) {
-        assert_failed("QS_onCommand", 123);
-    }
 }
 
 #endif /* Q_SPY */

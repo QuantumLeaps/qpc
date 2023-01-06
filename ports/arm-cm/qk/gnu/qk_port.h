@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-05-02
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2022-12-18
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QK/C port to ARM Cortex-M, GNU-ARM toolset
@@ -42,7 +42,7 @@ static inline uint32_t QK_get_IPSR(void) {
     return regIPSR;
 }
 
-/* QK interrupt entry and exit */
+/* QK ISR entry and exit */
 #define QK_ISR_ENTRY() ((void)0)
 
 #define QK_ISR_EXIT()  do {                                   \
@@ -54,9 +54,9 @@ static inline uint32_t QK_get_IPSR(void) {
     QK_ARM_ERRATUM_838869();                                  \
 } while (false)
 
-#if (__ARM_ARCH == 6) /* Cortex-M0/M0+/M1 (v6-M, v6S-M)? */
+#if (__ARM_ARCH == 6) /* ARMv6-M? */
     #define QK_ARM_ERRATUM_838869() ((void)0)
-#else /* Cortex-M3/M4/M7 (v7-M) */
+#else /* ARMv7-M or higher */
     /* The following macro implements the recommended workaround for the
     * ARM Erratum 838869. Specifically, for Cortex-M3/M4/M7 the DSB
     * (memory barrier) instruction needs to be added before exiting an ISR.
@@ -81,6 +81,13 @@ static inline uint32_t QK_get_IPSR(void) {
 #define QK_INIT() QK_init()
 void QK_init(void);
 void QK_thread_ret(void);
+
+#if (__ARM_FP != 0) /* if VFP available... */
+/* When the FPU is configured, clear the FPCA bit in the CONTROL register
+* to prevent wasting the stack space for the FPU context.
+*/
+#define QK_START() __asm volatile ("msr CONTROL,%0" :: "r" (0) : )
+#endif
 
 #include "qk.h" /* QK platform-independent public interface */
 

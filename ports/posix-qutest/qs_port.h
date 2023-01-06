@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-12
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2023-01-04
+* @version Last updated for: @ref qpc_7_2.0
 *
 * @file
 * @brief QS/C port to POSIX with GNU compiler
@@ -33,6 +33,7 @@
 #ifndef QS_PORT_H
 #define QS_PORT_H
 
+#define QS_CTR_SIZE         4U
 #define QS_TIME_SIZE        4U
 
 #if defined(__LP64__) || defined(_LP64) /* 64-bit architecture? */
@@ -46,8 +47,8 @@
 /* flush the QS output buffer after each QS record */
 #define QS_REC_DONE()  QS_onFlush()
 
-/*****************************************************************************
-* NOTE: QS might be used with or without other QP components, in which
+/*==========================================================================*/
+/* NOTE: QS might be used with or without other QP components, in which
 * case the separate definitions of the macros QF_CRIT_STAT_TYPE,
 * QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this port QS is configured
 * to be used with the other QP component, by simply including "qf_port.h"

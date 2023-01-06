@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.3" links="1">
+<model version="5.2.4" links="1">
  <documentation>QP/C Real-Time Embedded Framework (RTEF)
 The model is used to generate the whole QP/C source code.
 
@@ -479,10 +479,9 @@ Contact information:
   <operation name="QHSM_INIT?def Q_SPY" type="void" visibility="0x03" properties="0x00">
    <documentation>/*! Virtual call to the top-most initial transition in a HSM.
 *
-* @param[in,out] me_ pointer (see @ref oop)
-* @param[in]     e_  constant pointer the ::QEvt or a class derived from
-*                    ::QEvt (see @ref oop)
-* @param[in]     qs_id_ QS local filter ID (used only when Q_SPY is defined)
+* @param[in,out] me_  current instance pointer (see @ref oop)
+* @param[in]  par_    pointer the optional initialization parameter
+* @param[in]  qs_id_  QS local filter ID (used only when Q_SPY is defined)
 *
 * @note Must be called only ONCE after the SM &quot;constructor&quot;.
 *
@@ -524,7 +523,7 @@ Contact information:
 * @details
 * Processes one event at a time in Run-to-Completion fashion.
 *
-* @param[in,out] me_ pointer (see @ref oop)
+* @param[in,out] me_ current instance pointer (see @ref oop)
 * @param[in]     e_  constant pointer the ::QEvt or a class
 *                    derived from ::QEvt (see @ref oop)
 * @param[in]     qs_id_ QS local filter ID (used only when Q_SPY is defined)
@@ -867,8 +866,6 @@ Contact information:
    <documentation>/*! Macro to call in a QM state-handler when it designates the
 * superstate to handle an event. Applicable only to QMSMs.
 */</documentation>
-   <!--${QEP-macros::QM_SUPER::super_}-->
-   <parameter name="super_" type="QStateHandler"/>
    <code>(Q_RET_SUPER)</code>
   </operation>
   <!--${QEP-macros::QM_SUPER_SUB}-->
@@ -959,7 +956,8 @@ Contact information:
    <operation name="ctor?def Q_EVT_CTOR" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! Custom event constructor
 * @public @memberof QEvt
-*
+* @note
+* Available only when the macro #Q_EVT_CTOR is defined
 * @tr{RQP005}
 */</documentation>
     <!--${QEP::QEvt::ctor::sig}-->
@@ -1152,7 +1150,7 @@ Contact information:
 * @note For a HSM, to &quot;be in a state&quot; means also to be in a superstate of
 * of the state.
 *
-* @param[in] me    pointer (see @ref oop)
+* @param[in] me    current instance pointer (see @ref oop)
 * @param[in] state pointer to the state-handler function to be tested
 *
 * @returns
@@ -1189,7 +1187,7 @@ return inState; /* return the status */</code>
     <documentation>/*! Obtain the current active state from a HSM (read only).
 * @public @memberof QHsm
 *
-* @param[in] me pointer (see @ref oop)
+* @param[in] me  current instance pointer (see @ref oop)
 *
 * @returns the current active state of the QHsm class
 *
@@ -1209,7 +1207,7 @@ return inState; /* return the status */</code>
 * function is to support **shallow history** transitions in state machines
 * derived from QHsm.
 *
-* @param[in] me     pointer (see @ref oop)
+* @param[in] me     current instance pointer (see @ref oop)
 * @param[in] parent pointer to the state-handler function
 *
 * @returns
@@ -1264,7 +1262,7 @@ return child; /* return the child */</code>
 * Performs the first step of HSM initialization by assigning the initial
 * pseudostate to the currently active state of the state machine.
 *
-* @param[in,out] me      pointer (see @ref oop)
+* @param[in,out] me      current instance pointer (see @ref oop)
 * @param[in]     initial pointer to the top-most initial state-handler
 *                        function in the derived state machine
 *
@@ -1303,7 +1301,7 @@ me-&gt;temp.fun  = initial;</code>
 * QHsm_top() is the ultimate root of state hierarchy in all HSMs derived
 * from ::QHsm.
 *
-* @param[in] me pointer (see @ref oop)
+* @param[in] me current instance pointer (see @ref oop)
 * @param[in] e  pointer to the event to be dispatched to the FSM
 *
 * @returns
@@ -1329,7 +1327,7 @@ return Q_RET_IGNORED; /* the top state ignores all events */</code>
 * @details
 * Executes the top-most initial transition in a HSM.
 *
-* @param[in,out] me  pointer (see @ref oop)
+* @param[in,out] me  current instance pointer (see @ref oop)
 * @param[in]     e   pointer to an extra parameter (might be NULL)
 * @param[in]     qs_id QS-id of this state machine (for QS local filter)
 *
@@ -1341,7 +1339,12 @@ return Q_RET_IGNORED; /* the top state ignores all events */</code>
     <parameter name="e" type="void const * const"/>
     <!--${QEP::QHsm::init_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>#ifndef Q_SPY
+    <code>#ifdef Q_SPY
+if ((QS_priv_.flags &amp; 0x01U) == 0U) {
+    QS_priv_.flags |= 0x01U;
+    QS_FUN_DICTIONARY(&amp;QHsm_top);
+}
+#else
 Q_UNUSED_PAR(qs_id);
 #endif
 
@@ -1423,7 +1426,7 @@ me-&gt;temp.fun  = t; /* mark the configuration as stable */</code>
 * Dispatches an event for processing to a hierarchical state machine (HSM).
 * The processing of an event represents one run-to-completion (RTC) step.
 *
-* @param[in,out] me pointer (see @ref oop)
+* @param[in,out] me current instance pointer (see @ref oop)
 * @param[in]     e  pointer to the event to be dispatched to the HSM
 * @param[in]     qs_id QS-id of this state machine (for QS local filter)
 *
@@ -1866,7 +1869,7 @@ return (*state)(me, &amp;l_reservedEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED;
 * For a MSM, to &quot;be-in&quot; a state means also to &quot;be-in&quot; a superstate of
 * of the state.
 *
-* @param[in] me    pointer (see @ref oop)
+* @param[in] me    current instance pointer (see @ref oop)
 * @param[in] state pointer to the QMState object that corresponds to the
 *                  tested state.
 * @returns
@@ -1892,7 +1895,7 @@ return inState;</code>
     <documentation>/*! Obtain the current active state from a MSM (read only)
 * @public @memberof QMsm
 *
-* @param[in] me     pointer (see @ref oop)
+* @param[in] me     current instance pointer (see @ref oop)
 *
 * @returns the current active state-object
 *
@@ -1914,7 +1917,7 @@ return inState;</code>
 * function is to support **shallow history** transitions in state machines
 * derived from QMsm.
 *
-* @param[in] me     pointer (see @ref oop)
+* @param[in] me     current instance pointer (see @ref oop)
 * @param[in] parent pointer to the state-handler object
 *
 * @returns
@@ -1930,11 +1933,9 @@ return inState;</code>
     <parameter name="parent" type="QMState const * const"/>
     <code>QMState const *child = me-&gt;state.obj;
 bool isFound = false; /* start with the child not found */
+QMState const *s;
 
-for (QMState const *s = me-&gt;state.obj;
-     s != (QMState *)0;
-     s = s-&gt;superstate)
-{
+for (s = me-&gt;state.obj; s != (QMState *)0; s = s-&gt;superstate) {
     if (s == parent) {
         isFound = true; /* child is found */
         break;
@@ -1943,12 +1944,23 @@ for (QMState const *s = me-&gt;state.obj;
         child = s;
     }
 }
+if (!isFound) { /* still not found? */
+    for (s = me-&gt;temp.obj; s != (QMState *)0; s = s-&gt;superstate) {
+        if (s == parent) {
+            isFound = true; /* child is found */
+            break;
+        }
+        else {
+            child = s;
+        }
+    }
+}
 
 /*! @post the child must be found */
 Q_ENSURE_ID(810, isFound);
 
 #ifdef Q_NASSERT
-(void)isFound; /* avoid compiler warning about unused variable */
+Q_UNUSED_PAR(isFound);
 #endif
 
 return child; /* return the child */</code>
@@ -1962,7 +1974,7 @@ return child; /* return the child */</code>
 * Performs the first step of QMsm initialization by assigning the initial
 * pseudostate to the currently active state of the state machine.
 *
-* @param[in,out] me       pointer (see @ref oop)
+* @param[in,out] me       current instance pointer (see @ref oop)
 * @param[in]     initial  the top-most initial transition for the MSM.
 *
 * @note
@@ -2003,7 +2015,7 @@ me-&gt;super.temp.fun  = initial;      /* the initial transition handler */</cod
 * @details
 * Executes the top-most initial transition in a MSM.
 *
-* @param[in,out] me  pointer (see @ref oop)
+* @param[in,out] me  current instance pointer (see @ref oop)
 * @param[in]     e   pointer to an extra parameter (might be NULL)
 * @param[in]     qs_id QS-id of this state machine (for QS local filter)
 *
@@ -2018,7 +2030,7 @@ me-&gt;super.temp.fun  = initial;      /* the initial transition handler */</cod
     <!--${QEP::QMsm::init_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>#ifndef Q_SPY
-(void)qs_id; /* unused parameter */
+Q_UNUSED_PAR(qs_id);
 #endif
 
 /*! @pre the virtual pointer must be initialized, the top-most initial
@@ -2066,7 +2078,7 @@ QS_END_PRE_()</code>
 * Dispatches an event for processing to a meta state machine (MSM).
 * The processing of an event represents one run-to-completion (RTC) step.
 *
-* @param[in,out] me pointer (see @ref oop)
+* @param[in,out] me current instance pointer (see @ref oop)
 * @param[in]     e  pointer to the event to be dispatched to the MSM
 * @param[in]     qs_id QS-id of this state machine (for QS local filter)
 *
@@ -2081,7 +2093,7 @@ QS_END_PRE_()</code>
     <!--${QEP::QMsm::dispatch_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>#ifndef Q_SPY
-(void)qs_id; /* unused parameter */
+Q_UNUSED_PAR(qs_id);
 #endif
 
 QMState const *s = me-&gt;state.obj; /* store the current state */
@@ -2149,6 +2161,7 @@ if (r &gt;= Q_RET_TRAN) {
 
         /* was TRAN, TRAN_INIT, or TRAN_EP taken? */
         if (r &lt;= Q_RET_TRAN_EP) {
+            me-&gt;temp.obj = (QMState *)0; /* clear */
             QMsm_exitToTranSource_(me, s, t, qs_id);
             r = QMsm_execTatbl_(me, tatbl, qs_id);
             s = me-&gt;state.obj;
@@ -2260,7 +2273,7 @@ else {
 * @details
 * Helper function to execute transition sequence in a transition-action table.
 *
-* @param[in,out] me    pointer (see @ref oop)
+* @param[in,out] me    current instance pointer (see @ref oop)
 * @param[in]     tatbl pointer to the transition-action table
 * @param[in]     qs_id QS-id of this state machine (for QS local filter)
 *
@@ -2277,7 +2290,9 @@ else {
     <parameter name="tatbl" type="QMTranActTable const * const"/>
     <!--${QEP::QMsm::execTatbl_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
 QState r = Q_RET_NULL;
 QS_CRIT_STAT_
@@ -2350,7 +2365,7 @@ return r;</code>
 * transition source, which in a hierarchical state machine might be a
 * superstate of the current state.
 *
-* @param[in,out] me   pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 * @param[in]     cs   pointer to the current state
 * @param[in]     ts   pointer to the transition source state
 * @param[in]     qs_id QS-id of this state machine (for QS local filter)
@@ -2363,11 +2378,12 @@ return r;</code>
     <parameter name="ts" type="QMState const * const"/>
     <!--${QEP::QMsm::exitToTranSource~::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
-
-QMState const *s = cs;
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
 /* exit states from the current state to the tran. source state */
+QMState const *s = cs;
 while (s != ts) {
     /* exit action provided in state 's'? */
     if (s-&gt;exitAction != Q_ACTION_CAST(0)) {
@@ -2398,7 +2414,7 @@ while (s != ts) {
 * Static helper function to execute the segment of transition to history
 * after entering the composite state and
 *
-* @param[in,out] me   pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 * @param[in]     hist pointer to the history substate
 * @param[in]     qs_id QS-id of this state machine (for QS local filter)
 *
@@ -2412,7 +2428,9 @@ while (s != ts) {
     <parameter name="hist" type="QMState const *const"/>
     <!--${QEP::QMsm::enterHistory_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
 QMState const *s = hist;
 QMState const *ts = me-&gt;state.obj; /* transition source */
@@ -2808,8 +2826,7 @@ return n + log2LUT[x];</code>
    <parameter name="..." type="__VA_ARGS__"/>
    <code>\
     (evtT_##_ctor((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
-                  QF_NO_MARGIN, 0), (enum_t)(sig_), ##__VA_ARGS__))
-</code>
+                  QF_NO_MARGIN, (sig_)), (enum_t)(sig_), ##__VA_ARGS__))</code>
   </operation>
   <!--${QF-macros::Q_NEW_X}-->
   <operation name="Q_NEW_X?ndef Q_EVT_CTOR" type="void" visibility="0x03" properties="0x00">
@@ -2869,7 +2886,7 @@ return n + log2LUT[x];</code>
    <parameter name="..." type="__VA_ARGS__"/>
    <code>do { \
     (e_) = (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
-                             (margin_), 0);\
+                             (margin_), (enum_t)(sig_));\
     if ((e_) != (evtT_ *)0) { \
         evtT_##_ctor((e_), (enum_t)(sig_), ##__VA_ARGS__); \
     } \
@@ -2935,7 +2952,7 @@ return n + log2LUT[x];</code>
 * @details
 * Starts execution of the AO and registers the AO with the framework.
 *
-* @param[in,out] me_   pointer (see @ref oop)
+* @param[in,out] me_   current instance pointer (see @ref oop)
 * @param[in] prioSpec_ priority specification for the Active Object
 * @param[in] qSto_     pointer to the storage for the ring buffer of the
 *                      event queue (used only with the built-in ::QEQueue)
@@ -2976,7 +2993,7 @@ return n + log2LUT[x];</code>
 * @details
 * This macro asserts if the queue overflows and cannot accept the event.
 *
-* @param[in,out] me_ pointer (see @ref oop)
+* @param[in,out] me_ current instance pointer (see @ref oop)
 * @param[in] e_      pointer to the event to post
 * @param[in] sender_ pointer to the sender object.
 *
@@ -3025,7 +3042,7 @@ return n + log2LUT[x];</code>
 * This macro does not assert if the queue overflows and cannot accept
 * the event with the specified margin of free slots remaining.
 *
-* @param[in,out] me_  pointer (see @ref oop)
+* @param[in,out] me_  current instance pointer (see @ref oop)
 * @param[in]  e_      pointer to the event to post
 * @param[in]  margin_ the minimum free slots in the queue, which
 *                     must still be available after posting the event.
@@ -3084,7 +3101,7 @@ return n + log2LUT[x];</code>
    <documentation>/*! Virtual call to post an event to an active object using the
 * Last-In-First-Out (LIFO) policy.
 *
-* @param[in,out] me_   pointer (see @ref oop)
+* @param[in,out] me_   current instance pointer (see @ref oop)
 * @param[in]     e_    pointer to the event to post
 */
 </documentation>
@@ -3462,7 +3479,9 @@ me-&gt;super.vptr = &amp;vtable.super; /* hook the vptr to QActive vtable */</co
     <parameter name="margin" type="uint_fast16_t const"/>
     <!--${QF::QActive::post_::sender}-->
     <parameter name="sender" type="void const * const"/>
-    <code>Q_UNUSED_PAR(sender); /* when Q_SPY undefined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(sender);
+#endif
 
 /*! @pre event pointer must be valid */
 Q_REQUIRE_ID(100, e != (QEvt *)0);
@@ -3938,8 +3957,10 @@ QF_bzero(subscrSto, (uint_fast16_t)maxSignal * sizeof(QSubscrList));</code>
     <parameter name="sender" type="void const * const"/>
     <!--${QF::QActive::publish_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>Q_UNUSED_PAR(sender); /* when Q_SPY undefined */
-Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(sender);
+Q_UNUSED_PAR(qs_id);
+#endif
 
 /*! @pre the published signal must be within the configured range */
 Q_REQUIRE_ID(200, e-&gt;sig &lt; (QSignal)QActive_maxPubSignal_);
@@ -4162,14 +4183,6 @@ for (QEvt const *e = QEQueue_get(eq, me-&gt;prio);
 }
 return n;</code>
    </operation>
-   <!--${QF::QActive::getPrio}-->
-   <operation name="getPrio" type="QPrioSpec" visibility="0x00" properties="0x02">
-    <specifiers>const</specifiers>
-    <documentation>/*! Get the priority of the active object.
-* @public @memberof QActive
-*/</documentation>
-    <code>return (QPrioSpec)me-&gt;prio | (me-&gt;pthre &lt;&lt; 8U);</code>
-   </operation>
    <!--${QF::QActive::setAttr}-->
    <operation name="setAttr" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! Generic setting of additional attributes (useful in QP ports)
@@ -4372,7 +4385,7 @@ QF_CRIT_X_();</code>
 * Performs the first step of active object initialization by assigning
 * the virtual pointer and calling the superclass constructor.
 *
-* @param[in,out] me       pointer (see @ref oop)
+* @param[in,out] me       current instance pointer (see @ref oop)
 * @param[in]     initial  pointer to the event to be dispatched to the MSM
 *
 * @note  Must be called only ONCE before QHSM_INIT().
@@ -4516,7 +4529,7 @@ me-&gt;super.super.vptr = &amp;vtable.super; /* hook vptr to QMActive vtable */<
 * `act`, tick rate `tickRate` and event signal `sig`. You cannot change
 * these attributes later.
 *
-* @param[in,out] me   pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 * @param[in] act      pointer to the active object associated with this
 *                     time event. The time event will post itself to this AO.
 * @param[in] sig      signal to associate with this time event.
@@ -4578,7 +4591,7 @@ me-&gt;super.refCtr_ = (uint8_t)tickRate;</code>
 * Also, a time event can be re-armed to fire in a different number of clock
 * ticks by calling the QTimeEvt_rearm().
 *
-* @param[in,out] me     pointer (see @ref oop)
+* @param[in,out] me     current instance pointer (see @ref oop)
 * @param[in]     nTicks number of clock ticks (at the associated rate)
 *                       to rearm the time event with.
 * @param[in]     interval interval (in clock ticks) for periodic time event.
@@ -4613,7 +4626,7 @@ Q_REQUIRE_ID(400, (me-&gt;act != (void *)0)
              &amp;&amp; (tickRate &lt; (uint_fast8_t)QF_MAX_TICK_RATE)
              &amp;&amp; (me-&gt;super.sig &gt;= (QSignal)Q_USER_SIG));
 #ifdef Q_NASSERT
-(void)ctr; /* avoid compiler warning about unused variable */
+Q_UNUSED_PAR(ctr);
 #endif
 
 QF_CRIT_STAT_
@@ -4660,7 +4673,7 @@ QF_CRIT_X_();</code>
 * @details
 * Disarm the time event so it can be safely reused.
 *
-* @param[in,out] me     pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 *
 * @returns
 * 'true' if the time event was truly disarmed, that is, it was running.
@@ -4726,7 +4739,7 @@ return wasArmed;</code>
 * Rearming a periodic timer leaves the interval unchanged and is a convenient
 * method to adjust the phasing of a periodic time event.
 *
-* @param[in,out] me     pointer (see @ref oop)
+* @param[in,out] me     current instance pointer (see @ref oop)
 * @param[in]     nTicks number of clock ticks (at the associated rate)
 *                       to rearm the time event with.
 *
@@ -4810,7 +4823,7 @@ return wasArmed;</code>
 * Useful for checking whether a one-shot time event was disarmed in the
 * QTimeEvt_disarm() operation.
 *
-* @param[in,out] me   pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 *
 * @returns
 * 'true' if the time event was truly disarmed in the last QTimeEvt_disarm()
@@ -4840,7 +4853,7 @@ return wasDisarmed != 0U;</code>
 * Useful for checking how many clock ticks (at the tick rate associated
 * with the time event) remain until the time event expires.
 *
-* @param[in,out] me   pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 *
 * @returns
 * For an armed time event, the function returns the current value of the
@@ -4887,7 +4900,9 @@ return ret;</code>
     <parameter name="tickRate" type="uint_fast8_t const"/>
     <!--${QF::QTimeEvt::tick_::sender}-->
     <parameter name="sender" type="void const * const"/>
-    <code>Q_UNUSED_PAR(sender); /* when Q_SPY undefined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(sender);
+#endif
 
 QTimeEvt *prev = &amp;QTimeEvt_timeEvtHead_[tickRate];
 
@@ -5091,7 +5106,7 @@ me-&gt;super.eQueue.head = (QEQueueCtr)tickRate;</code>
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>Q_UNUSED_PAR(me);
 Q_UNUSED_PAR(par);
-Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
+Q_UNUSED_PAR(qs_id);
 
 QTICKER_CAST_(me)-&gt;eQueue.tail = 0U;</code>
    </operation>
@@ -5106,15 +5121,13 @@ QTICKER_CAST_(me)-&gt;eQueue.tail = 0U;</code>
     <parameter name="e" type="QEvt const * const"/>
     <!--${QF::QTicker::dispatch_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>QEQueueCtr nTicks; /* # ticks since the last call */
+    <code>Q_UNUSED_PAR(e);
+Q_UNUSED_PAR(qs_id);
+
 QF_CRIT_STAT_
-
-Q_UNUSED_PAR(e);
-Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
-
 QF_CRIT_E_();
-nTicks = QTICKER_CAST_(me)-&gt;eQueue.tail; /* save the # of ticks */
-QTICKER_CAST_(me)-&gt;eQueue.tail = 0U; /* clear the # ticks */
+QEQueueCtr nTicks = QTICKER_CAST_(me)-&gt;eQueue.tail; /* save # of ticks */
+QTICKER_CAST_(me)-&gt;eQueue.tail = 0U; /* clear # ticks */
 QF_CRIT_X_();
 
 for (; nTicks &gt; 0U; --nTicks) {
@@ -5136,7 +5149,9 @@ for (; nTicks &gt; 0U; --nTicks) {
     <parameter name="sender" type="void const * const"/>
     <code>Q_UNUSED_PAR(e);
 Q_UNUSED_PAR(margin);
-Q_UNUSED_PAR(sender); /* when Q_SPY undefined */
+#ifndef Q_SPY
+Q_UNUSED_PAR(sender);
+#endif
 
 QF_CRIT_STAT_
 QF_CRIT_E_();
@@ -5292,7 +5307,7 @@ Q_ERROR_ID(900);</code>
 * @details
 * Initialize the event queue by giving it the storage for the ring buffer.
 *
-* @param[in,out] me   pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 * @param[in] qSto     an array of pointers to ::QEvt to sereve as the
 *                     ring buffer for the event queue
 * @param[in] qLen     the length of the `qSto` buffer (in ::QEvt pointers)
@@ -5328,7 +5343,7 @@ me-&gt;nMin     = me-&gt;nFree;</code>
 * Post an event to the &quot;raw&quot; thread-safe event queue using the
 * First-In-First-Out (FIFO) order.
 *
-* @param[in,out] me     pointer (see @ref oop)
+* @param[in,out] me     current instance pointer (see @ref oop)
 * @param[in]     e      pointer to the event to be posted to the queue
 * @param[in]     margin number of required free slots in the queue after
 *                       posting the event. The special value #QF_NO_MARGIN
@@ -5352,10 +5367,12 @@ me-&gt;nMin     = me-&gt;nFree;</code>
     <parameter name="margin" type="uint_fast16_t const"/>
     <!--${QF::QEQueue::post::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>/* @pre event must be valid */
-Q_REQUIRE_ID(200, e != (QEvt *)0);
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
-(void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
+/* @pre event must be valid */
+Q_REQUIRE_ID(200, e != (QEvt *)0);
 
 QF_CRIT_STAT_
 QF_CRIT_E_();
@@ -5432,7 +5449,7 @@ return status;</code>
 * Post an event to the &quot;raw&quot; thread-safe event queue using the
 * Last-In-First-Out (LIFO) order.
 *
-* @param[in,out] me  pointer (see @ref oop)
+* @param[in,out] me  current instance pointer (see @ref oop)
 * @param[in]     e   pointer to the event to be posted to the queue
 *
 * @attention
@@ -5453,7 +5470,9 @@ return status;</code>
     <parameter name="e" type="QEvt const * const"/>
     <!--${QF::QEQueue::postLIFO::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>(void)qs_id; /* unused parameter, if Q_SPY not defined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
 QF_CRIT_STAT_
 QF_CRIT_E_();
@@ -5504,7 +5523,7 @@ QF_CRIT_X_();</code>
 * Retrieves an event from the front of the &quot;raw&quot; thread-safe queue and
 * returns a pointer to this event to the caller.
 *
-* @param[in,out] me     pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 *
 * @returns
 * pointer to event at the front of the queue, if the queue is
@@ -5519,7 +5538,9 @@ QF_CRIT_X_();</code>
 */</documentation>
     <!--${QF::QEQueue::get::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>(void)qs_id; /* unused parameter (outside Q_SPY build configuration) */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
 QF_CRIT_STAT_
 QF_CRIT_E_();
@@ -5578,7 +5599,7 @@ return e;</code>
 * only from a single thread (by a single AO),  so the number of free
 * entries cannot change unexpectedly.
 *
-* @param[in] me pointer (see @ref oop)
+* @param[in] me   current instance pointer (see @ref oop)
 *
 * @returns the current number of free slots in the queue.
 */</documentation>
@@ -5596,7 +5617,7 @@ return e;</code>
 * can change unexpectedly. The main intent for using this operation is to
 * get an idea of queue usage to size the queue adequately.
 *
-* @param[in] me  pointer (see @ref oop)
+* @param[in] me  current instance pointer (see @ref oop)
 *
 * @returns the minimum number of free entries ever in the queue since init.
 */</documentation>
@@ -5616,7 +5637,7 @@ return e;</code>
 * from a single thread (by a single AO), so no other entity can post
 * events to the queue.
 *
-* @param[in] me_  pointer (see @ref oop)
+* @param[in] me_  current instance pointer (see @ref oop)
 *
 * @returns 'true' if the queue is current empty and 'false' otherwise.
 */</documentation>
@@ -5703,7 +5724,7 @@ return e;</code>
 * Initialize a fixed block-size memory pool by providing it with the pool
 * memory to manage, size of this memory, and the block size.
 *
-* @param[in,out] me       pointer (see @ref oop)
+* @param[in,out] me       current instance pointer (see @ref oop)
 * @param[in]     poolSto  pointer to the memory buffer for pool storage
 * @param[in]     poolSize size of the storage buffer in bytes
 * @param[in]     blockSize fixed-size of the memory blocks in bytes
@@ -5793,7 +5814,7 @@ me-&gt;end   = fb;              /* the last block in this pool */</code>
 * The function allocates a memory block from the pool and returns a pointer
 * to the block back to the caller.
 *
-* @param[in,out] me      pointer (see @ref oop)
+* @param[in,out] me      current instance pointer (see @ref oop)
 * @param[in]     margin  the minimum number of unused blocks still available
 *                        in the pool after the allocation.
 *
@@ -5824,7 +5845,9 @@ me-&gt;end   = fb;              /* the last block in this pool */</code>
     <parameter name="margin" type="uint_fast16_t const"/>
     <!--${QF::QMPool::get::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
 QF_CRIT_STAT_
 QF_CRIT_E_();
@@ -5900,7 +5923,7 @@ return fb;  /* return the block or NULL pointer to the caller */</code>
 * @details
 * Recycle a memory block to the fixed block-size memory pool.
 *
-* @param[in,out] me   pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 * @param[in]     b    pointer to the memory block that is being recycled
 *
 * @attention
@@ -5921,7 +5944,9 @@ return fb;  /* return the block or NULL pointer to the caller */</code>
     <parameter name="b" type="void * const"/>
     <!--${QF::QMPool::put::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(qs_id);
+#endif
 
 /*! @pre number of free blocks cannot exceed the total # blocks and
 * the block pointer must be in range for this pool.
@@ -6072,9 +6097,13 @@ return min;</code>
 * @static @public @memberof QF
 *
 * @details
-* The timeline for calling QF_onStartup() depends on the particular
-* QF port. In most cases, QF_onStartup() is called from QF_run(), right
-* before starting any multitasking kernel or the background loop.
+* The purpose of the QF_onStartup() callback is to configure and enable
+* hardware interrupts. The callback is invoked from QF_run(), right before
+* starting the underlying real-time kernel. By that time, the application
+* is considered ready to receive and service interrupts.
+*
+* This function is application-specific and is not implemented in QF, but
+* rather in the Board Support Package (BSP) for the given application.
 */</documentation>
    </operation>
    <!--${QF::QF-base::onCleanup}-->
@@ -6084,7 +6113,7 @@ return min;</code>
 *
 * @details
 * QF_onCleanup() is called in some QF ports before QF returns to the
-* underlying operating system or RTOS.
+* underlying real-time kernel or operating system.
 *
 * This function is strongly platform-specific and is not implemented in
 * the QF, but either in the QF port or in the Board Support Package (BSP)
@@ -6385,7 +6414,9 @@ if (e-&gt;poolId_ != 0U) {
     <parameter name="e" type="QEvt const * const"/>
     <!--${QF::QF-dyn::newRef_::evtRef}-->
     <parameter name="evtRef" type="void const * const"/>
-    <code>Q_UNUSED_PAR(evtRef); /* in case Q_NASSERT is defined */
+    <code>#ifdef Q_NASSERT
+Q_UNUSED_PAR(evtRef);
+#endif
 
 /*! @pre the event must be dynamic and the provided event reference
 * must not be already in use */
@@ -6484,6 +6515,37 @@ for (uint_fast16_t n = len; n &gt; 0U; --n) {
 }</code>
    </operation>
   </package>
+  <!--${QF::QF-extern-C}-->
+  <package name="QF-extern-C" stereotype="0x02" namespace="QF_">
+   <!--${QF::QF-extern-C::onContextSw}-->
+   <operation name="onContextSw?def QF_ON_CONTEXT_SW" type="void" visibility="0x00" properties="0x00">
+    <documentation>/*! QF context switch callback used in built-in kernels (QV, QK, QXK)
+* @static @public @memberof QF
+*
+* @details
+* This callback function provides a mechanism to perform additional
+* custom operations when one of the built-in kernels switches context
+* from one thread to another.
+*
+* @param[in] prev   pointer to the previous thread (active object)
+*                   (prev==0 means that `prev` was the idle loop)
+* @param[in] next   pointer to the next thread (active object)
+*                   (next==0) means that `next` is the idle loop)
+* @attention
+* QF_onContextSw() is invoked with interrupts **disabled** and must also
+* return with interrupts **disabled**.
+*
+* @note
+* This callback is enabled by defining the macro #QF_ON_CONTEXT_SW.
+*
+* @include qf_oncontextsw.c
+*/</documentation>
+    <!--${QF::QF-extern-C::onContextSw::prev}-->
+    <parameter name="prev" type="QActive *"/>
+    <!--${QF::QF-extern-C::onContextSw::next}-->
+    <parameter name="next" type="QActive *"/>
+   </operation>
+  </package>
  </package>
  <!--${QF-QMPool-impl}-->
  <package name="QF-QMPool-impl" stereotype="0x02">
@@ -6542,6 +6604,20 @@ for (uint_fast16_t n = len; n &gt; 0U; --n) {
  </package>
  <!--${QS-config}-->
  <package name="QS-config" stereotype="0x02">
+  <!--${QS-config::QS_CTR_SIZE}-->
+  <attribute name="QS_CTR_SIZE?ndef QS_CTR_SIZE" type="unsigned" visibility="0x03" properties="0x00">
+   <documentation>/*! The size [bytes] of the internal QS buffer-counters. Valid values: 2U or 4U;
+* default 2U.
+*
+* @details
+* This macro can be defined in the QS port file (qs_port.h) to
+* configure the ::QSCtr type. Here the macro is not defined so the
+* default of 2 byte is chosen.
+*/</documentation>
+   <code>2U</code>
+  </attribute>
+  <!--${QS-config::QS_CTR_SIZE defined incorrectly,~}-->
+  <attribute name="QS_CTR_SIZE defined incorrectly, expected 2U or 4U? (QS_CTR_SIZE != 2U) &amp;&amp; (QS_CTR_SIZE != 4U)" type="#error" visibility="0x04" properties="0x00"/>
   <!--${QS-config::QS_TIME_SIZE}-->
   <attribute name="QS_TIME_SIZE?ndef QS_TIME_SIZE" type="unsigned" visibility="0x03" properties="0x00">
    <documentation>/*! The size [bytes] of the QS time stamp. Valid values: 1U, 2U, or 4U;
@@ -6611,8 +6687,8 @@ for (uint_fast16_t n = len; n &gt; 0U; --n) {
 * if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 *
 * @sa
-* - ::QSpyRecordGroups - QS record groups that can be used as `rec_`
-* - ::QSpyRecords - individual QS records that can be used as `rec_`
+* - enum QSpyGroups - QS record groups that can be used as `rec_`
+* - enum QSpyPre - predefined QS records that can be used as `rec_`
 *
 * @usage
 * The following example shows how to use QS filters:
@@ -6631,8 +6707,8 @@ for (uint_fast16_t n = len; n &gt; 0U; --n) {
 * if #Q_SPY is defined, or do nothing if #Q_SPY is not defined.
 *
 * @sa
-* - ::QSpyIdGroups - QS ID groups that can be used as `qs_id_`
-* - ::QSpyIdOffsets - QS ID offsets for `qs_id_` (e.g., QS_AP_IDS + 5)
+* - enum QSpyIdGroups - QS ID groups that can be used as `qs_id_`
+* - enum QSpyIdOffsets - QS ID offsets for `qs_id_` (e.g., QS_AP_IDS + 5)
 *
 * The following example shows how to use QS filters:
 * @include qs_filter.c
@@ -6653,7 +6729,7 @@ for (uint_fast16_t n = len; n &gt; 0U; --n) {
 * @note
 * Must always be used in pair with QS_END()
 *
-* @include qs_user.c
+* @include qs_ap.c
 */</documentation>
    <!--${QS-macros::QS_BEGIN_ID::rec_}-->
    <parameter name="rec_" type="uint8_t"/>
@@ -6744,7 +6820,8 @@ if (QS_GLB_CHECK_(rec_) &amp;&amp; QS_LOC_CHECK_(qs_id_)) { \
    <!--${QS-macros::QS_I8::data_}-->
    <parameter name="data_" type="int8_t"/>
    <code>\
-    (QS_u8_fmt_((uint8_t)(((width_) &lt;&lt; 4)) | (uint8_t)QS_I8_T, (data_)))</code>
+    (QS_u8_fmt_((uint8_t)(((width_) &lt;&lt; 4U) &amp; 0x7U) | (uint8_t)QS_I8_ENUM_T, \
+                (data_)))</code>
   </operation>
   <!--${QS-macros::QS_U8}-->
   <operation name="QS_U8" type="void" visibility="0x03" properties="0x00">
@@ -6851,6 +6928,17 @@ if (QS_GLB_CHECK_(rec_) &amp;&amp; QS_LOC_CHECK_(qs_id_)) { \
    <!--${QS-macros::QS_MEM::size_}-->
    <parameter name="size_" type="std:u:int8_t"/>
    <code>(QS_mem_fmt_((mem_), (size_)))</code>
+  </operation>
+  <!--${QS-macros::QS_ENUM}-->
+  <operation name="QS_ENUM" type="void" visibility="0x03" properties="0x00">
+   <documentation>/*! Output formatted enumeration to the QS record */</documentation>
+   <!--${QS-macros::QS_ENUM::group_}-->
+   <parameter name="group_" type="uint8_t const"/>
+   <!--${QS-macros::QS_ENUM::value_}-->
+   <parameter name="value_" type="enum_t const"/>
+   <code>\
+    (QS_u8_fmt_((uint8_t)(0x80U | ((group_) &lt;&lt; 4U)) | (uint8_t)QS_I8_ENUM_T,\
+                (uint8_t)(value_)))</code>
   </operation>
   <!--${QS-macros::QS_TIME_PRE_}-->
   <operation name="QS_TIME_PRE_? (QS_TIME_SIZE == 4U)" type="void" visibility="0x03" properties="0x00">
@@ -7077,6 +7165,21 @@ if (QS_GLB_CHECK_(rec_) &amp;&amp; QS_LOC_CHECK_(qs_id_)) { \
    <code>\
     (QS_usr_dict_pre_((rec_), #rec_))</code>
   </operation>
+  <!--${QS-macros::QS_ENUM_DICTIONARY}-->
+  <operation name="QS_ENUM_DICTIONARY" type="void" visibility="0x03" properties="0x00">
+   <documentation>/*! Output enumeration dictionary record
+*
+* @details
+* An enum QS record dictionary record associates the numerical value of
+* an enumeration with the human-readable identifier.
+*/</documentation>
+   <!--${QS-macros::QS_ENUM_DICTIONA~::value_}-->
+   <parameter name="value_" type="enum_t const"/>
+   <!--${QS-macros::QS_ENUM_DICTIONA~::group_}-->
+   <parameter name="group_" type="uint8_t const"/>
+   <code>\
+    (QS_enum_dict_pre_((value_), (group_), #value_))</code>
+  </operation>
   <!--${QS-macros::QF_QS_CRIT_ENTRY}-->
   <operation name="QF_QS_CRIT_ENTRY" type="void" visibility="0x00" properties="0x00">
    <documentation>/*! Output the critical section entry record */</documentation>
@@ -7116,9 +7219,37 @@ QS_END_NOCRIT_PRE_()</code>
    <parameter name="act_" type="&lt;action code&gt;"/>
    <code>(act_)</code>
   </operation>
+  <!--${QS-macros::QS_EOD}-->
+  <attribute name="QS_EOD" type="uint16_t" visibility="0x03" properties="0x00">
+   <documentation>/*! Constant representing End-Of-Data condition returned from the
+* QS_getByte() function.
+*/</documentation>
+   <code>((uint16_t)0xFFFFU)</code>
+  </attribute>
+  <!--${QS-macros::QS_CMD}-->
+  <attribute name="QS_CMD" type="uint8_t" visibility="0x03" properties="0x00">
+   <documentation>/*! Constant representing command enumeration group
+* in QS_ENUM_DICTIONARY() and QS_ENUM()
+* @sa QS_onCommand()
+*/</documentation>
+   <code>((uint8_t)7U)</code>
+  </attribute>
+  <!--${QS-macros::QS_HEX_FMT}-->
+  <attribute name="QS_HEX_FMT" type="uint8_t" visibility="0x03" properties="0x00">
+   <documentation>/*! Constant representing HEX format for the &quot;width&quot; filed
+* in QS_U8(), QS_U16(), QS_U32(), and QS_U64().
+*/</documentation>
+   <code>((uint8_t)0x0FU)</code>
+  </attribute>
  </package>
  <!--${QS}-->
  <package name="QS" stereotype="0x05">
+  <!--${QS::QSCtr}-->
+  <attribute name="QSCtr? (QS_CTR_SIZE == 2U)" type="typedef uint_fast16_t" visibility="0x04" properties="0x00">
+   <documentation>/*! QS ring buffer counter and offset type */</documentation>
+  </attribute>
+  <!--${QS::QSCtr}-->
+  <attribute name="QSCtr? (QS_CTR_SIZE == 4U)" type="typedef uint_fast32_t" visibility="0x04" properties="0x00"/>
   <!--${QS::QSTimeCtr}-->
   <attribute name="QSTimeCtr? (QS_TIME_SIZE == 4U)" type="typedef uint32_t" visibility="0x04" properties="0x00">
    <documentation>/*! QS time stamp type, which determines the dynamic range of QS time stamps */</documentation>
@@ -7137,10 +7268,6 @@ QS_END_NOCRIT_PRE_()</code>
   <attribute name="QSFun? (QS_FUN_PTR_SIZE == 2U)" type="typedef uint16_t" visibility="0x04" properties="0x00"/>
   <!--${QS::QSFun}-->
   <attribute name="QSFun? (QS_FUN_PTR_SIZE == 1U)" type="typedef uint8_t" visibility="0x04" properties="0x00"/>
-  <!--${QS::QSCtr}-->
-  <attribute name="QSCtr" type="typedef uint_fast16_t" visibility="0x04" properties="0x00">
-   <documentation>/*! QS ring buffer counter and offset type */</documentation>
-  </attribute>
   <!--${QS::QSpyPre}-->
   <attribute name="QSpyPre" type="enum" visibility="0x04" properties="0x00">
    <documentation>/*! QS pre-defined record types (TX channel)
@@ -7238,7 +7365,9 @@ QS_END_NOCRIT_PRE_()</code>
     QS_SCHED_UNLOCK,      /*!&lt; scheduler was unlocked */
     QS_SCHED_NEXT,        /*!&lt; scheduler started new task */
     QS_SCHED_IDLE,        /*!&lt; scheduler restored the idle task */
-    QS_SCHED_RESUME,      /*!&lt; scheduler resumed a (blocked) task */
+
+    /* [54] Miscellaneous QS records (not maskable) */
+    QS_ENUM_DICT,         /*!&lt; enumeration dictionary entry */
 
     /* [55] Additional QEP records */
     QS_QEP_TRAN_HIST,     /*!&lt; a tran to history was taken */
@@ -7348,14 +7477,6 @@ QS_END_NOCRIT_PRE_()</code>
 */</documentation>
    <code>)(void);</code>
   </attribute>
-  <!--${QS::QS_EOD}-->
-  <attribute name="QS_EOD" type="constexpr uint16_t" visibility="0x03" properties="0x00">
-   <documentation>/*! Constant representing End-Of-Data condition returned from the
-* QS_getByte() function.
-* @static @public @memberof QS_tx
-*/</documentation>
-   <code>((uint16_t)0xFFFFU)</code>
-  </attribute>
   <!--${QS::QSpyId}-->
   <attribute name="QSpyId" type="typedef struct { uint8_t prio; }" visibility="0x04" properties="0x00">
    <documentation>/*! @brief QS ID type for applying local filtering
@@ -7415,32 +7536,30 @@ QS_END_NOCRIT_PRE_()</code>
     <attribute name="critNest" type="uint8_t volatile" visibility="0x00" properties="0x00">
      <documentation>/*! critical section nesting level */</documentation>
     </attribute>
+    <!--${QS::QS-tx::tx::flags}-->
+    <attribute name="flags" type="uint8_t" visibility="0x00" properties="0x00">
+     <documentation>/* flags for internal use */</documentation>
+    </attribute>
    </class>
    <!--${QS::QS-tx::preType}-->
    <attribute name="preType" type="enum" visibility="0x04" properties="0x01">
-    <documentation>/*! Enumerates data formats recognized by QS
-*
-* @details
-* QS uses this enumeration is used only internally for the formatted
-* user data elements.
-*/</documentation>
+    <documentation>/*! Enumerates data elements for app-specific trace records */</documentation>
     <code>{
-    QS_I8_T,              /*!&lt; signed 8-bit integer format */
-    QS_U8_T,              /*!&lt; unsigned 8-bit integer format */
-    QS_I16_T,             /*!&lt; signed 16-bit integer format */
-    QS_U16_T,             /*!&lt; unsigned 16-bit integer format */
-    QS_I32_T,             /*!&lt; signed 32-bit integer format */
-    QS_U32_T,             /*!&lt; unsigned 32-bit integer format */
-    QS_F32_T,             /*!&lt; 32-bit floating point format */
-    QS_F64_T,             /*!&lt; 64-bit floating point format */
-    QS_STR_T,             /*!&lt; zero-terminated ASCII string format */
-    QS_MEM_T,             /*!&lt; up to 255-bytes memory block format */
-    QS_SIG_T,             /*!&lt; event signal format */
-    QS_OBJ_T,             /*!&lt; object pointer format */
-    QS_FUN_T,             /*!&lt; function pointer format */
-    QS_I64_T,             /*!&lt; signed 64-bit integer format */
-    QS_U64_T,             /*!&lt; unsigned 64-bit integer format */
-    QS_HEX_FMT            /*!&lt; HEX format for the &quot;width&quot; filed */
+    QS_I8_ENUM_T, /*!&lt; signed 8-bit integer or enum format */
+    QS_U8_T,      /*!&lt; unsigned 8-bit integer format */
+    QS_I16_T,     /*!&lt; signed 16-bit integer format */
+    QS_U16_T,     /*!&lt; unsigned 16-bit integer format */
+    QS_I32_T,     /*!&lt; signed 32-bit integer format */
+    QS_U32_T,     /*!&lt; unsigned 32-bit integer format */
+    QS_F32_T,     /*!&lt; 32-bit floating point format */
+    QS_F64_T,     /*!&lt; 64-bit floating point format */
+    QS_STR_T,     /*!&lt; zero-terminated ASCII string format */
+    QS_MEM_T,     /*!&lt; up to 255-bytes memory block format */
+    QS_SIG_T,     /*!&lt; event signal format */
+    QS_OBJ_T,     /*!&lt; object pointer format */
+    QS_FUN_T,     /*!&lt; function pointer format */
+    QS_I64_T,     /*!&lt; signed 64-bit integer format */
+    QS_U64_T,     /*!&lt; unsigned 64-bit integer format */
 };</code>
    </attribute>
    <!--${QS::QS-tx::priv_}-->
@@ -7479,7 +7598,7 @@ QS_END_NOCRIT_PRE_()</code>
     <!--${QS::QS-tx::initBuf::sto}-->
     <parameter name="sto" type="uint8_t * const"/>
     <!--${QS::QS-tx::initBuf::stoSize}-->
-    <parameter name="stoSize" type="uint_fast16_t const"/>
+    <parameter name="stoSize" type="uint_fast32_t const"/>
     <code>/* the provided buffer must be at least 8 bytes long */
 Q_REQUIRE_ID(100, stoSize &gt; 8U);
 
@@ -7635,9 +7754,11 @@ uint8_t const rec = isRemove ? (uint8_t)(-filter) : (uint8_t)filter;
 switch (rec) {
     case QS_ALL_RECORDS: {
         uint8_t const tmp = (isRemove ? 0x00U : 0xFFU);
-        uint_fast8_t i;
         /* set all global filters (partially unrolled loop) */
-        for (i = 0U; i &lt; Q_DIM(QS_priv_.glbFilter); i += 4U) {
+        for (uint_fast8_t i = 0U;
+             i &lt; Q_DIM(QS_priv_.glbFilter);
+             i += 4U)
+        {
             QS_priv_.glbFilter[i     ] = tmp;
             QS_priv_.glbFilter[i + 1U] = tmp;
             QS_priv_.glbFilter[i + 2U] = tmp;
@@ -7648,6 +7769,7 @@ switch (rec) {
             * see qs.h, Miscellaneous QS records (not maskable)
             */
             QS_priv_.glbFilter[0] = 0x01U;
+            QS_priv_.glbFilter[6] = 0x40U;
             QS_priv_.glbFilter[7] = 0xFCU;
             QS_priv_.glbFilter[8] = 0x7FU;
         }
@@ -7727,10 +7849,10 @@ switch (rec) {
         break;
     case QS_SC_RECORDS:
         if (isRemove) {
-            QS_priv_.glbFilter[6] &amp;= (uint8_t)(~0x7FU &amp; 0xFFU);
+            QS_priv_.glbFilter[6] &amp;= (uint8_t)(~0x3FU &amp; 0xFFU);
         }
         else {
-            QS_priv_.glbFilter[6] |= 0x7FU;
+            QS_priv_.glbFilter[6] |= 0x3FU;
         }
         break;
     case QS_SEM_RECORDS:
@@ -8406,6 +8528,29 @@ QS_onFlush();</code>
 QS_CRIT_E_();
 QS_beginRec_((uint_fast8_t)QS_USR_DICT);
 QS_u8_raw_((uint8_t)rec);
+QS_str_raw_(name);
+QS_endRec_();
+QS_CRIT_X_();
+QS_onFlush();</code>
+   </operation>
+   <!--${QS::QS-tx::enum_dict_pre_}-->
+   <operation name="enum_dict_pre_" type="void" visibility="0x00" properties="0x01">
+    <documentation>/*! Output predefined enum-dictionary record
+* @static @private @memberof QS_tx
+*
+* @note This function is only to be used through macro QS_ENUM_DICTIONARY()
+*/</documentation>
+    <!--${QS::QS-tx::enum_dict_pre_::value}-->
+    <parameter name="value" type="enum_t const"/>
+    <!--${QS::QS-tx::enum_dict_pre_::group}-->
+    <parameter name="group" type="uint8_t const"/>
+    <!--${QS::QS-tx::enum_dict_pre_::name}-->
+    <parameter name="name" type="char const * const"/>
+    <code>QS_CRIT_STAT_
+
+QS_CRIT_E_();
+QS_beginRec_((uint_fast8_t)QS_ENUM_DICT);
+QS_2U8_PRE_((uint8_t)value, group);
 QS_str_raw_(name);
 QS_endRec_();
 QS_CRIT_X_();
@@ -9559,6 +9704,7 @@ QS_CRIT_STAT_
 QS_BEGIN_PRE_(QS_QF_RUN, 0U)
 QS_END_PRE_()
 
+QS_processTestEvts_(); /* process all events posted so far */
 QS_onTestLoop(); /* run the test loop */
 QS_onCleanup();  /* application cleanup */
 return 0; /* return no error */</code>
@@ -9755,6 +9901,13 @@ me-&gt;super.vptr = &amp;vtable;  /* hook the vptr */</code>
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>Q_UNUSED_PAR(par);
 
+#ifdef Q_SPY
+if ((QS_priv_.flags &amp; 0x01U) == 0U) {
+    QS_priv_.flags |= 0x01U;
+    QS_FUN_DICTIONARY(&amp;QHsm_top);
+}
+#endif
+
 QS_CRIT_STAT_
 QS_BEGIN_PRE_(QS_QEP_STATE_INIT, qs_id)
     QS_OBJ_PRE_(me);        /* this state machine object */
@@ -9823,7 +9976,7 @@ me-&gt;super.super.vptr = &amp;vtable.super;  /* hook the vptr */</code>
     <parameter name="par" type="void const * const"/>
     <!--${QUTest-stub::QActiveDummy::init_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>(void)qs_id; /* unused parameter */
+    <code>Q_UNUSED_PAR(qs_id);
 
 QHsmDummy_init_(me, par, ((QActive const *)me)-&gt;prio);</code>
    </operation>
@@ -9838,7 +9991,7 @@ QHsmDummy_init_(me, par, ((QActive const *)me)-&gt;prio);</code>
     <parameter name="e" type="QEvt const * const"/>
     <!--${QUTest-stub::QActiveDummy::dispatch_::qs_id}-->
     <parameter name="qs_id" type="uint_fast8_t const"/>
-    <code>(void)qs_id; /* unused parameter */
+    <code>Q_UNUSED_PAR(qs_id);
 
 QHsmDummy_dispatch_(me, e, ((QActive const *)me)-&gt;prio);</code>
    </operation>
@@ -10059,39 +10212,53 @@ QV_INIT(); /* port-specific initialization of the QV kernel */
    <operation name="run" type="int_t" visibility="0x00" properties="0x01">
     <documentation>/*! QF_run() customization for QV kernel */</documentation>
     <code>#ifdef Q_SPY
-uint_fast8_t pprev = 0U; /* previously used priority */
-#endif
+/* produce the QS_QF_RUN trace record */
+QF_INT_DISABLE();
+QS_beginRec_((uint_fast8_t)QS_QF_RUN);
+QS_endRec_();
+QF_INT_ENABLE();
+#endif /* Q_SPY */
 
 QF_onStartup(); /* application-specific startup callback */
 
-/* the combined event-loop and background-loop of the QV kernel... */
 QF_INT_DISABLE();
 
-/* produce the QS_QF_RUN trace record */
-QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, 0U)
-QS_END_NOCRIT_PRE_()
+#ifdef QV_START
+QV_START(); /* port-specific startup of the QV kernel */
+#endif
 
-for (;;) {
+#if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
+uint8_t pprev = 0U; /* previously used priority */
+#endif /* (defined QF_ON_CONTEXT_SW) || (defined Q_SPY) */
+
+for (;;) { /* QV event loop... */
+
     /* find the maximum priority AO ready to run */
     if (QPSet_notEmpty(&amp;QF_readySet_)) {
-        uint_fast8_t const p = QPSet_findMax(&amp;QF_readySet_);
+        uint8_t const p = (uint8_t)QPSet_findMax(&amp;QF_readySet_);
         QActive * const a = QActive_registry_[p];
 
-#ifdef Q_SPY
-        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a-&gt;prio)
+#if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, p)
             QS_TIME_PRE_();     /* timestamp */
             QS_2U8_PRE_(p,      /* priority of the scheduled AO */
                         pprev); /* previous priority */
         QS_END_NOCRIT_PRE_()
 
+#ifdef QF_ON_CONTEXT_SW
+        QF_onContextSw(((pprev != 0U)
+                        ? QActive_registry_[pprev]
+                        : (QActive *)0), a);
+#endif /* QF_ON_CONTEXT_SW */
+
         pprev = p; /* update previous priority */
-#endif /* Q_SPY */
+#endif /* (defined QF_ON_CONTEXT_SW) || (defined Q_SPY) */
 
         QF_INT_ENABLE();
 
         /* perform the run-to-completion (RTC) step...
-        * 1. retrieve the event from the AO's event queue, which by this
-        *    time must be non-empty and The &quot;Vanialla&quot; kernel asserts it.
+        * 1. retrieve the event from the AO's event queue, which
+        *    by this time must be non-empty (and QV asserts it).
         * 2. dispatch the event to the AO's state machine.
         * 3. determine if event is garbage and collect it if so
         */
@@ -10107,27 +10274,33 @@ for (;;) {
         }
     }
     else { /* no AO ready to run --&gt; idle */
-#ifdef Q_SPY
+#if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
         if (pprev != 0U) {
-            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, 0U)
+            QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, pprev)
                 QS_TIME_PRE_();    /* timestamp */
                 QS_U8_PRE_(pprev); /* previous priority */
             QS_END_NOCRIT_PRE_()
 
+#ifdef QF_ON_CONTEXT_SW
+            QF_onContextSw(QActive_registry_[pprev], (QActive *)0);
+#endif /* QF_ON_CONTEXT_SW */
+
             pprev = 0U; /* update previous priority */
         }
-#endif /* Q_SPY */
+#endif /* (defined QF_ON_CONTEXT_SW) || (defined Q_SPY) */
 
-        /* QV_onIdle() must be called with interrupts DISABLED because
-        * the determination of the idle condition (no events in the
-        * queues) can change at any time by an interrupt posting events
-        * to a queue. QV_onIdle() MUST enable interrupts internally,
-        * perhaps at the same time as putting the CPU into a power-saving
-        * mode.
+        /* QV_onIdle() must be called with interrupts DISABLED
+        * because the determination of the idle condition (all event
+        * queues empty) can change at any time by an interrupt posting
+        * events to a queue.
+        *
+        * NOTE: QV_onIdle() MUST enable interrupts internally,
+        * ideally at the same time as putting the CPU into a power-
+        * saving mode.
         */
         QV_onIdle();
 
-        QF_INT_DISABLE();
+        QF_INT_DISABLE(); /* disable interrupts before looping back */
     }
 }
 #ifdef __GNUC__  /* GNU compiler? */
@@ -10390,31 +10563,39 @@ QK_INIT(); /* port-specific initialization of the QK kernel */
 * @sa QF_onCleanup()
 */</documentation>
     <code>QF_onCleanup(); /* application-specific cleanup callback */
-/* nothing else to do for the cooperative QK kernel */</code>
+/* nothing else to do for the preemptive QK kernel */</code>
    </operation>
    <!--${QK::QF-cust::run}-->
    <operation name="run" type="int_t" visibility="0x00" properties="0x01">
     <documentation>/*! QF_run() customization for QK kernel */</documentation>
-    <code>QF_INT_DISABLE();
-QK_attr_.lockCeil = 0U; /* scheduler unlocked */
-
-/* any active objects need to be scheduled before starting event loop? */
-if (QK_sched_() != 0U) {
-    QK_activate_(); /* activate AOs to process events posted so far */
-}
+    <code>#ifdef Q_SPY
+/* produce the QS_QF_RUN trace record */
+QF_INT_DISABLE();
+QS_beginRec_((uint_fast8_t)QS_QF_RUN);
+QS_endRec_();
+QF_INT_ENABLE();
+#endif /* Q_SPY */
 
 QF_onStartup(); /* application-specific startup callback */
 
-/* produce the QS_QF_RUN trace record (no nested critical section) */
-QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, 0U)
-QS_END_NOCRIT_PRE_()
+QF_INT_DISABLE();
+
+QK_attr_.lockCeil = 0U; /* unlock the QK scheduler */
+
+/* activate AOs to process events posted so far */
+if (QK_sched_() != 0U) {
+    QK_activate_();
+}
+
+#ifdef QK_START
+QK_START(); /* port-specific startup of the QK kernel */
+#endif
 
 QF_INT_ENABLE();
-
-/* the QK idle loop... */
-for (;;) {
+for (;;) { /* QK idle loop... */
     QK_onIdle(); /* application-specific QK on-idle callback */
 }
+
 #ifdef __GNUC__
 return 0;
 #endif</code>
@@ -10525,16 +10706,16 @@ return p;</code>
 * returns with interrupts **disabled**.
 */</documentation>
     <code>uint8_t const prio_in = QK_attr_.actPrio; /* saved initial priority */
-uint_fast8_t p = QK_attr_.nextPrio; /* next prio to run */
+uint8_t p = QK_attr_.nextPrio; /* next prio to run */
 QK_attr_.nextPrio = 0U; /* clear for the next time */
 
 /* QK_attr_.actPrio and QK_attr_.nextPrio must be in range */
 Q_REQUIRE_ID(500, (prio_in &lt;= QF_MAX_ACTIVE)
                   &amp;&amp; (0U &lt; p) &amp;&amp; (p &lt;= QF_MAX_ACTIVE));
 
-#if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
-uint_fast8_t pprev = prio_in;
-#endif /* QK_ON_CONTEXT_SW || Q_SPY */
+#if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
+uint8_t pprev = prio_in;
+#endif /* QF_ON_CONTEXT_SW || Q_SPY */
 
 /* loop until no more ready-to-run AOs of higher pthre than the initial */
 QActive *a;
@@ -10542,27 +10723,27 @@ do  {
     a = QActive_registry_[p]; /* obtain the pointer to the AO */
 
     /* set new active priority and preemption-threshold */
-    QK_attr_.actPrio = (uint8_t)p;
+    QK_attr_.actPrio = p;
     QK_attr_.actThre = QActive_registry_[p]-&gt;pthre;
 
-#if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
-    if (p != pprev) {  /* changing threads? */
+#if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
+    if (p != pprev) { /* changing threads? */
 
-        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a-&gt;prio)
+        QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, p)
             QS_TIME_PRE_();     /* timestamp */
             QS_2U8_PRE_(p,      /* priority of the scheduled AO */
                         pprev); /* previous priority */
         QS_END_NOCRIT_PRE_()
 
-#ifdef QK_ON_CONTEXT_SW
-        QK_onContextSw(((pprev != 0U)
+#ifdef QF_ON_CONTEXT_SW
+        QF_onContextSw(((pprev != 0U)
                         ? QActive_registry_[pprev]
                         : (QActive *)0), a);
-#endif /* QK_ON_CONTEXT_SW */
+#endif /* QF_ON_CONTEXT_SW */
 
         pprev = p; /* update previous priority */
     }
-#endif /* QK_ON_CONTEXT_SW || Q_SPY */
+#endif /* QF_ON_CONTEXT_SW || Q_SPY */
 
     QF_INT_ENABLE(); /* unconditionally enable interrupts */
 
@@ -10573,7 +10754,7 @@ do  {
     * 3. determine if event is garbage and collect it if so
     */
     QEvt const * const e = QActive_get_(a);
-    QHSM_DISPATCH(&amp;a-&gt;super, e, a-&gt;prio);
+    QHSM_DISPATCH(&amp;a-&gt;super, e, p);
 #if (QF_MAX_EPOOL &gt; 0U)
     QF_gc(e);
 #endif
@@ -10590,7 +10771,7 @@ do  {
     }
     else {
         /* find new highest-prio AO ready to run... */
-        p = QPSet_findMax(&amp;QF_readySet_);
+        p = (uint8_t)QPSet_findMax(&amp;QF_readySet_);
 
         /* is the new priority below the initial preemption-threshold? */
         if (p &lt;= (uint_fast8_t)QActive_registry_[prio_in]-&gt;pthre) {
@@ -10610,11 +10791,11 @@ do  {
 QK_attr_.actPrio = prio_in;
 QK_attr_.actThre = QActive_registry_[prio_in]-&gt;pthre;
 
-#if (defined QK_ON_CONTEXT_SW) || (defined Q_SPY)
+#if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
 if (prio_in != 0U) { /* resuming an active object? */
     a = QActive_registry_[prio_in]; /* pointer to the preempted AO */
 
-    QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, a-&gt;prio)
+    QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, prio_in)
         QS_TIME_PRE_();     /* timestamp */
         /* priority of the resumed AO, previous priority */
         QS_2U8_PRE_(prio_in, pprev);
@@ -10623,45 +10804,17 @@ if (prio_in != 0U) { /* resuming an active object? */
 else {  /* resuming priority==0 --&gt; idle */
     a = (QActive *)0; /* QK idle loop */
 
-    QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, 0U)
+    QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, pprev)
         QS_TIME_PRE_();     /* timestamp */
         QS_U8_PRE_(pprev);  /* previous priority */
     QS_END_NOCRIT_PRE_()
 }
 
-#ifdef QK_ON_CONTEXT_SW
-QK_onContextSw(QActive_registry_[pprev], a);
-#endif /* QK_ON_CONTEXT_SW */
+#ifdef QF_ON_CONTEXT_SW
+QF_onContextSw(QActive_registry_[pprev], a);
+#endif /* QF_ON_CONTEXT_SW */
 
-#endif /* QK_ON_CONTEXT_SW || Q_SPY */</code>
-   </operation>
-   <!--${QK::QK-extern-C::onContextSw}-->
-   <operation name="onContextSw?def QK_ON_CONTEXT_SW" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! QK context switch callback (customized in BSPs for QK)
-* @static @public @memberof QK
-*
-* @details
-* This callback function provides a mechanism to perform additional
-* custom operations when QK switches context from one thread to
-* another.
-*
-* @param[in] prev   pointer to the previous thread (active object)
-*                   (prev==0 means that `prev` was the QK idle loop)
-* @param[in] next   pointer to the next thread (active object)
-*                   (next==0) means that `next` is the QK idle loop)
-* @attention
-* QK_onContextSw() is invoked with interrupts **disabled** and must also
-* return with interrupts **disabled**.
-*
-* @note
-* This callback is enabled by defining the macro #QK_ON_CONTEXT_SW.
-*
-* @include qk_oncontextsw.c
-*/</documentation>
-    <!--${QK::QK-extern-C::onContextSw::prev}-->
-    <parameter name="prev" type="QActive *"/>
-    <!--${QK::QK-extern-C::onContextSw::next}-->
-    <parameter name="next" type="QActive *"/>
+#endif /* QF_ON_CONTEXT_SW || Q_SPY */</code>
    </operation>
   </package>
  </package>
@@ -10903,6 +11056,7 @@ static QActive const idle_ao = { (struct QHsmVtable const *)0 };
 
 /* register the idle AO object (cast 'const' away) */
 QActive_registry_[0] = (QActive *)&amp;idle_ao;
+QXK_attr_.prev = QActive_registry_[0];
 
 #ifdef QXK_INIT
 QXK_INIT(); /* port-specific initialization of the QXK kernel */
@@ -10915,33 +11069,38 @@ QXK_INIT(); /* port-specific initialization of the QXK kernel */
 * @sa QF_onCleanup()
 */</documentation>
     <code>QF_onCleanup(); /* application-specific cleanup callback */
-/* nothing else to do for the cooperative QXK kernel */</code>
+/* nothing else to do for the dual-mode QXK kernel */</code>
    </operation>
    <!--${QXK::QF-cust::run}-->
    <operation name="run" type="int_t" visibility="0x00" properties="0x01">
     <documentation>/*! QF_run() customization for QXK kernel */</documentation>
-    <code>QF_INT_DISABLE();
-QXK_attr_.prev = QActive_registry_[0]; /* the QXK idle thread */
-QXK_attr_.lockCeil = 0U; /* unlock the scheduler */
-
-/* any active objects need to be scheduled before starting event loop? */
-if (QXK_sched_() != 0U) { /* activation needed? */
-    QXK_activate_(); /* synchronously activate basic-thred(s) */
-}
-
-QF_onStartup(); /* application-specific startup callback */
-
-/* produce the QS_QF_RUN trace record (no nested critical section) */
-QS_BEGIN_NOCRIT_PRE_(QS_QF_RUN, 0U)
-QS_END_NOCRIT_PRE_()
-
-QF_INT_ENABLE();
-
+    <code>#ifdef Q_SPY
 QS_SIG_DICTIONARY(QXK_DELAY_SIG,   (void *)0);
 QS_SIG_DICTIONARY(QXK_TIMEOUT_SIG, (void *)0);
 
-/* the QXK idle loop... */
-for (;;) {
+/* produce the QS_QF_RUN trace record */
+QF_INT_DISABLE();
+QS_beginRec_((uint_fast8_t)QS_QF_RUN);
+QS_endRec_();
+QF_INT_ENABLE();
+#endif /* Q_SPY */
+
+QF_onStartup(); /* application-specific startup callback */
+
+QF_INT_DISABLE();
+
+QXK_attr_.lockCeil = 0U; /* unlock the QXK scheduler */
+/* activate AOs to process events posted so far */
+if (QXK_sched_() != 0U) {
+    QXK_activate_();
+}
+
+#ifdef QXK_START
+QXK_START(); /* port-specific startup of the QXK kernel */
+#endif
+
+QF_INT_ENABLE();
+for (;;) { /* QXK idle loop... */
     QXK_onIdle(); /* application-specific QXK idle callback */
 }
 
@@ -10989,7 +11148,7 @@ return 0;
 * thread-handler function and the tick rate at which it will handle
 * the timeouts.
 *
-* @param[in,out] me       pointer (see @ref oop)
+* @param[in,out] me       current instance pointer (see @ref oop)
 * @param[in]     handler  the thread-handler function
 * @param[in]     tickRate the ticking rate for timeouts in this thread
 *                (see QXThread_delay() and QTIMEEVT_TICK_X())
@@ -11234,7 +11393,7 @@ return e;
     <parameter name="qs_id" type="uint_fast8_t const"/>
     <code>Q_UNUSED_PAR(me);
 Q_UNUSED_PAR(par);
-Q_UNUSED_PAR(qs_id); /* when Q_SPY undefined */
+Q_UNUSED_PAR(qs_id);
 
 Q_ERROR_ID(110);</code>
    </operation>
@@ -11263,7 +11422,7 @@ Q_ERROR_ID(120);</code>
 * The extended thread becomes ready-to-run immediately and is scheduled
 * if the QXK is already running.
 *
-* @param[in,out] me      pointer (see @ref oop)
+* @param[in,out] me      current instance pointer (see @ref oop)
 * @param[in]     prio    QF-priority of the thread, but no preemption-
 *                        threshold. See also ::QPrioSpec.
 * @param[in]     qSto    pointer to the storage for the ring buffer of the
@@ -11358,7 +11517,7 @@ QF_CRIT_X_();</code>
 * returns 1 (success) if the posting succeeded (with the provided margin)
 * and 0 (failure) when the posting fails.
 *
-* @param[in,out] me     pointer (see @ref oop)
+* @param[in,out] me     current instance pointer (see @ref oop)
 * @param[in]     e      pointer to the event to be posted
 * @param[in]     margin number of required free slots in the queue after
 *                       posting the event. The special value #QF_NO_MARGIN
@@ -11392,7 +11551,9 @@ QF_CRIT_X_();</code>
     <parameter name="margin" type="uint_fast16_t const"/>
     <!--${QXK::QXThread::post_::sender}-->
     <parameter name="sender" type="void const * const"/>
-    <code>Q_UNUSED_PAR(sender); /* when Q_SPY undefined */
+    <code>#ifndef Q_SPY
+Q_UNUSED_PAR(sender);
+#endif
 
 QF_CRIT_STAT_
 QS_TEST_PROBE_DEF(&amp;QXThread_post_)
@@ -11532,8 +11693,8 @@ return status;</code>
 * @details
 * Last-In-First-Out (LIFO) policy is not supported for extened threads.
 *
-* @param[in] me pointer (see @ref oop)
-* @param[in] e  pointer to the event to post to the queue
+* @param[in] me   current instance pointer (see @ref oop)
+* @param[in] e    pointer to the event to post to the queue
 *
 * @sa
 * QActive_postLIFO_()
@@ -11766,7 +11927,7 @@ QF_CRIT_X_();</code>
 * mechanism, the initial count should set to 0 and maximum count to 1
 * (binary semaphore).
 *
-* @param[in,out] me     pointer (see @ref oop)
+* @param[in,out] me     current instance pointer (see @ref oop)
 * @param[in]     count  initial value of the semaphore counter
 * @param[in]     max_count  maximum value of the semaphore counter.
 *                The purpose of the max_count is to limit the counter
@@ -11803,11 +11964,11 @@ QPSet_setEmpty(&amp;me-&gt;waitSet);</code>
 * expires. If the semaphore is signaled before the timeout expires, QXK
 * resumes the highest-priority extended thread waiting for the semaphore.
 *
-* @param[in,out] me     pointer (see @ref oop)
-* @param[in]     nTicks number of clock ticks (at the associated rate)
-*                       to wait for the semaphore. The value of
-*                       ::QXTHREAD_NO_TIMEOUT indicates that no timeout will
-*                       occur and the semaphore will wait indefinitely.
+* @param[in,out] me   current instance pointer (see @ref oop)
+* @param[in] nTicks   number of clock ticks (at the associated rate)
+*                     to wait for the semaphore. The value of
+*                     ::QXTHREAD_NO_TIMEOUT indicates that no timeout will
+*                     occur and the semaphore will wait indefinitely.
 *
 * @returns
 * 'true' if the semaphore has been signaled and 'false' if a timeout
@@ -11908,7 +12069,7 @@ return signaled;</code>
 * This function checks if the semaphore counter is greater than 0,
 * in which case the counter is decremented.
 *
-* @param[in,out] me     pointer (see @ref oop)
+* @param[in,out] me     current instance pointer (see @ref oop)
 *
 * @returns
 * 'true' if the semaphore has count available and 'false' NOT available.
@@ -11968,7 +12129,7 @@ return isAvailable;</code>
 * this thread ready-to-run. The QXK scheduler is then called to determine if
 * the awakened thread is now the highest-priority thread that is ready-to-run.
 *
-* @param[in,out] me     pointer (see @ref oop)
+* @param[in,out] me     current instance pointer (see @ref oop)
 *
 * @returns
 * 'true' when the semaphore signaled and 'false' when the semaphore count
@@ -12094,7 +12255,7 @@ return signaled;</code>
 * @details
 * Initialize the QXK priority ceiling mutex.
 *
-* @param[in,out] me    pointer (see @ref oop)
+* @param[in,out] me    current instance pointer (see @ref oop)
 * @param[in] prioSpec  the priority specification for the mutex
 *                      (See also ::QPrioSpec). This value might
 *                      also be zero.
@@ -12128,7 +12289,7 @@ if (prioSpec != 0U) {  /* priority-ceiling protocol used? */
     <documentation>/*! lock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
 *
-* @param[in,out] me   pointer (see @ref oop)
+* @param[in,out] me   current instance pointer (see @ref oop)
 * @param[in]  nTicks  number of clock ticks (at the associated rate)
 *                     to wait for the mutex. The value of
 *                     ::QXTHREAD_NO_TIMEOUT indicates that no timeout will
@@ -12286,7 +12447,7 @@ return locked;</code>
     <documentation>/*! try to lock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
 *
-* @param[in,out] me      pointer (see @ref oop)
+* @param[in,out] me      current instance pointer (see @ref oop)
 *
 * @returns
 * 'true' if the mutex was successfully locked and 'false' if the mutex was
@@ -12403,7 +12564,7 @@ return curr != (QActive *)0;</code>
     <documentation>/*! unlock the QXK priority-ceiling mutex ::QXMutex
 * @public @memberof QXMutex
 *!
-* @param[in,out] me      pointer (see @ref oop)
+* @param[in,out] me      current instance pointer (see @ref oop)
 *
 * @note
 * This function **can** be called from both basic threads (active objects)
@@ -12668,19 +12829,19 @@ QActive *next = QXK_attr_.next; /* the next AO (basic-thread) to run */
 Q_REQUIRE_ID(700, (next != (QActive *)0) &amp;&amp; (prio_in &lt;= QF_MAX_ACTIVE));
 
 /* QXK Context switch callback defined or QS tracing enabled? */
-#if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
+#if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
 QXK_contextSw(next);
-#endif /* QXK_ON_CONTEXT_SW || Q_SPY */
+#endif /* QF_ON_CONTEXT_SW || Q_SPY */
 
 QXK_attr_.next = (QActive *)0; /* clear the next AO */
 QXK_attr_.curr = (QActive *)0; /* current is basic-thread */
 
 /* priority of the next thread */
-uint_fast8_t p = (uint_fast8_t)next-&gt;prio;
+uint8_t p = next-&gt;prio;
 
 /* loop until no more ready-to-run AOs of higher prio than the initial */
 do  {
-    QXK_attr_.actPrio = (uint8_t)p; /* next active prio */
+    QXK_attr_.actPrio = p; /* next active prio */
 
     QF_INT_ENABLE(); /* unconditionally enable interrupts */
 
@@ -12709,14 +12870,14 @@ do  {
     }
     else {
         /* find new highest-prio AO ready to run... */
-        p = QPSet_findMax(&amp;QF_readySet_);
+        p = (uint8_t)QPSet_findMax(&amp;QF_readySet_);
         next = QActive_registry_[p];
 
         /* next thread must be registered in QF */
         Q_ASSERT_ID(710, next != (QActive *)0);
 
         /* is the next priority below the lock-ceiling? */
-        if (p &lt;= (uint_fast8_t)QXK_attr_.lockCeil) {
+        if (p &lt;= QXK_attr_.lockCeil) {
             p = QXK_attr_.lockHolder; /* thread holding lock */
             if (p != 0U) {
                 Q_ASSERT_ID(720, QPSet_hasElement(&amp;QF_readySet_, p));
@@ -12727,11 +12888,11 @@ do  {
         if (next-&gt;osObject == (void *)0) {
             /* is the next priority above the initial priority? */
             if (p &gt; QActive_registry_[prio_in]-&gt;prio) {
-#if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
-                if (p != QXK_attr_.actPrio) {  /* changing threads? */
+#if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
+                if (p != QXK_attr_.actPrio) { /* changing threads? */
                     QXK_contextSw(next);
                 }
-#endif /* QXK_ON_CONTEXT_SW || Q_SPY */
+#endif /* QF_ON_CONTEXT_SW || Q_SPY */
                 QXK_attr_.next = next;
             }
             else {
@@ -12750,13 +12911,13 @@ do  {
 /* restore the active priority */
 QXK_attr_.actPrio = prio_in;
 
-#if (defined QXK_ON_CONTEXT_SW) || (defined Q_SPY)
+#if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
 if (next-&gt;osObject == (void *)0) {
     QXK_contextSw((prio_in == 0U)
                    ? (QActive *)0
                    : QActive_registry_[prio_in]);
 }
-#endif /* QXK_ON_CONTEXT_SW || Q_SPY */</code>
+#endif /* QF_ON_CONTEXT_SW || Q_SPY */</code>
    </operation>
    <!--${QXK::QXK-extern-C::current}-->
    <operation name="current" type="QActive *" visibility="0x00" properties="0x00">
@@ -12796,13 +12957,13 @@ return curr;</code>
     <parameter name="stkSize" type="uint_fast16_t const"/>
    </operation>
    <!--${QXK::QXK-extern-C::contextSw}-->
-   <operation name="contextSw? defined(Q_SPY) || defined(QXK_ON_CONTEXT_SW)" type="void" visibility="0x00" properties="0x00">
+   <operation name="contextSw? defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)" type="void" visibility="0x00" properties="0x00">
     <documentation>/*! QXK context switch management
 * @static @public @memberof QXK
 *
 * @details
 * This function performs software tracing (if #Q_SPY is defined)
-* and calls QXK_onContextSw() (if #QXK_ON_CONTEXT_SW is defined)
+* and calls QF_onContextSw() (if #QF_ON_CONTEXT_SW is defined)
 *
 * @param[in] next  pointer to the next thread (NULL for basic-thread)
 *
@@ -12818,59 +12979,24 @@ uint8_t const prev_prio = (QXK_attr_.prev != (QActive *)0)
                     : 0U;
 #endif /* Q_SPY */
 
-uint8_t const next_prio = (next != (QActive *)0)
-                    ? next-&gt;prio
-                    : QXK_attr_.actPrio;
-
-if (next_prio == 0U) { /* going to idle? */
-    QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, 0U)
+if (next != (QActive *)0) { /* next is NOT idle? */
+    QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, next-&gt;prio)
+        QS_TIME_PRE_(); /* timestamp */
+        QS_2U8_PRE_(next-&gt;prio, prev_prio);
+    QS_END_NOCRIT_PRE_()
+}
+else { /* going to idle */
+    QS_BEGIN_NOCRIT_PRE_(QS_SCHED_IDLE, prev_prio)
         QS_TIME_PRE_(); /* timestamp */
         QS_U8_PRE_(prev_prio);
     QS_END_NOCRIT_PRE_()
-
-#ifdef QXK_ON_CONTEXT_SW
-    QXK_onContextSw(QXK_attr_.prev, (QActive *)0);
-#endif /* QXK_ON_CONTEXT_SW */
 }
-else {
-    QS_BEGIN_NOCRIT_PRE_(QS_SCHED_NEXT, next_prio)
-        QS_TIME_PRE_(); /* timestamp */
-        QS_2U8_PRE_(next_prio, prev_prio);
-    QS_END_NOCRIT_PRE_()
 
-#ifdef QXK_ON_CONTEXT_SW
-    QXK_onContextSw(QXK_attr_.prev, next);
-#endif /* QXK_ON_CONTEXT_SW */
-}
+#ifdef QF_ON_CONTEXT_SW
+    QF_onContextSw(QXK_attr_.prev, next);
+#endif /* QF_ON_CONTEXT_SW */
 
 QXK_attr_.prev = next; /* update the previous thread */</code>
-   </operation>
-   <!--${QXK::QXK-extern-C::onContextSw}-->
-   <operation name="onContextSw?def QXK_ON_CONTEXT_SW" type="void" visibility="0x00" properties="0x00">
-    <documentation>/*! QXK context switch callback (customized in BSPs for QXK)
-* @static @public @memberof QXK
-*
-* @details
-* This callback function provides a mechanism to perform additional
-* custom operations when QXK switches context from one thread to
-* another.
-*
-* @param[in] prev   pointer to the previous thread (NULL for idle thead)
-* @param[in] next   pointer to the next thread (NULL for idle thead)
-*
-* @attention
-* QXK_onContextSw() is invoked with interrupts **disabled** and must also
-* return with interrupts **disabled**.
-*
-* @note
-* This callback is enabled by defining the macro #QXK_ON_CONTEXT_SW.
-*
-* @include qxk_oncontextsw.c
-*/</documentation>
-    <!--${QXK::QXK-extern-C::onContextSw::prev}-->
-    <parameter name="prev" type="QActive *"/>
-    <!--${QXK::QXK-extern-C::onContextSw::next}-->
-    <parameter name="next" type="QActive *"/>
    </operation>
   </package>
  </package>
@@ -12883,7 +13009,7 @@ QXK_attr_.prev = next; /* update the previous thread */</code>
 * @details
 * Starts execution of the thread and registers the AO with the framework.
 *
-* @param[in,out] me_   pointer (see @ref oop)
+* @param[in,out] me_   current instance pointer (see @ref oop)
 * @param[in] prioSpec_ priority specification at which to start the
 *                      extended thread (see ::QPrioSpec)
 * @param[in] qSto_     pointer to the storage for the ring buffer of the
@@ -12931,7 +13057,7 @@ do { \
 * This macro does not assert if the queue overflows and cannot accept
 * the event with the specified margin of free slots remaining.
 *
-* @param[in,out] me_   pointer (see @ref oop)
+* @param[in,out] me_   current instance pointer (see @ref oop)
 * @param[in]     e_    pointer to the event to post
 * @param[in]     margin_ the minimum free slots in the queue, which
 *                      must still be available after posting the event.
@@ -13154,7 +13280,7 @@ $declare ${DbC}
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION 713U
+#define QP_VERSION 720U
 
 /*! The current QP version as a zero terminated string literal.
 *
@@ -13163,10 +13289,10 @@ $declare ${DbC}
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION_STR &quot;7.1.3&quot;
+#define QP_VERSION_STR &quot;7.2.0&quot;
 
-/*! Encrypted  current QP release (7.1.3) and date (2022-11-18) */
-#define QP_RELEASE 0x7C340F56U
+/*! Encrypted  current QP release (7.2.0) and date (2023-01-06) */
+#define QP_RELEASE 0x76D8998FU
 
 /*==========================================================================*/
 $declare ${glob-types}
@@ -13202,6 +13328,7 @@ $declare ${QF::QTicker}
 
 $declare ${QF::QF-base}
 $declare ${QF::QF-dyn}
+$declare ${QF::QF-extern-C}
 
 /*==========================================================================*/
 $declare ${QF-macros}
@@ -13738,7 +13865,9 @@ $declare ${QUTest-stub::QActiveDummy}
 #define QS_U32(width_, data_)           ((void)0)
 #define QS_F32(width_, data_)           ((void)0)
 #define QS_F64(width_, data_)           ((void)0)
+#define QS_I64(width_, data_)           ((void)0)
 #define QS_U64(width_, data_)           ((void)0)
+#define QS_ENUM(group_, value_)         ((void)0)
 #define QS_STR(str_)                    ((void)0)
 #define QS_MEM(mem_, size_)             ((void)0)
 #define QS_SIG(sig_, obj_)              ((void)0)
@@ -13750,6 +13879,7 @@ $declare ${QUTest-stub::QActiveDummy}
 #define QS_OBJ_ARR_DICTIONARY(obj_, idx_) ((void)0)
 #define QS_FUN_DICTIONARY(fun_)         ((void)0)
 #define QS_USR_DICTIONARY(rec_)         ((void)0)
+#define QS_ENUM_DICTIONARY(value_, group_)  ((void)0)
 #define QS_ASSERTION(module_, loc_, delay_) ((void)0)
 #define QS_FLUSH()                      ((void)0)
 
@@ -14125,7 +14255,7 @@ typedef char char_t;
 
 /*! @deprecated Output formatted uint32_t to the QS record */
 #define QS_U32_HEX(width_, data_) \
-    (QS_u32_fmt_((uint8_t)(((width_) &lt;&lt; 4)) | (uint8_t)0x0FU, (data_)))
+    (QS_u32_fmt_((uint8_t)(((width_) &lt;&lt; 4)) | QS_HEX_FMT, (data_)))
 
 #else
 
@@ -14153,34 +14283,6 @@ typedef char char_t;
 * instead use: QHSM_DISPATCH() */
 #define QMSM_DISPATCH(me_, e_) QHSM_DISPATCH((me_), (e_), 0U)
 
-/*==========================================================================*/
-#if (QP_API_VERSION &lt; 540)
-
-/*! @deprecated QFsm state machine;
-* instead use: ::QHsm. Legacy state machines coded in the &quot;QFsm-style&quot; will
-* continue to work, but will use the ::QHsm implementation internally.
-* There is no longer any efficiency advantage in using the &quot;QFsm-style&quot;
-* state machines.
-*
-* @note
-* For efficiency, the recommended migration path is to use the ::QMsm
-* state machine and the QM modeling tool.
-*/
-typedef QHsm        QFsm;
-
-/*! @deprecated QFsm state machine constructor; instead use: QHsm_ctor() */
-#define QFsm_ctor   QHsm_ctor
-
-/*! deprecated macro to call in QFsm state-handler when it
-* ignores (does not handle) an event (instead use Q_SUPER())
-*/
-#define Q_IGNORED() (Q_SUPER(&amp;QHsm_top))
-
-/*! @deprecated macro for cooperativew &quot;Vanilla&quot; kernel;
-* instead use: QV_onIdle() */
-#define QF_onIdle   QV_onIdle
-
-#endif /* QP_API_VERSION &lt; 540 */
 #endif /* QP_API_VERSION &lt; 580 */
 #endif /* QP_API_VERSION &lt; 660 */
 #endif /* QP_API_VERSION &lt; 691 */
@@ -15493,9 +15595,9 @@ Q_NORETURN Q_onAssert(
         QS_STR_PRE_((module != (char *)0) ? module : &quot;?&quot;);
     QS_END_NOCRIT_PRE_()
 
-    QS_onFlush(); /* flush the assertion record to the host */
-    QS_onTestLoop(); /* loop to wait for commands (typically reset) */
-    QS_onReset(); /* in case the QUTEST loop ever returns, reset manually */
+    QS_onFlush();   /* flush the assertion record to the host */
+    QS_onCleanup(); /* cleanup after the failure */
+    QS_onReset();   /* reset the target to prevent the code from continuing */
     for (;;) { /* QS_onReset() should not return, but to ensure no-return */
     }
 }

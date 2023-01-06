@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for SYSTEM-Level tests of QP/C on NUCLEO-L053R8, GNU-ARM
-# Last Updated for Version: 7.1.2
-# Date of the Last Update:  2022-10-05
+# Last Updated for Version: 7.2.0
+# Date of the Last Update:  2022-12-21
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -33,8 +33,8 @@
 ##############################################################################
 #
 # examples of invoking this Makefile:
-# make -f make_nucleo-l053r8 USB=e: # make, uplaod to USB drive, run the tests
-# make -f make_nucleo-l053r8 USB=h: TESTS=philo*.py  # make and run the selected tests
+# make -f make_nucleo-l053r8 USB=g: # make, uplaod to USB drive, run the tests
+# make -f make_nucleo-l053r8 USB=g: TESTS=philo*.py  # make and run the selected tests
 # make -f make_nucleo-l053r8 HOST=localhost:7705 # connect to host:port
 # make -f make_nucleo-l053r8 norun   # only make but not run the tests
 # make -f make_nucleo-l053r8 clean   # cleanup the build
@@ -137,8 +137,8 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := \
-	-DQK_ON_CONTEXT_SW
+DEFINES   := -DQP_API_VERSION=9999 \
+	-DQF_ON_CONTEXT_SW
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
@@ -169,11 +169,11 @@ LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 #-----------------------------------------------------------------------------
-# NOTE: The following symbol USB assumes that the NUCLEO board
+# NOTE: The symbol USB must be provided for the NUCLEO board
 # has enumerated as USB drive f:
 #
 ifeq ($(USB),)
-USB := f:
+$(error USB drive not provided for the NUCLEO board.)
 endif
 
 ##############################################################################
@@ -193,8 +193,6 @@ SLEEP := sleep
 ifeq ("$(wildcard $(QUTEST))","")
 QUTEST := python3 $(QTOOLS)/qutest/qutest.py
 endif
-
-TESTS  := *.py
 
 #-----------------------------------------------------------------------------
 # build options
@@ -269,7 +267,7 @@ flash :
 	$(CP) $(TARGET_BIN) $(USB)
 
 run : $(TARGET_BIN)
-	$(QUTEST) $(TESTS) $(TARGET_EXE) $(HOST)
+	$(QUTEST) -q$(QSPY) -l$(LOG) -o$(OPT) -- $(TESTS)
 
 $(BIN_DIR)/%.d : %.c
 	$(CC) -MM -MT $(@:.d=.o) $(CFLAGS) $< > $@

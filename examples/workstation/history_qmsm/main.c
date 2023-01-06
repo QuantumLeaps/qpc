@@ -61,7 +61,7 @@ int main() {
         QEvt e;
         uint8_t c;
 
-        PRINTF_S("\n", "");
+        PRINTF_S("%c", '\n');
         c = (uint8_t)QF_consoleWaitForKey();
         PRINTF_S("%c: ", (c >= ' ') ? c : 'X');
 

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on NUCLEO-H743ZI, QV kernel, GNU-ARM
-# Last Updated for Version: 7.0.1
-# Date of the Last Update:  2022-05-23
+# Last Updated for Version: 7.2.0
+# Date of the Last Update:  2022-12-15
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -146,7 +146,10 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DSTM32H743xx -DUSE_HAL_DRIVER -DUSE_STM32H7XX_NUCLEO_144
+DEFINES   := -DSTM32H743xx \
+	-DUSE_HAL_DRIVER \
+	-DUSE_STM32H7XX_NUCLEO_144 \
+	-DQF_ON_CONTEXT_SW
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]

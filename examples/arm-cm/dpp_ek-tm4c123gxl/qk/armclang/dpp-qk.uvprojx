@@ -1597,7 +1597,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY,QK_ON_CONTEXT_SW,TARGET_IS_TM4C123_RB1</Define>
+              <Define>Q_SPY,QF_ON_CONTEXT_SW,TARGET_IS_TM4C123_RB1</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>

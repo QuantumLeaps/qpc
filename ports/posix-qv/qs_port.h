@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-12
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2023-01-04
+* @version Last updated for: @ref qpc_7_2.0
 *
 * @file
 * @brief QS/C port to POSIX with GNU compiler
@@ -33,6 +33,7 @@
 #ifndef QS_PORT_H
 #define QS_PORT_H
 
+#define QS_CTR_SIZE         4U
 #define QS_TIME_SIZE        4U
 
 #if defined(__LP64__) || defined(_LP64) /* 64-bit architecture? */
@@ -60,3 +61,4 @@ void QS_rx_input(void);  /* handle the QS-RX input */
 #include "qs.h"      /* QS platform-independent public interface */
 
 #endif /* QS_PORT_H  */
+

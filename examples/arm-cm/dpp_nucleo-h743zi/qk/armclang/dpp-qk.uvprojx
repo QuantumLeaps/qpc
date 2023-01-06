@@ -322,7 +322,7 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>0</wLevel>
+            <wLevel>3</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>1</uSurpInc>
             <uC99>0</uC99>
@@ -1683,7 +1683,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>2</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -1692,7 +1692,7 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>0</wLevel>
+            <wLevel>3</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>1</uSurpInc>
             <uC99>0</uC99>
@@ -1996,7 +1996,7 @@
                 <PlainCh>2</PlainCh>
                 <Ropi>2</Ropi>
                 <Rwpi>2</Rwpi>
-                <wLevel>2</wLevel>
+                <wLevel>0</wLevel>
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>

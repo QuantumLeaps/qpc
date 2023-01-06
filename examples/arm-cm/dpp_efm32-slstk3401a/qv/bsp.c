@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example, EFM32-SLSTK3401A board, cooperative QV kernel
-* Last updated for version 6.9.3
-* Last updated on  2021-03-03
+* Last updated for version 7.2.0
+* Last updated on  2022-12-17
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -79,30 +79,20 @@ static uint32_t l_rnd;      /* random seed */
 
 /*..........................................................................*/
 void SysTick_Handler(void) {
-    /* state of the button debouncing, see below */
-    static struct ButtonsDebouncing {
-        uint32_t depressed;
-        uint32_t previous;
-    } buttons = { 0U, 0U };
-    uint32_t current;
-    uint32_t tmp;
-
-#ifdef Q_SPY
-    {
-        tmp = SysTick->CTRL; /* clear SysTick_CTRL_COUNTFLAG */
-        QS_tickTime_ += QS_tickPeriod_; /* account for the clock rollover */
-    }
-#endif
-
-    //QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
-    QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
+    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time-evts for rate 0 */
+    //QACTIVE_POST(the_Ticker0, 0, &l_SysTick_Handler); /* post to Ticker0 */
 
     /* Perform the debouncing of buttons. The algorithm for debouncing
     * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
     * and Michael Barr, page 71.
     */
-    current = ~GPIO->P[PB_PORT].DIN; /* read PB0 and BP1 */
-    tmp = buttons.depressed; /* save the debounced depressed buttons */
+    /* state of the button debouncing, see below */
+    static struct ButtonsDebouncing {
+        uint32_t depressed;
+        uint32_t previous;
+    } buttons = { 0U, 0U };
+    uint32_t current = ~GPIO->P[PB_PORT].DIN; /* read PB0 and BP1 */
+    uint32_t tmp = buttons.depressed; /* the debounced depressed buttons */
     buttons.depressed |= (buttons.previous & current); /* set depressed */
     buttons.depressed &= (buttons.previous | current); /* clear released */
     buttons.previous   = current; /* update the history */
@@ -117,6 +107,13 @@ void SysTick_Handler(void) {
             QACTIVE_PUBLISH(&serveEvt, &l_SysTick_Handler);
         }
     }
+
+#ifdef Q_SPY
+    {
+        tmp = SysTick->CTRL; /* clear SysTick_CTRL_COUNTFLAG */
+        QS_tickTime_ += QS_tickPeriod_; /* account for the clock rollover */
+    }
+#endif
     QV_ARM_ERRATUM_838869();
 }
 /*..........................................................................*/
@@ -144,37 +141,133 @@ void USART0_RX_IRQHandler(void) {
 void USART0_RX_IRQHandler(void) {}
 #endif
 
+
+/* BSP functions ===========================================================*/
+/* MPU setup for EFM32PG1B200F256GM48 MCU */
+static void EFM32PG182_MPU_setup(void) {
+    /* The following MPU configuration contains the general EFM32PG1 memory
+    * map described in the EFM32PG1 Data Sheet Figure 3.2. EFM32PG1 Memory Map
+    *
+    * Please note that the actual STM32 MCUs provide much less Flash and SRAM
+    * than the maximums configured here. This means that actual MCUs have
+    * unmapped memory regions (e.g., beyond the actual SRAM). Attempts to
+    * access these regions causes the HardFault exception, which is the
+    * desired behavior.
+    */
+    static struct {
+        uint32_t rbar;
+        uint32_t rasr;
+    } const mpu_setup[] = {
+
+        { /* region #0: Flash: base=0x0000'0000, size=512M=2^(28+1) */
+          0x00000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 0U), /* region #0 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(18+1) region */
+              | (0x6U << MPU_RASR_AP_Pos)   /* PA:ro/UA:ro */
+              | (1U << MPU_RASR_C_Pos)      /* C=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #1: SRAM: base=0x2000'0000, size=512M=2^(28+1) */
+          0x20000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 1U), /* region #1 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_C_Pos)      /* C=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        /* region #3: (not configured) */
+        { MPU_RBAR_VALID_Msk | (MPU_RBAR_REGION_Msk & 2U), 0U },
+
+        { /* region #3: Peripherals: base=0x4000'0000, size=512M=2^(28+1) */
+          0x40000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 3U), /* region #3 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #4: Priv. Periph: base=0xE000'0000, size=512M=2^(28+1) */
+          0xE0000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 4U), /* region #4 */
+          (28U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #5: Ext RAM: base=0x6000'0000, size=1G=2^(29+1) */
+          0x60000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 5U), /* region #5 */
+          (29U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #6: Ext Dev: base=0xA000'0000, size=1G=2^(29+1) */
+          0xA0000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 6U), /* region #6 */
+          (29U << MPU_RASR_SIZE_Pos)        /* 2^(28+1) region */
+              | (0x3U << MPU_RASR_AP_Pos)   /* PA:rw/UA:rw */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | (1U << MPU_RASR_S_Pos)      /* S=1 */
+              | (1U << MPU_RASR_B_Pos)      /* B=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+
+        { /* region #7: NULL-pointer: base=0x000'0000, size=256B, NOTE0 */
+          0x00000000U                       /* base address */
+              | MPU_RBAR_VALID_Msk          /* valid region */
+              | (MPU_RBAR_REGION_Msk & 7U), /* region #7 */
+          (7U << MPU_RASR_SIZE_Pos)         /* 2^(7+1)=256B region */
+              | (0x0U << MPU_RASR_AP_Pos)   /* PA:na/UA:na */
+              | (1U << MPU_RASR_XN_Pos)     /* XN=1 */
+              | MPU_RASR_ENABLE_Msk         /* region enable */
+        },
+    };
+
+    /* enable the MemManage_Handler for MPU exception */
+    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
+
+    __DSB();
+    MPU->CTRL = 0U; /* disable the MPU */
+    for (uint_fast8_t n = 0U; n < Q_DIM(mpu_setup); ++n) {
+        MPU->RBAR = mpu_setup[n].rbar;
+        MPU->RASR = mpu_setup[n].rasr;
+    }
+    MPU->CTRL = MPU_CTRL_ENABLE_Msk;        /* enable the MPU */
+    __ISB();
+    __DSB();
+}
+
 /*..........................................................................*/
 void BSP_init(void) {
+    /* setup the MPU... */
+    EFM32PG182_MPU_setup();
+
     /* NOTE: SystemInit() already called from the startup code
     *  but SystemCoreClock needs to be updated
     */
     SystemCoreClockUpdate();
 
-    /* configure the FPU usage by choosing one of the options... */
-#if 1
-    /* OPTION 1:
-    * Use the automatic FPU state preservation and the FPU lazy stacking.
-    *
-    * NOTE:
-    * Use the following setting when FPU is used in more than one task or
-    * in any ISRs. This setting is the safest and recommended, but requires
-    * extra stack space and CPU cycles.
-    */
-    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
-#else
-    /* OPTION 2:
-    * Do NOT to use the automatic FPU state preservation and
-    * do NOT to use the FPU lazy stacking.
-    *
-    * NOTE:
-    * Use the following setting when FPU is used in ONE task only and not
-    * in any ISR. This setting is very efficient, but if more than one task
-    * (or ISR) start using the FPU, this can lead to corruption of the
-    * FPU registers. This option should be used with CAUTION.
-    */
-    FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
-#endif
+    /* NOTE The VFP (hardware Floating Point) unit is configured by QV-port */
 
     /* enable clock for to the peripherals used by this application... */
     CMU_ClockEnable(cmuClock_HFPER, true);
@@ -192,7 +285,7 @@ void BSP_init(void) {
     GPIO_PinModeSet(PB_PORT, PB0_PIN, gpioModeInputPull, 1);
     GPIO_PinModeSet(PB_PORT, PB1_PIN, gpioModeInputPull, 1);
 
-    //...
+    /*... */
     BSP_randomSeed(1234U);
 
     if (QS_INIT((void *)0) == 0) { /* initialize the QS software tracing */
@@ -231,7 +324,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
     QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
         QS_U8(1, n);  /* Philosopher number */
         QS_STR(stat); /* Philosopher status */
-    QS_END()
+    QS_END()          /* application-specific record end */
 }
 /*..........................................................................*/
 void BSP_displayPaused(uint8_t paused) {
@@ -267,7 +360,7 @@ void BSP_terminate(int16_t result) {
     (void)result;
 }
 
-/*..........................................................................*/
+/* QF callbacks ============================================================*/
 void QF_onStartup(void) {
     /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
@@ -434,7 +527,7 @@ void QS_onFlush(void) {
         /* while TXE not empty */
         while ((l_USART0->STATUS & USART_STATUS_TXBL) == 0U) {
         }
-        l_USART0->TXDATA  = (b & 0xFFU);  /* put into the DR register */
+        l_USART0->TXDATA  = (b & 0xFFU); /* put into the DR register */
         QF_INT_DISABLE();
     }
     QF_INT_ENABLE();
@@ -472,7 +565,15 @@ void QS_onCommand(uint8_t cmdId,
 #endif /* Q_SPY */
 /*--------------------------------------------------------------------------*/
 
-/*****************************************************************************
+/*============================================================================
+* NOTE0:
+* The MPU protection against NULL-pointer dereferencing sets up a no-access
+* MPU region #7 around the NULL address (0x0). This works even though the
+* Vector Table also resides at address 0x0. However, the *size* of the
+* no-access region should not exceed the size of the Vector Table. In this
+* case, the size is set to 2**(7+1)==256 bytes, which does not contain any
+* data that the CPU would legitimately read with the LDR instruction.
+*
 * NOTE1:
 * The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
 * ISR priority that is disabled by the QF framework. The value is suitable

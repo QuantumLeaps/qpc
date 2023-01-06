@@ -1,7 +1,7 @@
-/*****************************************************************************
-* Product: BSP for system-testing QXK
-* Last updated for version 7.1.2
-* Last updated on  2022-10-02
+/*============================================================================
+* Product: BSP for system-testing
+* Last updated for version 7.2.0
+* Last updated on  2022-12-13
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -30,9 +30,9 @@
 * Contact information:
 * <www.state-machine.com/licensing>
 * <info@state-machine.com>
-*****************************************************************************/
-#ifndef BSP_H
-#define BSP_H
+============================================================================*/
+#ifndef BSP_H_
+#define BSP_H_
 
 void BSP_init(void);
 void BSP_terminate(int16_t result);
@@ -44,6 +44,12 @@ void BSP_ledOn(void);
 void BSP_ledOff(void);
 void BSP_trigISR(void);
 
+uint32_t BSP_romRead(int32_t offset, uint32_t fromEnd);
+void BSP_romWrite(int32_t offset, uint32_t fromEnd, uint32_t value);
+
+uint32_t BSP_ramRead(int32_t offset, uint32_t fromEnd);
+void BSP_ramWrite(int32_t offset, uint32_t fromEnd, uint32_t value);
+
 enum TestSignals {
     TEST0_SIG = Q_USER_SIG,
     TEST1_SIG,
@@ -54,5 +60,5 @@ enum TestSignals {
     MAX_SIG         /* the last signal */
 };
 
-#endif /* BSP_H */
+#endif /* BSP_H_ */
 

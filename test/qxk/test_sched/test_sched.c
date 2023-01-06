@@ -1,7 +1,7 @@
 /*============================================================================
 * Product: System test fixture for QXK kernel
-* Last updated for version 7.1.2
-* Last updated on  2022-10-03
+* Last updated for version 7.2.0
+* Last updated on  2022-12-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -94,6 +94,13 @@ ObjB aoB[NUM_B];
 /*==========================================================================*/
 enum { NUM_X = 3 };
 
+enum UserCommands {
+    MEM_READ, MEM_WRITE,
+    ROM_READ, ROM_WRITE,
+    RAM_READ, RAM_WRITE,
+};
+
+/*..........................................................................*/
 void ThrX_run(QXThread * const me) {
     QActive_subscribe(&me->super, TEST1_SIG);
     QActive_subscribe(&me->super, TEST2_SIG);
@@ -135,20 +142,26 @@ int main() {
 
     /* initialize publish-subscribe... */
     static QSubscrList subscrSto[MAX_PUB_SIG];
-    QF_psInit(subscrSto, Q_DIM(subscrSto));
+    QActive_psInit(subscrSto, Q_DIM(subscrSto));
 
     /* initialize event pools... */
     static QF_MPOOL_EL(QEvt) smlPoolSto[10]; /* small pool */
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     /* dictionaries */
-    QS_FUN_DICTIONARY(&QHsm_top);
     QS_SIG_DICTIONARY(QXK_DELAY_SIG,   (void *)0);
     QS_SIG_DICTIONARY(QXK_TIMEOUT_SIG, (void *)0);
-    QS_SIG_DICTIONARY(TEST0_SIG,       (void *)0);
-    QS_SIG_DICTIONARY(TEST1_SIG,       (void *)0);
-    QS_SIG_DICTIONARY(TEST2_SIG,       (void *)0);
-    QS_SIG_DICTIONARY(TEST3_SIG,       (void *)0);
+    QS_SIG_DICTIONARY(TEST0_SIG,  (void *)0);
+    QS_SIG_DICTIONARY(TEST1_SIG,  (void *)0);
+    QS_SIG_DICTIONARY(TEST2_SIG,  (void *)0);
+    QS_SIG_DICTIONARY(TEST3_SIG,  (void *)0);
+
+    QS_ENUM_DICTIONARY(MEM_READ,  QS_CMD);
+    QS_ENUM_DICTIONARY(MEM_WRITE, QS_CMD);
+    QS_ENUM_DICTIONARY(ROM_READ,  QS_CMD);
+    QS_ENUM_DICTIONARY(ROM_WRITE, QS_CMD);
+    QS_ENUM_DICTIONARY(RAM_READ,  QS_CMD);
+    QS_ENUM_DICTIONARY(RAM_WRITE, QS_CMD);
 
     /* priority specifications for ObjBs... */
     static QPrioSpec pspecB[NUM_B];
@@ -217,10 +230,67 @@ void QS_onTestTeardown(void) {
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    Q_UNUSED_PAR(cmdId);
-    Q_UNUSED_PAR(param1);
-    Q_UNUSED_PAR(param2);
-    Q_UNUSED_PAR(param3);
+    uint32_t volatile value;
+
+    switch (cmdId) {
+        case MEM_READ: { // read MEM (can trip the MPU)
+            value = *(uint32_t volatile *)(param1 + param2);
+            QS_BEGIN_ID(QS_USER, 0U)
+                QS_ENUM(QS_CMD, cmdId);
+                QS_U32(0, value);
+            QS_END()
+            break;
+        }
+        case MEM_WRITE: { // write MEM (can trip the MPU)
+            *(uint32_t volatile *)(param1 + param2) = param3;
+            QS_BEGIN_ID(QS_USER, 0U)
+                QS_ENUM(QS_CMD, cmdId);
+                QS_U32(QS_HEX_FMT , param1);
+                QS_U32(QS_HEX_FMT , param2);
+                QS_U32(0 , param3);
+            QS_END()
+            break;
+        }
+        case ROM_READ: { // read ROM (can trip the MPU)
+            value = BSP_romRead((int32_t)param1, param2);
+            QS_BEGIN_ID(QS_USER, 0U)
+                QS_ENUM(QS_CMD, cmdId);
+                QS_U32(0, value);
+            QS_END()
+            break;
+        }
+        case ROM_WRITE: { // write ROM (can trip the MPU)
+            BSP_romWrite(param1, param2, param3);
+            QS_BEGIN_ID(QS_USER, 0U)
+                QS_ENUM(QS_CMD, cmdId);
+                QS_U32(QS_HEX_FMT , param1);
+                QS_U32(QS_HEX_FMT , param2);
+                QS_U32(0 , param3);
+            QS_END()
+            break;
+        }
+        case RAM_READ: { // read RAM (can trip the MPU)
+            value = BSP_ramRead(param1, param2);
+            QS_BEGIN_ID(QS_USER, 0U)
+                QS_ENUM(QS_CMD, cmdId);
+                QS_U32(0, value);
+            QS_END()
+            break;
+        }
+        case RAM_WRITE: { // write RAM (can trip the MPU)
+            BSP_ramWrite(param1, param2, param3);
+            QS_BEGIN_ID(QS_USER, 0U)
+                QS_ENUM(QS_CMD, cmdId);
+                QS_U32(QS_HEX_FMT , param1);
+                QS_U32(QS_HEX_FMT , param2);
+                QS_U32(0, param3);
+            QS_END()
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 /****************************************************************************/

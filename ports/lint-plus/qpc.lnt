@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2022-10-13
-//! @version Last updated for version: 7.1.3
+//! @date Last updated on: 2022-11-29
+//! @version Last updated for version: 7.2.0
 //!
 //! @file
 //! @brief PC-Lint-Plus option file for linting **QP/C Applications**
@@ -322,10 +322,12 @@
  QS_OBJ_ARR_DICTIONARY,
  QS_FUN_DICTIONARY,
  QS_USR_DICTIONARY,
+ QS_ENUM_DICTIONARY,
  QS_ASSERTION,
  QS_FLUSH,
  QS_MEM,
  QS_SIG,
+ QS_ENUM,
  QS_PTR_AT_,
  QS_RX_PUT,
  QS_OUTPUT,
@@ -375,7 +377,8 @@
  QS_OBJ_ARR_DICTIONARY,
  QS_FUN_DICTIONARY,
  QS_SIG_DICTIONARY,
- QS_USR_DICTIONARY)
+ QS_USR_DICTIONARY,
+ QS_ENUM_DICTIONARY)
 
 // M3-R10.3(R) cannot assign enum to different essential type
 -emacro(9034,

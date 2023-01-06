@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>QXK_ON_CONTEXT_SW</Define>
+              <Define>QF_ON_CONTEXT_SW</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\nucleo-l053r8</IncludePath>
             </VariousControls>
@@ -1738,7 +1738,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY,QXK_ON_CONTEXT_SW</Define>
+              <Define>Q_SPY,QF_ON_CONTEXT_SW</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\nucleo-l053r8</IncludePath>
             </VariousControls>

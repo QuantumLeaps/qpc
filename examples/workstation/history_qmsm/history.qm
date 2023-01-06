@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.3" links="1">
+<model version="5.2.4" links="1">
  <documentation>Demonstration of transitions to shallow history and deep history in QMsm-style state machines.</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>

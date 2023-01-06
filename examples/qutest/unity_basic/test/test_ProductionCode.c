@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Purpose: example QUTEST fixture for the basic example from Unity
-* Last Updated for Version: 6.3.6
-* Date of the Last Update:  2018-10-11
+* Last Updated for Version: 7.2.0
+* Date of the Last Update:  2022-11-30
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -86,7 +86,7 @@ void QS_onCommand(uint8_t cmdId,
             int ret = FunctionWhichReturnsLocalVariable();
             QS_BEGIN_ID(QS_USER + cmdId, 0U) /* app-specific record */
                 QS_FUN(&FunctionWhichReturnsLocalVariable); /* function called */
-                QS_U32_HEX(0, (uint32_t)ret); /* returned value */
+                QS_U32(QS_HEX_FMT, (uint32_t)ret); /* returned value */
             QS_END()
              break;
         }
@@ -94,10 +94,10 @@ void QS_onCommand(uint8_t cmdId,
             break;
     }
 
-    /* unused parametrers... */
-    //(void)param1;
-    (void)param2;
-    (void)param3;
+    /* unused parameters... */
+    //Q_UNUSED_PAR(param1);
+    Q_UNUSED_PAR(param2);
+    Q_UNUSED_PAR(param3);
 }
 /*..........................................................................*/
 /* host callback function to "massage" the event, if necessary */
@@ -112,8 +112,8 @@ void QS_onTestEvt(QEvt *e) {
 void QS_onTestPost(void const *sender, QActive *recipient,
                    QEvt const *e, bool status)
 {
-    (void)sender;
-    (void)recipient;
-    (void)e;
-    (void)status;
+    Q_UNUSED_PAR(sender);
+    Q_UNUSED_PAR(recipient);
+    Q_UNUSED_PAR(e);
+    Q_UNUSED_PAR(status);
 }

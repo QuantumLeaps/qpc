@@ -261,15 +261,15 @@ void QF_onStartup(void) {
 void QF_onCleanup(void) {
 }
 /*..........................................................................*/
-#ifdef QXK_ON_CONTEXT_SW
+#ifdef QF_ON_CONTEXT_SW
 /* NOTE: the context-switch callback is called with interrupts DISABLED */
-void QXK_onContextSw(QActive *prev, QActive *next) {
+void QF_onContextSw(QActive *prev, QActive *next) {
     QS_BEGIN_NOCRIT(CONTEXT_SW, 0U) /* no critical section! */
         QS_OBJ(prev);
         QS_OBJ(next);
     QS_END_NOCRIT()
 }
-#endif /* QXK_ON_CONTEXT_SW */
+#endif /* QF_ON_CONTEXT_SW */
 /*..........................................................................*/
 void QXK_onIdle(void) { /* called with interrupts enabled */
 

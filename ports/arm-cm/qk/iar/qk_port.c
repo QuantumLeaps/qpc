@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-10-02
-* @version Last updated for: @ref qpc_7_1_2
+* @date Last updated on: 2022-12-18
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QK/C port to ARM Cortex-M, IAR-ARM toolset
@@ -41,10 +41,11 @@ void QK_USE_IRQ_HANDLER(void);
 void NMI_Handler(void);
 #endif
 
-#define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004)
-#define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14)
-#define NVIC_EN      ((uint32_t volatile *)0xE000E100)
-#define NVIC_IP      ((uint8_t  volatile *)0xE000E400)
+#define SCnSCB_ICTR  ((uint32_t volatile *)0xE000E004U)
+#define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED14U)
+#define NVIC_EN      ((uint32_t volatile *)0xE000E100U)
+#define NVIC_IP      ((uint8_t  volatile *)0xE000E400U)
+#define FPU_FPCCR   *((uint32_t volatile *)0xE000EF34U)
 #define NVIC_PEND    0xE000E200
 #define NVIC_ICSR    0xE000ED04
 
@@ -52,11 +53,11 @@ void NMI_Handler(void);
 #define VAL(x) #x
 #define STRINGIFY(x) VAL(x)
 
-/*
-* Initialize the exception priorities and IRQ priorities to safe values.
+/*..........................................................................*/
+/* Initialize the exception priorities and IRQ priorities to safe values.
 *
 * Description:
-* On Cortex-M3/M4/M7, this QK port disables interrupts by means of the
+* On ARMv7-M or higher, this QK port disables interrupts by means of the
 * BASEPRI register. However, this method cannot disable interrupt
 * priority zero, which is the default for all interrupts out of reset.
 * The following code changes the SysTick priority and all IRQ priorities
@@ -75,17 +76,17 @@ void QK_init(void) {
     * SCB_SYSPRI1: Usage-fault, Bus-fault, Memory-fault
     */
     SCB_SYSPRI[1] = (SCB_SYSPRI[1]
-        | (QF_BASEPRI << 16) | (QF_BASEPRI << 8) | QF_BASEPRI);
+        | (QF_BASEPRI << 16U) | (QF_BASEPRI << 8U) | QF_BASEPRI);
 
     /* SCB_SYSPRI2: SVCall */
-    SCB_SYSPRI[2] = (SCB_SYSPRI[2] | (QF_BASEPRI << 24));
+    SCB_SYSPRI[2] = (SCB_SYSPRI[2] | (QF_BASEPRI << 24U));
 
     /* SCB_SYSPRI3:  SysTick, PendSV, Debug */
     SCB_SYSPRI[3] = (SCB_SYSPRI[3]
-        | (QF_BASEPRI << 24) | (QF_BASEPRI << 16) | QF_BASEPRI);
+        | (QF_BASEPRI << 24U) | (QF_BASEPRI << 16U) | QF_BASEPRI);
 
     /* set all implemented IRQ priories to QF_BASEPRI... */
-    uint8_t nprio = (8U + ((*SCnSCB_ICTR & 0x7U) << 3U))*4;
+    uint8_t nprio = (8U + ((*SCnSCB_ICTR & 0x7U) << 3U)) * 4U;
     for (uint8_t n = 0U; n < nprio; ++n) {
         NVIC_IP[n] = QF_BASEPRI;
     }
@@ -102,9 +103,15 @@ void QK_init(void) {
     NVIC_IP[QK_USE_IRQ_NUM] = 0U; /* priority 0 (highest) */
     NVIC_EN[QK_USE_IRQ_NUM / 32U] = (1U << (QK_USE_IRQ_NUM % 32U));
 #endif                  /*--------- QK IRQ specified */
+
+#if (__ARM_FP != 0)     /*--------- if VFP available... */
+    /* configure the FPU for QK */
+    FPU_FPCCR |= (1U << 30U)    /* automatic FPU state preservation (ASPEN) */
+                 | (1U << 31U); /* lazy stacking (LSPEN) */
+#endif                  /*--------- VFP available */
 }
 
-/*==========================================================================*/
+/*..........................................................................*/
 /* The PendSV_Handler exception is used for handling the asynchronous
 * preemption in QK. The use of the PendSV exception is the recommended and
 * the most efficient method for performing context switches with ARM Cortex-M.
@@ -278,36 +285,36 @@ __asm volatile (
 /*==========================================================================*/
 #if (__ARM_ARCH == 6) /* if ARMv6-M... */
 
-/* hand-optimized quick LOG2 in assembly (No CLZ instruction in ARMv6-M) */
+/* hand-optimized quick LOG2 in assembly (no CLZ instruction in ARMv6-M) */
 uint_fast8_t QF_qlog2(uint32_t x) {
     static uint8_t const log2LUT[16] = {
         0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
         4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U
     };
     uint_fast8_t n;
-    __asm (
-        "MOVS    %[n],#0\n"
+
+__asm volatile (
+   "  MOVS    %[n],#0           \n"
 #if (QF_MAX_ACTIVE > 16U)
-        "LSRS    r2,r0,#16\n"
-        "BEQ.N   QF_qlog2_1\n"
-        "MOVS    %[n],#16\n"
-        "MOVS    r0,r2\n"
-    "QF_qlog2_1:\n"
+    "  LSRS    r2,r0,#16        \n"
+    "  BEQ     QF_qlog2_1       \n"
+    "  MOVS    %[n],#16         \n"
+    "  MOVS    r0,r2            \n"
+    "QF_qlog2_1:                \n"
 #endif
 #if (QF_MAX_ACTIVE > 8U)
-        "LSRS    r2,r0,#8\n"
-        "BEQ.N   QF_qlog2_2\n"
-        "ADDS    %[n],%[n],#8\n"
-        "MOVS    r0,r2\n"
-    "QF_qlog2_2:\n"
+    "  LSRS    r2,r0,#8         \n"
+    "  BEQ     QF_qlog2_2       \n"
+    "  ADDS    %[n],%[n],#8     \n"
+    "  MOVS    r0,r2            \n"
+    "QF_qlog2_2:                \n"
 #endif
-        "LSRS    r2,r0,#4\n"
-        "BEQ.N   QF_qlog2_3\n"
-        "ADDS    %[n],%[n],#4\n"
-        "MOVS    r0,r2\n"
-    "QF_qlog2_3:"
-        : [n]"=r"(n)
-    );
+    "  LSRS    r2,r0,#4         \n"
+    "  BEQ.N   QF_qlog2_3       \n"
+    "  ADDS    %[n],%[n],#4     \n"
+    "  MOVS    r0,r2            \n"
+    "QF_qlog2_3:" : [n]"=r"(n)
+);
     return n + log2LUT[x];
 }
 

@@ -125,6 +125,7 @@ QS is a software tracing system that enables developers to monitor live event-dr
 - QS_OBJ_ARR_DICTIONARY()
 - QS_FUN_DICTIONARY()
 - QS_USR_DICTIONARY()
+- QS_ENUM_DICTIONARY()
 
 
 @subsection api_qs_user QS Application-Specific Records
@@ -134,9 +135,9 @@ QS is a software tracing system that enables developers to monitor live event-dr
 - QS_U8() / QS_I8()
 - QS_U16() / QS_I16()
 - QS_U32() / QS_I32()
-- QS_U32_HEX()
 - QS_STR()
 - QS_MEM()
+- QS_ENUM()
 
 
 @section api_qv QV (Cooperative Kernel)
@@ -176,7 +177,7 @@ QK is a tiny **preemptive**, run-to-completion (RTC) kernel designed specificall
 
 
 @section api_qxk QXK (Dual-Mode Kernel)
-QXK is a small, preemptive, priority-based, dual-mode (run-to-completion/**blocking**) kernel that executes active objects like the @ref srs_qk "QK kernel", but can also execute traditional __blocking__ threads (extended threads). In this respect, QXK behaves exactly as a conventional __RTOS__ (Real-Time Operating System). QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
+QXK is a small, preemptive, priority-based, dual-mode (run-to-completion/<b>blocking</b>) kernel that executes active objects like the @ref srs_qk "QK kernel", but can also execute traditional __blocking__ threads (extended threads). In this respect, QXK behaves exactly as a conventional __RTOS__ (Real-Time Operating System). QXK has been designed specifically for mixing event-driven active objects with traditional blocking code, such as commercial middleware (TCP/IP stacks, UDP stacks, embedded file systems, etc.) or legacy software.
 
 
 @subsection api_qxk_ctrl Kernel Initialization and Control

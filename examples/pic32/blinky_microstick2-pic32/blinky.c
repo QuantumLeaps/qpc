@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: Simple Blinky example
-* Last Updated for Version: 5.6.4
-* Date of the Last Update:  2016-06-05
+* Last Updated for Version: 7.2.0
+* Date of the Last Update:  2022-12-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -67,7 +67,6 @@ QState Blinky_initial(Blinky * const me, QEvt const * const e) {
     QS_OBJ_DICTIONARY(&l_blinky);
     QS_OBJ_DICTIONARY(&l_blinky.timeEvt);
 
-    QS_FUN_DICTIONARY(&QHsm_top);
     QS_FUN_DICTIONARY(&Blinky_initial);
     QS_FUN_DICTIONARY(&Blinky_off);
     QS_FUN_DICTIONARY(&Blinky_on);

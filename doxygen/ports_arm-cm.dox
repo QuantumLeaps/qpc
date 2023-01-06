@@ -10,6 +10,7 @@ To focus the discussion, this section references the **GNU-ARM toolchain**, the 
 @section arm-cm_files Directories and Files
 The QP ports to ARM Cortex-M are available in the standard QP distribution. Specifically, the ARM Cortex-M ports are placed in the following directories:
 
+<br>
 @code{.c}
 qpc/ports/arm-cm    // QP/C ports to ARM Cortex-M
 +---qk              // QP/C ports to QK preemptive kernel
@@ -226,7 +227,7 @@ The QEP header file for the ARM Cortex-M port is located in <span class="img fil
 
 @anchor arm-cm_qv_qep_port-code
 @caption{Listing: The qep_port.h header file for ARM Cortex-M}
-@code{c}
+@code{.c}
      #include <stdint.h>  /* Exact-width types. WG14/N843 C99 Standard */
      #include <stdbool.h> /* Boolean type.      WG14/N843 C99 Standard */
      #include "qep.h"     /* QEP platform-independent public interface */
@@ -439,7 +440,7 @@ The QV implementation file for the ARM Cortex-M port is located in <span class="
 
 @anchor arm-cm_qv_port_c-code
 @caption{Listing: The qv_port.c header file for ARM Cortex-M}
-@code{c}
+@code{.c}
      #include "qf_port.h"
 
  [1] #if (__ARM_ARCH != 6) /* NOT Cortex-M0/M0+/M1 ? */
@@ -501,7 +502,7 @@ The following listing shows an example of the SysTick_Handler() ISR (from the DP
 
 @anchor arm-cm_qv-isr-code
 @caption{Listing: An ISR header for QV}
-@code{c}
+@code{.c}
      void SysTick_Handler(void) __attribute__((__interrupt__));
      void SysTick_Handler(void) {
           ~ ~ ~
@@ -524,8 +525,11 @@ If you use ARMv7M or higher CPU and your application uses the hardware FPU, it s
 @note
 The FPU must be enabled before executing any floating point instruction. An attempt to execute a floating point instruction will fault if the FPU is not enabled.
 
-
-Depending on whether or not you use the FPU in your ISRs, the QV port allows you to configure the FPU in various ways, as described in the following sub-sections.
+@note
+If the FPU is configured in the project, the QV kernel initializes the FPU to use the automatic state preservation and the lazy stacking feature as follows:
+@verbatim
+    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
+@endverbatim
 
 
 @subsection arm-cm_qv-fpu_noisr FPU NOT used in the ISRs
@@ -535,23 +539,10 @@ If you use the FPU only at the thread-level (inside active objects) and none of 
     FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
 @endverbatim
 
-With this setting, the Cortex-M4F processor handles the ISRs in the exact-same way as Cortex-M0-M3, that is, only the standard interrupt frame with R0-R3,R12,LR,PC,xPSR is used. This scheme is the fastest and incurs no additional CPU cycles to save and restore the FPU registers.
+With this setting, the processor uses only the standard 8-register interrupt stack frame with R0-R3,R12,LR,PC,xPSR. This scheme is the fastest and incurs no additional CPU cycles to save and restore the FPU registers.
 
-@note
+@attention
 This FPU setting will lead to FPU errors, if any of the ISRs indeed starts to use the FPU
-
-
-@subsection arm-cm_qv-fpu_isr FPU used in the ISRs
-If you use the FPU both at the thread-level (inside active objects) and in any of your ISRs as well, you should setup the FPU to use the automatic state preservation and the lazy stacking feature as follows:
-
-@verbatim
-    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
-@endverbatim
-
-This will enable the lazy stacking feature of the Cortex-M4F/M7 processor [@ref ARM-AN298]. The the "automatic state saving" and "lazy stacking" are enabled by default, so you typically don't need to change these settings.
-
-@note
-As described in the ARM Application Note "Cortex-M4(F) Lazy Stacking and Context Switching" [@ref ARM-AN298], the FPU automatic state saving requires more stack plus additional CPU time to save the FPU registers, but only when the FPU is actually used.
 
 
 @section arm-cm_qv-idle QV Idle Processing Customization in QV_onIdle()
@@ -565,7 +556,7 @@ Because QV_onIdle() must enable interrupts internally, the signature of the func
 
 @anchor arm-cm_qv_onidle-code
 @caption{Listing: QV_onIdle() for ARM Cortex-M}
-@code{c}
+@code{.c}
  [1] void QV_onIdle(void) { /* entered with interrupts DISABLED, see NOTE01 */
          ~ ~ ~
  [2] #if defined NDEBUG
@@ -1125,32 +1116,10 @@ If you have the Cortex-M4F CPU and your application uses the hardware FPU, it sh
 @endverbatim
 
 @note
-The FPU must be enabled before executing any floating point instruction. An attempt to execute a floating point instruction will fault if the FPU is not enabled.
-
-Depending on wheter or not you use the FPU in your ISRs, the "Vanilla" QP port allows you to configure the FPU in various ways, as described in the following sub-sections.
-
-
-@subsection arm-cm_qk-fpu_1thread FPU used in ONE thread only and not in any ISR
-If you use the FPU only at a single thread (active object) and none of your ISRs use the FPU, you can setup the FPU not to use the automatic state preservation and not to use the lazy stacking feature as follows:
-
+If the FPU is configured in the project, the QK kernel initializes the FPU to use the automatic state preservation and the lazy stacking feature as follows:
 @verbatim
-FPU->FPCCR &= ~((1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos));
+    FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
 @endverbatim
-
-With this setting, the Cortex-M4F processor handles the ISRs in the exact-same way as Cortex-M0-M3, that is, only the standard interrupt frame with R0-R3,R12,LR,PC,xPSR is used. This scheme is the fastest and incurs no additional CPU cycles to save and restore the FPU registers.
-
-@note
-This FPU setting will lead to FPU errors, if more than one thread or any of the ISRs indeed start to use the FPU
-
-
-@subsection arm-cm_qk-fpu_nthreadd FPU used in more than one thread only or the ISR
-If you use the FPU in more than one of the threads (active objects) or in any of your ISRs, you should setup the FPU to use the automatic state preservation and the lazy stacking feature as follows:
-
-@verbatim
-FPU->FPCCR |= (1U << FPU_FPCCR_ASPEN_Pos) | (1U << FPU_FPCCR_LSPEN_Pos);
-@endverbatim
-
-This is actually the default setting of the hardware FPU and is recommended for the QK port, because it is safer in view of code evolution. Future changes to the application can easily introduce FPU use in multiple active objects, which would be unsafe if the FPU context was not preserved automatically.
 
 @note
 As described in the ARM Application Note "Cortex-M4(F) Lazy Stacking and Context Switching" [@ref ARM-AN298], the FPU automatic state saving requires more stack plus additional CPU time to save the FPU registers, but only when the FPU is actually used.
@@ -1163,7 +1132,7 @@ The THUMB-2 instruction set used exclusively in ARM Cortex-M provides a special 
 
 @anchor arm-cm_qk_onidle-code
 @caption{Listing: QV_onIdle() for ARM Cortex-M}
-@code{c}
+@code{.c}
 
  [1] void QK_onIdle(void) {
           ~ ~ ~
@@ -1189,7 +1158,8 @@ The `bsp.c` file included in the <span class="img folder">examples/arm-cm/dpp_ek
 
 The technique described in this section will allow you to trigger an interrupt at any machine instruction and observe the preemption it causes. The interrupt used for the testing purposes is the GPIOA interrupt (INTID == 0). The ISR for this interrupt is shown below:
 
-@code{c}
+<br>
+@code{.c}
 void GPIOPortA_IRQHandler(void) {
     QK_ISR_ENTRY(); /* inform QK about entering an ISR */
     QACTIVE_POST(AO_Table, Q_NEW(QEvt, MAX_PUB_SIG), /* for testing... */

@@ -93,6 +93,7 @@ The provided examples show how to write regular "kernel-aware" ISRs as well as "
 
 Here is an example of a regular "kernel-aware" ISR (note the use of the `FromISR` suffix in the QP APIs):
 
+<br>
 @code{.c}
 /* NOTE: only the "FromISR" API variants are allowed in the ISRs! */
 void GPIOPortA_IRQHandler(void) {
@@ -111,6 +112,7 @@ void GPIOPortA_IRQHandler(void) {
 
 Here is an example of a "kernel-unaware" ISR (See also the FreeRTOS documentation for [configMAX_SYSCALL_INTERRUPT_PRIORITY](https://www.freertos.org/a00110.html#kernel_priority) ):
 
+<br>
 @code{.c}
 /*
 * ISR for receiving bytes from the QSPY Back-End
@@ -134,6 +136,7 @@ void UART0_IRQHandler(void) {
 @subsection freertos_hook Writing FreeRTOS Hooks Running in ISR Context
 FreeRTOS provides "hooks" that are user functions that execute in the ISR context (e.g., `vApplicationTickHook()`). Such ISR-level functions are closely related to ISRs and should also use exclusively only the "FromISR" APIs. Here is an example of the `vApplicationTickHook()`:
 
+<br>
 @code{.c}
 /* NOTE: only the "FromISR" API variants are allowed in vApplicationTickHook */
 void vApplicationTickHook(void) {
@@ -151,6 +154,7 @@ void vApplicationTickHook(void) {
 @subsection freertos_ao Starting Active Objects in QP/FreeRTOS
 As mentioned in the @ref freertos_about "FreeRTOS port summary", the QP port to FreeRTOS uses the [static memory allocation of FreeRTOS](https://freertos.org/Static_Vs_Dynamic_Memory_Allocation.html). This means that all memory for an active object, including the private queue buffer and the private **stack** for the the associated FreeRTOS task must be allocated by the user. Here is an example code that starts an active object:
 
+<br>
 @code{.c}
 int main() {
     . . .
@@ -227,6 +231,7 @@ However, this port can also be used as a library, in which case you need to buil
 @subsection uc-os2_build QP Source Files Needed in this QP Port
 Whether you use this QP port as source files or as a library, it is important to note that not all QP source files should be included. Here is the list of QP source files needed:
 
+<br>
 @code{.c}
 qpc/
 +-src/
@@ -307,34 +312,35 @@ The Zephyr message queue currently supports only the FIFO policy and does NOT su
 @subsection zephyr_build QP Source Files Needed in this QP Port
 It is important to note that **NOT** all QP source files should be included. Here is the list of QP source files needed:
 
-@verbatim
+<br>
+@code{.c}
 qpc/
-+-src/
-| | +-qf/
-| | | +-qep_hsm.c
-| | | +-qep_msm.c
-| | | +-qf_act.c
-| | | +-qf_actq.c  - NOT included (implemented in Zephyr)
-| | | +-qf_defer.c
-| | | +-qf_dyn.c
-| | | +-qf_mem.c
-| | | +-qf_ps.c
-| | | +-qf_qeq.c
-| | | +-qf_qmact.c
-| | | +-qf_time.c
-| |
-| | +-qs/
-| | | +-qs.c       - included only in the Spy build configuration
-| | | +-qs_fp.c    - included only in the Spy build configuration
++--src/
+|  +--qf/
+|  |    qep_hsm.c
+|  |    qep_msm.c
+|  |    qf_act.c
+|  |    qf_actq.c  // NOT included (implemented in Zephyr)
+|  |    qf_defer.c
+|  |    qf_dyn.c
+|  |    qf_mem.c
+|  |    qf_ps.c
+|  |    qf_qeq.c
+|  |    qf_qmact.c
+|  |    qf_time.c
+|  |
+|  +--qs/
+|  |    qs.c       // included only in the Spy build configuration
+|  |    qs_fp.c    // included only in the Spy build configuration
 |
-+-ports
-| +-zephyr
-| | +-qep_port.h
-| | +-qf_port.h
-| | +-qf_port.c    - implementation of the Zephyr port
-| | +-qs_port.h
++--ports/
+|  +--zephyr
+|  |    qep_port.h
+|  |    qf_port.h
+|  |    qf_port.c  // implementation of the Zephyr port
+|  |    qs_port.h
 |
-@endverbatim
+@endcode
 
 @note
 Specifically, the QP source files qf_actq.c must **NOT** be included in the build, because this functionality is taken from Zephyr.

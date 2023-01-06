@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Purpose: Fixture for QUTEST
-* Last Updated for Version: 6.3.5
-* Date of the Last Update:  2018-09-16
+* Last Updated for Version: 7.2.0
+* Date of the Last Update:  2022-12-22
 *
 *                    Q u a n t u m  L e a P s
 *                    ------------------------
@@ -53,7 +53,6 @@ int main(int argc, char *argv[]) {
     QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
 
     /* dictionaries... */
-    QS_FUN_DICTIONARY(&QHsm_top);
     QS_OBJ_DICTIONARY(the_hsm);
     QS_USR_DICTIONARY(BSP_DISPLAY);
 

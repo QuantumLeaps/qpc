@@ -1,7 +1,7 @@
 /*****************************************************************************
 * Product: DPP example with emWin/uC/GUI, NO Window Manager
-* Last Updated for Version: 6.2.0
-* Date of the Last Update:  2018-03-16
+* Last Updated for Version: 7.2.0
+* Date of the Last Update:  2022-12-22
 *
 *                    Q u a n t u m     L e a P s
 *                    ---------------------------
@@ -168,7 +168,6 @@ QState Table_initial(Table *me, QEvt const *e) {
     (void)e;        /* suppress the compiler warning about unused parameter */
 
     QS_OBJ_DICTIONARY(&l_table);
-    QS_FUN_DICTIONARY(&QHsm_top);
     QS_FUN_DICTIONARY(&Table_initial);
     QS_FUN_DICTIONARY(&Table_serving);
 

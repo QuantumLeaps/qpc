@@ -229,7 +229,9 @@ The TLS implementations vary, but many systems, including QXK, implement TLS by 
 Typical usage of TLS in QXK is illustrated in the example <span class="img folder">qpc/examples/arm-cm/dpp_efm32-slstk3401a/qxk/</span>, <span class="img file_c">test.c</span>, and consists:
 
 - define the TLS structure
-@code{c}
+
+<br>
+@code{.c}
 typedef struct {
     uint32_t foo;
     uint8_t bar[10];
@@ -237,7 +239,9 @@ typedef struct {
 @endcode
 
 - allocate the TLS storage for all participating threads (extended or basic threads)
-@code{c}
+
+<br>
+@code{.c}
 static TLS_test l_tls1;
 static TLS_test l_tls2;
 @endcode
@@ -256,7 +260,9 @@ static void Thread2_run(QXThread * const me) {
 @endcode
 
 - access the TLS from your code:
-@code{c}
+
+<br>
+@code{.c}
 void lib_fun(uint32_t x) {
     QXK_TLS(TLS_test *)->foo = x;
 }
