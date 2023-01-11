@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-06-12
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QS/C port for Win32 API
-* @ingroup ports
 */
 #ifndef Q_SPY
     #error "Q_SPY must be defined to compile qs_port.c"

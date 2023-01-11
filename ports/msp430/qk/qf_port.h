@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QF/C port to MSP430, preemptive QK kernel
-* @ingroup ports
 */
 #ifndef QF_PORT_H
 #define QF_PORT_H

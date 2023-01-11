@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QEP/C port, generic C11 compiler
-* @ingroup qep
 */
 #ifndef QEP_PORT_H
 #define QEP_PORT_H

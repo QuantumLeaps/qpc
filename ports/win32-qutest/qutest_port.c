@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-12-19
+* @date Last updated on: 2023-01-07
 * @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QS/C QUTest port for Win32
-* @ingroup ports
 */
 #ifndef Q_SPY
     #error "Q_SPY must be defined to compile qutest_port.c"

@@ -23,11 +23,10 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2021-12-23
-* @version Last updated for: @ref qpc_7_0_0
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
-* @ingroup ports
 * @brief QF/C port to uC-OS2, generic C99 compiler
 */
 #ifndef QF_PORT_H

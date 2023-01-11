@@ -292,10 +292,11 @@ void QK_activate_(void) {
     QActive *a;
     do  {
         a = QActive_registry_[p]; /* obtain the pointer to the AO */
+        Q_ASSERT_ID(505, a != (QActive *)0); /* the AO must be registered */
 
         /* set new active priority and preemption-threshold */
         QK_attr_.actPrio = p;
-        QK_attr_.actThre = QActive_registry_[p]->pthre;
+        QK_attr_.actThre = a->pthre;
 
     #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
         if (p != pprev) { /* changing threads? */
@@ -345,11 +346,11 @@ void QK_activate_(void) {
             p = (uint8_t)QPSet_findMax(&QF_readySet_);
 
             /* is the new priority below the initial preemption-threshold? */
-            if (p <= (uint_fast8_t)QActive_registry_[prio_in]->pthre) {
+            if (p <= QActive_registry_[prio_in]->pthre) {
                 p = 0U; /* no activation needed */
             }
             /* is the AO's priority below the lock preemption-ceiling? */
-            else if (p <= (uint_fast8_t)QK_attr_.lockCeil) {
+            else if (p <= QK_attr_.lockCeil) {
                 p = 0U; /* no activation needed */
             }
             else {

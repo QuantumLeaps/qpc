@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2023-01-04
-* @version Last updated for: @ref qpc_7_2.0
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QS/C port to POSIX with GNU compiler
-* @ingroup ports
 */
 #ifndef QS_PORT_H
 #define QS_PORT_H

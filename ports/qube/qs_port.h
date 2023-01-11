@@ -23,22 +23,23 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2023-01-07
-* @version Last updated for: @ref qpc_7_2_0
+* @date Last updated on: 2023-01-04
+* @version Last updated for: @ref qpc_7_2.0
 *
 * @file
-* @brief QS/C port to Win32 with GNU or Visual C++ compilers
+* @brief QS/C port for the "Qube" execution harness (Windows, Linux, macOS)
 */
-#ifndef QS_PORT_H
-#define QS_PORT_H
+#ifndef QS_PORT_H_
+#define QS_PORT_H_
 
 #define QS_CTR_SIZE         4U
 #define QS_TIME_SIZE        4U
 
-#ifdef _WIN64 /* 64-bit architecture? */
+/* 64-bit architecture? */
+#if defined(__LP64__) || defined(_LP64) || defined(_WIN64)
     #define QS_OBJ_PTR_SIZE 8U
     #define QS_FUN_PTR_SIZE 8U
-#else         /* 32-bit architecture */
+#else /* 32-bit architecture */
     #define QS_OBJ_PTR_SIZE 4U
     #define QS_FUN_PTR_SIZE 4U
 #endif
@@ -46,8 +47,8 @@
 /* flush the QS output buffer after each QS record */
 #define QS_REC_DONE()  QS_onFlush()
 
-/*==========================================================================*/
-/* NOTE: QS might be used with or without other QP components, in which
+/*============================================================================
+* NOTE: QS might be used with or without other QP components, in which
 * case the separate definitions of the macros QF_CRIT_STAT_TYPE,
 * QF_CRIT_ENTRY, and QF_CRIT_EXIT are needed. In this port QS is configured
 * to be used with the other QP component, by simply including "qf_port.h"
@@ -59,5 +60,5 @@
 
 #include "qs.h"      /* QS platform-independent public interface */
 
-#endif /* QS_PORT_H  */
+#endif /* QS_PORT_H_ */
 

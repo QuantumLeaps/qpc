@@ -27,12 +27,12 @@
 * @version Last updated for: @ref qpc_7_2_0
 *
 * @file
-* @brief QF/C "port" for QUTest unit test harness, Win32 with GNU or VisualC++
+* @brief QF/C port for the "Qube" execution harness (Windows, Linux, macOS)
 */
 #ifndef QF_PORT_H
 #define QF_PORT_H
 
-/* QUTest event queue and thread types */
+/* Qube event queue and thread types */
 #define QF_EQUEUE_TYPE QEQueue
 /* QF_OS_OBJECT_TYPE  not used */
 /* QF_THREAD_TYPE     not used */
@@ -40,17 +40,11 @@
 /* The maximum number of active objects in the application */
 #define QF_MAX_ACTIVE        64U
 
-/* The number of system clock tick rates */
-#define QF_MAX_TICK_RATE     2U
-
-/* Activate the QF QActive_stop() API */
-#define QF_ACTIVE_STOP       1
-
 /* QF interrupt disable/enable */
 #define QF_INT_DISABLE()     (++QF_intLock_)
 #define QF_INT_ENABLE()      (--QF_intLock_)
 
-/* QUTest critical section */
+/* Qube critical section */
 /* QF_CRIT_STAT_TYPE not defined */
 #define QF_CRIT_ENTRY(dummy) QF_INT_DISABLE()
 #define QF_CRIT_EXIT(dummy)  QF_INT_ENABLE()
@@ -58,15 +52,18 @@
 /* QF_LOG2 not defined -- use the internal LOG2() implementation */
 
 #include "qep_port.h"  /* QEP port */
-#include "qequeue.h"   /* QUTest port uses QEQueue event-queue */
-#include "qmpool.h"    /* QUTest port uses QMPool memory-pool */
+#include "qequeue.h"   /* Qube port uses QEQueue event-queue */
+#include "qmpool.h"    /* Qube port uses QMPool memory-pool */
 #include "qf.h"        /* QF platform-independent public interface */
 
-/****************************************************************************/
+void Qube_setAO(QActive *ao);
+QEvt const *Qube_onGenEvt(QSignal sig, char const *params);
+
+/*==========================================================================*/
 /* interface used only inside QF implementation, but not in applications */
 #ifdef QP_IMPL
 
-    /* QUTest scheduler locking (not used) */
+    /* Qube scheduler locking (not used) */
     #define QF_SCHED_STAT_
     #define QF_SCHED_LOCK_(dummy) ((void)0)
     #define QF_SCHED_UNLOCK_()    ((void)0)

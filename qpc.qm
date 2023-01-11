@@ -7040,25 +7040,25 @@ if (QS_GLB_CHECK_(rec_) &amp;&amp; QS_LOC_CHECK_(qs_id_)) { \
   </operation>
   <!--${QS-macros::QS_SIG_DICTIONARY}-->
   <operation name="QS_SIG_DICTIONARY" type="void" visibility="0x03" properties="0x00">
-   <documentation>/*! Output signal dictionary record
+   <documentation>/*! Output QS signal dictionary record
 *
 * @details
 * A signal dictionary record associates the numerical value of the signal
 * and the binary address of the state machine that consumes that signal
 * with the human-readable name of the signal.
 *
-* Providing a signal dictionary QS record can vastly improve readability of
-* the QS log, because instead of dealing with cryptic machine addresses the
-* QSpy host utility can display human-readable names.
+* @param[in] sig_ event signal (typically enumerated, e.g. `TIMEOUT_SIG`)
+* @param[in] obj_ pointer to the associated state machine object
+*                 (might be `(void*)0` for globally recognized signals)
 *
 * A signal dictionary entry is associated with both the signal value `sig_`
 * and the state machine `obj_`, because signals are required to be unique
 * only within a given state machine and therefore the same numerical values
 * can represent different signals in different state machines.
 *
-* For the &quot;global&quot; signals that have the same meaning in all state machines
+* For the &quot;global&quot; signals that have the same meaning in many state machines
 * (such as globally published signals), you can specify a signal dictionary
-* entry with the `obj_` parameter set to NULL.
+* entry with the `obj_` parameter set to `(void*)0`.
 *
 * The following example shows the definition of signal dictionary entries
 * in the initial transition of the Table active object. Please note that
@@ -7067,18 +7067,10 @@ if (QS_GLB_CHECK_(rec_) &amp;&amp; QS_LOC_CHECK_(qs_id_)) { \
 * hand, is global (0 `obj_` pointer):
 * @include qs_sigDic.c
 *
-* @note The QSpy log utility must capture the signal dictionary record
-* in order to use the human-readable information. You need to connect to
-* the target before the dictionary entries have been transmitted.
-*
 * The following QSpy log example shows the signal dictionary records
 * generated from the Table initial transition and subsequent records that
 * show human-readable names of the signals:
 * @include qs_sigLog.txt
-*
-* The following QSpy log example shows the same sequence of records, but
-* with dictionary records removed. The human-readable signal names are not
-* available.
 */</documentation>
    <!--${QS-macros::QS_SIG_DICTIONAR~::sig_}-->
    <parameter name="sig_" type="QSignal"/>
@@ -7095,9 +7087,7 @@ if (QS_GLB_CHECK_(rec_) &amp;&amp; QS_LOC_CHECK_(qs_id_)) { \
 * An object dictionary record associates the binary address of an object
 * in the target's memory with the human-readable name of the object.
 *
-* Providing an object dictionary QS record can vastly improve readability of
-* the QS log, because instead of dealing with cryptic machine addresses the
-* QSpy host utility can display human-readable object names.
+* @param[in] obj_  pointer to the object (any object)
 *
 * The following example shows the definition of object dictionary entry
 * for the Table active object:
@@ -7117,13 +7107,12 @@ if (QS_GLB_CHECK_(rec_) &amp;&amp; QS_LOC_CHECK_(qs_id_)) { \
 * object element in the target's memory with the human-readable name
 * of the object.
 *
-* Providing a dictionary QS record can vastly improve readability of
-* the QS log, because instead of dealing with cryptic machine addresses the
-* QSpy host utility can display human-readable object names.
+* @param[in] obj_  pointer to the object (any object)
+* @param[in] idx_  array index
 *
 * The following example shows the definition of object array dictionary
 * for `Philo::inst[n]` and `Philo::inst[n].m_timeEvt`:
-* @include qs_objDic.c
+* @include qs_objArrDic.c
 */</documentation>
    <!--${QS-macros::QS_OBJ_ARR_DICTI~::obj_}-->
    <parameter name="obj_" type="void const *"/>
@@ -10721,10 +10710,11 @@ uint8_t pprev = prio_in;
 QActive *a;
 do  {
     a = QActive_registry_[p]; /* obtain the pointer to the AO */
+    Q_ASSERT_ID(505, a != (QActive *)0); /* the AO must be registered */
 
     /* set new active priority and preemption-threshold */
     QK_attr_.actPrio = p;
-    QK_attr_.actThre = QActive_registry_[p]-&gt;pthre;
+    QK_attr_.actThre = a-&gt;pthre;
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
     if (p != pprev) { /* changing threads? */
@@ -10774,11 +10764,11 @@ do  {
         p = (uint8_t)QPSet_findMax(&amp;QF_readySet_);
 
         /* is the new priority below the initial preemption-threshold? */
-        if (p &lt;= (uint_fast8_t)QActive_registry_[prio_in]-&gt;pthre) {
+        if (p &lt;= QActive_registry_[prio_in]-&gt;pthre) {
             p = 0U; /* no activation needed */
         }
         /* is the AO's priority below the lock preemption-ceiling? */
-        else if (p &lt;= (uint_fast8_t)QK_attr_.lockCeil) {
+        else if (p &lt;= QK_attr_.lockCeil) {
             p = 0U; /* no activation needed */
         }
         else {
@@ -12869,22 +12859,20 @@ do  {
         p = 0U; /* no activation needed */
     }
     else {
-        /* find new highest-prio AO ready to run... */
+        /* find next highest-prio below the lock ceiling */
         p = (uint8_t)QPSet_findMax(&amp;QF_readySet_);
-        next = QActive_registry_[p];
-
-        /* next thread must be registered in QF */
-        Q_ASSERT_ID(710, next != (QActive *)0);
-
-        /* is the next priority below the lock-ceiling? */
         if (p &lt;= QXK_attr_.lockCeil) {
             p = QXK_attr_.lockHolder; /* thread holding lock */
             if (p != 0U) {
-                Q_ASSERT_ID(720, QPSet_hasElement(&amp;QF_readySet_, p));
+                Q_ASSERT_ID(710, QPSet_hasElement(&amp;QF_readySet_, p));
             }
         }
 
-        /* is the next a basic thread? */
+        /* set the next thread and ensure that it is registered */
+        next = QActive_registry_[p];
+        Q_ASSERT_ID(720, next != (QActive *)0);
+
+        /* is next a basic thread? */
         if (next-&gt;osObject == (void *)0) {
             /* is the next priority above the initial priority? */
             if (p &gt; QActive_registry_[prio_in]-&gt;prio) {

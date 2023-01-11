@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-29
-* @version Last updated for: @ref qpc_7_1_0
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QF/C port to POSIX API (multi-threaded)
-* @ingroup ports
 */
 
 /* expose features from the 2008 POSIX standard (IEEE Standard 1003.1-2008) */

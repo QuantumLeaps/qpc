@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QS/C port to POSIX
-* @ingroup ports
 */
 /* expose features from the 2008 POSIX standard (IEEE Standard 1003.1-2008) */
 #define _POSIX_C_SOURCE 200809L
