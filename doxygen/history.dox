@@ -6,6 +6,14 @@
 @remark
 This document is part of the @webref{products/qp#CERT,QP Certification Pack}, which has been specifically designed to aid companies in **safety certification** of their software based on the QP real-time embedded frameworks.
 
+@section qpc_7_2_1 Version 7.2.1, 2023-01-11
+__Bug Fixes:__
+- [bug#328    Assertion qxk:720 in QP/​C/​C++ 7.2.0](https://sourceforge.net/p/qpc/bugs/328)
+
+@attention
+This bug in QXK affects releases QP/C 7.1.0 through 7.2.0
+
+
 @section qpc_7_2_0 Version 7.2.0, 2023-01-06
 __QP/C Source Code:__
 - Added "enumeration dictionaries" for QS software tracing (see QS_ENUM_DICTIONARY())

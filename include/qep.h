@@ -52,7 +52,7 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION 720U
+#define QP_VERSION 721U
 
 /*! The current QP version as a zero terminated string literal.
 *
@@ -61,10 +61,10 @@
 * major version number, Y is a 1-digit minor version number, and Z is
 * a 1-digit release number.
 */
-#define QP_VERSION_STR "7.2.0"
+#define QP_VERSION_STR "7.2.1"
 
-/*! Encrypted  current QP release (7.2.0) and date (2023-01-06) */
-#define QP_RELEASE 0x76D8998FU
+/*! Encrypted  current QP release (7.2.1) and date (2023-01-11) */
+#define QP_RELEASE 0x76D7D63EU
 
 /*==========================================================================*/
 /*$declare${glob-types} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/
