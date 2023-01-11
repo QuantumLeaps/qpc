@@ -272,7 +272,7 @@ enum QSpyPre {
     QS_MTX_UNLOCK_ATTEMPT,/*!< a mutex unlock was attempted */
 
     /* [81] */
-    QS_PRE_MAX,           /*!< the number of predefined signals */
+    QS_PRE_MAX            /*!< the number of predefined signals */
 };
 
 /*${QS::QSpyGroups} ........................................................*/
@@ -319,7 +319,7 @@ enum QSpyIdOffsets {
     QS_AO_ID = 0,  /*!< offset for AO priorities */
     QS_EP_ID = 64, /*!< offset for event-pool IDs */
     QS_EQ_ID = 80, /*!< offset for event-queue IDs */
-    QS_AP_ID = 96, /*!< offset for Application-specific IDs */
+    QS_AP_ID = 96  /*!< offset for Application-specific IDs */
 };
 
 /*${QS::QSpyIdGroups} ......................................................*/
@@ -331,7 +331,7 @@ enum QSpyIdGroups {
     QS_AO_IDS  = (0x80 + (enum_t)QS_AO_ID), /*!< AO IDs (priorities) */
     QS_EP_IDS  = (0x80 + (enum_t)QS_EP_ID), /*!< event-pool IDs */
     QS_EQ_IDS  = (0x80 + (enum_t)QS_EQ_ID), /*!< event-queue IDs */
-    QS_AP_IDS  = (0x80 + (enum_t)QS_AP_ID), /*!< Application-specific IDs */
+    QS_AP_IDS  = (0x80 + (enum_t)QS_AP_ID)  /*!< Application-specific IDs */
 };
 
 /*${QS::QSpyFunPtr} ........................................................*/
@@ -409,7 +409,7 @@ enum QS_preType {
     QS_OBJ_T,     /*!< object pointer format */
     QS_FUN_T,     /*!< function pointer format */
     QS_I64_T,     /*!< signed 64-bit integer format */
-    QS_U64_T,     /*!< unsigned 64-bit integer format */
+    QS_U64_T      /*!< unsigned 64-bit integer format */
 };
 
 /*${QS::QS-tx::priv_} ......................................................*/
@@ -1280,25 +1280,25 @@ if (QS_GLB_CHECK_(rec_) && QS_LOC_CHECK_(qs_id_)) { \
 #endif /*  (Q_SIGNAL_SIZE == 1U) */
 
 /*${QS-macros::QS_SIG_DICTIONARY} ..........................................*/
-/*! Output signal dictionary record
+/*! Output QS signal dictionary record
 *
 * @details
 * A signal dictionary record associates the numerical value of the signal
 * and the binary address of the state machine that consumes that signal
 * with the human-readable name of the signal.
 *
-* Providing a signal dictionary QS record can vastly improve readability of
-* the QS log, because instead of dealing with cryptic machine addresses the
-* QSpy host utility can display human-readable names.
+* @param[in] sig_ event signal (typically enumerated, e.g. `TIMEOUT_SIG`)
+* @param[in] obj_ pointer to the associated state machine object
+*                 (might be `(void*)0` for globally recognized signals)
 *
 * A signal dictionary entry is associated with both the signal value `sig_`
 * and the state machine `obj_`, because signals are required to be unique
 * only within a given state machine and therefore the same numerical values
 * can represent different signals in different state machines.
 *
-* For the "global" signals that have the same meaning in all state machines
+* For the "global" signals that have the same meaning in many state machines
 * (such as globally published signals), you can specify a signal dictionary
-* entry with the `obj_` parameter set to NULL.
+* entry with the `obj_` parameter set to `(void*)0`.
 *
 * The following example shows the definition of signal dictionary entries
 * in the initial transition of the Table active object. Please note that
@@ -1307,18 +1307,10 @@ if (QS_GLB_CHECK_(rec_) && QS_LOC_CHECK_(qs_id_)) { \
 * hand, is global (0 `obj_` pointer):
 * @include qs_sigDic.c
 *
-* @note The QSpy log utility must capture the signal dictionary record
-* in order to use the human-readable information. You need to connect to
-* the target before the dictionary entries have been transmitted.
-*
 * The following QSpy log example shows the signal dictionary records
 * generated from the Table initial transition and subsequent records that
 * show human-readable names of the signals:
 * @include qs_sigLog.txt
-*
-* The following QSpy log example shows the same sequence of records, but
-* with dictionary records removed. The human-readable signal names are not
-* available.
 */
 #define QS_SIG_DICTIONARY(sig_, obj_) \
     (QS_sig_dict_pre_((sig_), (obj_), #sig_))
@@ -1330,9 +1322,7 @@ if (QS_GLB_CHECK_(rec_) && QS_LOC_CHECK_(qs_id_)) { \
 * An object dictionary record associates the binary address of an object
 * in the target's memory with the human-readable name of the object.
 *
-* Providing an object dictionary QS record can vastly improve readability of
-* the QS log, because instead of dealing with cryptic machine addresses the
-* QSpy host utility can display human-readable object names.
+* @param[in] obj_  pointer to the object (any object)
 *
 * The following example shows the definition of object dictionary entry
 * for the Table active object:
@@ -1349,13 +1339,12 @@ if (QS_GLB_CHECK_(rec_) && QS_LOC_CHECK_(qs_id_)) { \
 * object element in the target's memory with the human-readable name
 * of the object.
 *
-* Providing a dictionary QS record can vastly improve readability of
-* the QS log, because instead of dealing with cryptic machine addresses the
-* QSpy host utility can display human-readable object names.
+* @param[in] obj_  pointer to the object (any object)
+* @param[in] idx_  array index
 *
 * The following example shows the definition of object array dictionary
 * for `Philo::inst[n]` and `Philo::inst[n].m_timeEvt`:
-* @include qs_objDic.c
+* @include qs_objArrDic.c
 */
 #define QS_OBJ_ARR_DICTIONARY(obj_, idx_) \
     (QS_obj_arr_dict_pre_((obj_), (idx_), #obj_))

@@ -6,6 +6,21 @@
 @remark
 This document is part of the @webref{products/qp#CERT,QP Certification Pack}, which has been specifically designed to aid companies in **safety certification** of their software based on the QP real-time embedded frameworks.
 
+@section qpc_7_2_1 Version 7.2.1, 2023-01-15
+__QP/C Source Code:__
+- Changed the design of the ::QXMutex class to include ::QActive by composition rather than inheritance.
+
+__Ports:__
+- Fixed problems in QK ports for ARM Cortex-M: in case a regular IRQ is used for returning to the thread context. The port didn't handle correctly #QK_USE_IRQ_NUM above 32.
+- Fixed problems in QXK ports for ARM Cortex-M: in case a regular IRQ is used for returning to the thread context. The port didn't handle correctly #QK_USE_IRQ_NUM above 32.
+
+__Bug Fixes:__
+- [bug#328    Assertion qxk:720 in QP/​C/​C++ 7.2.0](https://sourceforge.net/p/qpc/bugs/328)
+
+@attention
+This bug in QXK affects releases QP/C @ref qpc_7_1_0 "7.1.0" through @ref qpc_7_2_0 "7.2.0"
+
+
 @section qpc_7_2_0 Version 7.2.0, 2023-01-06
 __QP/C Source Code:__
 - Added "enumeration dictionaries" for QS software tracing (see QS_ENUM_DICTIONARY())

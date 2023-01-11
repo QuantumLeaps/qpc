@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>QXK_USE_IRQ_HANDLER=CRYPTO_IRQHandler QXK_USE_IRQ_NUM=25</Define>
+              <Define>QXK_USE_IRQ_HANDLER=FPUEH_IRQHandler QXK_USE_IRQ_NUM=33</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>
@@ -1662,7 +1662,7 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>3</wLevel>
+            <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>1</uSurpInc>
             <uC99>1</uC99>
@@ -1676,9 +1676,8 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls></MiscControls>
-              <Define>Q_SPY QF_ON_CONTEXT_SW QXK_USE_IRQ_HANDLER=CRYPTO_IRQHandler QXK_USE_IRQ_NUM=25
-</Define>
+              <MiscControls>-Wno-padded</MiscControls>
+              <Define>Q_SPY QF_ON_CONTEXT_SW QXK_USE_IRQ_HANDLER=FPUEH_IRQHandler QXK_USE_IRQ_NUM=33</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>

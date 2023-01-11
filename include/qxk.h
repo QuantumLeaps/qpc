@@ -669,7 +669,6 @@ bool QXSemaphore_signal(QXSemaphore * const me);
 /*${QXK::QXMutex} ..........................................................*/
 /*! @brief Blocking Mutex the QXK preemptive kernel
 * @class QXMutex
-* @extends QActive
 *
 * @details
 * ::QXMutex is a blocking mutual exclusion mechanism that can also apply
@@ -704,10 +703,12 @@ bool QXSemaphore_signal(QXSemaphore * const me);
 * @include qxk_mutex.c
 */
 typedef struct {
-/* protected: */
-    QActive super;
-
 /* private: */
+
+    /*! active object used as a placeholder AO for this mutex
+    * in QActive_registry_[]
+    */
+    QActive ao;
 
     /*! set of extended-threads waiting on this mutex */
     QPSet waitSet;

@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-08-19
-* @version Last updated for: @ref qpc_7_1_0
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QF/C, port to ThreadX
-* @ingroup ports
 */
 #define QP_IMPL           /* this is QP implementation */
 #include "qf_port.h"      /* QF port */

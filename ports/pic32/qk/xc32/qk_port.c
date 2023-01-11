@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-10-02
-* @version Last updated for: @ref qpc_7_1_2
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QK/C port, preemptive QK kernel, MPLAB-X XC32 compiler
-* @ingroup ports
 */
 #include "qf_port.h"
 

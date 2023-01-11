@@ -1,13 +1,13 @@
-/*****************************************************************************
-* Product: simple "Blinky" example
-* Last Updated for Version: 5.4.0
-* Date of the Last Update:  2015-03-07
+/*============================================================================
+* Product: "Blinky" example
+* Last updated for version 7.2.0
+* Last updated on  2023-01-08
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
-* Copyright (C) 2005 Quantum Leaps, LLC. state-machine.com.
+* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
 * This program is open source software: you can redistribute it and/or
 * modify it under the terms of the GNU General Public License as published
@@ -30,9 +30,9 @@
 * Contact information:
 * <www.state-machine.com/licensing>
 * <info@state-machine.com>
-*****************************************************************************/
-#ifndef BLINKY_H
-#define BLINKY_H
+============================================================================*/
+#ifndef BLINKY_H_
+#define BLINKY_H_
 
 enum BlinkySignals {
     DUMMY_SIG = Q_USER_SIG,
@@ -45,4 +45,4 @@ enum BlinkySignals {
 void Blinky_ctor(void);
 extern QActive * const AO_Blinky; /* opaque pointer */
 
-#endif /* BLINKY_H */
+#endif /* BLINKY_H_ */

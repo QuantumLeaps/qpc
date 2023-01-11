@@ -23,12 +23,11 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-11-03
-* @version Last updated for: @ref qpc_7_1_3
+* @date Last updated on: 2023-01-07
+* @version Last updated for: @ref qpc_7_2_0
 *
 * @file
 * @brief QF/C port to Win32 API (single-threaded, like the QV kernel)
-* @ingroup ports
 */
 #ifndef QF_PORT_H
 #define QF_PORT_H

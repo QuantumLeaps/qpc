@@ -366,22 +366,20 @@ void QXK_activate_(void) {
             p = 0U; /* no activation needed */
         }
         else {
-            /* find new highest-prio AO ready to run... */
+            /* find next highest-prio below the lock ceiling */
             p = (uint8_t)QPSet_findMax(&QF_readySet_);
-            next = QActive_registry_[p];
-
-            /* next thread must be registered in QF */
-            Q_ASSERT_ID(710, next != (QActive *)0);
-
-            /* is the next priority below the lock-ceiling? */
             if (p <= QXK_attr_.lockCeil) {
                 p = QXK_attr_.lockHolder; /* thread holding lock */
                 if (p != 0U) {
-                    Q_ASSERT_ID(720, QPSet_hasElement(&QF_readySet_, p));
+                    Q_ASSERT_ID(710, QPSet_hasElement(&QF_readySet_, p));
                 }
             }
 
-            /* is the next a basic thread? */
+            /* set the next thread and ensure that it is registered */
+            next = QActive_registry_[p];
+            Q_ASSERT_ID(720, next != (QActive *)0);
+
+            /* is next a basic thread? */
             if (next->osObject == (void *)0) {
                 /* is the next priority above the initial priority? */
                 if (p > QActive_registry_[prio_in]->prio) {

@@ -7,7 +7,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = QP/C
-PROJECT_NUMBER         = 7.2.0
+PROJECT_NUMBER         = 7.2.1
 PROJECT_BRIEF          = "Real-Time Embedded Framework"
 PROJECT_LOGO           = ../../ql-doxygen/images/logo_ql.png
 OUTPUT_DIRECTORY       =

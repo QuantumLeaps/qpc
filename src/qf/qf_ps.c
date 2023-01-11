@@ -127,7 +127,7 @@ void QActive_publish_(
     QF_CRIT_X_();
 
     if (QPSet_notEmpty(&subscrList)) { /* any subscribers? */
-        /* the highest-prio subscriber */;
+        /* the highest-prio subscriber */
         uint_fast8_t p = QPSet_findMax(&subscrList);
         QActive *a = QActive_registry_[p];
         QF_SCHED_STAT_

@@ -1,11 +1,11 @@
-/*****************************************************************************
-* Product: Simple Blinky example
-* Last Updated for Version: 5.6.5
-* Date of the Last Update:  2016-06-03
+/*============================================================================
+* Product: "Blinky" example
+* Last updated for version 7.2.0
+* Last updated on  2023-01-08
 *
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
+*                    Q u a n t u m  L e a P s
+*                    ------------------------
+*                    Modern Embedded Software
 *
 * Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 *
@@ -28,19 +28,18 @@
 * along with this program. If not, see <www.gnu.org/licenses/>.
 *
 * Contact information:
-* Web:   www.state-machine.com
+* <www.state-machine.com/licensing>
 * <info@state-machine.com>
-*****************************************************************************/
+============================================================================*/
 #include "qpc.h"
-#include "blinky.h"
 #include "bsp.h"
+#include "blinky.h"
 
 //Q_DEFINE_THIS_FILE
 
 /*..........................................................................*/
 typedef struct {     /* the Blinky active object */
     QActive super;   /* inherit QActive */
-
     QTimeEvt timeEvt; /* private time event generator */
 } Blinky;
 
@@ -49,9 +48,9 @@ static Blinky Blinky_inst; /* the Blinky active object */
 QActive * const AO_Blinky = &Blinky_inst.super;
 
 /* hierarchical state machine ... */
-static QState Blinky_initial(Blinky * const me, QEvt const * const e);
-static QState Blinky_off    (Blinky * const me, QEvt const * const e);
-static QState Blinky_on     (Blinky * const me, QEvt const * const e);
+static QState Blinky_initial(Blinky * const me, void const * const par);
+static QState Blinky_off(Blinky * const me, QEvt const * const e);
+static QState Blinky_on(Blinky * const me, QEvt const * const e);
 
 /*..........................................................................*/
 void Blinky_ctor(void) {
@@ -61,8 +60,15 @@ void Blinky_ctor(void) {
 }
 
 /* HSM definition ----------------------------------------------------------*/
-QState Blinky_initial(Blinky * const me, QEvt const * const e) {
-    (void)e; /* avoid compiler warning about unused parameter */
+QState Blinky_initial(Blinky * const me, void const * const par) {
+    Q_UNUSED_PAR(par);
+
+    QS_OBJ_DICTIONARY(&Blinky_inst);
+    QS_OBJ_DICTIONARY(&Blinky_inst.timeEvt);
+
+    QS_FUN_DICTIONARY(&Blinky_initial);
+    QS_FUN_DICTIONARY(&Blinky_off);
+    QS_FUN_DICTIONARY(&Blinky_on);
 
     /* arm the time event to expire in half a second and every half second */
     QTimeEvt_armX(&me->timeEvt, BSP_TICKS_PER_SEC/2U, BSP_TICKS_PER_SEC/2U);
