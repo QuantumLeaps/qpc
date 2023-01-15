@@ -63,8 +63,8 @@
 */
 #define QP_VERSION_STR "7.2.1"
 
-/*! Encrypted  current QP release (7.2.1) and date (2023-01-11) */
-#define QP_RELEASE 0x76D7D63EU
+/*! Encrypted  current QP release (7.2.1) and date (2023-01-15) */
+#define QP_RELEASE 0x76D739FEU
 
 /*==========================================================================*/
 /*$declare${glob-types} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv*/

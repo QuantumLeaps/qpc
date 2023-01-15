@@ -272,7 +272,7 @@ enum QSpyPre {
     QS_MTX_UNLOCK_ATTEMPT,/*!< a mutex unlock was attempted */
 
     /* [81] */
-    QS_PRE_MAX,           /*!< the number of predefined signals */
+    QS_PRE_MAX            /*!< the number of predefined signals */
 };
 
 /*${QS::QSpyGroups} ........................................................*/
@@ -319,7 +319,7 @@ enum QSpyIdOffsets {
     QS_AO_ID = 0,  /*!< offset for AO priorities */
     QS_EP_ID = 64, /*!< offset for event-pool IDs */
     QS_EQ_ID = 80, /*!< offset for event-queue IDs */
-    QS_AP_ID = 96, /*!< offset for Application-specific IDs */
+    QS_AP_ID = 96  /*!< offset for Application-specific IDs */
 };
 
 /*${QS::QSpyIdGroups} ......................................................*/
@@ -331,7 +331,7 @@ enum QSpyIdGroups {
     QS_AO_IDS  = (0x80 + (enum_t)QS_AO_ID), /*!< AO IDs (priorities) */
     QS_EP_IDS  = (0x80 + (enum_t)QS_EP_ID), /*!< event-pool IDs */
     QS_EQ_IDS  = (0x80 + (enum_t)QS_EQ_ID), /*!< event-queue IDs */
-    QS_AP_IDS  = (0x80 + (enum_t)QS_AP_ID), /*!< Application-specific IDs */
+    QS_AP_IDS  = (0x80 + (enum_t)QS_AP_ID)  /*!< Application-specific IDs */
 };
 
 /*${QS::QSpyFunPtr} ........................................................*/
@@ -409,7 +409,7 @@ enum QS_preType {
     QS_OBJ_T,     /*!< object pointer format */
     QS_FUN_T,     /*!< function pointer format */
     QS_I64_T,     /*!< signed 64-bit integer format */
-    QS_U64_T,     /*!< unsigned 64-bit integer format */
+    QS_U64_T      /*!< unsigned 64-bit integer format */
 };
 
 /*${QS::QS-tx::priv_} ......................................................*/

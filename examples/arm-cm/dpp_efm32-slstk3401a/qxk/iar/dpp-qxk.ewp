@@ -2178,7 +2178,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>8.50.6.28950</state>
+                    <state>9.10.2.39304</state>
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
@@ -2324,6 +2324,8 @@
                     <name>CCDefines</name>
                     <state>Q_SPY</state>
                     <state>EFM32PG1B200F256GM48</state>
+                    <state>QXK_USE_IRQ_HANDLER=FPUEH_IRQHandler</state>
+                    <state>QXK_USE_IRQ_NUM=33</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>

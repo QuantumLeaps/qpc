@@ -61,7 +61,7 @@
       45      5    241      3      74 QMPool_get@119-192@..\src\qf\qf_mem.c
       19      3    117      3      28 QMPool_put@195-222@..\src\qf\qf_mem.c
        8      1     35      2      13 QActive_psInit@73-85@..\src\qf\qf_ps.c
-      43      6    232      3      75 QActive_publish_@90-164@..\src\qf\qf_ps.c
+      42      6    231      3      75 QActive_publish_@90-164@..\src\qf\qf_ps.c
       18      5    111      2      24 QActive_subscribe@169-192@..\src\qf\qf_ps.c
       18      5    111      2      27 QActive_unsubscribe@197-223@..\src\qf\qf_ps.c
       19      5    130      1      24 QActive_unsubscribeAll@228-251@..\src\qf\qf_ps.c
@@ -107,9 +107,9 @@
       19      5    105      1      26 QXK_contextSw@440-465@..\src\qxk\qxk.c
       13      2    104      1      23 QXK_threadExit_@472-494@..\src\qxk\qxk.c
       10      2     64      2      13 QXMutex_init@74-86@..\src\qxk\qxk_mutex.c
-      81     11    724      2     138 QXMutex_lock@89-226@..\src\qxk\qxk_mutex.c
-      59      9    502      1      97 QXMutex_tryLock@229-325@..\src\qxk\qxk_mutex.c
-      78     12    670      1     135 QXMutex_unlock@328-462@..\src\qxk\qxk_mutex.c
+      79     11    701      2     136 QXMutex_lock@89-224@..\src\qxk\qxk_mutex.c
+      57      9    483      1      95 QXMutex_tryLock@227-321@..\src\qxk\qxk_mutex.c
+      74     12    622      1     129 QXMutex_unlock@324-452@..\src\qxk\qxk_mutex.c
        9      1     51      3      11 QXSemaphore_init@73-83@..\src\qxk\qxk_sema.c
       57      7    389      2      84 QXSemaphore_wait@86-169@..\src\qxk\qxk_sema.c
       28      3    139      1      39 QXSemaphore_tryWait@172-210@..\src\qxk\qxk_sema.c
@@ -153,7 +153,7 @@ NLOC    Avg.NLOC  AvgCCN  Avg.token  function_cnt    file
      69      20.7     2.3      107.0         3     ..\src\qf\qf_defer.c
     138      18.4     3.3      111.4         7     ..\src\qf\qf_dyn.c
     103      32.0     4.3      197.0         3     ..\src\qf\qf_mem.c
-    115      21.2     4.4      123.8         5     ..\src\qf\qf_ps.c
+    114      21.0     4.4      123.6         5     ..\src\qf\qf_ps.c
      96      17.6     4.6      113.0         5     ..\src\qf\qf_qact.c
     152      36.2     4.8      200.8         4     ..\src\qf\qf_qeq.c
      18      16.0     2.0       79.0         1     ..\src\qf\qf_qmact.c
@@ -161,7 +161,7 @@ NLOC    Avg.NLOC  AvgCCN  Avg.token  function_cnt    file
     191      22.9     5.0      129.1         8     ..\src\qk\qk.c
      81      18.5     5.0      109.2         4     ..\src\qv\qv.c
     260      22.9     5.0      138.5        11     ..\src\qxk\qxk.c
-    235      57.0     8.5      490.0         4     ..\src\qxk\qxk_mutex.c
+    227      55.0     8.5      467.5         4     ..\src\qxk\qxk_mutex.c
     143      34.0     4.5      213.5         4     ..\src\qxk\qxk_sema.c
     325      24.4     3.8      156.0        13     ..\src\qxk\qxk_xthr.c
 
@@ -170,5 +170,5 @@ No thresholds exceeded (cyclomatic_complexity > 20 or length > 500 or nloc > 100
 ==========================================================================================
 Total nloc   Avg.NLOC  AvgCCN  Avg.token   Fun Cnt  Warning cnt   Fun Rt   nloc Rt
 ------------------------------------------------------------------------------------------
-      4058      24.5     4.3      151.2      125            0      0.00    0.00
+      4049      24.4     4.3      150.5      125            0      0.00    0.00
 @endcode
