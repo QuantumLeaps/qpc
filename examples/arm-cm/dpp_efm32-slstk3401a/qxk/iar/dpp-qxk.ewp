@@ -215,8 +215,8 @@
                 <option>
                     <name>CCDefines</name>
                     <state>EFM32PG1B200F256GM48</state>
-                    <state>QXK_USE_IRQ_HANDLER=CRYPTO_IRQHandler</state>
-                    <state>QXK_USE_IRQ_NUM=25</state>
+                    <state>QXK_USE_IRQ_HANDLER=FPUEH_IRQHandler</state>
+                    <state>QXK_USE_IRQ_NUM=33</state>
                     <state>QF_ON_CONTEXT_SW</state>
                 </option>
                 <option>

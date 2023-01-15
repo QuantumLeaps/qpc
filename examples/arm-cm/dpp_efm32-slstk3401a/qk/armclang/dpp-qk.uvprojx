@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>QK_USE_IRQ_NUM=25 QK_USE_IRQ_HANDLER=CRYPTO_IRQHandler</Define>
+              <Define>QK_USE_IRQ_NUM=33,QK_USE_IRQ_HANDLER=FPUEH_IRQHandler</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>

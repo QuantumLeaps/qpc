@@ -23,8 +23,8 @@
 * <info@state-machine.com>
 ============================================================================*/
 /*!
-* @date Last updated on: 2022-12-18
-* @version Last updated for: @ref qpc_7_2_0
+* @date Last updated on: 2023-01-14
+* @version Last updated for: @ref qpc_7_2_1
 *
 * @file
 * @brief QK/C port to ARM Cortex-M, ARM-CLANG toolset
@@ -102,7 +102,7 @@ void QK_init(void) {
     * to return to thread mode (default is to use the NMI exception)
     */
     NVIC_IP[QK_USE_IRQ_NUM] = 0U; /* priority 0 (highest) */
-    NVIC_EN[QK_USE_IRQ_NUM / 32U] = (1U << (QK_USE_IRQ_NUM % 32U));
+    NVIC_EN[QK_USE_IRQ_NUM >> 5U] = (1U << (QK_USE_IRQ_NUM & 0x1FU));
 #endif                  /*--------- QK IRQ specified */
 
 #if (__ARM_FP != 0)     /*--------- if VFP available... */
@@ -150,7 +150,7 @@ __asm volatile (
     "  PUSH    {r0,lr}          \n" /* ... push lr plus stack-aligner */
 #endif                  /*--------- VFP available */
     "  MOVS    r0,#" STRINGIFY(QF_BASEPRI) "\n"
-    "  CPSID   i                \n" /* disable interrutps with BASEPRI */
+    "  CPSID   i                \n" /* disable interrupts with BASEPRI */
     "  MSR     BASEPRI,r0       \n" /* apply the Cortex-M7 erraturm */
     "  CPSIE   i                \n" /* 837070, see SDEN-1068427. */
 #endif                  /*--------- ARMv7-M and higher */
@@ -223,9 +223,9 @@ __asm volatile (
     "  STR     r1,[r0]          \n" /* ICSR[31] := 1 (pend NMI) */
 
 #else                   /*--------- use the selected IRQ */
-    "  LDR     r0,=" STRINGIFY(NVIC_PEND + (QK_USE_IRQ_NUM / 32)) "\n"
+    "  LDR     r0,=" STRINGIFY(NVIC_PEND + ((QK_USE_IRQ_NUM >> 5) << 2)) "\n"
     "  MOVS    r1,#1            \n"
-    "  LSLS    r1,r1,#" STRINGIFY(QK_USE_IRQ_NUM % 32) "\n" /* r1 := IRQ bit */
+    "  LSLS    r1,r1,#" STRINGIFY(QK_USE_IRQ_NUM & 0x1F) "\n" /* r1 := IRQ bit */
     "  STR     r1,[r0]          \n" /* pend the IRQ */
 
     /* now enable interrupts so that pended IRQ can be entered */
