@@ -5,12 +5,12 @@
 
 void setUp(void)
 {
-    /* This is run before EACH TEST */
+    // This is run before EACH TEST
 }
 
 void tearDown(void)
 {
-    /* This is run after EACH TEST */
+    // This is run after EACH TEST
 }
 
 void test_LedBar_0_percent_all_off(void)
@@ -80,8 +80,8 @@ void test_LedBar_99_percent_four_on(void)
 }
 
 
-/* NOTE:
-* The Mock example requires a specific "test runner", which
-* is provided in the file TestLedBar_Runner.c.
-*/
+// NOTE:
+// The Mock example requires a specific "test runner", which
+// is provided in the file TestLedBar_Runner.c.
+//
 

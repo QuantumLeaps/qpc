@@ -3469,9 +3469,6 @@
         <file>
             <name>$PROJ_DIR$\..\..\main.c</name>
         </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\include\qstamp.c</name>
-        </file>
     </group>
     <group>
         <name>QP</name>
@@ -3521,16 +3518,10 @@
     <group>
         <name>QP_port</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qv\qep_port.h</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qv\qf_port.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qv\qp_port.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qv\qs_port.h</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qv\qv_port.h</name>
         </file>
     </group>
     <group>
@@ -3550,6 +3541,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_rx.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qstamp.c</name>
         </file>
     </group>
 </project>

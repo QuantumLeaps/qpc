@@ -44,10 +44,10 @@ Please check the Device Manager to find the COM port number.
 
 
 # Win32-GUI Emulation
-The sub-directory "win32-gui" provides the emulation of the example
-on Windows GUI, either single-threaded (win32-qv) or multithreded (win32).
-This sub-directory contains the Makefile for the GNU-GCC toolset (MinGW)
-and Visual Studio solution file (game-gui.sln) for Visual C++.
+The directory `qpc\examples\workstation\game-gui` conatins the emulation
+of the "Fly 'n' Shoot" game on Windows GUI, either single-threaded (win32-qv)
+or multithreded (win32). This sub-directory contains the  Visual Studio
+solution file (game-gui.sln) for Visual C++.
 
 The Win32-GUI emulation is based on the QWin™ GUI Prototyping Toolkit, see:
 

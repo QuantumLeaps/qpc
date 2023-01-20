@@ -88,7 +88,7 @@
                 </option>
                 <option>
                     <name>OCLastSavedByProductVersion</name>
-                    <state>8.40.2.22864</state>
+                    <state>9.32.1.54977</state>
                 </option>
                 <option>
                     <name>UseFlashLoader</name>
@@ -112,7 +112,7 @@
                 </option>
                 <option>
                     <name>FlashLoadersV3</name>
-                    <state>$TOOLKIT_DIR$\config\flashloader\ST\FlashSTM32L15xxE.board</state>
+                    <state>$TOOLKIT_DIR$/config/flashloader/ST/FlashSTM32L15xxE.board</state>
                 </option>
                 <option>
                     <name>OCImagesSuppressCheck1</name>
@@ -498,7 +498,7 @@
             <name>IJET_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>8</version>
+                <version>9</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -722,6 +722,58 @@
                     <name>CCIjetUsbSerialNoSelect</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>CatchV8ARReset</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL1NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL1S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL2NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL3S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL1NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL1NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL1S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL1S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL2NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL2NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL3S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL3S</name>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -928,7 +980,7 @@
             <name>LMIFTDI_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>2</version>
+                <version>3</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -953,6 +1005,19 @@
                 </option>
                 <option>
                     <name>CCLmiFtdiInterfaceCmdLine</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CCLmiftdiUsbSerialNo</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>CCLmiftdiUsbSerialNoSelect</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CCLmiftdiResetList</name>
+                    <version>0</version>
                     <state>0</state>
                 </option>
             </data>
@@ -1007,7 +1072,7 @@
             <name>STLINK_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>6</version>
+                <version>8</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -1125,6 +1190,14 @@
                     <version>1</version>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>CCSTLinkTargetVccEnable</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>CCSTLinkTargetVoltage</name>
+                    <state>3.3</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -1227,7 +1300,7 @@
             <name>XDS100_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>8</version>
+                <version>9</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -1352,7 +1425,7 @@
                 </option>
                 <option>
                     <name>CCXds100ResetList</name>
-                    <version>0</version>
+                    <version>1</version>
                     <state>0</state>
                 </option>
                 <option>
@@ -1401,6 +1474,10 @@
                     <name>OCXDSDigitalStatesConfigFile</name>
                     <state>1</state>
                 </option>
+                <option>
+                    <name>OCSelectedCoreName</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <debuggerPlugins>
@@ -1421,10 +1498,6 @@
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\HWRTOSplugin\HWRTOSplugin.ewplugin</file>
-                <loadFlag>0</loadFlag>
-            </plugin>
-            <plugin>
                 <file>$TOOLKIT_DIR$\plugins\rtos\Mbed\MbedArmPlugin.ENU.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
@@ -1437,27 +1510,19 @@
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\RemedyRtosViewer\RemedyRtosViewer.ewplugin</file>
-                <loadFlag>0</loadFlag>
-            </plugin>
-            <plugin>
                 <file>$TOOLKIT_DIR$\plugins\rtos\SafeRTOS\SafeRTOSPlugin.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm8.ewplugin</file>
+                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm9.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm8BE.ewplugin</file>
+                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm9BE.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
                 <file>$TOOLKIT_DIR$\plugins\rtos\ThreadX\ThreadXArmPlugin.ENU.ewplugin</file>
-                <loadFlag>0</loadFlag>
-            </plugin>
-            <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\TI-RTOS\tirtosplugin.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
@@ -1983,7 +2048,7 @@
             <name>IJET_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>8</version>
+                <version>9</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -2207,6 +2272,58 @@
                     <name>CCIjetUsbSerialNoSelect</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>CatchV8ARReset</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL1NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL1S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL2NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL3S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL1NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL1NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL1S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL1S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL2NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL2NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL3S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL3S</name>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -2413,7 +2530,7 @@
             <name>LMIFTDI_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>2</version>
+                <version>3</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -2438,6 +2555,19 @@
                 </option>
                 <option>
                     <name>CCLmiFtdiInterfaceCmdLine</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CCLmiftdiUsbSerialNo</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>CCLmiftdiUsbSerialNoSelect</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CCLmiftdiResetList</name>
+                    <version>0</version>
                     <state>0</state>
                 </option>
             </data>
@@ -2492,7 +2622,7 @@
             <name>STLINK_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>6</version>
+                <version>8</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -2610,6 +2740,14 @@
                     <version>1</version>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>CCSTLinkTargetVccEnable</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>CCSTLinkTargetVoltage</name>
+                    <state>###Uninitialized###</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -2712,7 +2850,7 @@
             <name>XDS100_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>8</version>
+                <version>9</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>0</debug>
                 <option>
@@ -2837,7 +2975,7 @@
                 </option>
                 <option>
                     <name>CCXds100ResetList</name>
-                    <version>0</version>
+                    <version>1</version>
                     <state>0</state>
                 </option>
                 <option>
@@ -2886,6 +3024,10 @@
                     <name>OCXDSDigitalStatesConfigFile</name>
                     <state>1</state>
                 </option>
+                <option>
+                    <name>OCSelectedCoreName</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <debuggerPlugins>
@@ -2906,10 +3048,6 @@
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\HWRTOSplugin\HWRTOSplugin.ewplugin</file>
-                <loadFlag>0</loadFlag>
-            </plugin>
-            <plugin>
                 <file>$TOOLKIT_DIR$\plugins\rtos\Mbed\MbedArmPlugin.ENU.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
@@ -2922,27 +3060,19 @@
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\RemedyRtosViewer\RemedyRtosViewer.ewplugin</file>
-                <loadFlag>0</loadFlag>
-            </plugin>
-            <plugin>
                 <file>$TOOLKIT_DIR$\plugins\rtos\SafeRTOS\SafeRTOSPlugin.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm8.ewplugin</file>
+                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm9.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm8BE.ewplugin</file>
+                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm9BE.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
                 <file>$TOOLKIT_DIR$\plugins\rtos\ThreadX\ThreadXArmPlugin.ENU.ewplugin</file>
-                <loadFlag>0</loadFlag>
-            </plugin>
-            <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\TI-RTOS\tirtosplugin.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
@@ -3468,7 +3598,7 @@
             <name>IJET_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>8</version>
+                <version>9</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -3692,6 +3822,58 @@
                     <name>CCIjetUsbSerialNoSelect</name>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>CatchV8ARReset</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL1NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL1S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL2NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREREL3S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL1NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL1NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL1S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL1S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL2NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL2NS</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8AREEL3S</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CatchV8ARREL3S</name>
+                    <state>0</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -3898,7 +4080,7 @@
             <name>LMIFTDI_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>2</version>
+                <version>3</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -3923,6 +4105,19 @@
                 </option>
                 <option>
                     <name>CCLmiFtdiInterfaceCmdLine</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CCLmiftdiUsbSerialNo</name>
+                    <state></state>
+                </option>
+                <option>
+                    <name>CCLmiftdiUsbSerialNoSelect</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>CCLmiftdiResetList</name>
+                    <version>0</version>
                     <state>0</state>
                 </option>
             </data>
@@ -3977,7 +4172,7 @@
             <name>STLINK_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>6</version>
+                <version>8</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -4095,6 +4290,14 @@
                     <version>1</version>
                     <state>0</state>
                 </option>
+                <option>
+                    <name>CCSTLinkTargetVccEnable</name>
+                    <state>1</state>
+                </option>
+                <option>
+                    <name>CCSTLinkTargetVoltage</name>
+                    <state>###Uninitialized###</state>
+                </option>
             </data>
         </settings>
         <settings>
@@ -4197,7 +4400,7 @@
             <name>XDS100_ID</name>
             <archiveVersion>2</archiveVersion>
             <data>
-                <version>8</version>
+                <version>9</version>
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
@@ -4322,7 +4525,7 @@
                 </option>
                 <option>
                     <name>CCXds100ResetList</name>
-                    <version>0</version>
+                    <version>1</version>
                     <state>0</state>
                 </option>
                 <option>
@@ -4371,6 +4574,10 @@
                     <name>OCXDSDigitalStatesConfigFile</name>
                     <state>1</state>
                 </option>
+                <option>
+                    <name>OCSelectedCoreName</name>
+                    <state>1</state>
+                </option>
             </data>
         </settings>
         <debuggerPlugins>
@@ -4391,10 +4598,6 @@
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\HWRTOSplugin\HWRTOSplugin.ewplugin</file>
-                <loadFlag>0</loadFlag>
-            </plugin>
-            <plugin>
                 <file>$TOOLKIT_DIR$\plugins\rtos\Mbed\MbedArmPlugin.ENU.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
@@ -4407,27 +4610,19 @@
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\RemedyRtosViewer\RemedyRtosViewer.ewplugin</file>
-                <loadFlag>0</loadFlag>
-            </plugin>
-            <plugin>
                 <file>$TOOLKIT_DIR$\plugins\rtos\SafeRTOS\SafeRTOSPlugin.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm8.ewplugin</file>
+                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm9.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm8BE.ewplugin</file>
+                <file>$TOOLKIT_DIR$\plugins\rtos\SMX\smxAwareIarArm9BE.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>
                 <file>$TOOLKIT_DIR$\plugins\rtos\ThreadX\ThreadXArmPlugin.ENU.ewplugin</file>
-                <loadFlag>0</loadFlag>
-            </plugin>
-            <plugin>
-                <file>$TOOLKIT_DIR$\plugins\rtos\TI-RTOS\tirtosplugin.ewplugin</file>
                 <loadFlag>0</loadFlag>
             </plugin>
             <plugin>

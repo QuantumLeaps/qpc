@@ -47,6 +47,6 @@ QP/Spy is configured.
 # Flashing the Board
 To flush the board, type:
 ```
-west flush
+west flash
 ```
 

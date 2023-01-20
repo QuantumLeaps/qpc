@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>2</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>TARGET_IS_TM4C123_RB1</Define>
+              <Define>QP_CONFIG</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -361,7 +361,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -370,7 +370,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qxk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -384,9 +384,9 @@
           <GroupName>Applicatioin</GroupName>
           <Files>
             <File>
-              <FileName>bsp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp.c</FilePath>
+              <FileName>bsp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\bsp.h</FilePath>
             </File>
             <File>
               <FileName>dpp.h</FileName>
@@ -394,9 +394,14 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>bsp.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\bsp.h</FilePath>
+              <FileName>bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
             <File>
               <FileName>philo.c</FileName>
@@ -409,19 +414,14 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
+              <FileName>xthread1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\xthread1.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>xthread2.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\test.c</FilePath>
+              <FilePath>..\xthread2.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -652,6 +652,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
             </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -660,7 +665,7 @@
       <TargetName>dpp-rel</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6070000::V6.7::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6160000::V6.16::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -987,7 +992,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>NDEBUG TARGET_IS_TM4C123_RB1</Define>
+              <Define>NDEBUG,QP_CONFIG</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -1011,7 +1016,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -1020,7 +1025,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile>dpp-qxk.sct</ScatterFile>
+            <ScatterFile>.\dpp-qxk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -1034,9 +1039,9 @@
           <GroupName>Applicatioin</GroupName>
           <Files>
             <File>
-              <FileName>bsp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp.c</FilePath>
+              <FileName>bsp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\bsp.h</FilePath>
             </File>
             <File>
               <FileName>dpp.h</FileName>
@@ -1044,9 +1049,14 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>bsp.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\bsp.h</FilePath>
+              <FileName>bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
             <File>
               <FileName>philo.c</FileName>
@@ -1059,19 +1069,14 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
+              <FileName>xthread1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\xthread1.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>xthread2.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\test.c</FilePath>
+              <FilePath>..\xthread2.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1301,6 +1306,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1637,7 +1647,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY,QF_ON_CONTEXT_SW,TARGET_IS_TM4C123_RB1</Define>
+              <Define>Q_SPY,QP_CONFIG</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qxk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -1661,7 +1671,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -1670,7 +1680,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qxk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -1684,9 +1694,9 @@
           <GroupName>Applicatioin</GroupName>
           <Files>
             <File>
-              <FileName>bsp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\bsp.c</FilePath>
+              <FileName>bsp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\bsp.h</FilePath>
             </File>
             <File>
               <FileName>dpp.h</FileName>
@@ -1694,9 +1704,14 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>bsp.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\bsp.h</FilePath>
+              <FileName>bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
             <File>
               <FileName>philo.c</FileName>
@@ -1709,19 +1724,14 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
+              <FileName>xthread1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\xthread1.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>xthread2.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
-            </File>
-            <File>
-              <FileName>test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\test.c</FilePath>
+              <FilePath>..\xthread2.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1882,6 +1892,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -336,7 +336,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY Q_UTEST __FPU_PRESENT</Define>
+              <Define>Q_SPY Q_UTEST</Define>
               <Undefine></Undefine>
               <IncludePath>.;..\src;..\..\..\..\include;..\..\..\..\src;..\..\..\..\ports\arm-cm\qutest;..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -410,7 +410,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -450,7 +450,7 @@
             <File>
               <FileName>qf_act.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\src\qf\qf_act.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qf\qf_act.c</FilePath>
             </File>
             <File>
               <FileName>qf_actq.c</FileName>

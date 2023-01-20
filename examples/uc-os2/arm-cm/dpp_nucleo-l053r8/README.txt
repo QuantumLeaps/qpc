@@ -30,7 +30,13 @@ The output is generated at 115200 baud rate.
 Here is an example invocation of the QSPY host application to receive
 the QS data from NUCLEO-L053R8:
 
-qspy -cCOM2
+qspy -c COM2
 
 The actual COM port number might be different on your Windows machine.
 Please check the Device Manager to find the COM port number.
+
+**NOTE**
+The Spy build configuration overflows one of the Philo[] stacks
+and the application ends up hitting an assertion. The NUCLEO-L053R8
+board has not enough RAM to size the uC-OS2 stacks and QS buffers
+adequately.

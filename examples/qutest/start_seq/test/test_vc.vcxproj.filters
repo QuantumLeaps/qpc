@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="test_blinky.c" />
-    <ClCompile Include="..\src\blinky.c" />
     <ClCompile Include="..\src\bsp.c" />
     <ClCompile Include="..\..\..\..\src\qf\qep_hsm.c">
       <Filter>QP</Filter>
@@ -61,9 +59,10 @@
     <ClCompile Include="..\..\..\..\ports\win32-qutest\qutest_port.c">
       <Filter>QP_port</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\gizmo.c" />
+    <ClCompile Include="test_fixture.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\blinky.h" />
     <ClInclude Include="..\src\bsp.h" />
     <ClInclude Include="..\..\..\..\ports\win32-qutest\qep_port.h">
       <Filter>QP_port</Filter>
@@ -77,6 +76,7 @@
     <ClInclude Include="..\..\..\..\ports\win32-qutest\safe_std.h">
       <Filter>QP_port</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\gizmo.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="QP_port">

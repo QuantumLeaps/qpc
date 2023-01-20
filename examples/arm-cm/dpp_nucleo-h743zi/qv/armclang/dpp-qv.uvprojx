@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>2</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -322,7 +322,7 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>0</wLevel>
+            <wLevel>3</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>1</uSurpInc>
             <uC99>0</uC99>
@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
+              <Define>QF_ON_CONTEXT_SW,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qv\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
@@ -361,7 +361,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -370,7 +370,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qv.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -387,11 +387,6 @@
               <FileName>bsp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\bsp.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
             </File>
             <File>
               <FileName>dpp.h</FileName>
@@ -414,9 +409,9 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -457,6 +452,11 @@
               <FileName>stm32h7xx_hal.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32h7xx_hal_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</FilePath>
             </File>
             <File>
               <FileName>stm32h7xx_hal_cortex.c</FileName>
@@ -564,29 +564,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qs_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qv_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qv_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -683,9 +663,9 @@
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
             </File>
             <File>
-              <FileName>stm32h7xx_hal_uart.c</FileName>
+              <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1017,12 +997,12 @@
             <v6LangP>3</v6LangP>
             <vShortEn>0</vShortEn>
             <vShortWch>0</vShortWch>
-            <v6Lto>1</v6Lto>
+            <v6Lto>0</v6Lto>
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>NDEBUG,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
+              <Define>NDEBUG,QF_ON_CONTEXT_SW,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qv\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
@@ -1046,7 +1026,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -1055,7 +1035,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qv.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -1072,11 +1052,6 @@
               <FileName>bsp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\bsp.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
             </File>
             <File>
               <FileName>dpp.h</FileName>
@@ -1099,9 +1074,9 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1142,6 +1117,11 @@
               <FileName>stm32h7xx_hal.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32h7xx_hal_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</FilePath>
             </File>
             <File>
               <FileName>stm32h7xx_hal_cortex.c</FileName>
@@ -1249,29 +1229,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qs_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qv_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qv_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1368,9 +1328,9 @@
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
             </File>
             <File>
-              <FileName>stm32h7xx_hal_uart.c</FileName>
+              <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1683,7 +1643,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>2</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -1707,7 +1667,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
+              <Define>Q_SPY,QF_ON_CONTEXT_SW,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qv\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
@@ -1731,7 +1691,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -1740,7 +1700,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qv.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -1757,11 +1717,6 @@
               <FileName>bsp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\bsp.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
             </File>
             <File>
               <FileName>dpp.h</FileName>
@@ -1784,9 +1739,9 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1827,6 +1782,11 @@
               <FileName>stm32h7xx_hal.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32h7xx_hal_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</FilePath>
             </File>
             <File>
               <FileName>stm32h7xx_hal_cortex.c</FileName>
@@ -1934,29 +1894,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qs_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qv_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qv_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1991,7 +1931,7 @@
                 <PlainCh>2</PlainCh>
                 <Ropi>2</Ropi>
                 <Rwpi>2</Rwpi>
-                <wLevel>2</wLevel>
+                <wLevel>0</wLevel>
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
@@ -2053,9 +1993,9 @@
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
             </File>
             <File>
-              <FileName>stm32h7xx_hal_uart.c</FileName>
+              <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>

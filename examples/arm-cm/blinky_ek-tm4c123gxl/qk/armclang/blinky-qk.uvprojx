@@ -10,7 +10,7 @@
       <TargetName>blinky-dbg</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6160000::V6.16::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -185,6 +185,7 @@
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
+            <RvdsCdeCp>0</RvdsCdeCp>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -336,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>__FPU_PRESENT</Define>
+              <Define></Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -351,7 +352,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>1</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
+            <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>Stack_Size=2048 Heap_Size=16</Define>
@@ -360,7 +361,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -369,7 +370,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\blinky-qk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -401,11 +402,6 @@
               <FileName>blinky.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\blinky.h</FilePath>
-            </File>
-            <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -590,7 +586,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
-                <uClangAs>2</uClangAs>
+                <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -620,6 +616,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -804,6 +805,7 @@
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
+            <RvdsCdeCp>0</RvdsCdeCp>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -955,7 +957,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>NDEBUG __FPU_PRESENT</Define>
+              <Define>NDEBUG</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -970,7 +972,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>1</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
+            <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>Stack_Size=2048 Heap_Size=16</Define>
@@ -1020,11 +1022,6 @@
               <FileName>blinky.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\blinky.h</FilePath>
-            </File>
-            <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1209,7 +1206,7 @@
                 <NoWarn>2</NoWarn>
                 <uSurpInc>2</uSurpInc>
                 <useXO>2</useXO>
-                <uClangAs>2</uClangAs>
+                <ClangAsOpt>0</ClangAsOpt>
                 <VariousControls>
                   <MiscControls></MiscControls>
                   <Define></Define>
@@ -1239,6 +1236,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1423,6 +1425,7 @@
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
+            <RvdsCdeCp>0</RvdsCdeCp>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -1574,7 +1577,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY __FPU_PRESENT</Define>
+              <Define>Q_SPY</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -1589,7 +1592,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>1</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
+            <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>Stack_Size=2048 Heap_Size=16</Define>
@@ -1639,11 +1642,6 @@
               <FileName>blinky.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\blinky.h</FilePath>
-            </File>
-            <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1790,6 +1788,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
             </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -1801,5 +1804,14 @@
     <components/>
     <files/>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>blinky-qk</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>

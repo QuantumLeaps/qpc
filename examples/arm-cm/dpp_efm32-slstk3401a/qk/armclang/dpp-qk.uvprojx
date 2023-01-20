@@ -183,7 +183,7 @@
             <hadIRAM>1</hadIRAM>
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
-            <RvdsVP>1</RvdsVP>
+            <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
             <RvdsCdeCp>0</RvdsCdeCp>
             <hadIRAM2>0</hadIRAM2>
@@ -361,7 +361,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -370,7 +370,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -394,16 +394,6 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\bsp.h</FilePath>
@@ -417,6 +407,11 @@
               <FileName>table.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\table.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -534,29 +529,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qk_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qs_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -651,6 +626,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1011,7 +991,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -1020,7 +1000,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile>dpp-qk.sct</ScatterFile>
+            <ScatterFile>.\dpp-qk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -1044,16 +1024,6 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\bsp.h</FilePath>
@@ -1067,6 +1037,11 @@
               <FileName>table.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\table.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1184,29 +1159,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qk_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qs_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1301,6 +1256,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1637,7 +1597,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY</Define>
+              <Define>Q_SPY,QF_ON_CONTEXT_SW</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>
@@ -1661,7 +1621,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -1670,7 +1630,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -1694,16 +1654,6 @@
               <FilePath>..\..\dpp.h</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\bsp.h</FilePath>
@@ -1717,6 +1667,11 @@
               <FileName>table.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\table.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1834,29 +1789,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qk_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qs_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1882,6 +1817,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>

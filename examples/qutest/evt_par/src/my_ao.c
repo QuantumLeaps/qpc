@@ -3,32 +3,32 @@
 
 //Q_DEFINE_THIS_FILE
 
-/* MyAO declaration --------------------------------------------------------*/
+// MyAO declaration --------------------------------------------------------
 typedef struct {
     QActive super;
 
-/* private: */
+// private:
 } MyAO;
 
-/* protected: */
+// protected:
 static QState MyAO_initial(MyAO * const me, QEvt const * const e);
 static QState MyAO_active(MyAO * const me, QEvt const * const e);
 
-/* Local objects -----------------------------------------------------------*/
-static MyAO l_MyAO; /* the single instance of the MyAO active object */
+// Local objects -----------------------------------------------------------
+static MyAO l_MyAO; // the single instance of the MyAO active object
 
-/* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_MyAO = &l_MyAO.super; /* "opaque" AO pointer */
+// Global-scope objects ----------------------------------------------------
+QActive * const AO_MyAO = &l_MyAO.super; // "opaque" AO pointer
 
-/* MyAO_ctor ...............................................................*/
+// MyAO_ctor ...............................................................
 void MyAO_ctor(void) {
     MyAO *me = &l_MyAO;
     QActive_ctor(&me->super, Q_STATE_CAST(&MyAO_initial));
 }
 
-/* MyAO::SM ................................................................*/
+// MyAO::SM ................................................................
 static QState MyAO_initial(MyAO * const me, QEvt const * const e) {
-    (void)e; /* unused parameter */
+    (void)e; // unused parameter
 
     QS_FUN_DICTIONARY(&MyAO_initial);
     QS_FUN_DICTIONARY(&MyAO_active);
@@ -40,7 +40,7 @@ static QState MyAO_initial(MyAO * const me, QEvt const * const e) {
 
     return Q_TRAN(&MyAO_active);
 }
-/*${AOs::MyAO::SM::active} ................................................*/
+//${AOs::MyAO::SM::active} ................................................
 static QState MyAO_active(MyAO * const me, QEvt const * const e) {
     QState status_;
     switch (e->sig) {

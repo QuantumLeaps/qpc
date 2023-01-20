@@ -34,17 +34,17 @@
     <ClCompile Include="..\..\..\..\src\qs\qs_fp.c" />
     <ClCompile Include="..\..\..\..\src\qs\qs_rx.c" />
     <ClCompile Include="..\..\..\..\src\qs\qutest.c" />
-    <ClCompile Include="..\src\blinky.c" />
     <ClCompile Include="..\src\bsp.c" />
-    <ClCompile Include="test_blinky.c" />
+    <ClCompile Include="..\src\gizmo.c" />
+    <ClCompile Include="test_fixture.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\ports\win32-qutest\qep_port.h" />
     <ClInclude Include="..\..\..\..\ports\win32-qutest\qf_port.h" />
     <ClInclude Include="..\..\..\..\ports\win32-qutest\qs_port.h" />
     <ClInclude Include="..\..\..\..\ports\win32-qutest\safe_std.h" />
-    <ClInclude Include="..\src\blinky.h" />
     <ClInclude Include="..\src\bsp.h" />
+    <ClInclude Include="..\src\gizmo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\ports\win32-qutest\README.md" />
@@ -112,6 +112,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4127</DisableSpecificWarnings>
       <CompileAs>Default</CompileAs>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -140,6 +141,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4127</DisableSpecificWarnings>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -168,6 +170,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4127</DisableSpecificWarnings>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>

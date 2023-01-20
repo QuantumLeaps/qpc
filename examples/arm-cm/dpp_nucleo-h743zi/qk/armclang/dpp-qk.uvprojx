@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>2</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
+              <Define>QF_ON_CONTEXT_SW,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
@@ -361,7 +361,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -370,7 +370,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -387,11 +387,6 @@
               <FileName>bsp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\bsp.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
             </File>
             <File>
               <FileName>dpp.h</FileName>
@@ -414,9 +409,9 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -569,29 +564,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qs_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qk_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -686,6 +661,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1022,7 +1002,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>NDEBUG,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
+              <Define>NDEBUG,QF_ON_CONTEXT_SW,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
@@ -1046,7 +1026,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -1055,7 +1035,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -1072,11 +1052,6 @@
               <FileName>bsp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\bsp.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
             </File>
             <File>
               <FileName>dpp.h</FileName>
@@ -1099,9 +1074,9 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1254,29 +1229,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qs_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qk_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1371,6 +1326,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1707,7 +1667,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
+              <Define>Q_SPY,QF_ON_CONTEXT_SW,STM32H743xx,USE_HAL_DRIVER,USE_STM32H7XX_NUCLEO_144</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\CMSIS\Device\ST/STM32H7xx\Include;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\BSP\STM32H7xx_Nucleo_144;..\..\..\..\..\3rd_party\STM32CubeH7\Drivers\STM32H7xx_HAL_Driver\Inc</IncludePath>
             </VariousControls>
@@ -1731,7 +1691,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -1740,7 +1700,7 @@
             <TextAddressRange>0x00000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\dpp-qk.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc>--entry Reset_Handler</Misc>
@@ -1757,11 +1717,6 @@
               <FileName>bsp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\bsp.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
             </File>
             <File>
               <FileName>dpp.h</FileName>
@@ -1784,9 +1739,9 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1939,29 +1894,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qs_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qk_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qk_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qk\armclang\qk_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -2056,6 +1991,11 @@
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>

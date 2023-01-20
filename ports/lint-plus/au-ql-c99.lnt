@@ -13,7 +13,7 @@
 // by the Quantum Leaps Embedded C/C++ Coding Style (QL-C/C++:2022):
 //  https://github.com/QuantumLeaps/embedded-coding-style
 
-// ========== GENERAL RULES ==========
+//========== GENERAL RULES ==========
 
 //  1.1  Which C?
 
@@ -121,7 +121,7 @@
     +e2765
     -append(2765,[BARR-C:2018 Rule 1.8c])
 
-// ========== COMMENTS ==========
+//========== COMMENTS ==========
 
 //  2.1  Acceptable Formats
 
@@ -149,7 +149,7 @@
 
     /* not statically checkable */
 
-// ========== WHITE SPACE RULES ==========
+//========== WHITE SPACE RULES ==========
 
 //  3.1  Spaces
 
@@ -187,7 +187,7 @@
 
     /* not currently supported */
 
-// ========== MODULE RULES ==========
+//========== MODULE RULES ==========
 
 //  4.1  Naming Conventions
 
@@ -278,7 +278,7 @@
 
     /* not statically checkable */
 
-// ========== DATA TYPE RULES ==========
+//========== DATA TYPE RULES ==========
 
 //  5.1  Naming Conventions
 
@@ -383,7 +383,7 @@
     +e8523
     -append(8523,[BARR-C:2018 Rule 5.6b])
 
-// ========== PROCEDURE RULES ==========
+//========== PROCEDURE RULES ==========
 
 //  6.1  Naming Conventions
 
@@ -465,7 +465,7 @@
 
     /* not currently supported */
 
-// ========== VARIABLES ==========
+//========== VARIABLES ==========
 
 //  7.1  Naming Conventions
 
@@ -564,7 +564,7 @@
     +e785
     -append(785,[BARR-C:2018 Rule 7.2a])
 
-// ========== STATEMENT RULES ==========
+//========== STATEMENT RULES ==========
 
 //  8.1  Variable Declarations
 

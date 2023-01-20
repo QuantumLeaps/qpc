@@ -35,7 +35,7 @@ define symbol __ICFEDIT_region_SDR1_end__     = 0x0;
 define symbol __ICFEDIT_region_SDR2_start__   = 0x0;
 define symbol __ICFEDIT_region_SDR2_end__     = 0x0;
 /*-Sizes-*/
-define symbol __ICFEDIT_size_cstack__     = 2048;
+define symbol __ICFEDIT_size_cstack__     = 1024;
 define symbol __ICFEDIT_size_proc_stack__ = 0;
 define symbol __ICFEDIT_size_heap__       = 0;
 /**** End of ICF editor section. ###ICF###*/
@@ -77,7 +77,8 @@ place in QSPI_region   { readonly section application_specific_ro };
 //place in NORPSR_region { };
 //place in NAND_region { };
 place in ITCMR_region  { section .textrw };
-place in DTCMR_region  { section .dtcm_ram, block CSTACK, block PROC_STACK };
+place at start of DTCMR_region  { block CSTACK }; /* <== Quantum Leaps */
+place in DTCMR_region  { section .dtcm_ram, block PROC_STACK };
 place in SRAM_region   { section .axi_sram, block HEAP };
 place in AXISR_region  { readwrite };
 place in BKPR_region   { section .backup_sram };

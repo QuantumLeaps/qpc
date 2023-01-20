@@ -91,8 +91,9 @@ SECTIONS {
     .stack : {
         __stack_start__ = .;
         . = . + STACK_SIZE;
-        . = ALIGN(4);
+        . = ALIGN(8);
         __stack_end__ = .;
+        ASSERT(((. - __stack_start__) == STACK_SIZE), "Error: Stack misaligned");
     } >RAM
 
     .data :  AT (_etext) {

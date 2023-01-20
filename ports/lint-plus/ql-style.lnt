@@ -15,7 +15,7 @@
 //  checks advocated by the Quantum Leaps Coding Standard
 //  https://barrgroup.com/Embedded-Systems/Books/Embedded-C-Coding-Standard
 
-// ========== GENERAL RULES ==========
+//========== GENERAL RULES ==========
 
 //  1.2  Line Widths
 
@@ -110,7 +110,7 @@
     +e2765
     -append(2765,[BARR-C:2018 Rule 1.8c])
 
-// ========== COMMENTS ==========
+//========== COMMENTS ==========
 
 //  2.1  Acceptable Formats
 
@@ -138,7 +138,7 @@
 
     /* not statically checkable */
 
-// ========== WHITE SPACE RULES ==========
+//========== WHITE SPACE RULES ==========
 
 //  3.1  Spaces
 
@@ -176,7 +176,7 @@
 
     /* not currently supported */
 
-// ========== MODULE RULES ==========
+//========== MODULE RULES ==========
 
 //  4.1  Naming Conventions
 
@@ -261,7 +261,7 @@
 
     /* not statically checkable */
 
-// ========== DATA TYPE RULES ==========
+//========== DATA TYPE RULES ==========
 
     /* 8528 - non-anonymous struct/union/enum declared outside of typedef */
     -hook(record_decl, -cond(%[is_freestanding] && !%[is_anonymous],
@@ -348,7 +348,7 @@
     +e8523
     -append(8523,[BARR-C:2018 Rule 5.6b])
 
-// ========== PROCEDURE RULES ==========
+//========== PROCEDURE RULES ==========
 
 //  6.1  Naming Conventions
 
@@ -425,7 +425,7 @@
 
     /* not currently supported */
 
-// ========== VARIABLES ==========
+//========== VARIABLES ==========
 
 //  7.1  Naming Conventions
 
@@ -493,7 +493,7 @@
     +e785
     -append(785,[BARR-C:2018 Rule 7.2a])
 
-// ========== STATEMENT RULES ==========
+//========== STATEMENT RULES ==========
 
 //  8.1  Variable Declarations
 

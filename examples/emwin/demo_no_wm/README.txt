@@ -39,5 +39,5 @@ this QP distribution.
 ***
 
 The "emWin Simulation & Trial version" should be installed in
-the 3rd_part\emWin directory. Please see the README.txt file
+the 3rd_party\emWin directory. Please see the README.txt file
 in this directory for more details.

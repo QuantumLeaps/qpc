@@ -18,6 +18,7 @@
     <ClCompile Include="..\..\..\..\ports\win32-qutest\qutest_port.c" />
     <ClCompile Include="..\..\..\..\src\qf\qep_hsm.c" />
     <ClCompile Include="..\..\..\..\src\qf\qep_msm.c" />
+    <ClCompile Include="..\..\..\..\src\qf\qf_act.c" />
     <ClCompile Include="..\..\..\..\src\qf\qf_actq.c" />
     <ClCompile Include="..\..\..\..\src\qf\qf_defer.c" />
     <ClCompile Include="..\..\..\..\src\qf\qf_dyn.c" />
@@ -111,6 +112,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4127</DisableSpecificWarnings>
       <CompileAs>Default</CompileAs>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -139,6 +141,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4127</DisableSpecificWarnings>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -167,6 +170,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4127</DisableSpecificWarnings>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>

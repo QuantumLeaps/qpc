@@ -1,33 +1,33 @@
-/*********************************************************************
-*                    SEGGER Microcontroller GmbH                     *
-*        Solutions for real time microcontroller applications        *
-**********************************************************************
-*                                                                    *
-*        (c) 1996 - 2022  SEGGER Microcontroller GmbH                *
-*                                                                    *
-*        Internet: www.segger.com    Support:  support@segger.com    *
-*                                                                    *
-**********************************************************************
-
-** emWin V6.28 - Graphical user interface for embedded applications **
-emWin is protected by international copyright laws.   Knowledge of the
-source code may not be used to write a similar product.  This file may
-only  be used  in accordance  with  a license  and should  not be  re-
-distributed in any way. We appreciate your understanding and fairness.
-----------------------------------------------------------------------
-File        : LCDConf.c
-Purpose     : Display controller configuration (single layer)
----------------------------END-OF-HEADER------------------------------
-*/
+//********************************************************************
+//                   SEGGER Microcontroller GmbH                     *
+//       Solutions for real time microcontroller applications        *
+//********************************************************************
+//                                                                   *
+//       (c) 1996 - 2022  SEGGER Microcontroller GmbH                *
+//                                                                   *
+//       Internet: www.segger.com    Support:  support@segger.com    *
+//                                                                   *
+//********************************************************************
+//
+// emWin V6.28 - Graphical user interface for embedded applications **
+// emWin is protected by international copyright laws.   Knowledge of the
+// source code may not be used to write a similar product.  This file may
+// only  be used  in accordance  with  a license  and should  not be  re-
+// distributed in any way. We appreciate your understanding and fairness.
+// ----------------------------------------------------------------------
+// File        : LCDConf.c
+// Purpose     : Display controller configuration (single layer)
+// ---------------------------END-OF-HEADER------------------------------
+//
 
 #include "GUI.h"
 
-/*********************************************************************
-*
-*       Layer configuration (to be modified)
-*
-**********************************************************************
-*/
+//********************************************************************
+//
+//      Layer configuration (to be modified)
+//
+//********************************************************************
+//
 //
 // Physical display size
 //
@@ -48,12 +48,12 @@ Purpose     : Display controller configuration (single layer)
 //
 #define DISPLAY_DRIVER GUIDRV_WIN32
 
-/*********************************************************************
-*
-*       Configuration checking
-*
-**********************************************************************
-*/
+//********************************************************************
+//
+//      Configuration checking
+//
+//********************************************************************
+//
 #ifndef   VXSIZE_PHYS
   #define VXSIZE_PHYS XSIZE_PHYS
 #endif
@@ -77,21 +77,21 @@ Purpose     : Display controller configuration (single layer)
   #error No display driver defined!
 #endif
 
-/*********************************************************************
-*
-*       Public code
-*
-**********************************************************************
-*/
-/*********************************************************************
-*
-*       LCD_X_Config
-*
-* Purpose:
-*   Called during the initialization process in order to set up the
-*   display driver configuration.
-*
-*/
+//********************************************************************
+//
+//      Public code
+//
+//********************************************************************
+//
+//********************************************************************
+//
+//      LCD_X_Config
+//
+// Purpose:
+//  Called during the initialization process in order to set up the
+//  display driver configuration.
+//
+//
 void LCD_X_Config(void) {
   //
   // Set display driver and color conversion for 1st layer
@@ -111,27 +111,27 @@ void LCD_X_Config(void) {
   #endif
 }
 
-/*********************************************************************
-*
-*       LCD_X_DisplayDriver
-*
-* Purpose:
-*   This function is called by the display driver for several purposes.
-*   To support the according task the routine needs to be adapted to
-*   the display controller. Please note that the commands marked with
-*   'optional' are not cogently required and should only be adapted if
-*   the display controller supports these features.
-*
-* Parameter:
-*   LayerIndex - Index of layer to be configured
-*   Cmd        - Please refer to the details in the switch statement below
-*   pData      - Pointer to a LCD_X_DATA structure
-*
-* Return Value:
-*   < -1 - Error
-*     -1 - Command not handled
-*      0 - Ok
-*/
+//********************************************************************
+//
+//      LCD_X_DisplayDriver
+//
+// Purpose:
+//  This function is called by the display driver for several purposes.
+//  To support the according task the routine needs to be adapted to
+//  the display controller. Please note that the commands marked with
+//  'optional' are not cogently required and should only be adapted if
+//  the display controller supports these features.
+//
+// Parameter:
+//  LayerIndex - Index of layer to be configured
+//  Cmd        - Please refer to the details in the switch statement below
+//  pData      - Pointer to a LCD_X_DATA structure
+//
+// Return Value:
+//  < -1 - Error
+//    -1 - Command not handled
+//     0 - Ok
+//
 int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData) {
   int r;
 
@@ -196,4 +196,4 @@ int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData) {
   return r;
 }
 
-/*************************** End of file ****************************/
+//************************** End of file *****************************

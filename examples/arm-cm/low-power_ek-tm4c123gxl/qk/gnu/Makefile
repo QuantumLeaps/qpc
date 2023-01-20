@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on EK-TM4C123GXL, QK kernel, GNU-ARM
-# Last Updated for Version: 7.0.1
-# Date of the Last Update:  2022-05-23
+# Last Updated for Version: 7.3.0
+# Date of the Last Update:  2023-09-03
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -133,7 +133,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DTARGET_IS_TM4C123_RB1
+DEFINES   := -DQP_CONFIG
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
@@ -267,7 +267,7 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.c

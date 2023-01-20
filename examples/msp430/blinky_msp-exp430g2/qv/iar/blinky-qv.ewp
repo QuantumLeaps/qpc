@@ -251,10 +251,6 @@
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
-                    <name>CCDefines</name>
-                    <state></state>
-                </option>
-                <option>
                     <name>CCPreprocFile</name>
                     <state>0</state>
                 </option>
@@ -408,7 +404,7 @@
                     <state>$PROJ_DIR$\.</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\qv_mini</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qv</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -1561,7 +1557,7 @@
                     <state>$PROJ_DIR$\.</state>
                     <state>$PROJ_DIR$\..\..</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\include</state>
-                    <state>$PROJ_DIR$\..\qv_mini</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qv</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2327,6 +2323,9 @@
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qep_hsm.c</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_act.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_actq.c</name>
         </file>
         <file>
@@ -2347,9 +2346,6 @@
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_time.c</name>
         </file>
-    </group>
-    <group>
-        <name>QV</name>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qv\qv.c</name>
         </file>

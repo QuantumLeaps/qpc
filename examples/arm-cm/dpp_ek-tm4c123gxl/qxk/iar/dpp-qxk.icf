@@ -25,5 +25,5 @@ do not initialize  { section .noinit };
 
 place at address mem:__ICFEDIT_intvec_start__ { readonly section .intvec };
 place in ROM_region   { readonly };
-place at start of RAM_region {block CSTACK };
+place at start of RAM_region {block CSTACK }; /* <== Quantum Leaps */
 place in RAM_region   { readwrite, block HEAP  };

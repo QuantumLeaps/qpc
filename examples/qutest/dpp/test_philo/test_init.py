@@ -13,7 +13,7 @@ def on_reset():
     expect("@timestamp TE0-Arm  Obj=Philo_inst[2].timeEvt,AO=Philo_inst[2],Tim=*,Int=0")
     expect("===RTC===> St-Entry Obj=Philo_inst[2],State=Philo_thinking")
     expect("@timestamp Init===> Obj=Philo_inst[2],State=Philo_thinking")
-    expect("===RTC===> St-Init  Obj=Table_inst,State=QHsm_top->NULL")
+    expect("===RTC===> St-Init  Obj=Table_dummy,State=QHsm_top->NULL")
     expect_run()
 
 # tests...

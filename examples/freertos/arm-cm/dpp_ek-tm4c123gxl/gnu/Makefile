@@ -1,13 +1,13 @@
 ##############################################################################
-# Product: Makefile for QP/C on EK-TM4C123GXL, FreeRTOS kernel, GNU-ARM
-# Last Updated for Version: 7.0.1
-# Date of the Last Update:  2022-06-13
+# Product: Makefile for QP/C on EK-TM4C123GXL, FreeRTOS-Kernel, GNU-ARM
+# Last Updated for Version: 7.2.2
+# Date of the Last Update:  2023-03-04
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005 Quantum Leaps, LLC. <www.state-machine.com>.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -64,7 +64,7 @@ endif
 
 # location of the FREERTOS (if not provided in an environemnt var.)
 ifeq ($(FREERTOS),)
-FREERTOS := $(QPC)/3rd_party/FreeRTOS
+FREERTOS := $(QPC)/3rd_party/FreeRTOS-Kernel
 endif
 
 # QP port used in this project
@@ -76,8 +76,8 @@ VPATH = \
 	$(QPC)/src/qf \
 	$(QPC)/src/qs \
 	$(QP_PORT_DIR) \
-	$(FREERTOS)/Source \
-	$(FREERTOS)/Source/portable/GCC/ARM_CM4F \
+	$(FREERTOS) \
+	$(FREERTOS)/portable/GCC/ARM_CM4F \
 	$(QPC)/3rd_party/ek-tm4c123gxl \
 	$(QPC)/3rd_party/ek-tm4c123gxl/gnu
 
@@ -86,8 +86,8 @@ INCLUDES  = \
 	-I.. \
 	-I$(QPC)/include \
 	-I$(QP_PORT_DIR) \
-	-I$(FREERTOS)/Source/include \
-	-I$(FREERTOS)/Source/portable/GCC/ARM_CM4F \
+	-I$(FREERTOS)/include \
+	-I$(FREERTOS)/portable/GCC/ARM_CM4F \
 	-I$(QPC)/3rd_party/CMSIS/Include \
 	-I$(QPC)/3rd_party/ek-tm4c123gxl
 
@@ -142,7 +142,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DTARGET_IS_TM4C123_RB1
+DEFINES   := -DQP_CONFIG
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
@@ -270,7 +270,7 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.c

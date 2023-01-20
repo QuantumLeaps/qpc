@@ -22,41 +22,40 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2022-11-29
-//! @version Last updated for version: 7.2.0
+//! @date Last updated on: 2023-09-01
+//! @version Last updated for version: 7.3.0
 //!
 //! @file
-//! @brief PC-Lint-Plus option file for linting **QP/C Applications**
+//! @brief PC-Lint-Plus option file for analysing both **QP/C**
+//! and **QP/C Applications**
 
-// M3-D4.8(A) complete definition is unnecessary in this translation unit
+// C Language Standard
+-std=c99        // apply the C99 Language Standard
+
+//! M4-D4.8(A) complete definition is unnecessary in this translation unit
+//! @tr{DVP-QP-MC4-D04_08}
 -efile(9045,
- -qep.h,
+ -qp.h,
  -qequeue.h,
  -qmpool.h,
- -qpset.h,
- -qf.h,
  -qv.h,
  -qk.h,
  -qxk.h,
- -qxthread.h,
  -qs.h)
 
-// Assertions ----------------------------------------------------------------
+// Functinal Safety (FuSa) System --------------------------------------------
 
-// give Q_onAssert() the semantics of "no return"
--sem(Q_onAssert, r_no)
+// "no return" semantics for error/failure callbacks
+-sem(Q_onError, r_no)
+-sem(assert_failed, r_no)
 
-// M3-R1.4(R1.4) keyword '_Noreturn' is deprecated
-// @tr{PQA01_4}
--emacro(586,
- Q_NORETURN)
-
-// M3-D4.9(A) function-like macro
+//! M4-D4.9(A) function-like macro
+//! @tr{DVP-QP-MC4-D04_09A} (false-positive)
 -esym(9026,
+ Q_DEFINE_THIS_MODULE,
+ Q_ASSERT_STATIC,
  Q_ASSERT,
  Q_ASSERT_ID,
- Q_ALLEGE,
- Q_ALLEGE_ID,
  Q_ERROR,
  Q_ERROR_ID,
  Q_REQUIRE,
@@ -65,34 +64,44 @@
  Q_ENSURE_ID,
  Q_INVARIANT,
  Q_INVARIANT_ID,
- Q_ASSERT_STATIC,
- Q_ASSERT_COMPILE,
- Q_DEFINE_THIS_MODULE,
- Q_UNUSED_PAR,
  Q_DIM)
 
-// definition of macro ends in semicolon
+//! PCLP definition of macro ends in semicolon
+//! @tr{DVP-QP-PCLP-823}
 -esym(823,
- Q_DEFINE_THIS_FILE,
- Q_DEFINE_THIS_MODULE)
+ Q_DEFINE_THIS_MODULE,
+ Q_DEFINE_THIS_FILE)
+
+//! BARR-C(R1.8b) parameter of function could be const
+-efunc(952,
+ Q_onError
+)
 
 // QEP -----------------------------------------------------------------------
-// M3-D4.9(A) function-like macro
+//! M4-D4.9(A) function-like macro
+//! @tr{DVP-QP-MC4-D04_09A} (false-positive)
 -esym(9026,
- QHSM_INIT,
- QHSM_DISPATCH,
+ Q_UNUSED_PAR,
  Q_TRAN,
  Q_TRAN_HIST,
  Q_SUPER,
  Q_HANDLED,
  Q_UNHANDLED,
  Q_IGNORED,
+ Q_ASM_UPCAST,
  Q_HSM_UPCAST,
+ Q_MSM_UPCAST,
  Q_EVT_CAST,
  QEVT_INITIALIZER,
  Q_UINT2PTR_CAST,
  Q_STATE_CAST,
  Q_ACTION_CAST,
+ QASM_INIT,
+ QASM_DISPATCH)
+
+//! M4-D4.9(A) function-like macro
+//! @tr{DVP-QP-MC4-D04_09B} (correct identification)
+-esym(9026,
  QM_ENTRY,
  QM_EXIT,
  QM_SM_EXIT,
@@ -108,7 +117,8 @@
  QMSM_INIT,
  QMSM_DISPATCH)
 
-// M3-R11.1(R) conversion between pointer to function type
+//! M4-R11.1(R) conversion between pointer to function type
+//! @tr{DVP-QP-MC4-R11_01}
 -emacro(9074,
  Q_STATE_CAST,
  Q_ACTION_CAST,
@@ -124,22 +134,27 @@
  QM_TRAN_EP,
  QM_TRAN_XP)
 
-// M3-R11.3(R) cast from pointer to pointer (upcast)
+//! M4-R11.3(R) cast from pointer to pointer (upcast)
+//! @tr{DVP-QP-MC4-R11_03A}
 -emacro(9087,
+ Q_ASM_UPCAST,
  Q_HSM_UPCAST,
- Q_EVT_CAST,
+ Q_MSM_UPCAST,
  QM_TRAN,
  QM_TRAN_EP,
  QM_TRAN_INIT)
 
-// M3-R11.5(A) conversion from pointer to void to other pointer
--emacro(9079,
+//! M4-R11.3(R) cast from pointer to pointer (downcast)
+//! @tr{DVP-QP-MC4-R11_03B}
+-emacro(9087,
  Q_EVT_CAST)
 
-// M3-R12.3(A) comma operator used
+//! M4-R12.3(A) comma operator used
+//! @tr{DVP-QP-MC4-R12_03}
 -emacro(9008,
  Q_SUPER,
  Q_TRAN,
+ Q_TRAN_HIST,
  QM_ENTRY,
  QM_EXIT,
  QM_SUPER_SUB,
@@ -150,7 +165,8 @@
  QM_SM_EXIT,
  QM_SUPER_SUB)
 
-// M3-R13.4(A) result of assignment used in left operand to ',' operator
+//! M4-R13.4(A) result of assignment used in left operand to ',' operator
+//! @tr{DVP-QP-MC4-R13_04}
 -emacro(9084,
  Q_SUPER,
  Q_TRAN,
@@ -158,23 +174,27 @@
  QM_EXIT,
  QM_TRAN,
  QM_TRAN_INIT,
+ QM_TRAN_HIST,
  QM_TRAN_EP,
  QM_TRAN_XP,
  QM_SM_EXIT,
  QM_SUPER_SUB)
 
-// M3-R19.2(A) union declared
+//! M4-R19.2(A) union declared
+//! @tr{DVP-QP-MC4-R19_02}
 -esym(9018,
- QHsmAttr)
+ QAsmAttr)
 
-// suspicious pointer-to-pointer conversion (area too small)
--emacro(826,
- Q_EVT_CAST)
-
-// '<symbol>' not referenced in QM-style state machines
+//! '<symbol>' not referenced in QM-style state machines
+//! @tr{DVP-QP-PCLP-754}
 -esym(754,
  *(anonymous struct)::act,
  *(anonymous struct)::target)
+
+//! suspicious pointer-to-pointer conversion (area too small)
+//! @tr{DVP-QP-PCLP-826}
+-emacro(826,
+ Q_EVT_CAST)
 
 // deprecated QEP facilities...
 -deprecate( type, QFsm, QP/C API pre 5.4.x)
@@ -186,12 +206,11 @@
 
 // QF ------------------------------------------------------------------------
 
-// M3-D4.9(A) function-like macro
+//! M4-D4.9(A) function-like macro
+//! @tr{DVP-QP-MC4-D04_09B}
 -esym(9026,
  QF_INT_DISABLE,
  QF_INT_ENABLE,
- QF_CRIT_ENTRY,
- QF_CRIT_EXIT,
  Q_PRIO,
  QF_LOG2,
  Q_NEW,
@@ -199,20 +218,13 @@
  Q_NEW_REF,
  Q_DELETE_REF,
  QF_PUBLISH,
- QF_TICK_X,
- QF_TICK,
- QF_INT_DISABLE,
- QF_INT_ENABLE,
  QF_CRIT_ENTRY,
  QF_CRIT_EXIT,
  QF_CRIT_EXIT_NOP,
+ QF_MEM_SYS,
+ QF_MEM_APP,
  QF_MPOOL_EL,
  QF_LOG2,
- QF_QS_CRIT_ENTRY,
- QF_QS_CRIT_EXIT,
- QF_QS_ISR_ENTRY,
- QF_QS_ISR_EXIT,
- QF_QS_ACTION,
  QF_EPOOL_INIT_,
  QF_EPOOL_EVENT_SIZE_,
  QF_EPOOL_GET_,
@@ -227,22 +239,28 @@
  QACTIVE_EQUEUE_SIGNAL_,
  QACTIVE_EQUEUE_ONEMPTY_,
  QTIMEEVT_TICK,
- QTIMEEVT_TICK_X)
+ QTIMEEVT_TICK_X,
+ QTICKER_TRIG,
+ QF_TICK,
+ QF_TICK_X)
 
-// M3-R10.3(R) cannot assign enum to different essential type 'int_t'
--emacro(9034,
- Q_NEW)
-
-// M3-R11.3(R) cast to pointer to different object type
+//! M4-R11.3(R) cast to pointer to different object type (upcast)
+//! @tr{DVP-QP-MC4-R11_03A}
 -emacro(9087,
- Q_NEW,
- Q_NEW_X,
  QACTIVE_POST,
  QACTIVE_POST_LIFO)
 
-// suspicious pointer-to-pointer conversion (area too small)
+//! M4-R11.3(R) cast to pointer to different object type (downcast)
+//! @tr{DVP-QP-MC4-R11_03B}
+-emacro(9087,
+ Q_NEW,
+ Q_NEW_X)
+
+//! suspicious pointer-to-pointer conversion (area too small)
+//! @tr{DVP-QP-PCLP-826}
 -emacro(826,
  QACTIVE_POST,
+ QACTIVE_POST_X,
  QACTIVE_POST_LIFO,
  Q_NEW,
  Q_NEW_X)
@@ -253,33 +271,36 @@
 -deprecate( macro,QTimeEvt_postEvery, QP/C API pre 5.8.x)
 
 // QV ------------------------------------------------------------------------
-// M3-D4.9(A) function-like macro
+//! M4-D4.9(A) function-like macro
+//! @tr{DVP-QP-MC4-D04_09A}
 -esym(9026,
  QV_CPU_SLEEP)
 
 // QK ------------------------------------------------------------------------
-// M3-D4.9(A) function-like macro
+// M4-D4.9(A) function-like macro
+//! @tr{DVP-QP-MC4-D04_09A}
 -esym(9026,
  QK_ISR_ENTRY,
  QK_ISR_EXIT,
  QK_ISR_CONTEXT_)
 
 // QXK -----------------------------------------------------------------------
-// M3-D4.9(A) function-like macro
+//! M4-D4.9(A) function-like macro
+//! @tr{DVP-QP-MC4-D04_09A}
 -esym(9026,
  QXK_ISR_ENTRY,
  QXK_ISR_EXIT,
  QXK_TLS,
  QXTHREAD_START,
- QXTHREAD_POST_X,
- Q_XTHREAD_CAST)
+ QXTHREAD_POST_X)
 
 // deprecated QXK facilities...
 -deprecate( macro, Q_XTHREAD_CAST, QP/C API pre 6.7.x)
 
 // QS ------------------------------------------------------------------------
 
-// M3-D4.9(A) function-like macro
+//! M4-D4.9(A) function-like macro
+//! @tr{DVP-QS-MC4-D04_09A}
 -esym(9026,
  QS_INIT,
  QS_EXIT,
@@ -300,8 +321,13 @@
  QS_BEGIN,
  QS_BEGIN_ID,
  QS_END,
- QS_BEGIN_NOCRIT,
- QS_END_NOCRIT,
+ QS_BEGIN_INCRIT,
+ QS_END_INCRIT,
+ QS_TR_CRIT_ENTRY,
+ QS_TR_CRIT_EXIT,
+ QS_TR_ISR_ENTRY,
+ QS_TR_ISR_EXIT,
+ QS_ONLY,
  QS_REC_DONE,
  QS_I8,
  QS_U8,
@@ -337,16 +363,17 @@
  QS_TEST_PROBE,
  QS_TEST_PROBE_ID)
 
-// M3-D4.9(A) function-like macro
+//! M4-D4.9(A) function-like macro
+//! @tr{DVP-QS-MC4-D04_09A}
 -esym(9026,
- QS_CRIT_E_,
- QS_CRIT_X_,
+ QS_CRIT_ENTRY,
+ QS_CRIT_EXIT,
+ QS_MEM_SYS,
+ QS_MEM_APP,
  QS_GLB_CHECK_,
  QS_LOC_CHECK_,
  QS_BEGIN_PRE_,
  QS_END_PRE_,
- QS_BEGIN_NOCRIT_PRE_,
- QS_END_NOCRIT_PRE_,
  QS_U8_PRE_,
  QS_2U8_PRE_,
  QS_U16_PRE_,
@@ -362,16 +389,24 @@
  QS_MPS_PRE_,
  QS_TEC_PRE_)
 
-// definition of macro ends in semicolon
--esym(823,
- QS_TEST_PROBE_DEF)
-
-// M3-R11.1(R) conversion between pointer to function type
+//! M4-R11.1(R) conversion between pointer to function type
+//! @tr{DVP-QS-MC4-R11_01}
 -emacro(9074,
  QS_FUN_DICTIONARY,
  QS_TEST_PROBE_DEF)
 
-// M3-R20.10(A) stringize operator
+// M4-R15.5(A) return statement before end of function
+//! @tr{DVP-QS-MC4-R15_05}
+-emacro(904,
+ QS_TEST_PROBE)
+
+//! M4-R19.2(A) union declared
+//! @tr{DVR-QS-MC4-R19_02}
+-esym(9018,
+ Variant)
+
+//! M4-R20.10(A) stringize operator
+//! @tr{DVP-QS-MC4-R20_10}
 -esym(9024,
  QS_OBJ_DICTIONARY,
  QS_OBJ_ARR_DICTIONARY,
@@ -380,18 +415,12 @@
  QS_USR_DICTIONARY,
  QS_ENUM_DICTIONARY)
 
-// M3-R10.3(R) cannot assign enum to different essential type
--emacro(9034,
- QS_SIG_DICTIONARY)
-
-// M3-R15.5(A) return statement before end of function
--emacro(904,
- QS_TEST_PROBE)
-
-// M3-R19.2(A) union declared
--esym(9018,
- Variant)
-
-// implicit conversion of enum to integral type 'int'
+//! implicit conversion of enum to integral type 'int'
+//! @tr{DVP-QS-PCLP-641}
 -emacro(641,
  QS_SIG_DICTIONARY)
+
+//! definition of macro ends in semicolon
+//! @tr{DVP-QS-PCLP-823}
+-esym(823,
+ QS_TEST_PROBE_DEF)

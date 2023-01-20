@@ -409,14 +409,9 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -529,16 +524,6 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qs_port.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qs_port.h</FilePath>
@@ -547,11 +532,6 @@
               <FileName>qv_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qv_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -643,14 +623,14 @@
               <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
-              <FileName>qs_pkg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
-            </File>
-            <File>
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1059,14 +1039,9 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1179,16 +1154,6 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qs_port.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qs_port.h</FilePath>
@@ -1197,11 +1162,6 @@
               <FileName>qv_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qv_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1293,14 +1253,14 @@
               <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
-              <FileName>qs_pkg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
-            </File>
-            <File>
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1310,7 +1270,7 @@
       <TargetName>dpp-spy</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6160000::V6.16::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -1637,7 +1597,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY</Define>
+              <Define>Q_SPY,QF_ON_CONTEXT_SW</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qv\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\nucleo-l053r8</IncludePath>
             </VariousControls>
@@ -1709,14 +1669,9 @@
               <FilePath>..\..\table.c</FilePath>
             </File>
             <File>
-              <FileName>qstamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\main.c</FilePath>
+              <FilePath>..\..\main.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1829,16 +1784,6 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qf_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qs_port.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qs_port.h</FilePath>
@@ -1847,11 +1792,6 @@
               <FileName>qv_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qv_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1874,14 +1814,14 @@
               <FilePath>..\..\..\..\..\src\qs\qs_fp.c</FilePath>
             </File>
             <File>
-              <FileName>qs_pkg.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\src\qs_pkg.h</FilePath>
-            </File>
-            <File>
               <FileName>qs_rx.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\src\qs\qs_rx.c</FilePath>
+            </File>
+            <File>
+              <FileName>qstamp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
           </Files>
         </Group>

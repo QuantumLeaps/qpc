@@ -1,41 +1,41 @@
-/*============================================================================
-* QP/C Real-Time Embedded Framework (RTEF)
-* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-*
-* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
-*
-* This software is dual-licensed under the terms of the open source GNU
-* General Public License version 3 (or any later version), or alternatively,
-* under the terms of one of the closed source Quantum Leaps commercial
-* licenses.
-*
-* The terms of the open source GNU General Public License version 3
-* can be found at: <www.gnu.org/licenses/gpl-3.0>
-*
-* The terms of the closed source Quantum Leaps commercial licenses
-* can be found at: <www.state-machine.com/licensing>
-*
-* Redistributions in source code must retain this top-level comment block.
-* Plagiarizing this software to sidestep the license obligations is illegal.
-*
-* Contact information:
-* <www.state-machine.com>
-* <info@state-machine.com>
-============================================================================*/
-/*!
-* @date Last updated on: 2022-07-30
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
-* @brief QWIN GUI facilities for building realistic embedded front panels
-*/
+//============================================================================
+// QP/C Real-Time Embedded Framework (RTEF)
+// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+//
+// This software is dual-licensed under the terms of the open source GNU
+// General Public License version 3 (or any later version), or alternatively,
+// under the terms of one of the closed source Quantum Leaps commercial
+// licenses.
+//
+// The terms of the open source GNU General Public License version 3
+// can be found at: <www.gnu.org/licenses/gpl-3.0>
+//
+// The terms of the closed source Quantum Leaps commercial licenses
+// can be found at: <www.state-machine.com/licensing>
+//
+// Redistributions in source code must retain this top-level comment block.
+// Plagiarizing this software to sidestep the license obligations is illegal.
+//
+// Contact information:
+// <www.state-machine.com>
+// <info@state-machine.com>
+//============================================================================
+//!
+//! @date Last updated on: 2022-07-30
+//! @version Last updated for: @ref qpc_7_0_1
+//!
+//! @file
+//! @brief QWIN GUI facilities for building realistic embedded front panels
+//!
 #include "qwin_gui.h"
 #include <stdlib.h>
 
 static HWND l_hWnd;
 static HDC  l_hDC;
 
-/*--------------------------------------------------------------------------*/
+//--------------------------------------------------------------------------
 HWND CreateCustDialog(HINSTANCE hInst, int iDlg, HWND hParent,
                       WNDPROC lpfnWndProc, LPCTSTR lpWndClass)
 {
@@ -57,19 +57,19 @@ HWND CreateCustDialog(HINSTANCE hInst, int iDlg, HWND hParent,
     RegisterClassEx(&wndclass);
 
     l_hWnd = CreateDialog(hInst, MAKEINTRESOURCE(iDlg), hParent, NULL);
-    l_hDC = GetDC(l_hWnd); /* obtain the DC for the client area of the window */
+    l_hDC = GetDC(l_hWnd); // obtain the DC for the client area of the window
 
-    /* NOTE: WM_INITDIALOG provides stimulus for initializing dialog controls.
-    * Dialog box procedures typically use this message to initialize controls
-    * and carry out any other initialization tasks that affect the appearance
-    * of the dialog box.
-    */
+    // NOTE: WM_INITDIALOG provides stimulus for initializing dialog controls.
+    // Dialog box procedures typically use this message to initialize controls
+    // and carry out any other initialization tasks that affect the appearance
+    // of the dialog box.
+    //
     SendMessage(l_hWnd, WM_INITDIALOG, (WPARAM)0, (LPARAM)0);
 
     return l_hWnd;
 }
 
-/*--------------------------------------------------------------------------*/
+//--------------------------------------------------------------------------
 void OwnerDrawnButton_init(OwnerDrawnButton * const me,
                            UINT itemID,
                            HBITMAP hBitmapUp, HBITMAP hBitmapDwn,
@@ -81,13 +81,13 @@ void OwnerDrawnButton_init(OwnerDrawnButton * const me,
     me->hCursor     = hCursor;
     me->isDepressed = 0;
 }
-/*..........................................................................*/
+//............................................................................
 void OwnerDrawnButton_xtor(OwnerDrawnButton * const me) {
     DeleteObject(me->hBitmapUp);
     DeleteObject(me->hBitmapDown);
     DeleteObject(me->hCursor);
 }
-/*..........................................................................*/
+//............................................................................
 enum OwnerDrawnButtonAction OwnerDrawnButton_draw(
                                OwnerDrawnButton * const me,
                                LPDRAWITEMSTRUCT lpdis)
@@ -98,7 +98,7 @@ enum OwnerDrawnButtonAction OwnerDrawnButton_draw(
         if (me->hCursor != NULL) {
            SetClassLongPtr(lpdis->hwndItem,
                            GCLP_HCURSOR, (LONG_PTR)me->hCursor);
-           me->hCursor = NULL; /* mark the cursor set */
+           me->hCursor = NULL; // mark the cursor set
         }
         DrawBitmap(lpdis->hDC, me->hBitmapUp,
                    lpdis->rcItem.left, lpdis->rcItem.top);
@@ -113,16 +113,16 @@ enum OwnerDrawnButtonAction OwnerDrawnButton_draw(
             ret = BTN_DEPRESSED;
         }
         else {
-            /* NOTE: the bitmap for button "UP" look will be
-            * drawn in the ODA_DRAWENTIRE action
-            */
+            // NOTE: the bitmap for button "UP" look will be
+            // drawn in the ODA_DRAWENTIRE action
+            //
             me->isDepressed = 0;
             ret = BTN_RELEASED;
         }
     }
     return ret;
 }
-/*..........................................................................*/
+//............................................................................
 void OwnerDrawnButton_set(OwnerDrawnButton * const me, int isDepressed) {
     if (me->isDepressed != isDepressed) {
         HWND hItem = GetDlgItem(l_hWnd, me->itemID);
@@ -135,12 +135,12 @@ void OwnerDrawnButton_set(OwnerDrawnButton * const me, int isDepressed) {
         }
     }
 }
-/*..........................................................................*/
+//............................................................................
 BOOL OwnerDrawnButton_isDepressed(OwnerDrawnButton const * const me) {
     return me->isDepressed;
 }
 
-/*--------------------------------------------------------------------------*/
+//--------------------------------------------------------------------------
 void GraphicDisplay_init(GraphicDisplay * const me,
                          UINT width,  UINT height,
                          UINT itemID, BYTE const bgColor[3])
@@ -161,8 +161,8 @@ void GraphicDisplay_init(GraphicDisplay * const me,
     me->bgColor[1] = bgColor[1];
     me->bgColor[2] = bgColor[2];
 
-    bi24BitInfo.bmiHeader.biBitCount    = 3U*8U;  /* 3 RGB bytes */
-    bi24BitInfo.bmiHeader.biCompression = BI_RGB; /* RGB color */
+    bi24BitInfo.bmiHeader.biBitCount    = 3U*8U;  // 3 RGB bytes
+    bi24BitInfo.bmiHeader.biCompression = BI_RGB; // RGB color
     bi24BitInfo.bmiHeader.biPlanes      = 1U;
     bi24BitInfo.bmiHeader.biSize        = sizeof(bi24BitInfo.bmiHeader);
     bi24BitInfo.bmiHeader.biWidth       = me->src_width;
@@ -176,13 +176,13 @@ void GraphicDisplay_init(GraphicDisplay * const me,
     GraphicDisplay_clear(me);
     GraphicDisplay_redraw(me);
 }
-/*..........................................................................*/
+//............................................................................
 void GraphicDisplay_xtor(GraphicDisplay * const me) {
     DeleteDC(me->src_hDC);
     DeleteObject(me->hBitmap);
     OutputDebugString("GraphicDisplay_xtor\n");
 }
-/*..........................................................................*/
+//............................................................................
 void GraphicDisplay_clear(GraphicDisplay * const me) {
     UINT n;
     BYTE r = me->bgColor[0];
@@ -196,13 +196,13 @@ void GraphicDisplay_clear(GraphicDisplay * const me) {
         bits[2] = r;
     }
 }
-/*..........................................................................*/
+//............................................................................
 void GraphicDisplay_redraw(GraphicDisplay * const me) {
     StretchBlt(me->dst_hDC, 0, 0, me->dst_width, me->dst_height,
                me->src_hDC, 0, 0, me->src_width, me->src_height, SRCCOPY);
 }
 
-/* SegmentDisplay ----------------------------------------------------------*/
+// SegmentDisplay ----------------------------------------------------------
 void SegmentDisplay_init(SegmentDisplay * const me,
                          UINT segmentNum, UINT bitmapNum)
 {
@@ -219,7 +219,7 @@ void SegmentDisplay_init(SegmentDisplay * const me,
         me->hBitmap[n] = NULL;
     }
 }
-/*..........................................................................*/
+//............................................................................
 void SegmentDisplay_xtor(SegmentDisplay * const me) {
     UINT n;
 
@@ -233,7 +233,7 @@ void SegmentDisplay_xtor(SegmentDisplay * const me) {
     }
     free(me->hBitmap);
 }
-/*..........................................................................*/
+//............................................................................
 BOOL SegmentDisplay_initSegment(SegmentDisplay * const me,
                                 UINT segmentNum, UINT segmentID)
 {
@@ -245,7 +245,7 @@ BOOL SegmentDisplay_initSegment(SegmentDisplay * const me,
         return FALSE;
     }
 }
-/*..........................................................................*/
+//............................................................................
 BOOL SegmentDisplay_initBitmap(SegmentDisplay * const me,
                                UINT bitmapNum, HBITMAP hBitmap)
 {
@@ -257,7 +257,7 @@ BOOL SegmentDisplay_initBitmap(SegmentDisplay * const me,
         return FALSE;
     }
 }
-/*..........................................................................*/
+//............................................................................
 BOOL SegmentDisplay_setSegment(SegmentDisplay * const me,
                                UINT segmentNum, UINT bitmapNum)
 {
@@ -272,10 +272,10 @@ BOOL SegmentDisplay_setSegment(SegmentDisplay * const me,
     }
 }
 
-/*--------------------------------------------------------------------------*/
-/* DrawBitmap() function adapted from the book "Programming Windows" by
-* Charles Petzold.
-*/
+//--------------------------------------------------------------------------
+// DrawBitmap() function adapted from the book "Programming Windows" by
+// Charles Petzold.
+//
 void DrawBitmap(HDC hdc, HBITMAP hBitmap,
                 int xStart, int yStart)
 {

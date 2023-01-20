@@ -5,11 +5,11 @@
 #include "MockSpi.h"
 
 void setUp(void) {
-    /* This is run before EACH TEST */
+    // This is run before EACH TEST
 }
 
 void tearDown(void) {
-    /* This is run after EACH TEST */
+    // This is run after EACH TEST
 }
 
 void test_LedBar_0_percent_all_off(void) {
@@ -41,10 +41,10 @@ void test_LedBar_100_percent_all_on(void)
 }
 
 void test_LedBar_200_percent_ASSERT(void) {
-    /* NOTE: Here we EXPECT breaking the internal assertion inside CUT.
-     * But Unity does not provide a mechanism to verify that and
-     * to PASS the test, so this test will FAIL...
-     */
+    // NOTE: Here we EXPECT breaking the internal assertion inside CUT.
+    // But Unity does not provide a mechanism to verify that and
+    // to PASS the test, so this test will FAIL...
+    //
     TEST_ASSERT(LedBar2_setPercent(200U));
 }
 
@@ -102,14 +102,16 @@ void test_LedBar_99_percent_four_on_FLAWED(void) {
     TEST_ASSERT_EQUAL(60U, LedBar2_setPercent(99U));
 }
 
-/* assertion handler... */
-void Q_onAssert(char const * const module, int const loc) {
-    (void)module;
-    UNITY_TEST_FAIL(loc, "ASSERTION");
+// error handler...
+Q_NORETURN Q_onError(char const * const module, int_t const id) {
+    Q_UNUSED_PAR(module);
+    Q_UNUSED_PAR(id);
+
+    UNITY_TEST_FAIL(loc, "ERROR");
 }
 
-/* NOTE:
-* The Mock example requires a specific "test runner", which
-* is provided in the file TestLedBar_Runner.c.
-*/
+// NOTE:
+// The Mock example requires a specific "test runner", which
+// is provided in the file TestLedBar_Runner.c.
+//
 

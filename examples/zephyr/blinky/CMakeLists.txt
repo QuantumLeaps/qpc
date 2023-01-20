@@ -28,6 +28,7 @@ option(QSPY "QSPY software tracing" OFF)
 zephyr_include_directories(
  ${QPC_DIR}/include
  ${QPC_DIR}/zephyr
+ ./src
 )
 target_sources(app PRIVATE
  ${QPC_DIR}/src/qf/qep_hsm.c
@@ -56,7 +57,7 @@ target_sources(app PRIVATE
  ${QPC_DIR}/src/qs/qs_fp.c
  ${QPC_DIR}/src/qs/qutest.c
  ${QPC_DIR}/src/qs/qs_64bit.c
- ${QPC_DIR}/include/qstamp.c
+ ${QPC_DIR}/src/qs/qstamp.c
 )
 
 endif()

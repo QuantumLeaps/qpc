@@ -7,6 +7,7 @@
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
+			<triggers>clean,full,incremental,</triggers>
 			<arguments>
 			</arguments>
 		</buildCommand>
@@ -63,17 +64,12 @@
 		<link>
 			<name>main.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/main.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/main.c</locationURI>
 		</link>
 		<link>
 			<name>philo.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/philo.c</locationURI>
-		</link>
-		<link>
-			<name>qstamp.c</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/include/qstamp.c</locationURI>
 		</link>
 		<link>
 			<name>table.c</name>

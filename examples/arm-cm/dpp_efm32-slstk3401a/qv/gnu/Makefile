@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C on EMF32-SLSTK3401A, QV kernel, GNU-ARM
-# Last Updated for Version: 7.0.1
-# Date of the Last Update:  2022-05-23
+# Last Updated for Version: 7.3.0
+# Date of the Last Update:  2023-09-02
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -78,6 +78,7 @@ VPATH = \
 
 # list of all include directories needed by this project
 INCLUDES  = \
+	-I.. \
 	-I../.. \
 	-I$(QPC)/include \
 	-I$(QP_PORT_DIR) \
@@ -137,7 +138,8 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DEFM32PG1B200F256GM48=1
+DEFINES   := -DEFM32PG1B200F256GM48=1 \
+	-DQP_CONFIG
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
@@ -191,7 +193,8 @@ BIN_DIR := rel
 
 ASFLAGS = $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
-CFLAGS = -c $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+CFLAGS = -c $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
+	-std=c11 -pedantic -Wall -Wextra -W  \
 	-ffunction-sections -fdata-sections \
 	-O1 $(INCLUDES) $(DEFINES) -DNDEBUG
 
@@ -207,7 +210,8 @@ C_SRCS += $(QS_SRCS)
 
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
-CFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+CFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
+	-std=c11 -pedantic -Wall -Wextra -W  \
 	-ffunction-sections -fdata-sections \
 	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
@@ -221,7 +225,8 @@ BIN_DIR := dbg
 
 ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
-CFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
+CFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
+	-std=c11 -pedantic -Wall -Wextra -W  \
 	-ffunction-sections -fdata-sections \
 	-O $(INCLUDES) $(DEFINES)
 
@@ -265,7 +270,7 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.c

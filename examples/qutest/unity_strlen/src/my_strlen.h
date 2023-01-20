@@ -5,4 +5,4 @@
 
 uint16_t my_strlen(char const *str);
 
-#endif /* MY_STRLEN_H */
+#endif // MY_STRLEN_H

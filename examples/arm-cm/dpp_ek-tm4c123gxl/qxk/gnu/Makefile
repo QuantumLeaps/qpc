@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C on EK-TM4C123GXL, QXK kernel, GNU-ARM
-# Last Updated for Version: 7.0.1
-# Date of the Last Update:  2022-05-23
+# Last Updated for Version: 7.3.0
+# Date of the Last Update:  2023-09-07
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2021 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -45,8 +45,7 @@
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
 # is included in the Qtools collection for Windows, see:
-#    https://sourceforge.net/projects/qpc/files/QTools/
-#
+#    https://github.com/QuantumLeaps/qtools
 
 #-----------------------------------------------------------------------------
 # project name
@@ -78,6 +77,7 @@ VPATH = \
 
 # list of all include directories needed by this project
 INCLUDES  = \
+	-I.. \
 	-I../.. \
 	-I$(QPC)/include \
 	-I$(QP_PORT_DIR) \
@@ -97,7 +97,8 @@ C_SRCS := \
 	main.c \
 	philo.c \
 	table.c \
-	test.c \
+	xthread1.c \
+	xthread2.c \
 	system_TM4C123GH6PM.c \
 	startup_TM4C123GH6PM.c
 
@@ -137,7 +138,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DTARGET_IS_TM4C123_RB1
+DEFINES   := -DQP_CONFIG
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
@@ -167,12 +168,11 @@ AS    := $(GNU_ARM)/bin/arm-none-eabi-as
 LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
-
 ##############################################################################
-# Typically, you should not need to change anything below this line
+# Typically you should not need to change anything below this line
 
-# basic utilities (included in Qtools for Windows), see:
-#    http://sourceforge.net/projects/qpc/files/Qtools
+# basic utilities (included in QTools for Windows), see:
+#     https://www.state-machine.com/qtools
 
 MKDIR := mkdir
 RM    := rm
@@ -193,11 +193,11 @@ ASFLAGS = $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -c $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
-	-O1 $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O2 $(INCLUDES) $(DEFINES) -DNDEBUG
 
 CPPFLAGS = -c $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O1 $(INCLUDES) $(DEFINES) -DNDEBUG
+	-O2 $(INCLUDES) $(DEFINES) -DNDEBUG
 
 else ifeq (spy, $(CONF))  # Spy configuration ................................
 
@@ -236,7 +236,6 @@ LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
 	-specs=nosys.specs -specs=nano.specs \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
-
 ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
 C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
 CPP_OBJS     := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
@@ -258,14 +257,20 @@ endif
 # rules
 #
 
-all: $(TARGET_BIN)
-#all: $(TARGET_ELF)
+.PHONY : run norun flash
+
+ifeq ($(MAKECMDGOALS),norun)
+all : $(TARGET_BIN)
+norun : all
+else
+all : $(TARGET_BIN) run
+endif
 
 $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.c
@@ -283,6 +288,8 @@ $(BIN_DIR)/%.o : %.c
 $(BIN_DIR)/%.o : %.cpp
 	$(CPP) $(CPPFLAGS) $< -o $@
 
+.PHONY : clean show
+
 # include dependency files only if our goal depends on their existence
 ifneq ($(MAKECMDGOALS),clean)
   ifneq ($(MAKECMDGOALS),show)
@@ -291,7 +298,6 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 
-.PHONY : clean
 clean:
 	-$(RM) $(BIN_DIR)/*.o \
 	$(BIN_DIR)/*.d \

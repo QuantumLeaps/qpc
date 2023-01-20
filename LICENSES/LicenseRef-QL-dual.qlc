@@ -1,8 +1,12 @@
 Any user of the QP/C real-time embedded framework
 qpc
-2023-12-31
+2024-12-31
 
 Copyright (C) 2005 Quantum Leaps, LLC <state-machine.com>.
+
+                   Q u a n t u m  L e a P s
+                   ------------------------
+                   Modern Embedded Software
 
 SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 
@@ -23,4 +27,4 @@ Plagiarizing this software to sidestep the license obligations is illegal.
 Contact information:
 <www.state-machine.com/licensing>
 <info@state-machine.com>
-#F04C7A28E6F84BAFDD11A028A9B7CFE2F4DE1FD7
+#5B2B82CE252E0FB7975E7196F9141A16DD356860

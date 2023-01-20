@@ -1,5 +1,5 @@
 ##############################################################################
-# Product: Makefile for QP/C on TM4C123, QUTEST, GNU-ARM
+# Product: Makefile for QUTEST; QP/C on TM4C123, GNU-ARM
 # Last Updated for Version: 7.2.0
 # Date of the Last Update:  2022-12-21
 #
@@ -99,7 +99,6 @@ ASM_SRCS :=
 # C source files
 C_SRCS := \
 	test_dpp.c \
-	main.c \
 	philo.c \
 	table.c \
 	bsp.c \
@@ -256,7 +255,7 @@ $(TARGET_BIN) : $(TARGET_ELF)
 	@pause
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 flash :

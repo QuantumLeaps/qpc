@@ -134,8 +134,8 @@ LIBS      :=
 # defines
 DEFINES   := \
 	-DQF_ON_CONTEXT_SW \
-	-DQK_USE_IRQ_NUM=30 \
-	-DQK_USE_IRQ_HANDLER=LCD_IRQHandler
+	-DQK_USE_IRQ_HANDLER=LCD_IRQHandler \
+	-DQK_USE_IRQ_NUM=30
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
@@ -162,7 +162,7 @@ endif
 CC    := $(GNU_ARM)/bin/arm-none-eabi-gcc
 CPP   := $(GNU_ARM)/bin/arm-none-eabi-g++
 AS    := $(GNU_ARM)/bin/arm-none-eabi-as
-LINK  := $(GNU_ARM)/bin/arm-none-eabi-g++
+LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 
@@ -207,11 +207,11 @@ ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
-	-O2 $(INCLUDES) $(DEFINES) -DQ_SPY
+	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
 CPPFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O2 $(INCLUDES) $(DEFINES) -DQ_SPY
+	-O $(INCLUDES) $(DEFINES) -DQ_SPY
 
 else # default Debug configuration ..........................................
 
@@ -221,11 +221,11 @@ ASFLAGS = -g $(ARM_CPU) $(ARM_FPU) $(ASM_CPU) $(ASM_FPU)
 
 CFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections \
-	-O2 $(INCLUDES) $(DEFINES)
+	-O $(INCLUDES) $(DEFINES)
 
 CPPFLAGS = -c -g $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb -Wall \
 	-ffunction-sections -fdata-sections -fno-rtti -fno-exceptions \
-	-O2 $(INCLUDES) $(DEFINES)
+	-O $(INCLUDES) $(DEFINES)
 
 endif # ......................................................................
 
@@ -263,7 +263,7 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.c

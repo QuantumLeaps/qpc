@@ -262,7 +262,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\include\qstamp.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\src\qs\qstamp.c</PathWithFileName>
       <FilenameWithoutPath>qstamp.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -357,12 +357,12 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-      <FileNumber>8</FileNumber>
+      <FileNumber>16</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\src\qf\qf_act.c</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\src\qf\qf_act.c</PathWithFileName>
       <FilenameWithoutPath>qf_act.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

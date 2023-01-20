@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>7</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>EFM32PG1B200F256GM48=1 __FPU_PRESENT</Define>
+              <Define>EFM32PG1B200F256GM48=1</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>
@@ -396,7 +396,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>bsp.h</FileName>
@@ -691,7 +691,7 @@
         <TargetCommonOption>
           <Device>EFM32PG1B200F256GM48</Device>
           <Vendor>Silicon Labs</Vendor>
-          <PackID>SiliconLabs.EFM32PG1B_DFP.5.5.0</PackID>
+          <PackID>SiliconLabs.GeckoPlatform_EFM32PG1B_DFP.4.0.0</PackID>
           <PackURL>https://www.silabs.com/documents/public/cmsis-packs/</PackURL>
           <Cpu>IRAM(0x20000000,0x00008000) IROM(0x00000000,0x00020000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -1012,7 +1012,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>NDEBUG EFM32PG1B200F256GM48=1 __FPU_PRESENT</Define>
+              <Define>NDEBUG EFM32PG1B200F256GM48=1</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>
@@ -1071,7 +1071,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>bsp.h</FileName>
@@ -1687,7 +1687,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY EFM32PG1B200F256GM48=1 __FPU_PRESENT</Define>
+              <Define>Q_SPY EFM32PG1B200F256GM48=1</Define>
               <Undefine></Undefine>
               <IncludePath>..\..;..\..\..\..\..\include;..\..\..\..\..\ports\arm-cm\qk\armclang;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\efm32pg1b</IncludePath>
             </VariousControls>
@@ -1746,7 +1746,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>bsp.h</FileName>

@@ -251,10 +251,6 @@
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
-                    <name>CCDefines</name>
-                    <state></state>
-                </option>
-                <option>
                     <name>CCPreprocFile</name>
                     <state>0</state>
                 </option>
@@ -2559,6 +2555,7 @@
                 <option>
                     <name>CCDefines</name>
                     <state>Q_SPY</state>
+                    <state>QP_CONFIG</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -3442,7 +3439,7 @@
                 </option>
                 <option>
                     <name>OutputFile</name>
-                    <state></state>
+                    <state>$PROJ_FNAME$.ulp</state>
                 </option>
                 <option>
                     <name>ULPStatus</name>
@@ -3472,9 +3469,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\main.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\include\qstamp.c</name>
         </file>
     </group>
     <group>
@@ -3557,6 +3551,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_rx.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qstamp.c</name>
         </file>
     </group>
 </project>

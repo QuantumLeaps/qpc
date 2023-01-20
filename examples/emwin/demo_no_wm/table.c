@@ -1,36 +1,36 @@
-/*****************************************************************************
-* Product: DPP example with emWin/uC/GUI, NO Window Manager
-* Last Updated for Version: 7.2.0
-* Date of the Last Update:  2022-12-22
-*
-*                    Q u a n t u m     L e a P s
-*                    ---------------------------
-*                    innovating embedded systems
-*
-* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-*****************************************************************************/
+//============================================================================
+// Product: DPP example with emWin/uC/GUI, NO Window Manager
+// Last Updated for Version: 7.2.0
+// Date of the Last Update:  2022-12-22
+//
+//                   Q u a n t u m     L e a P s
+//                   ---------------------------
+//                   innovating embedded systems
+//
+// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+//
+// This program is open source software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Alternatively, this program may be distributed and modified under the
+// terms of Quantum Leaps commercial licenses, which expressly supersede
+// the GNU General Public License and are specifically designed for
+// licensees interested in retaining the proprietary status of their code.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <www.gnu.org/licenses/>.
+//
+// Contact information:
+// <www.state-machine.com/licensing>
+// <info@state-machine.com>
+//============================================================================
 #include "qpc.h"
 #include "dpp.h"
 #include "bsp.h"
@@ -41,7 +41,7 @@
 
 Q_DEFINE_THIS_FILE
 
-/* Active object class -----------------------------------------------------*/
+// Active object class -----------------------------------------------------
 typedef struct TableTag {
     QActive super;
     uint8_t fork[N_PHILO];
@@ -57,8 +57,8 @@ static QState Table_paused (Table *me, QEvt const *e);
 #define LEFT(n_)  ((uint8_t)(((n_) + 1) % N_PHILO))
 enum ForkState { FREE, USED };
 
-/* Local objects -----------------------------------------------------------*/
-static Table l_table; /* the single instance of the Table active object */
+// Local objects -----------------------------------------------------------
+static Table l_table; // the single instance of the Table active object
 
 #ifdef Q_SPY
 enum QSUserRecords {
@@ -67,10 +67,10 @@ enum QSUserRecords {
 };
 #endif
 
-/* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_Table = (QActive *)&l_table; /* "opaque" AO pointer */
+// Global-scope objects ----------------------------------------------------
+QActive * const AO_Table = (QActive *)&l_table; // "opaque" AO pointer
 
-/* GUI definition ==========================================================*/
+// GUI definition ==========================================================
 enum YCoord {
     PHILO_0_Y =   0,
     PHILO_1_Y =  20,
@@ -93,7 +93,7 @@ static int const l_philoY[N_PHILO] = {
 static char const *l_tableState = " ";
 static int const l_tableY = 100;
 
-/*..........................................................................*/
+//............................................................................
 static void displyPhilStat(uint8_t n, char const *stat) {
     GUI_SetBkColor(GUI_GRAY);
     GUI_SetColor(GUI_BLACK);
@@ -102,12 +102,12 @@ static void displyPhilStat(uint8_t n, char const *stat) {
     l_philoStat[n] = stat;
     GUI_DispStringAt(stat,  l_xOrg + STATE_X, l_yOrg + l_philoY[n]);
 
-    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
-        QS_U8(1, n);  /* Philosopher number */
-        QS_STR(stat); /* Philosopher status */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) // app-specific record
+        QS_U8(1, n);  // Philosopher number
+        QS_STR(stat); // Philosopher status
     QS_END()
 }
-/*..........................................................................*/
+//............................................................................
 static void displyTableStat(char const *stat) {
     GUI_SetBkColor(GUI_GRAY);
     GUI_SetColor(GUI_BLACK);
@@ -116,12 +116,12 @@ static void displyTableStat(char const *stat) {
     l_tableState = stat;
     GUI_DispStringAt(stat,  l_xOrg + STATE_X, l_yOrg + l_tableY);
 
-    QS_BEGIN_ID(TABLE_STAT, AO_Table->prio) /* app-specific record */
-        QS_STR(stat); /* Philosopher status */
+    QS_BEGIN_ID(TABLE_STAT, AO_Table->prio) // app-specific record
+        QS_STR(stat); // Philosopher status
     QS_END()
 }
 
-/*..........................................................................*/
+//............................................................................
 static void renderDppScreen(void) {
     GUI_SetBkColor(GUI_GRAY);
     GUI_Clear();
@@ -143,14 +143,14 @@ static void renderDppScreen(void) {
     displyPhilStat(3, l_philoStat[3]);
     displyPhilStat(4, l_philoStat[4]);
 }
-/*..........................................................................*/
+//............................................................................
 static void moveDppScreen(int dx, int dy) {
     l_xOrg += dx;
     l_yOrg += dy;
 
     renderDppScreen();
 }
-/*..........................................................................*/
+//............................................................................
 void Table_ctor(void) {
     uint8_t n;
     Table *me = &l_table;
@@ -163,27 +163,27 @@ void Table_ctor(void) {
     }
 }
 
-/* Table HSM ===============================================================*/
+// Table HSM ===============================================================
 QState Table_initial(Table *me, QEvt const *e) {
-    (void)e;        /* suppress the compiler warning about unused parameter */
+    (void)e;        // suppress the compiler warning about unused parameter
 
     QS_OBJ_DICTIONARY(&l_table);
     QS_FUN_DICTIONARY(&Table_initial);
     QS_FUN_DICTIONARY(&Table_serving);
 
-    QS_SIG_DICTIONARY(DONE_SIG,      0); /* global signals */
+    QS_SIG_DICTIONARY(DONE_SIG,      0); // global signals
     QS_SIG_DICTIONARY(EAT_SIG,       0);
     QS_SIG_DICTIONARY(PAUSE_SIG, 0);
 
-    QS_SIG_DICTIONARY(HUNGRY_SIG,    me); /* signal just for Table */
+    QS_SIG_DICTIONARY(HUNGRY_SIG,    me); // signal just for Table
 
-    GUI_Init(); /* initialize the embedded GUI */
+    GUI_Init(); // initialize the embedded GUI
 
     QActive_subscribe((QActive *)me, DONE_SIG);
 
     return Q_TRAN(&Table_ready);
 }
-/*..........................................................................*/
+//............................................................................
 QState Table_ready(Table *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
@@ -194,27 +194,27 @@ QState Table_ready(Table *me, QEvt const *e) {
             return Q_TRAN(&Table_serving);
         }
 
-        /* ... hardkey events ... */
-        case KEY_LEFT_REL_SIG: { /* hardkey LEFT released */
+        // ... hardkey events ...
+        case KEY_LEFT_REL_SIG: { // hardkey LEFT released
             moveDppScreen(-5, 0);
             return Q_HANDLED();
         }
-        case KEY_RIGHT_REL_SIG: { /* hardkey RIGHT released */
+        case KEY_RIGHT_REL_SIG: { // hardkey RIGHT released
             moveDppScreen(5, 0);
             return Q_HANDLED();
         }
-        case KEY_DOWN_REL_SIG: {  /* hardkey DOWN released */
+        case KEY_DOWN_REL_SIG: {  // hardkey DOWN released
             moveDppScreen(0, 5);
             return Q_HANDLED();
         }
-        case KEY_UP_REL_SIG: {    /* hardkey UP released */
+        case KEY_UP_REL_SIG: {    // hardkey UP released
             moveDppScreen(0, -5);
             return Q_HANDLED();
         }
     }
     return Q_SUPER(&QHsm_top);
 }
-/*..........................................................................*/
+//............................................................................
 QState Table_serving(Table *me, QEvt const *e) {
     uint8_t n, m;
     TableEvt *pe;
@@ -222,7 +222,7 @@ QState Table_serving(Table *me, QEvt const *e) {
     switch (e->sig) {
         case Q_ENTRY_SIG: {
             displyTableStat("serving");
-            for (n = 0; n < N_PHILO; ++n) { /* give permissions to eat... */
+            for (n = 0; n < N_PHILO; ++n) { // give permissions to eat...
                 if (me->isHungry[n]
                     && (me->fork[LEFT(n)] == FREE)
                         && (me->fork[n] == FREE))
@@ -259,7 +259,7 @@ QState Table_serving(Table *me, QEvt const *e) {
             Q_ASSERT(n < N_PHILO);
             displyPhilStat(n, "thinking");
             me->fork[LEFT(n)] = me->fork[n] = FREE;
-            m = RIGHT(n); /* check the right neighbor */
+            m = RIGHT(n); // check the right neighbor
             if (me->isHungry[m] && me->fork[m] == FREE) {
                 me->fork[n] = me->fork[m] = USED;
                 me->isHungry[m] = 0;
@@ -268,7 +268,7 @@ QState Table_serving(Table *me, QEvt const *e) {
                 QACTIVE_PUBLISH((QEvt *)pe, &me->super);
                 displyPhilStat(m, "eating  ");
             }
-            m = LEFT(n); /* check the left neighbor */
+            m = LEFT(n); // check the left neighbor
             n = LEFT(m);
             if (me->isHungry[m] && me->fork[n] == FREE) {
                 me->fork[m] = me->fork[n] = USED;
@@ -280,14 +280,14 @@ QState Table_serving(Table *me, QEvt const *e) {
             }
             return Q_HANDLED();
         }
-        case PAUSE_SIG:              /* "Toggle" button pressed */
-        case KEY_CENTER_PRESS_SIG: { /* hardkey CENTER pressed */
+        case PAUSE_SIG:              // "Toggle" button pressed
+        case KEY_CENTER_PRESS_SIG: { // hardkey CENTER pressed
             return Q_TRAN(&Table_paused);
         }
     }
     return Q_SUPER(&Table_ready);
 }
-/*..........................................................................*/
+//............................................................................
 QState Table_paused(Table *me, QEvt const *e) {
     uint8_t n;
 
@@ -310,8 +310,8 @@ QState Table_paused(Table *me, QEvt const *e) {
             me->fork[LEFT(n)] = me->fork[n] = FREE;
             return Q_HANDLED();
         }
-        case PAUSE_SIG:            /* "Toggle" button pressed */
-        case KEY_CENTER_REL_SIG: { /* hardkey CENTER released */
+        case PAUSE_SIG:            // "Toggle" button pressed
+        case KEY_CENTER_REL_SIG: { // hardkey CENTER released
             return Q_TRAN(&Table_serving);
         }
     }

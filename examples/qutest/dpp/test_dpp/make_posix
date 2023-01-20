@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QUTEST; QP/C on POSIX *Target*
-# Last Updated for Version: 7.0.1
-# Date of the Last Update:  2022-05-23
+# Last Updated for Version: 7.2.0
+# Date of the Last Update:  2022-12-21
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005-2020 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -25,7 +25,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program. If not, see <www.gnu.org/licenses/>.
+# along with this program. If not, see <http://www.gnu.org/licenses>.
 #
 # Contact information:
 # <www.state-machine.com/licensing>
@@ -77,11 +77,10 @@ endif
 
 # C source files...
 C_SRCS := \
-	bsp.c \
-	main.c \
+	test_dpp.c \
 	philo.c \
 	table.c \
-	test_dpp.c
+	bsp.c
 
 # C++ source files...
 CPP_SRCS :=
@@ -185,7 +184,7 @@ all : $(TARGET_EXE) run
 endif
 
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 # run the test fixture on a POSIX target in a loop, so that it is re-started

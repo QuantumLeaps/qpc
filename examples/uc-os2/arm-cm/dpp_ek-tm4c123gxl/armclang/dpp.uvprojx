@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>__FPU_PRESENT</Define>
+              <Define></Define>
               <Undefine></Undefine>
               <IncludePath>..;..\..\..\..\..\include;..\..\..\..\..\ports\uc-os2;..\..\..\..\..\3rd_party\uC-OS2\Source;..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv7-M\ARM;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -391,7 +391,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -537,21 +537,6 @@
               <FileName>qf_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qs_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1062,7 +1047,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>NDEBUG __FPU_PRESENT</Define>
+              <Define>NDEBUG</Define>
               <Undefine></Undefine>
               <IncludePath>..;..\..\..\..\..\include;..\..\..\..\..\ports\uc-os2;..\..\..\..\..\3rd_party\uC-OS2\Source;..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv7-M\ARM;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -1116,7 +1101,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -1262,21 +1247,6 @@
               <FileName>qf_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qs_port.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1787,7 +1757,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>Q_SPY __FPU_PRESENT</Define>
+              <Define>Q_SPY</Define>
               <Undefine></Undefine>
               <IncludePath>..;..\..\..\..\..\include;..\..\..\..\..\ports\uc-os2;..\..\..\..\..\3rd_party\uC-OS2\Source;..\..\..\..\..\3rd_party\uC-OS2\Ports\ARM-Cortex-M\ARMv7-M\ARM;..\..\..\..\..\3rd_party\CMSIS\Include;..\..\..\..\..\3rd_party\ek-tm4c123gxl</IncludePath>
             </VariousControls>
@@ -1841,7 +1811,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -1987,21 +1957,6 @@
               <FileName>qf_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qs_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qs_port.h</FilePath>
             </File>
           </Files>
         </Group>

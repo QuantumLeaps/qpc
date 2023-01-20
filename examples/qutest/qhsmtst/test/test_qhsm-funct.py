@@ -5,7 +5,7 @@
 def on_reset():
     expect_run()
     glb_filter(GRP_UA)
-    current_obj(OBJ_SM, "the_hsm")
+    current_obj(OBJ_SM, "the_sm")
 
 # tests...
 test("QHsmTst_init")

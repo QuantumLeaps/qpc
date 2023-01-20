@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QUTEST-QP/C for Windows and POSIX *HOSTS*
-# Last Updated for Version: 7.2.0
-# Date of the Last Update:  2022-12-21
+# Last Updated for Version: 7.3.0
+# Date of the Last Update:  2023-09-04
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -80,7 +80,6 @@ endif
 # C source files...
 C_SRCS := \
 	bsp.c \
-	main.c \
 	philo.c \
 	table.c \
 	test_dpp.c
@@ -92,7 +91,7 @@ LIB_DIRS :=
 LIBS     :=
 
 # defines...
-DEFINES  :=
+DEFINES  := $(DEF)
 
 #-----------------------------------------------------------------------------
 # add QP/C framework:
@@ -126,7 +125,6 @@ LIBS += -lws2_32
 else
 
 QP_PORT_DIR := $(QPC)/ports/posix-qutest
-#QP_PORT_DIR := $(QPC)/ports/posix
 LIBS += -lpthread
 
 endif
@@ -220,7 +218,7 @@ all : $(TARGET_EXE) run
 endif
 
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_EXE)

@@ -29,6 +29,7 @@
       <itemPath>../../../../../src/qs/qs_64bit.c</itemPath>
       <itemPath>../../../../../src/qs/qs_fp.c</itemPath>
       <itemPath>../../../../../src/qs/qs_rx.c</itemPath>
+      <itemPath>../../../../../src/qs/qstamp.c</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -36,7 +37,6 @@
       <itemPath>bsp.c</itemPath>
       <itemPath>../../bsp.h</itemPath>
       <itemPath>../../main.c</itemPath>
-      <itemPath>../../../../../include/qstamp.c</itemPath>
       <itemPath>../../philo.c</itemPath>
       <itemPath>../../table.c</itemPath>
     </logicalFolder>
@@ -286,6 +286,7 @@
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="memories.configurationmemory" value="false"/>
         <property key="memories.dataflash" value="true"/>
         <property key="memories.eeprom" value="false"/>
@@ -732,6 +733,7 @@
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="memories.configurationmemory" value="false"/>
         <property key="memories.dataflash" value="true"/>
         <property key="memories.eeprom" value="false"/>

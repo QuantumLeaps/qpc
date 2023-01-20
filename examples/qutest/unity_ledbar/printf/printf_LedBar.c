@@ -1,18 +1,18 @@
 #include <stdint.h>
-#include <stdio.h> /* for printf() */
+#include <stdio.h> // for printf()
 
-#include "LedBar.h" /* CUT interface */
+#include "LedBar.h" // CUT interface
 
-/*--------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------
 static void trace_LedBar_percent(uint8_t percent) {
     uint32_t ret = LedBar_setPercent(percent);
     printf("LedBar_setPercent %d %d\n", ret, percent);
 }
 
-/*--------------------------------------------------------------------------*/
+//----------------------------------------------------------------------------
 int main(int argc, char *argv[]) {
-    (void)argc; /* unused parameter */
-    (void)argv; /* unused parameter */
+    (void)argc; // unused parameter
+    (void)argv; // unused parameter
 
     trace_LedBar_percent(100U);
     trace_LedBar_percent(19U);
@@ -23,10 +23,15 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-/*..........................................................................*/
-#include <stdlib.h> /* for exit() */
+//............................................................................
+#include <stdlib.h> // for exit()
 
-void Q_onAssert(char const * const module, int const loc) {
-    printf("Assertion in %s:%d\n", module, loc);
+Q_NORETURN Q_onError(char const * const module, int_t const id) {
+    printf("ERROR in %s:%d\n", module, id);
     exit(-1);
+}
+//............................................................................
+void assert_failed(char const * const module, int_t const id); // prototype
+void assert_failed(char const * const module, int_t const id) {
+    Q_onError(module, id);
 }

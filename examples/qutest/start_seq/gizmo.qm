@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<model version="5.2.4" links="1">
+<model version="5.3.0" links="1">
  <documentation>Start sequence example</documentation>
  <!--${qpc}-->
  <framework name="qpc"/>
@@ -22,8 +22,8 @@
     </initial>
     <!--${AOs::Gizmo::SM::init}-->
     <state name="init">
-     <entry brief="self-post START">static QEvt const startEvt = { START_SIG, 0U, 0U };
-QACTIVE_POST(&amp;me-&gt;super, &amp;startEvt, me); /* self-post */</entry>
+     <entry brief="self-post START">static QEvt const startEvt = QEVT_INITIALIZER(START_SIG);
+QACTIVE_POST(&amp;me-&gt;super, &amp;startEvt, me); // self-post</entry>
      <!--${AOs::Gizmo::SM::init::START}-->
      <tran trig="START">
       <action>QS_BEGIN_ID(QS_USER1, me-&gt;super.prio)
@@ -69,7 +69,7 @@ QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Gizmo_initial));</code>
   </operation>
   <!--${AOs::AO_Gizmo}-->
   <attribute name="AO_Gizmo" type="QActive * const" visibility="0x00" properties="0x00">
-   <documentation>/* opaque pointer to the Gizmo AO */</documentation>
+   <documentation>// opaque pointer to the Gizmo AO</documentation>
    <code>= &amp;Gizmo_inst.super;</code>
   </attribute>
  </package>
@@ -82,18 +82,18 @@ QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;Gizmo_initial));</code>
 
 enum BlinkySignals {
     DUMMY_SIG = Q_USER_SIG,
-    /* ... */
-    MAX_PUB_SIG,   /* the last published signal */
+    // ...
+    MAX_PUB_SIG,   // the last published signal
 
     START_SIG,
-    /* ... */
-    MAX_SIG        /* the last signal */
+    // ...
+    MAX_SIG        // the last signal
 };
 
 $declare ${AOs::AO_Gizmo}
 $declare ${AOs::Gizmo_ctor}
 
-#endif /* GIZMO_H_ */</text>
+#endif // GIZMO_H_</text>
   </file>
   <!--${src::gizmo.c}-->
   <file name="gizmo.c">

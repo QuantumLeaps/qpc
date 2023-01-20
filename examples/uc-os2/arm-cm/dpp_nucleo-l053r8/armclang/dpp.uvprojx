@@ -391,7 +391,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -527,16 +527,6 @@
               <FileName>qf_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.h</FilePath>
             </File>
             <File>
               <FileName>qs_port.h</FileName>
@@ -1106,7 +1096,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -1242,16 +1232,6 @@
               <FileName>qf_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.h</FilePath>
             </File>
             <File>
               <FileName>qs_port.h</FileName>
@@ -1440,7 +1420,7 @@
       <TargetName>dpp-spy</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6130001::V6.13.1::.\ARMCLANG</pCCUsed>
+      <pCCUsed>6160000::V6.16::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -1743,7 +1723,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>0</interw>
-            <Optim>7</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -1821,7 +1801,7 @@
             <File>
               <FileName>qstamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\include\qstamp.c</FilePath>
+              <FilePath>..\..\..\..\..\src\qs\qstamp.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -1957,16 +1937,6 @@
               <FileName>qf_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\uc-os2\qf_port.h</FilePath>
             </File>
             <File>
               <FileName>qs_port.h</FileName>

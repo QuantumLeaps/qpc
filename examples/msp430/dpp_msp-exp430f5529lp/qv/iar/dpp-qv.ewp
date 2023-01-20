@@ -61,7 +61,7 @@
                 </option>
                 <option>
                     <name>RTLibraryPath</name>
-                    <state>$TOOLKIT_DIR$\lib\dlib\dl430xlsfn.r43</state>
+                    <state>$TOOLKIT_DIR$\lib\dlib\dl430xssfn.r43</state>
                 </option>
                 <option>
                     <name>Input variant</name>
@@ -3448,6 +3448,9 @@
             <data />
         </settings>
     </configuration>
+    <mfc>
+        <configuration>Release</configuration>
+    </mfc>
     <group>
         <name>Application</name>
         <file>
@@ -3464,9 +3467,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\philo.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\include\qstamp.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\table.c</name>
@@ -3549,6 +3549,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_rx.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qstamp.c</name>
         </file>
     </group>
 </project>

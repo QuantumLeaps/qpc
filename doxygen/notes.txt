@@ -1,8 +1,0 @@
-main.dox
-
-@note
-<a href="https://www.state-machine.com/products/qp#CERT" title="QP Cert-Pack"><img class="right" src="cert-pack.png"></img></a>
-The @webref{products/qp#CERT,QP Certification Pack} provides:
-- @ref srs "Software Requirements Specification" with a good @ref srs_over "overview" of the QP/C Framework
-- @ref sas "Software Architecture Specification" with concise description of QP/C @ref sas_core "architecture"
-- @ref sds "Software Design Specification" with detailed description of the QP/C @ref sds "design".

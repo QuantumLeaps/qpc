@@ -1,307 +1,406 @@
-/*****************************************************************************
-* Product: DPP example, STM32 NUCLEO-L152RE board, preemptive QK kernel
-* Last updated for version 6.9.3
-* Last updated on  2021-03-03
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses/>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-*****************************************************************************/
-#include "qpc.h"
-#include "dpp.h"
-#include "bsp.h"
+//============================================================================
+// Product: DPP example, NUCLEO-L152RE board, QK kernel
+// Last updated for version 7.3.0
+// Last updated on  2023-08-23
+//
+//                   Q u a n t u m  L e a P s
+//                   ------------------------
+//                   Modern Embedded Software
+//
+// Copyright (C) 2005 Quantum Leaps, LLC. <state-machine.com>
+//
+// This program is open source software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Alternatively, this program may be distributed and modified under the
+// terms of Quantum Leaps commercial licenses, which expressly supersede
+// the GNU General Public License and are specifically designed for
+// licensees interested in retaining the proprietary status of their code.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <www.gnu.org/licenses/>.
+//
+// Contact information:
+// <www.state-machine.com/licensing>
+// <info@state-machine.com>
+//============================================================================
+#include "qpc.h"                 // QP/C real-time embedded framework
+#include "dpp.h"                 // DPP Application interface
+#include "bsp.h"                 // Board Support Package
 
-#include "stm32l1xx.h"  /* CMSIS-compliant header file for the MCU used */
-/* add other drivers if necessary... */
+#include "stm32l1xx.h"  // CMSIS-compliant header file for the MCU used
+// add other drivers if necessary...
 
-Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE  // define the name of this file for assertions
 
-/* Local-scope objects -----------------------------------------------------*/
-/* LED pins available on the board (just one user LED LD2--Green on PA.5) */
-#define LED_LD2  (1U << 5)
+// Local-scope defines -----------------------------------------------------
+// LED pins available on the board (just one user LED LD2--Green on PA.5)
+#define LED_PIN  5U
 
-/* Button pins available on the board (just one user Button B1 on PC.13) */
-#define BTN_B1   (1U << 13)
+// Button pins available on the board (just one user Button B1 on PC.13)
+#define BTN_PIN  13U
 
-static uint32_t l_rnd;  /* random seed */
+static uint32_t l_rndSeed;
 
 #ifdef Q_SPY
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
 
-    /* QSpy source IDs */
+    // QSpy source IDs
     static QSpyId const l_SysTick_Handler = { 0U };
 
-    enum AppRecords { /* application-specific trace records */
-        PHILO_STAT = QS_USER
+    enum AppRecords { // application-specific trace records
+        PHILO_STAT = QS_USER,
+        PAUSED_STAT,
+        CONTEXT_SW,
     };
 
 #endif
 
-/* ISRs used in the application ==========================================*/
-void SysTick_Handler(void);
-void USART2_IRQHandler(void);
+//============================================================================
+// Error handler and ISRs...
 
-/*..........................................................................*/
-void SysTick_Handler(void) { /* system clock tick ISR -- kernel aware */
-    /* state of the button debouncing, see below */
-    static struct ButtonsDebouncing {
-        uint32_t depressed;
-        uint32_t previous;
-    } buttons = { 0U, 0U };
-    uint32_t current;
-    uint32_t tmp;
+Q_NORETURN Q_onError(char const * const module, int_t const id) {
+    // NOTE: this implementation of the assertion handler is intended only
+    // for debugging and MUST be changed for deployment of the application
+    // (assuming that you ship your production code with assertions enabled).
+    Q_UNUSED_PAR(module);
+    Q_UNUSED_PAR(id);
+    QS_ASSERTION(module, id, 10000U);
 
-    QK_ISR_ENTRY();   /* inform QK about entering an ISR */
-
-#ifdef Q_SPY
-    {
-        tmp = SysTick->CTRL; /* clear CTRL_COUNTFLAG */
-        QS_tickTime_ += QS_tickPeriod_; /* account for the clock rollover */
+#ifndef NDEBUG
+    // light up the user LED
+    GPIOA->BSRRL = (1U << LED_PIN);  // turn LED on
+    // for debugging, hang on in an endless loop...
+    for (;;) {
     }
 #endif
 
-    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); /* process time events for rate 0 */
+    NVIC_SystemReset();
+}
+//............................................................................
+void assert_failed(char const * const module, int_t const id); // prototype
+void assert_failed(char const * const module, int_t const id) {
+    Q_onError(module, id);
+}
 
-    /* get state of the user button */
-    /* Perform the debouncing of buttons. The algorithm for debouncing
-    * adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
-    * and Michael Barr, page 71.
-    */
-    current = ~GPIOC->IDR; /* read Port C with the state of Button B1 */
-    tmp = buttons.depressed; /* save the debounced depressed buttons */
-    buttons.depressed |= (buttons.previous & current); /* set depressed */
-    buttons.depressed &= (buttons.previous | current); /* clear released */
-    buttons.previous   = current; /* update the history */
-    tmp ^= buttons.depressed;     /* changed debounced depressed */
-    if ((tmp & BTN_B1) != 0U) {  /* debounced B1 state changed? */
-        if ((buttons.depressed & BTN_B1) != 0U) { /* is B1 depressed? */
-            static QEvt const pauseEvt = { PAUSE_SIG, 0U, 0U};
+// ISRs used in the application ==========================================
+void SysTick_Handler(void); // prototype
+void SysTick_Handler(void) {
+    QK_ISR_ENTRY();   // inform QK about entering an ISR
+
+    QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); // time events at rate 0
+
+    // Perform the debouncing of buttons. The algorithm for debouncing
+    // adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
+    // and Michael Barr, page 71.
+    //
+    // state of the button debouncing
+    static struct {
+        uint32_t depressed;
+        uint32_t previous;
+    } buttons = { 0U, 0U };
+
+    uint32_t current = ~GPIOC->IDR; // Port C with state of Button B1
+    uint32_t tmp = buttons.depressed; // save the depressed buttons
+    buttons.depressed |= (buttons.previous & current); // set depressed
+    buttons.depressed &= (buttons.previous | current); // clear released
+    buttons.previous   = current; // update the history
+    tmp ^= buttons.depressed;     // changed debounced depressed
+    current = buttons.depressed;
+
+    if ((tmp & (1U << BTN_PIN)) != 0U) { // debounced BTN state changed?
+        if ((current & (1U << BTN_PIN)) != 0U) { // is BTN depressed?
+            static QEvt const pauseEvt = QEVT_INITIALIZER(PAUSE_SIG);
             QACTIVE_PUBLISH(&pauseEvt, &l_SysTick_Handler);
         }
-        else {            /* the button is released */
-            static QEvt const serveEvt = { SERVE_SIG, 0U, 0U};
+        else { // the button is released
+            static QEvt const serveEvt = QEVT_INITIALIZER(SERVE_SIG);
             QACTIVE_PUBLISH(&serveEvt, &l_SysTick_Handler);
         }
     }
 
-    QK_ISR_EXIT();             /* inform QK about exiting an ISR */
+#ifdef Q_SPY
+    tmp = SysTick->CTRL; // clear CTRL_COUNTFLAG
+    QS_tickTime_ += QS_tickPeriod_; // account for the clock rollover
+#endif
+
+    QK_ISR_EXIT();  // inform QK about exiting an ISR
 }
-/*..........................................................................*/
-#if Q_SPY
-void USART2_IRQHandler(void) { /* kernel UNAWARE interrupt */
-    /* is RX register NOT empty? */
+//............................................................................
+// interrupt handler for testing preemptions in QK
+void EXTI0_1_IRQHandler(void); // prototype
+void EXTI0_1_IRQHandler(void) {
+    QK_ISR_ENTRY();   // inform QK about entering an ISR
+
+    static QEvt const testEvt = QEVT_INITIALIZER(TEST_SIG);
+    QACTIVE_POST(AO_Table, &testEvt, (void *)0);
+
+    QK_ISR_EXIT();    // inform QK about exiting an ISR
+}
+
+//............................................................................
+#ifdef Q_SPY
+// ISR for receiving bytes from the QSPY Back-End
+// NOTE: This ISR is "QF-unaware" meaning that it does not interact with
+// the QF/QK and is not disabled. Such ISRs don't need to call
+// QK_ISR_ENTRY/QK_ISR_EXIT and they cannot post or publish events.
+
+void USART2_IRQHandler(void); // prototype
+void USART2_IRQHandler(void) { // used in QS-RX (kernel UNAWARE interrutp)
+    // is RX register NOT empty?
     if ((USART2->SR & (1U << 5)) != 0) {
         uint32_t b = USART2->DR;
         QS_RX_PUT(b);
     }
+
     QK_ARM_ERRATUM_838869();
 }
-#endif
+#endif // Q_SPY
 
-/* BSP functions ===========================================================*/
+//............................................................................
+#ifdef QF_ON_CONTEXT_SW
+// NOTE: the context-switch callback is called with interrupts DISABLED
+void QF_onContextSw(QActive *prev, QActive *next) {
+    QS_BEGIN_INCRIT(CONTEXT_SW, 0U) // in critical section!
+        QS_OBJ(prev);
+        QS_OBJ(next);
+    QS_END_INCRIT()
+}
+#endif // QF_ON_CONTEXT_SW
+
+//============================================================================
+// BSP functions...
+
 void BSP_init(void) {
-    /* NOTE: SystemInit() has been already called from the startup code
-    *  but SystemCoreClock needs to be updated
-    */
+    // Configure the MPU to prevent NULL-pointer dereferencing ...
+    MPU->RBAR = 0x0U                          // base address (NULL)
+                | MPU_RBAR_VALID_Msk          // valid region
+                | (MPU_RBAR_REGION_Msk & 7U); // region #7
+    MPU->RASR = (7U << MPU_RASR_SIZE_Pos)     // 2^(7+1) region
+                | (0x0U << MPU_RASR_AP_Pos)   // no-access region
+                | MPU_RASR_ENABLE_Msk;        // region enable
+    MPU->CTRL = MPU_CTRL_PRIVDEFENA_Msk       // enable background region
+                | MPU_CTRL_ENABLE_Msk;        // enable the MPU
+    __ISB();
+    __DSB();
+
+    // NOTE: SystemInit() has been already called from the startup code
+    // but SystemCoreClock needs to be updated
     SystemCoreClockUpdate();
 
-    /* enable GPIOA clock port for the LED LD2 */
+    // enable GPIOA clock port for the LED LD2
     RCC->AHBENR |= (1U << 0);
 
-    /* configure LED (PA.5) pin as push-pull output, no pull-up, pull-down */
-    GPIOA->MODER   &= ~((3U << 2*5));
-    GPIOA->MODER   |=  ((1U << 2*5));
-    GPIOA->OTYPER  &= ~((1U <<   5));
-    GPIOA->OSPEEDR &= ~((3U << 2*5));
-    GPIOA->OSPEEDR |=  ((1U << 2*5));
-    GPIOA->PUPDR   &= ~((3U << 2*5));
+    // configure LED (PA.5) pin as push-pull output, no pull-up, pull-down
+    GPIOA->MODER   &= ~((3U << 2U*LED_PIN));
+    GPIOA->MODER   |=  ((1U << 2U*LED_PIN));
+    GPIOA->OTYPER  &= ~((1U <<    LED_PIN));
+    GPIOA->OSPEEDR &= ~((3U << 2U*LED_PIN));
+    GPIOA->OSPEEDR |=  ((1U << 2U*LED_PIN));
+    GPIOA->PUPDR   &= ~((3U << 2U*LED_PIN));
 
-    /* enable GPIOC clock port for the Button B1 */
+    // enable GPIOC clock port for the Button B1
     RCC->AHBENR |=  (1U << 2);
 
-    /* configure Button (PC.13) pins as input, no pull-up, pull-down */
-    GPIOC->MODER   &= ~(3U << 2*13);
-    GPIOC->OSPEEDR &= ~(3U << 2*13);
-    GPIOC->OSPEEDR |=  (1U << 2*13);
-    GPIOC->PUPDR   &= ~(3U << 2*13);
+    // configure Button (PC.13) pins as input, no pull-up, pull-down
+    GPIOC->MODER   &= ~(3U << 2U*BTN_PIN);
+    GPIOC->OSPEEDR &= ~(3U << 2U*BTN_PIN);
+    GPIOC->OSPEEDR |=  (1U << 2U*BTN_PIN);
+    GPIOC->PUPDR   &= ~(3U << 2U*BTN_PIN);
 
-    BSP_randomSeed(1234U); /* seed the random number generator */
+    BSP_randomSeed(1234U); // seed the random number generator
 
-    /* initialize the QS software tracing... */
-    if (QS_INIT((void *)0) == 0U) {
+    // initialize the QS software tracing...
+    if (!QS_INIT((void *)0)) {
         Q_ERROR();
     }
+
+    // dictionaries...
     QS_OBJ_DICTIONARY(&l_SysTick_Handler);
     QS_USR_DICTIONARY(PHILO_STAT);
+    QS_USR_DICTIONARY(PAUSED_STAT);
+    QS_USR_DICTIONARY(CONTEXT_SW);
 
-    /* setup the QS filters... */
-    QS_GLB_FILTER(QS_ALL_RECORDS);
-    QS_GLB_FILTER(-QS_QF_TICK);
+    QS_ONLY(produce_sig_dict());
+
+    // setup the QS filters...
+    QS_GLB_FILTER(QS_ALL_RECORDS);   // all records
+    QS_GLB_FILTER(-QS_QF_TICK);      // exclude the clock tick
 }
-/*..........................................................................*/
+//............................................................................
+void BSP_start(void) {
+    // initialize event pools
+    static QF_MPOOL_EL(TableEvt) smlPoolSto[2*N_PHILO];
+    QF_poolInit(smlPoolSto, sizeof(smlPoolSto), sizeof(smlPoolSto[0]));
+
+    // initialize publish-subscribe
+    static QSubscrList subscrSto[MAX_PUB_SIG];
+    QActive_psInit(subscrSto, Q_DIM(subscrSto));
+
+    // instantiate and start AOs/threads...
+
+    static QEvt const *philoQueueSto[N_PHILO][10];
+    for (uint8_t n = 0U; n < N_PHILO; ++n) {
+        Philo_ctor(n);
+        QACTIVE_START(AO_Philo[n],
+
+            // NOTE: set the preemption-threshold of all Philos to
+            // the same level, so that they cannot preempt each other.
+            Q_PRIO(n + 3U, N_PHILO + 2U), // QF-prio/pre-thre.
+
+            philoQueueSto[n],        // event queue storage
+            Q_DIM(philoQueueSto[n]), // queue length [events]
+            (void *)0, 0U,           // no stack storage
+            (void *)0);              // no initialization param
+    }
+
+    static QEvt const *tableQueueSto[N_PHILO];
+    Table_ctor();
+    QACTIVE_START(AO_Table,
+        N_PHILO + 7U,                // QP prio. of the AO
+        tableQueueSto,               // event queue storage
+        Q_DIM(tableQueueSto),        // queue length [events]
+        (void *)0, 0U,               // no stack storage
+        (void *)0);                  // no initialization param
+}
+//............................................................................
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
+    Q_UNUSED_PAR(n);
+
     if (stat[0] == 'h') {
-        GPIOA->BSRRL |= LED_LD2;  /* turn LED on  */
+        GPIOA->BSRRL = (1U << LED_PIN);  // turn LED on
     }
     else {
-        GPIOA->BSRRH |= LED_LD2;  /* turn LED off */
+        GPIOA->BSRRH = (1U << LED_PIN);  // turn LED off
     }
 
-    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
-        QS_U8(0, n);    /* Philosopher number */
-        QS_STR(stat);   /* Philosopher status */
+    // app-specific trace record...
+    QS_BEGIN_ID(PHILO_STAT, AO_Table->prio)
+        QS_U8(1, n);  // Philosopher number
+        QS_STR(stat); // Philosopher status
     QS_END()
 }
-/*..........................................................................*/
-void BSP_displayPaused(uint8_t paused) {
-    // not enough LEDs to show the "Paused" status
+//............................................................................
+void BSP_displayPaused(uint8_t const paused) {
+    // not enough LEDs to implement this feature
     if (paused != 0U) {
-        //GPIOA->BSRRL |= LED_LD2;  /* turn LED on  */
+        //GPIOA->BSRRL = (1U << LED_PIN);  // turn LED on
     }
     else {
-        //GPIOA->BSRRH |= LED_LD2;  /* turn LED off */
+        //GPIOA->BSRRH = (1U << LED_PIN);  // turn LED off
     }
+
+    // application-specific trace record
+    QS_BEGIN_ID(PAUSED_STAT, AO_Table->prio)
+        QS_U8(1, paused);  // Paused status
+    QS_END()
 }
-/*..........................................................................*/
-uint32_t BSP_random(void) { /* a very cheap pseudo-random-number generator */
-    /* "Super-Duper" Linear Congruential Generator (LCG)
-    * LCG(2^32, 3*7*11*13*23, 0, seed)
-    */
-    l_rnd = l_rnd * (3U*7U*11U*13U*23U);
-    return l_rnd >> 8;
-}
-/*..........................................................................*/
+//............................................................................
 void BSP_randomSeed(uint32_t seed) {
-    l_rnd = seed;
+    l_rndSeed = seed;
 }
-/*..........................................................................*/
-void BSP_terminate(int16_t result) {
-    (void)result;
+//............................................................................
+uint32_t BSP_random(void) { // a very cheap pseudo-random-number generator
+
+    QSchedStatus lockStat = QK_schedLock(N_PHILO);
+    // "Super-Duper" Linear Congruential Generator (LCG)
+    // LCG(2^32, 3*7*11*13*23, 0, seed)
+    //
+    uint32_t rnd = l_rndSeed * (3U*7U*11U*13U*23U);
+    l_rndSeed = rnd; // set for the next time
+    QK_schedUnlock(lockStat);
+
+    return (rnd >> 8U);
 }
-/*..........................................................................*/
-void BSP_wait4SW1(void) {
-    while ((GPIOC->IDR  & BTN_B1) != 0U) {
-        GPIOA->BSRRL |= LED_LD2;  /* turn LED[n] on  */
-        GPIOA->BSRRH |= LED_LD2;  /* turn LED[n] off */
-    }
-}
-/*..........................................................................*/
+//............................................................................
 void BSP_ledOn(void) {
-    //GPIOA->BSRL |= (LED_LD2); /* turn LED2 on  */
+    GPIOA->BSRRL = (1U << LED_PIN);  // turn LED on
 }
-/*..........................................................................*/
+//............................................................................
 void BSP_ledOff(void) {
-    //GPIOA->BSRRH |= LED_LD2;  /* turn LED2 off */
+    GPIOA->BSRRH = (1U << LED_PIN);  // turn LED off
+}
+//............................................................................
+void BSP_terminate(int16_t result) {
+    Q_UNUSED_PAR(result);
 }
 
-/* QF callbacks ============================================================*/
+//============================================================================
+// QF callbacks...
 void QF_onStartup(void) {
-    /* set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate */
+    // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
-    /* set priorities of ALL ISRs used in the system, see NOTE00
-    *
-    * !!!!!!!!!!!!!!!!!!!!!!!!!!!! CAUTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    * Assign a priority to EVERY ISR explicitly by calling NVIC_SetPriority().
-    * DO NOT LEAVE THE ISR PRIORITIES AT THE DEFAULT VALUE!
-    */
-    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1);
-    NVIC_SetPriority(USART2_IRQn,    0); /* kernel UNAWARE interrupt */
-    /* ... */
+    // assign all priority bits for preemption-prio. and none to sub-prio.
+    NVIC_SetPriorityGrouping(0U);
 
-    /* enable IRQs... */
+    // set priorities of ALL ISRs used in the system, see NOTE1
+    NVIC_SetPriority(USART2_IRQn,    0); // kernel UNAWARE interrupt
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
+    // ...
+
+    // enable IRQs...
 #ifdef Q_SPY
-    NVIC_EnableIRQ(USART2_IRQn); /* UART2 interrupt used for QS-RX */
+    NVIC_EnableIRQ(USART2_IRQn); // UART2 interrupt used for QS-RX
 #endif
 }
-/*..........................................................................*/
+//............................................................................
 void QF_onCleanup(void) {
 }
-/*..........................................................................*/
-void QK_onIdle(void) { /* called with interrupts enabled */
-
-    /* toggle an LED on and then off (not enough LEDs, see NOTE01) */
-    QF_INT_DISABLE();
-    //GPIOA->BSRRL |= LED_LD2;  /* turn LED[n] on  */
-    //GPIOA->BSRRH |= LED_LD2;  /* turn LED[n] off */
-    QF_INT_ENABLE();
+//............................................................................
+void QK_onIdle(void) {
+    // toggle an LED on and then off (not enough LEDs, see NOTE02)
+    //QF_INT_DISABLE();
+    //GPIOA->BSRRL = (1U << LED_PIN); // turn LED[n] on
+    //GPIOA->BSRRH = (1U << LED_PIN); // turn LED[n] off
+    //QF_INT_ENABLE();
 
 #ifdef Q_SPY
-    QS_rxParse();  /* parse all the received bytes */
+    QF_INT_DISABLE();
+    QS_rxParse();  // parse all the received bytes
+    QF_INT_ENABLE();
+    QF_CRIT_EXIT_NOP();
 
-    if ((USART2->SR & (1U << 7)) != 0) {  /* is TXE empty? */
-        uint16_t b;
-
-        QF_INT_DISABLE();
-        b = QS_getByte();
-        QF_INT_ENABLE();
-
-        if (b != QS_EOD) {  /* not End-Of-Data? */
-            USART2->DR = (b & 0xFFU);  /* put into the DR register */
+    QF_INT_DISABLE();
+    if ((USART2->SR & (1U << 7U)) != 0U) {  // is TXE empty?
+        uint16_t b = QS_getByte();
+        if (b != QS_EOD) {  // not End-Of-Data?
+            USART2->DR = b; // put into the DR register
         }
     }
+    QF_INT_ENABLE();
 #elif defined NDEBUG
-    /* Put the CPU and peripherals to the low-power mode.
-    * you might need to customize the clock management for your application,
-    * see the datasheet for your particular Cortex-M MCU.
-    */
-    /* !!!CAUTION!!!
-    * The WFI instruction stops the CPU clock, which unfortunately disables
-    * the JTAG port, so the ST-Link debugger can no longer connect to the
-    * board. For that reason, the call to __WFI() has to be used with CAUTION.
-    *
-    * NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
-    * reset the board, then connect with ST-Link Utilities and erase the part.
-    * The trick with BOOT(0) is it gets the part to run the System Loader
-    * instead of your broken code. When done disconnect BOOT0, and start over.
-    */
-    //__WFI(); /* Wait-For-Interrupt */
+    // Put the CPU and peripherals to the low-power mode.
+    // you might need to customize the clock management for your application,
+    // see the datasheet for your particular Cortex-M MCU.
+    //
+    // !!!CAUTION!!!
+    // The WFI instruction stops the CPU clock, which unfortunately disables
+    // the JTAG port, so the ST-Link debugger can no longer connect to the
+    // board. For that reason, the call to __WFI() has to be used with CAUTION.
+    //
+    // NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
+    // reset the board, then connect with ST-Link Utilities and erase the part.
+    // The trick with BOOT(0) is that it gets the part to run the System Loader
+    // instead of your broken code. When done disconnect BOOT0, and start over.
+    //
+    //__WFI(); // Wait-For-Interrupt
 #endif
 }
 
-/*..........................................................................*/
-Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
-    /*
-    * NOTE: add here your application-specific error handling
-    */
-    (void)module;
-    (void)loc;
-    QS_ASSERTION(module, loc, 10000U); /* report assertion to QS */
-
-#ifndef NDEBUG
-    BSP_wait4SW1();
-#endif
-    NVIC_SystemReset();
-}
-
-/* QS callbacks ============================================================*/
+//============================================================================
+// QS callbacks...
 #ifdef Q_SPY
-/*..........................................................................*/
+
+//............................................................................
 #define __DIV(__PCLK, __BAUD)       (((__PCLK / 4) *25)/(__BAUD))
 #define __DIVMANT(__PCLK, __BAUD)   (__DIV(__PCLK, __BAUD)/100)
 #define __DIVFRAQ(__PCLK, __BAUD)   \
@@ -310,102 +409,120 @@ Q_NORETURN Q_onAssert(char const * const module, int_t const loc) {
 #define __USART_BRR(__PCLK, __BAUD) \
     ((__DIVMANT(__PCLK, __BAUD) << 4)|(__DIVFRAQ(__PCLK, __BAUD) & 0x0F))
 
-/*..........................................................................*/
+// USART2 pins PA.2 and PA.3
+#define USART2_TX_PIN 2U
+#define USART2_RX_PIN 3U
+
+//............................................................................
 uint8_t QS_onStartup(void const *arg) {
-    static uint8_t qsBuf[2*1024]; /* buffer for Quantum Spy */
-    static uint8_t qsRxBuf[128];  /* buffer for QS-RX channel */
+    Q_UNUSED_PAR(arg);
 
-    (void)arg; /* avoid the "unused parameter" compiler warning */
+    static uint8_t qsTxBuf[2*1024]; // buffer for QS-TX channel
+    QS_initBuf(qsTxBuf, sizeof(qsTxBuf));
 
-    QS_initBuf(qsBuf, sizeof(qsBuf));
+    static uint8_t qsRxBuf[100];    // buffer for QS-RX channel
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
 
-    /* enable peripheral clock for USART2 */
-    RCC->AHBENR   |=  (1U <<  0);   /* Enable GPIOA clock   */
-    RCC->APB1ENR  |=  (1U << 17);   /* Enable USART#2 clock */
+    // enable peripheral clock for USART2
+    RCC->AHBENR  |= ( 1U <<  0U);  // Enable GPIOA clock
+    RCC->APB1ENR |= ( 1U << 17U);  // Enable USART#2 clock
 
-    /* Configure PA3 to USART2_RX, PA2 to USART2_TX */
-    GPIOA->AFR[0] &= ~((15U << 4*3) | (15U << 4*2));
-    GPIOA->AFR[0] |=  (( 7U << 4*3) | ( 7U << 4*2));
-    GPIOA->MODER  &= ~(( 3U << 2*3) | ( 3U << 2*2));
-    GPIOA->MODER  |=  (( 2U << 2*3) | ( 2U << 2*2));
+    // Configure PA3 to USART2_RX, PA2 to USART2_TX
+    GPIOA->AFR[0] &= ~((15U << 4U*USART2_RX_PIN) | (15U << 4U*USART2_TX_PIN));
+    GPIOA->AFR[0] |=  (( 7U << 4U*USART2_RX_PIN) | ( 7U << 4U*USART2_TX_PIN));
+    GPIOA->MODER  &= ~(( 3U << 2U*USART2_RX_PIN) | ( 3U << 2U*USART2_TX_PIN));
+    GPIOA->MODER  |=  (( 2U << 2U*USART2_RX_PIN) | ( 2U << 2U*USART2_TX_PIN));
 
-    USART2->BRR  = __USART_BRR(SystemCoreClock, 115200U);  /* baud rate */
-    USART2->CR3  = 0x0000U;        /* no flow control          */
-    USART2->CR2  = 0x0000U;        /* 1 stop bit               */
-    USART2->CR1  = ((1U <<  2) |   /* enable RX                */
-                    (1U <<  3) |   /* enable TX                */
-                    (1U <<  5) |   /* enable RX interrupt */
-                    (0U << 12) |   /* 1 start bit, 8 data bits */
-                    (1U << 13));   /* enable USART             */
+    USART2->BRR  = __USART_BRR(SystemCoreClock, 115200U);  // baud rate
+    USART2->CR3  = 0x0000U;         // no flow control
+    USART2->CR2  = 0x0000U;         // 1 stop bit
+    USART2->CR1  = ((1U <<  2U) |   // enable RX
+                    (1U <<  3U) |   // enable TX
+                    (1U <<  5U) |   // enable RX interrupt
+                    (0U << 12U) |   // 8 data bits
+                    (0U << 28U) |   // 8 data bits
+                    (1U << 13U));   // enable USART
 
-    return 1U; /* return success */
+    QS_tickPeriod_ = SystemCoreClock / BSP_TICKS_PER_SEC;
+    QS_tickTime_ = QS_tickPeriod_; // to start the timestamp at zero
+
+    return 1U; // return success
 }
-/*..........................................................................*/
+//............................................................................
 void QS_onCleanup(void) {
 }
-/*..........................................................................*/
-QSTimeCtr QS_onGetTime(void) { /* NOTE: invoked with interrupts DISABLED */
-    if ((SysTick->CTRL & 0x00010000) == 0) {  /* COUNT no set? */
+//............................................................................
+QSTimeCtr QS_onGetTime(void) { // NOTE: invoked with interrupts DISABLED
+    if ((SysTick->CTRL & 0x00010000U) == 0U) { // COUNT no set?
         return QS_tickTime_ - (QSTimeCtr)SysTick->VAL;
     }
-    else { /* the rollover occured, but the SysTick_ISR did not run yet */
+    else { // the rollover occured, but the SysTick_ISR did not run yet
         return QS_tickTime_ + QS_tickPeriod_ - (QSTimeCtr)SysTick->VAL;
     }
 }
-/*..........................................................................*/
+//............................................................................
 void QS_onFlush(void) {
-    uint16_t b;
-
-    QF_INT_DISABLE();
-    while ((b = QS_getByte()) != QS_EOD) {    /* while not End-Of-Data... */
-        QF_INT_ENABLE();
-        while ((USART2->SR & (1U << 7)) == 0U) { /* while TXE not empty */
-        }
-        USART2->DR = (b & 0xFFU);  /* put into the DR register */
+    for (;;) {
         QF_INT_DISABLE();
+        uint16_t b = QS_getByte();
+        if (b != QS_EOD) {
+            while ((USART2->SR & (1U << 7U)) == 0U) { // while TXE not empty
+                QF_INT_ENABLE();
+                QF_CRIT_EXIT_NOP();
+
+                QF_INT_DISABLE();
+            }
+            USART2->DR = b; // put into the DR register
+            QF_INT_ENABLE();
+        }
+        else {
+            QF_INT_ENABLE();
+            break;
+        }
     }
-    QF_INT_ENABLE();
 }
-/*..........................................................................*/
-/*! callback function to reset the target (to be implemented in the BSP) */
+//............................................................................
+//! callback function to reset the target (to be implemented in the BSP)
 void QS_onReset(void) {
     NVIC_SystemReset();
 }
-/*..........................................................................*/
-/*! callback function to execute a user command (to be implemented in BSP) */
+//............................................................................
+//! callback function to execute a user command
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
-    (void)cmdId;
-    (void)param1;
-    (void)param2;
-    (void)param3;
+    Q_UNUSED_PAR(cmdId);
+    Q_UNUSED_PAR(param1);
+    Q_UNUSED_PAR(param2);
+    Q_UNUSED_PAR(param3);
 }
 
-#endif /* Q_SPY */
-/*--------------------------------------------------------------------------*/
+#endif // Q_SPY
+//----------------------------------------------------------------------------
 
-/*****************************************************************************
-* NOTE00:
-* The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
-* ISR priority that is disabled by the QF framework. The value is suitable
-* for the NVIC_SetPriority() CMSIS function.
-*
-* Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
-* with the numerical values of priorities equal or higher than
-* QF_AWARE_ISR_CMSIS_PRI) are allowed to call any QF services. These ISRs
-* are "QF-aware".
-*
-* Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
-* level (i.e., with the numerical values of priorities less than
-* QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
-* Such "QF-unaware" ISRs cannot call any QF services. The only mechanism
-* by which a "QF-unaware" ISR can communicate with the QF framework is by
-* triggering a "QF-aware" ISR, which can post/publish events.
-*
-* NOTE01:
-* Usually, one of the LEDs is used to visualize the idle loop activity.
-* However, the board has not enough LEDs (only one, actually), so this
-* feature is disabled.
-*/
+//============================================================================
+// NOTE1:
+// The QF_AWARE_ISR_CMSIS_PRI constant from the QF port specifies the highest
+// ISR priority that is disabled by the QF framework. The value is suitable
+// for the NVIC_SetPriority() CMSIS function.
+//
+// Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
+// with the numerical values of priorities equal or higher than
+// QF_AWARE_ISR_CMSIS_PRI) are allowed to call the QK_ISR_ENTRY/
+// QK_ISR_ENTRY macros or any other QF/QK services. These ISRs are
+// "QF-aware".
+//
+// Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
+// level (i.e., with the numerical values of priorities less than
+// QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
+// Such "QF-unaware" ISRs cannot call ANY QF/QK services. In particular they
+// can NOT call the macros QK_ISR_ENTRY/QK_ISR_ENTRY. The only mechanism
+// by which a "QF-unaware" ISR can communicate with the QF framework is by
+// triggering a "QF-aware" ISR, which can post/publish events.
+//
+// NOTE2:
+// The User LED is used to visualize the idle loop activity. The brightness
+// of the LED is proportional to the frequency of the idle loop.
+// Please note that the LED is toggled with interrupts locked, so no interrupt
+// execution time contributes to the brightness of the User LED.
+//

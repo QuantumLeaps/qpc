@@ -1,34 +1,34 @@
-/*============================================================================
-* QP/C Real-Time Embedded Framework (RTEF)
-* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-*
-* SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
-*
-* This software is dual-licensed under the terms of the open source GNU
-* General Public License version 3 (or any later version), or alternatively,
-* under the terms of one of the closed source Quantum Leaps commercial
-* licenses.
-*
-* The terms of the open source GNU General Public License version 3
-* can be found at: <www.gnu.org/licenses/gpl-3.0>
-*
-* The terms of the closed source Quantum Leaps commercial licenses
-* can be found at: <www.state-machine.com/licensing>
-*
-* Redistributions in source code must retain this top-level comment block.
-* Plagiarizing this software to sidestep the license obligations is illegal.
-*
-* Contact information:
-* <www.state-machine.com>
-* <info@state-machine.com>
-============================================================================*/
-/*!
-* @date Last updated on: 2022-06-12
-* @version Last updated for: @ref qpc_7_0_1
-*
-* @file
-* @brief QWIN GUI facilities for building realistic embedded front panels
-*/
+//============================================================================
+// QP/C Real-Time Embedded Framework (RTEF)
+// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+//
+// This software is dual-licensed under the terms of the open source GNU
+// General Public License version 3 (or any later version), or alternatively,
+// under the terms of one of the closed source Quantum Leaps commercial
+// licenses.
+//
+// The terms of the open source GNU General Public License version 3
+// can be found at: <www.gnu.org/licenses/gpl-3.0>
+//
+// The terms of the closed source Quantum Leaps commercial licenses
+// can be found at: <www.state-machine.com/licensing>
+//
+// Redistributions in source code must retain this top-level comment block.
+// Plagiarizing this software to sidestep the license obligations is illegal.
+//
+// Contact information:
+// <www.state-machine.com>
+// <info@state-machine.com>
+//============================================================================
+//!
+//! @date Last updated on: 2022-06-12
+//! @version Last updated for: @ref qpc_7_0_1
+//!
+//! @file
+//! @brief QWIN GUI facilities for building realistic embedded front panels
+//!
 #ifndef QWIN_GUI_H
 #define QWIN_GUI_H
 
@@ -37,17 +37,17 @@
 #endif
 
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>  /* Win32 API */
+#include <windows.h>  // Win32 API
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* create the custom dialog hosting the embedded front panel ...............*/
+// create the custom dialog hosting the embedded front panel ...............
 HWND CreateCustDialog(HINSTANCE hInst, int iDlg, HWND hParent,
                       WNDPROC lpfnWndProc, LPCTSTR lpWndClass);
 
-/* OwnerDrawnButton "class" ................................................*/
+// OwnerDrawnButton "class" ................................................
 typedef struct {
     UINT    itemID;
     HBITMAP hBitmapUp;
@@ -75,9 +75,9 @@ void OwnerDrawnButton_set(OwnerDrawnButton * const me,
                           int isDepressed);
 BOOL OwnerDrawnButton_isDepressed(OwnerDrawnButton const * const me);
 
-/* GraphicDisplay "class" for drawing graphic displays
-* with up to 24-bit color...
-*/
+// GraphicDisplay "class" for drawing graphic displays
+// with up to 24-bit color...
+//
 typedef struct {
     HDC     src_hDC;
     int     src_width;
@@ -113,12 +113,12 @@ void GraphicDisplay_redraw(GraphicDisplay * const me);
     pixelRGB[2] = (me_)->bgColor[2]; \
 } while (false)
 
-/* SegmentDisplay "class" for drawing segment displays, LEDs, etc...........*/
+// SegmentDisplay "class" for drawing segment displays, LEDs, etc...........
 typedef struct {
-    HWND    *hSegment;    /* array of segment controls */
-    UINT     segmentNum;  /* number of segments */
-    HBITMAP *hBitmap;     /* array of bitmap handles */
-    UINT     bitmapNum;   /* number of bitmaps */
+    HWND    *hSegment;    // array of segment controls
+    UINT     segmentNum;  // number of segments
+    HBITMAP *hBitmap;     // array of bitmap handles
+    UINT     bitmapNum;   // number of bitmaps
 } SegmentDisplay;
 
 void SegmentDisplay_init(SegmentDisplay * const me,
@@ -131,11 +131,11 @@ BOOL SegmentDisplay_initBitmap(SegmentDisplay * const me,
 BOOL SegmentDisplay_setSegment(SegmentDisplay * const me,
                          UINT segmentNum, UINT bitmapNum);
 
-/* useful helper functions .................................................*/
+// useful helper functions .................................................
 void DrawBitmap(HDC hdc, HBITMAP hBitmap, int xStart, int yStart);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* QWIN_GUI_H */
+#endif // QWIN_GUI_H

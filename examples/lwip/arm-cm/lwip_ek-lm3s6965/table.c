@@ -1,47 +1,47 @@
-/*****************************************************************************
-* Product: DPP example with lwIP and direct screen output
-* Last updated for version 7.2.0
-* Last updated on  2022-12-22
-*
-*                    Q u a n t u m  L e a P s
-*                    ------------------------
-*                    Modern Embedded Software
-*
-* Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-*
-* This program is open source software: you can redistribute it and/or
-* modify it under the terms of the GNU General Public License as published
-* by the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Alternatively, this program may be distributed and modified under the
-* terms of Quantum Leaps commercial licenses, which expressly supersede
-* the GNU General Public License and are specifically designed for
-* licensees interested in retaining the proprietary status of their code.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <www.gnu.org/licenses>.
-*
-* Contact information:
-* <www.state-machine.com/licensing>
-* <info@state-machine.com>
-*****************************************************************************/
-#include "qpc.h"     /* QP/C header file */
-#include "dpp.h"     /* application events and active objects */
-#include "bsp.h"     /* Board Support Package header file */
+//============================================================================
+// Product: DPP example with lwIP and direct screen output
+// Last updated for version 7.2.0
+// Last updated on  2022-12-22
+//
+//                   Q u a n t u m  L e a P s
+//                   ------------------------
+//                   Modern Embedded Software
+//
+// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+//
+// This program is open source software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Alternatively, this program may be distributed and modified under the
+// terms of Quantum Leaps commercial licenses, which expressly supersede
+// the GNU General Public License and are specifically designed for
+// licensees interested in retaining the proprietary status of their code.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <www.gnu.org/licenses>.
+//
+// Contact information:
+// <www.state-machine.com/licensing>
+// <info@state-machine.com>
+//============================================================================
+#include "qpc.h"     // QP/C header file
+#include "dpp.h"     // application events and active objects
+#include "bsp.h"     // Board Support Package header file
 
-#include "rit128x96x4.h" /* RITEK 128x96x4 OLED used in Rev C-D boards */
+#include "rit128x96x4.h" // RITEK 128x96x4 OLED used in Rev C-D boards
 
-#include <stdio.h>   /* for snprintf() */
+#include <stdio.h>   // for snprintf()
 
 Q_DEFINE_THIS_FILE
 
-/* Active object class -----------------------------------------------------*/
+// Active object class -----------------------------------------------------
 typedef struct TableTag {
     QActive super;
 
@@ -68,15 +68,15 @@ static void Table_displyCgiText(Table *me, char const *text);
 enum ForkState { FREE, USED };
 
 #ifdef Q_SPY
-enum AppRecords { /* application-specific QS trace records */
+enum AppRecords { // application-specific QS trace records
     PHILO_STAT = QS_USER,
     CGI_TEXT,
     UDP_TEXT,
 };
 #endif
 
-/* Local objects -----------------------------------------------------------*/
-static Table l_table; /* the single instance of the Table active object */
+// Local objects -----------------------------------------------------------
+static Table l_table; // the single instance of the Table active object
 
 enum TablePrivateSignals {
    DISPLAY_TIMEOUT_SIG = MAX_SIG
@@ -84,10 +84,10 @@ enum TablePrivateSignals {
 
 #define DISPLAY_TIMEOUT (BSP_TICKS_PER_SEC * 30)
 
-/* Global-scope objects ----------------------------------------------------*/
-QActive * const AO_Table = (QActive *)&l_table; /* "opaque" AO pointer */
+// Global-scope objects ----------------------------------------------------
+QActive * const AO_Table = (QActive *)&l_table; // "opaque" AO pointer
 
-/*..........................................................................*/
+//............................................................................
 void Table_ctor(void) {
     uint8_t n;
     Table *me = &l_table;
@@ -102,11 +102,11 @@ void Table_ctor(void) {
     }
     me->udpCtr = 0;
 }
-/*..........................................................................*/
+//............................................................................
 QState Table_initial(Table *me, QEvt const *e) {
-    (void)e; /* unused parameter */
+    (void)e; // unused parameter
 
-    /* Initialize the OLED display */
+    // Initialize the OLED display
     Table_displayInit(me);
 
     QActive_subscribe((QActive *)me, DONE_SIG);
@@ -119,18 +119,18 @@ QState Table_initial(Table *me, QEvt const *e) {
     QS_FUN_DICTIONARY(&Table_initial);
     QS_FUN_DICTIONARY(&Table_serving);
 
-    QS_SIG_DICTIONARY(DONE_SIG,            0); /* global signals */
+    QS_SIG_DICTIONARY(DONE_SIG,            0); // global signals
     QS_SIG_DICTIONARY(EAT_SIG,             0);
     QS_SIG_DICTIONARY(DISPLAY_IPADDR_SIG,  0);
     QS_SIG_DICTIONARY(DISPLAY_CGI_SIG,     0);
     QS_SIG_DICTIONARY(DISPLAY_UDP_SIG,     0);
 
-    QS_SIG_DICTIONARY(HUNGRY_SIG,          me); /* signal just for Table */
-    QS_SIG_DICTIONARY(DISPLAY_TIMEOUT_SIG, me); /* signal just for Table */
+    QS_SIG_DICTIONARY(HUNGRY_SIG,          me); // signal just for Table
+    QS_SIG_DICTIONARY(DISPLAY_TIMEOUT_SIG, me); // signal just for Table
 
     return Q_TRAN(&Table_serving);
 }
-/*..........................................................................*/
+//............................................................................
 QState Table_serving(Table *me, QEvt const *e) {
     uint8_t n, m;
     TableEvt *pe;
@@ -149,7 +149,7 @@ QState Table_serving(Table *me, QEvt const *e) {
         }
         case HUNGRY_SIG: {
             n = ((TableEvt const *)e)->philoNum;
-            /* phil ID must be in range and he must be not hungry */
+            // phil ID must be in range and he must be not hungry
             Q_ASSERT((n < N_PHILO) && (!me->isHungry[n]));
 
             Table_displayPhilStat(me, n, "hungry  ");
@@ -168,16 +168,16 @@ QState Table_serving(Table *me, QEvt const *e) {
         }
         case DONE_SIG: {
             n = ((TableEvt const *)e)->philoNum;
-            /* phil ID must be in range and he must be not hungry */
+            // phil ID must be in range and he must be not hungry
             Q_ASSERT((n < N_PHILO) && (!me->isHungry[n]));
 
             Table_displayPhilStat(me, n, "thinking");
             m = LEFT(n);
-            /* both forks of Phil[n] must be used */
+            // both forks of Phil[n] must be used
             Q_ASSERT((me->fork[n] == USED) && (me->fork[m] == USED));
 
             me->fork[m] = me->fork[n] = FREE;
-            m = RIGHT(n); /* check the right neighbor */
+            m = RIGHT(n); // check the right neighbor
             if (me->isHungry[m] && (me->fork[m] == FREE)) {
                 me->fork[n] = me->fork[m] = USED;
                 me->isHungry[m] = 0;
@@ -186,8 +186,8 @@ QState Table_serving(Table *me, QEvt const *e) {
                 QACTIVE_PUBLISH((QEvt *)pe, &me->super);
                 Table_displayPhilStat(me, m, "eating  ");
             }
-            m = LEFT(n); /* check the left neighbor */
-            n = LEFT(m); /* left fork of the left neighbor */
+            m = LEFT(n); // check the left neighbor
+            n = LEFT(m); // left fork of the left neighbor
             if (me->isHungry[m] && (me->fork[n] == FREE)) {
                 me->fork[m] = me->fork[n] = USED;
                 me->isHungry[m] = 0;
@@ -223,7 +223,7 @@ QState Table_serving(Table *me, QEvt const *e) {
             te = Q_NEW(TextEvt, SEND_UDP_SIG);
             snprintf(te->text, Q_DIM(te->text), "%s-%d",
                       Q_EVT_CAST(TextEvt)->text, (int)me->udpCtr);
-            QACTIVE_POST(AO_LwIPMgr, (QEvt *)te, me); /* post directly */
+            QACTIVE_POST(AO_LwIPMgr, (QEvt *)te, me); // post directly
 
             return Q_HANDLED();
         }
@@ -231,8 +231,8 @@ QState Table_serving(Table *me, QEvt const *e) {
     return Q_SUPER(&QHsm_top);
 }
 
-/* helper functions for the display ........................................*/
-/* include the correct OLED display implementation... */
+// helper functions for the display ........................................
+// include the correct OLED display implementation...
 void Table_displayInit(Table *me) {
     RIT128x96x4Init(1000000);
     RIT128x96x4StringDraw("QP-lwIP Demo",       4*6, 0*8,  9);
@@ -243,7 +243,7 @@ void Table_displayInit(Table *me) {
     RIT128x96x4StringDraw("state-machine.com",  2*6,10*8,  9);
     me->displayOn = 1;
 }
-/*..........................................................................*/
+//............................................................................
 static void Table_displayOn(Table *me) {
     QTimeEvt_rearm(&me->te_DISPLAY_TIMEOUT, DISPLAY_TIMEOUT);
     if (!me->displayOn) {
@@ -251,14 +251,14 @@ static void Table_displayOn(Table *me) {
         RIT128x96x4DisplayOn();
     }
 }
-/*..........................................................................*/
+//............................................................................
 static void Table_displayOff(Table *me) {
     if (me->displayOn) {
         me->displayOn = 0;
         RIT128x96x4DisplayOff();
     }
 }
-/*..........................................................................*/
+//............................................................................
 static void Table_displayPhilStat(Table *me, uint8_t n, char const *stat) {
     if (me->displayOn) {
         char str[2];
@@ -266,35 +266,35 @@ static void Table_displayPhilStat(Table *me, uint8_t n, char const *stat) {
         str[1] = '\0';
         RIT128x96x4StringDraw(str, (6*6 + 3*6*n), 4*8, 15);
     }
-    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) /* app-specific record */
-        QS_U8(1, n);  /* Philosopher number */
-        QS_STR(stat); /* Philosopher status */
+    QS_BEGIN_ID(PHILO_STAT, AO_Philo[n]->prio) // app-specific record
+        QS_U8(1, n);  // Philosopher number
+        QS_STR(stat); // Philosopher status
     QS_END()
 }
-/*..........................................................................*/
+//............................................................................
 static void Table_displyIPAddr(Table *me, char const *ip_addr) {
-    Table_displayOn(me); /* make sure the screen is on */
-    RIT128x96x4StringDraw("               ", 5*6, 2*8, 15); /* wipe */
+    Table_displayOn(me); // make sure the screen is on
+    RIT128x96x4StringDraw("               ", 5*6, 2*8, 15); // wipe
     RIT128x96x4StringDraw(ip_addr,           5*6, 2*8, 15);
 }
-/*..........................................................................*/
+//............................................................................
 void Table_displyCgiText(Table *me, char const *text) {
-    Table_displayOn(me); /* make sure the screen is on */
-    RIT128x96x4StringDraw("               ", 5*6, 6*8, 15); /* wipe */
+    Table_displayOn(me); // make sure the screen is on
+    RIT128x96x4StringDraw("               ", 5*6, 6*8, 15); // wipe
     RIT128x96x4StringDraw(text,              5*6, 6*8, 15);
 
-    QS_BEGIN_ID(CGI_TEXT, 0U) /* app-specific record */
-        QS_STR(text); /* User text */
+    QS_BEGIN_ID(CGI_TEXT, 0U) // app-specific record
+        QS_STR(text); // User text
     QS_END()
 }
-/*..........................................................................*/
+//............................................................................
 void Table_displyUdpText(Table *me, char const *text) {
-    Table_displayOn(me); /* make sure the screen is on */
-    RIT128x96x4StringDraw("               ", 5*6, 6*8, 15); /* wipe */
+    Table_displayOn(me); // make sure the screen is on
+    RIT128x96x4StringDraw("               ", 5*6, 6*8, 15); // wipe
     RIT128x96x4StringDraw(text,              5*6, 6*8, 15);
 
-    QS_BEGIN_ID(UDP_TEXT, 0U) /* app-specific record */
-        QS_STR(text); /* User text */
+    QS_BEGIN_ID(UDP_TEXT, 0U) // app-specific record
+        QS_STR(text); // User text
     QS_END()
 }
 

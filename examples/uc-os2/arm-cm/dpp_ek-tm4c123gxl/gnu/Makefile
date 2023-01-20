@@ -147,7 +147,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DTARGET_IS_TM4C123_RB1 -D__FPU_PRESENT
+DEFINES   :=
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]
@@ -157,7 +157,7 @@ DEFINES   := -DTARGET_IS_TM4C123_RB1 -D__FPU_PRESENT
 ARM_CPU   := -mcpu=cortex-m4
 ARM_FPU   := -mfpu=vfp
 FLOAT_ABI := -mfloat-abi=softfp
-ASM_FPU   := -defsym=__FPU_PRESENT=1
+ASM_FPU   :=
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
@@ -276,7 +276,7 @@ $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@
 
 $(TARGET_ELF) : $(ASM_OBJS_EXT) $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 $(BIN_DIR)/%.d : %.c

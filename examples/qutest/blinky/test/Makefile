@@ -57,11 +57,11 @@ PROJECT := test_blinky
 
 # list of all source directories used by this project
 VPATH := . \
-../src
+	../src
 
 # list of all include directories needed by this project
 INCLUDES := -I. \
--I../src
+	-I../src
 
 # location of the QP/C framework (if not provided in an env. variable)
 ifeq ($(QPC),)
@@ -96,8 +96,8 @@ DEFINES  :=
 # add QP/C framework:
 #
 C_SRCS += \
-qep_hsm.c \
-qep_msm.c \
+	qep_hsm.c \
+	qep_msm.c \
 	qf_act.c \
 	qf_actq.c \
 	qf_defer.c \
@@ -218,7 +218,7 @@ all : $(TARGET_EXE) run
 endif
 
 $(TARGET_EXE) : $(C_OBJS_EXT) $(CPP_OBJS_EXT)
-	$(CC) $(CFLAGS) $(QPC)/include/qstamp.c -o $(BIN_DIR)/qstamp.o
+	$(CC) $(CFLAGS) $(QPC)/src/qs/qstamp.c -o $(BIN_DIR)/qstamp.o
 	$(LINK) $(LINKFLAGS) $(LIB_DIRS) -o $@ $^ $(BIN_DIR)/qstamp.o $(LIBS)
 
 run : $(TARGET_EXE)

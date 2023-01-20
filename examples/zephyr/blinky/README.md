@@ -33,7 +33,7 @@ nucleo_h743zi
 
 To flush the board, type:
 ```
-west flush
+west flash
 ```
 
 # Sample Output
