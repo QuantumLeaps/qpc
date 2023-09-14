@@ -11,6 +11,17 @@
    <attribute name="iter" type="uint32_t" visibility="0x00" properties="0x00">
     <documentation>// the next iteration to perform</documentation>
    </attribute>
+   <!--${Events::ReminderEvt::ctor}-->
+   <operation name="ctor?def QEVT_DYN_CTOR" type="ReminderEvt *" visibility="0x00" properties="0x02">
+    <!--${Events::ReminderEvt::ctor::iter}-->
+    <parameter name="iter" type="uint32_t"/>
+    <code>if (me != (ReminderEvt *)0) {
+    // don't call QEvt_ctor() because the initialization of all
+    // QEvt attributes is already done in QF_QF_newX_()
+    me-&gt;iter = iter;
+}
+return me;</code>
+   </operation>
   </class>
  </package>
  <!--${Components}-->
@@ -38,8 +49,13 @@
     </initial>
     <!--${Components::Cruncher::SM::processing}-->
     <state name="processing">
-     <entry>ReminderEvt *reminder = Q_NEW(ReminderEvt, CRUNCH_SIG);
+     <entry>#ifdef QEVT_DYN_CTOR
+ReminderEvt *reminder = Q_NEW(ReminderEvt, CRUNCH_SIG, 0U);
+#else
+ReminderEvt *reminder = Q_NEW(ReminderEvt, CRUNCH_SIG);
 reminder-&gt;iter = 0U;
+#endif
+
 QACTIVE_POST(&amp;me-&gt;super, &amp;reminder-&gt;super, me);
 me-&gt;sum = 0.0;</entry>
      <!--${Components::Cruncher::SM::processing::CRUNCH}-->
@@ -66,8 +82,13 @@ for (; n &lt; i; ++n) {
       <!--${Components::Cruncher::SM::processing::CRUNCH::[i<0x07000000U]}-->
       <choice>
        <guard>i &lt; 0x07000000U</guard>
-       <action>ReminderEvt *reminder = Q_NEW(ReminderEvt, CRUNCH_SIG);
+       <action>#ifdef QEVT_DYN_CTOR
+ReminderEvt *reminder = Q_NEW(ReminderEvt, CRUNCH_SIG, i);
+#else
+ReminderEvt *reminder = Q_NEW(ReminderEvt, CRUNCH_SIG);
 reminder-&gt;iter = i;
+#endif
+
 QACTIVE_POST(&amp;me-&gt;super, &amp;reminder-&gt;super, me);</action>
        <choice_glyph conn="24,18,4,-1,-4,14">
         <action box="0,-6,17,2"/>
@@ -169,8 +190,19 @@ int main(int argc, char *argv[]) {
 void BSP_onKeyboardInput(uint8_t key) {
     switch (key) {
         case 'e': { // echo the progress so far
-            static QEvt const echoEvt = QEVT_INITIALIZER(ECHO_SIG);
-            QACTIVE_POST((QActive *)&amp;l_cruncher, &amp;echoEvt, (void *)0);
+            // NOTE:
+            // The following Q_NEW_X() allocation might potentially fail
+            // but this is acceptable becasue the &quot;ECHO&quot; event is not
+            // considered critical. This code illustrates the Q_NEW_X()
+            // API and its use.
+            #ifdef QEVT_DYN_CTOR
+            QEvt const *echoEvt = Q_NEW_X(QEvt, 2U, ECHO_SIG, QEVT_DYNAMIC);
+            #else
+            QEvt const *echoEvt = Q_NEW_X(QEvt, 2U, ECHO_SIG);
+            #endif
+            if (echoEvt != (QEvt *)0) { // event allocated successfully?
+                QACTIVE_POST((QActive *)&amp;l_cruncher, echoEvt, (void *)0);
+            }
             break;
         }
         case '\033': { // ESC pressed?

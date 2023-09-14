@@ -146,7 +146,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\include\qstamp.c" />
+    <ClCompile Include="..\..\..\src\qs\qstamp.c" />
     <ClCompile Include="..\..\..\ports\win32-qv\qf_port.c" />
     <ClCompile Include="..\..\..\ports\win32-qv\qs_port.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

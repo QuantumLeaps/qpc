@@ -83,7 +83,7 @@
 		<link>
 			<name>qstamp.c</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/include/qstamp.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/src/qs/qstamp.c</locationURI>
 		</link>
 		<link>
 			<name>rom.h</name>

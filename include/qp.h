@@ -1149,7 +1149,7 @@ void QF_gcFromISR(QEvt const * const e);
 //${QF-macros::Q_NEW_X} ......................................................
 #ifndef QEVT_DYN_CTOR
 #define Q_NEW_X(evtT_, margin_, sig_) \
-    (evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
+    ((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
                       (margin_), (enum_t)(sig_)))
 #endif // ndef QEVT_DYN_CTOR
 

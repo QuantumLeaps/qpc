@@ -326,7 +326,7 @@ void QS_glbFilter_(int_fast16_t const filter) {
             break;
         case (uint8_t)QS_U4_RECORDS:
             if (isRemove) {
-                QS_filt_.glb[15] &= 0x1FU;
+                QS_filt_.glb[15] &= (uint8_t)(~0x1FU & 0xFFU);
             }
             else {
                 QS_filt_.glb[15] |= 0x1FU;

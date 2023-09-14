@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C for Windows and POSIX *HOSTS*
-# Last updated for version 7.2.0
-# Last updated on  2022-11-13
+# Last updated for version 7.3.0
+# Last updated on  2023-09-25
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -83,7 +83,8 @@ LIBS     :=
 
 # defines...
 # QP_API_VERSION controls the QP API compatibility; 9999 means the latest API
-DEFINES   := -DQP_API_VERSION=9999
+DEFINES   := -DQP_API_VERSION=9999 \
+	$(DEF)
 
 ifeq (,$(CONF))
 	CONF := dbg

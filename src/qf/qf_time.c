@@ -86,7 +86,7 @@ void QTimeEvt_ctorX(QTimeEvt * const me,
     // This default event constructor initializes the event
     // as NOT allocated from any event-pool, which must be
     // the case for Time Events.
-    QEvt_ctor(&me->super, sig);
+    (void)QEvt_ctor(&me->super, sig);
 
     // The refCtr_ attribute is not used in time events, so it is
     // reused to hold the tickRate as well as other information

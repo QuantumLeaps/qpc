@@ -1,7 +1,7 @@
 //============================================================================
 // QP configuration file example
 // Last updated for version: 7.3.0
-// Last updated on: 2023-09-02
+// Last updated on: 2023-09-26
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -33,9 +33,9 @@
 #define QP_CONFIG_H_
 
 // NOTE:
-// The QP configuration takes effect only when the macro QP_CONFIG
-// is defined on the command-line to the compiler for all QP source files.
-
-#define QF_MAX_ACTIVE   64U
+// This QP configuration header file must be provided in the QP applications
+// for the Zephyr RTOS. This file might be empty, if the default settings of
+// the QP framework are adequate. The configuration options for QP framework
+// ared documented at: https://www.state-machine.com/qpc/qp__config_8h.html
 
 #endif // QP_CONFIG_H_

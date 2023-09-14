@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.c" />
-    <ClCompile Include="..\..\..\include\qstamp.c" />
+    <ClCompile Include="..\..\..\src\qs\qstamp.c" />
     <ClCompile Include="..\..\..\ports\win32-qv\qf_port.c">
       <Filter>QP_port</Filter>
     </ClCompile>
