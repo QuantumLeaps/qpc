@@ -2,8 +2,8 @@
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.7.27" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.27/schema/PACK.xsd">
     <vendor>QuantumLeaps</vendor>
     <name>qpc</name>
-    <description>QP/C Real-Time Embedded Framework</description>
-    <url>https://github.com/QuantumLeaps/qpc/releases/download/v7.3.0/</url>
+    <description>QP/C RTEF (Real-Time Embedded Framework)</description>
+    <url>https://raw.githubusercontent.com/QuantumLeaps/qpc/master/</url>
     <supportContact>info@state-machine.com.com</supportContact>
     <repository type="git">https://github.com/QuantumLeaps/qpc.git</repository>
     <changeLogs>
@@ -22,22 +22,39 @@
         <release version="7.3.0" date="2023-09-12" url="https://github.com/QuantumLeaps/qpc/releases/download/v7.3.0/QuantumLeaps.qpc.7.3.0.pack" tag="v7.3.0">QP/C 7.3.0. See release notes at https://www.state-machine.com/history.html#qpc_7_3_0</release>
     </releases>
 
+    <!-- keywords for indexing -->
     <keywords>
         <keyword>Quantum Leaps</keyword>
+        <keyword>Samek</keyword>
+        <keyword>state-machine</keyword>
+        <keyword>hierarchical-state-machine</keyword>
         <keyword>QP/C</keyword>
-        <keyword>qpc</keyword>
-        <keyword>Miro Samek</keyword>
+        <keyword>QP/C++</keyword>
+        <keyword>QP</keyword>
         <keyword>FSM</keyword>
         <keyword>HSM</keyword>
         <keyword>UML</keyword>
-        <keyword>safety critical</keyword>
-        <keyword>state machine</keyword>
-        <keyword>hierarchical state machine</keyword>
-        <keyword>Active Object</keyword>
-        <keyword>Real-Time Embedded Framework</keyword>
-        <keyword>Actor Framework</keyword>
-        <keyword>IEC 61508</keyword>
+        <keyword>uml-state-machine</keyword>
+        <keyword>uml-statechart</keyword>
+        <keyword>modeling</keyword>
+        <keyword>code-generation</keyword>
+        <keyword>actor-model</keyword>
+        <keyword>actor</keyword>
+        <keyword>embedded-systems</keyword>
+        <keyword>event-driven</keyword>
+        <keyword>rtos</keyword>
+        <keyword>arm-cortex-m</keyword>
+        <keyword>embedded-c</keyword>
+        <keyword>active-object</keyword>
+        <keyword>real time</keyword>
+        <keyword>embedded framework</keyword>
+        <keyword>real-time framework</keyword>
+        <keyword>RTEF</keyword>
     </keywords>
+
+    <taxonomy>
+        <description Cclass="RTOS">RTOS</description>
+    </taxonomy>
 
     <conditions>
         <!-- compilers -->
@@ -56,15 +73,17 @@
             <description>Cortex-M processor based device</description>
             <accept Dcore="Cortex-M0"/>
             <accept Dcore="Cortex-M0+"/>
-            <accept Dcore="SC000"/>
+            <accept Dcore="Cortex-M1"/>
+            <accept Dcore="Cortex-M23"/>
             <accept Dcore="Cortex-M3"/>
-            <accept Dcore="SC300"/>
+            <accept Dcore="Cortex-M33"/>
+            <accept Dcore="Cortex-M35P"/>
+            <accept Dcore="Cortex-M85"/>
+            <accept Dcore="Cortex-M33"/>
             <accept Dcore="Cortex-M4"/>
             <accept Dcore="Cortex-M7"/>
-            <accept Dcore="Cortex-M23"/>
-            <accept Dcore="Cortex-M33"/>
-            <accept Dcore="Cortex-M55"/>
-            <accept Dcore="Cortex-M85"/>
+            <accept Dcore="SC000"/>
+            <accept Dcore="SC300"/>
         </condition>
     
         <!-- core-R -->
@@ -114,11 +133,14 @@
 
     <components>
         <bundle Cclass="RTEF" Cbundle="Quantum Leaps QP/C" Cversion="7.3.0">
-            <description>QP/C Real-Time Embedded Framework</description>
+            <description>QP/C RTEF (Real-Time Embedded Framework)</description>
             <doc>https://www.state-machine.com/</doc>
 
             <component Cgroup="Event Processor" Cvariant="qep">
-                <description>Events and QHsm state machine strategy</description>
+                <description>Events and Hierarchical State Machines</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_QEP        /* QP/C QEP */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/srs_sm.html"/>
                     <file category="include" name="include/"/>
@@ -128,7 +150,10 @@
             </component>
 
             <component Cgroup="Framework" Cvariant="qf">
-                <description>Active-Object Framework</description>
+                <description>Active-Object (Actor) Framework</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_QF         /* QP/C QF */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/srs_ao.html"/>
                     <file category="source"  name="src/qf/qf_act.c"/>
@@ -144,7 +169,10 @@
             </component>
 
             <component Cgroup="Software tracing" Cvariant="qs">
-                <description>Software tracing (target-resident component)</description>
+                <description>Software Tracing (Target-Resident Component)</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_QS         /* QP/C QS */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/srs_qs.html"/>
                     <file category="source"  name="src/qs/qs.c"/>
@@ -158,6 +186,9 @@
 
             <component Cgroup="Real-Time Kernel" Cvariant="qv">
                 <description>Cooperative run-to-completion kernel</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_QV         /* QP/C QV kernel */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/srs_qv.html"/>
                     <file category="source"  name="src/qf/qf_actq.c"/>
@@ -185,6 +216,9 @@
 
             <component Cgroup="Real-Time Kernel" Cvariant="qk" isDefaultVariant="true">
                 <description>Preemptive non-blocking kernel</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_QK         /* QP/C QK kernel */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/srs_qk.html"/>
                     <file category="source"  name="src/qf/qf_actq.c"/>
@@ -212,6 +246,9 @@
 
             <component Cgroup="Real-Time Kernel" Cvariant="qxk" condition="CoreM">
                 <description>Preemptive blocking/non-blocking kernel</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_QXK        /* QP/C QXK kernel */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/srs_qxk.html"/>
                     <file category="source"  name="src/qf/qf_actq.c"/>
@@ -235,6 +272,9 @@
 
             <component Cgroup="Real-Time Kernel" Cvariant="third-party embOS">
                 <description>QP/C port to SEGGER embOS RTOS</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_EMBOS      /* QP/C-embOS port */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/embos.html"/>
                     <file category="header"  attr="config" version="7.3.0" name="ports/config/qp_config.h"/>
@@ -246,6 +286,9 @@
 
             <component Cgroup="Real-Time Kernel" Cvariant="third-party FreeRTOS">
                 <description>QP/C port to Amazon FreeRTOS</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_FREERTOS   /* QP/C-FreeRTOS port */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/freertos.html"/>
                     <file category="header"  attr="config" version="7.3.0" name="ports/config/qp_config.h"/>
@@ -257,6 +300,9 @@
 
             <component Cgroup="Real-Time Kernel" Cvariant="third-party ThreadX">
                 <description>QP/C port to Azure RTOS (ThreadX)</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_THREADX    /* QP/C-ThreadX port */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/threadx.html"/>
                     <file category="header"  attr="config" version="7.3.0" name="ports/config/qp_config.h"/>
@@ -268,6 +314,9 @@
 
             <component Cgroup="Real-Time Kernel" Cvariant="third-party uC-OS2">
                 <description>QP/C port to Micrium uC-OS2 RTOS</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_UCOS2      /* QP/C-uC-OS2 port */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/uc-os2.html"/>
                     <file category="header"  attr="config" version="7.3.0" name="ports/config/qp_config.h"/>
@@ -279,6 +328,9 @@
 
             <component Cgroup="Real-Time Kernel" Cvariant="third-party Zephyr">
                 <description>QP/C port to Zephyr RTOS</description>
+                <RTE_Components_h>
+                    #define RTE_RTEF_QPC_ZEPHYR     /* QP/C-Zephyr port */
+                </RTE_Components_h>
                 <files>
                     <file category="doc"     name="https://www.state-machine.com/qpc/zephyr.html"/>
                     <file category="header"  attr="config" version="7.3.0" name="ports/config/qp_config.h"/>
