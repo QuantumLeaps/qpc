@@ -77,7 +77,7 @@ void QF_onClockTick(void) {
 
     key = QF_consoleGetKey();
     if (key != 0) { // any key pressed?
-        BSP_onKeyboardInput(key);
+        BSP_onKeyboardInput((uint8_t)key);
     }
 }
 //----------------------------------------------------------------------------

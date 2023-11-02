@@ -132,6 +132,7 @@ int QF_consoleWaitForKey(void);
     // QF event queue customization for Win32-QV...
     #define QACTIVE_EQUEUE_WAIT_(me_) \
         Q_ASSERT_INCRIT(302, (me_)->eQueue.frontEvt != (QEvt *)0)
+
 #ifndef Q_UNSAFE
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
         QPSet_insert(&QF_readySet_, (me_)->prio); \

@@ -228,6 +228,7 @@
                     <name>CCDefines</name>
                     <state>QK_USE_IRQ_HANDLER=LCD_IRQHandler</state>
                     <state>QK_USE_IRQ_NUM=30</state>
+                    <state>STM32L053xx</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -1307,6 +1308,7 @@
                 <option>
                     <name>CCDefines</name>
                     <state>NDEBUG</state>
+                    <state>STM32L053xx</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -2073,7 +2075,7 @@
                 </option>
                 <option>
                     <name>IlinkTrustzoneImportLibraryOut</name>
-                    <state>###Unitialized###</state>
+                    <state>dpp-qk_import_lib.o</state>
                 </option>
                 <option>
                     <name>OILinkExtraOption</name>
@@ -2386,6 +2388,7 @@
                 <option>
                     <name>CCDefines</name>
                     <state>Q_SPY</state>
+                    <state>STM32L053xx</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>

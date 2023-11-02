@@ -149,10 +149,14 @@ void QHsm_init_(
     QS_MEM_SYS();
     if ((QS_priv_.flags & 0x01U) == 0U) {
         QS_priv_.flags |= 0x01U;
+        QS_MEM_APP();
+        QS_CRIT_EXIT();
         QS_FUN_DICTIONARY(&QHsm_top);
     }
-    QS_MEM_APP();
-    QS_CRIT_EXIT();
+    else {
+        QS_MEM_APP();
+        QS_CRIT_EXIT();
+    }
     #else
     Q_UNUSED_PAR(qs_id);
     #endif

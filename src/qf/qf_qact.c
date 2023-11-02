@@ -129,6 +129,10 @@ void QActive_register_(QActive * const me) {
 
     Q_ASSERT_INCRIT(190, (prev_thre <= me->pthre)
                           && (me->pthre <= next_thre));
+
+    me->prio_dis  = (uint8_t)(~me->prio);
+    me->pthre_dis = (uint8_t)(~me->pthre);
+
     #endif // Q_UNSAFE
 
     // register the AO at the QF-prio.

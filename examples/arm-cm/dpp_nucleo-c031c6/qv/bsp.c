@@ -89,10 +89,19 @@ Q_NORETURN Q_onError(char const * const module, int_t const id) {
     NVIC_SystemReset();
 }
 //............................................................................
+// assertion failure handler for the STM32 library, including the startup code
 void assert_failed(char const * const module, int_t const id); // prototype
 void assert_failed(char const * const module, int_t const id) {
     Q_onError(module, id);
 }
+
+//............................................................................
+#ifdef __UVISION_VERSION
+// dummy initialization of the ctors (not used in C)
+void _init(void);
+void _init(void) {
+}
+#endif // __UVISION_VERSION
 
 // ISRs used in the application ============================================
 
@@ -192,10 +201,6 @@ void BSP_init(void) {
                 | MPU_CTRL_ENABLE_Msk;        // enable the MPU
     __ISB();
     __DSB();
-
-    // NOTE: SystemInit() has been already called from the startup code
-    // but SystemCoreClock needs to be updated
-    SystemCoreClockUpdate();
 
     // enable GPIOA clock port for the LED LD4
     RCC->IOPENR |= (1U << 0U);
@@ -330,6 +335,7 @@ void BSP_terminate(int16_t result) {
 // QF callbacks...
 void QF_onStartup(void) {
     // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
+    SystemCoreClockUpdate();
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
     // assign all priority bits for preemption-prio. and none to sub-prio.
@@ -352,6 +358,7 @@ void QF_onStartup(void) {
 //............................................................................
 void QF_onCleanup(void) {
 }
+
 //............................................................................
 void QV_onIdle(void) { // CATION: called with interrupts DISABLED, see NOTE0
 
@@ -377,20 +384,7 @@ void QV_onIdle(void) { // CATION: called with interrupts DISABLED, see NOTE0
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,
     // see the datasheet for your particular Cortex-M MCU.
-    //
-    // !!!CAUTION!!!
-    // QV_CPU_SLEEP() contains the WFI instruction, which stops the CPU
-    // clock, which unfortunately disables the JTAG port, so the ST-Link
-    // debugger can no longer connect to the board. For that reason, the call
-    // to QV_CPU_SLEEP() has to be used with CAUTION.
-    //
-    // NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
-    // reset the board, then connect with ST-Link Utilities and erase the part.
-    // The trick with BOOT(0) is it gets the part to run the System Loader
-    // instead of your broken code. When done disconnect BOOT0, and start over.
-    //
-    //QV_CPU_SLEEP(); // atomically go to sleep and enable interrupts
-    QF_INT_ENABLE(); // for now, just enable interrupts
+    QV_CPU_SLEEP(); // atomically go to sleep and enable interrupts
 #else
     QF_INT_ENABLE(); // just enable interrupts
 #endif

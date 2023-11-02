@@ -33,7 +33,7 @@
 
 #include "safe_std.h" // portable "safe" <stdio.h>/<string.h> facilities
 
-//Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE
 
 //..........................................................................
 enum TServerSignals {
@@ -73,9 +73,10 @@ typedef struct TServer {
     QTimeEvt authorizedEvt;
 } TServer;
 
+extern TServer TServer_inst;
+
 // public:
 static void TServer_ctor(TServer * const me);
-extern TServer TServer_inst;
 
 // protected:
 static QState TServer_initial(TServer * const me, void const * const par);
@@ -193,10 +194,21 @@ static QState TServer_busy(TServer * const me, QEvt const * const e) {
                 PRINTF_S("Request #%d deferred;\n",
                        (int)Q_EVT_CAST(RequestEvt)->ref_num);
             }
-            else {
-                // notify the request sender that his request was denied...
-                PRINTF_S("Request #%d IGNORED;\n",
-                       (int)Q_EVT_CAST(RequestEvt)->ref_num);
+            else { // deferred queue full
+                // option1: ignore the new request and do nothing here
+
+                // option2:
+                // flush the oldest request to make room for the new one
+                QEvt const *old_evt = QEQueue_get(&me->requestQueue, 0U);
+                Q_ASSERT(old_evt != (QEvt *)0);
+                PRINTF_S("Previous request #%d DISCARDED;\n",
+                         (int)((RequestEvt*)old_evt)->ref_num);
+                QF_gc(old_evt); // explicitly recycle old
+
+                // repeat the defer request after making room in the queue
+                if (!QActive_defer(&me->super, &me->requestQueue, e)) {
+                    Q_ERROR(); // now it must succeed
+                }
             }
             status_ = Q_HANDLED();
             break;

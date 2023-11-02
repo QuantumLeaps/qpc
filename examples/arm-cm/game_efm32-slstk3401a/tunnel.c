@@ -57,6 +57,7 @@ typedef struct Tunnel {
 
 // public:
 } Tunnel;
+extern Tunnel Tunnel_inst;
 
 // private:
 static void Tunnel_advance(Tunnel * const me);
@@ -66,7 +67,6 @@ static void Tunnel_dispatchToAllMines(Tunnel * const me,
 
 // public:
 static void Tunnel_ctor(Tunnel * const me);
-extern Tunnel Tunnel_inst;
 
 // protected:
 static QState Tunnel_initial(Tunnel * const me, void const * const par);
@@ -160,8 +160,9 @@ static void Tunnel_plantMine(Tunnel * const me) {
     if ((me->last_mine_x + GAME_MINES_DIST_MIN < GAME_TUNNEL_WIDTH)
         && (rnd < 8U)) // place the mines only 5% of the time
     {
+        // look for disabled mines...
         uint8_t n;
-        for (n = 0U; n < Q_DIM(me->mines); ++n) { //look for disabled mines
+        for (n = 0U; n < Q_DIM(me->mines); ++n) {
             if (me->mines[n] == (QHsm *)0) {
                 break;
             }
@@ -185,11 +186,12 @@ static void Tunnel_plantMine(Tunnel * const me) {
                     - me->wall_thickness_bottom - 4U);
             me->last_mine_y = (uint8_t)(me->wall_thickness_top + 2U + rnd);
 
-            ObjectPosEvt ope; // event to dispatch to the Mine
-            QEvt_ctor(&ope.super, MINE_PLANT_SIG);
-            ope.x = me->last_mine_x;
-            ope.y = me->last_mine_y;
-            // direct dispatch
+            // event to dispatch to the Mine
+            ObjectPosEvt ope = {
+                QEVT_INITIALIZER(MINE_PLANT_SIG),
+                .x = me->last_mine_x,
+                .y = me->last_mine_y
+            };
             QASM_DISPATCH(me->mines[n], &ope.super, me->super.prio);
         }
     }

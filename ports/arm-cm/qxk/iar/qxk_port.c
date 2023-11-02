@@ -5,7 +5,7 @@
 //                   ------------------------
 //                   Modern Embedded Software
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005 Quantum Leaps, LLC <state-machine.com>.
 //
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
@@ -27,8 +27,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-16
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-12-04
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QXK/C port to ARM Cortex-M, IAR-ARM
@@ -55,18 +55,14 @@ _Static_assert(QXK_ACT_PRIO == offsetof(QXK_Attr, actPrio),
                "QXK_Attr.actPrio at unexpected offset");
 
 // offsets within struct QActive; NOTE: keep in synch with "qp.h" !!!
-#define QACTIVE_OSOBJ  28
-#define QACTIVE_PRIO   36
+#define QACTIVE_PRIO   12
+#define QACTIVE_OSOBJ  20
 
 // make sure that the offsets match the QActvie declaration in "qp.h"
 _Static_assert(QACTIVE_OSOBJ == offsetof(QActive, osObject),
                "QActive.osObject at unexpected offset");
 _Static_assert(QACTIVE_PRIO  == offsetof(QActive, prio),
                "QActive.prio at unexpected offset");
-
-// helper macros to "stringify" values
-#define VAL(x) #x
-#define STRINGIFY(x) VAL(x)
 
 //============================================================================
 // Initialize the private stack of an extended QXK thread.
@@ -137,11 +133,170 @@ void NMI_Handler(void);
 #define NVIC_PEND    0xE000E200
 #define SCB_ICSR     0xE000ED04
 
+// helper macros to "stringify" values
+#define VAL(x) #x
+#define STRINGIFY(x) VAL(x)
+
+//============================================================================
+// interrupts and critical section...
+//
+// NOTE:
+// The following interrupt disabling/enabling as well as critical section
+// entry/exit functions are defined as "weak" so that they can be
+// re-implemented differently at the application level.
+//
+// NOTE:
+// For best performance, these functions are implemented in assembly,
+// but they can be implemented in C as well.
+
+#pragma weak QF_int_disable_
+#pragma weak QF_int_enable_
+#pragma weak QF_crit_entry_
+#pragma weak QF_crit_exit_
+
+//int32_t volatile QF_int_lock_nest_; // not used
+extern char const QF_port_module_[];
+char const QF_port_module_[] = "qxk_port";
+
 //............................................................................
+// Unconditionally disable interrupts.
+//
+// description:
+// On ARMv6-M, interrupts are disabled with the PRIMASK register.
+// On ARMv7-M and higer, interrupts are disabled *selectively* with the
+// BASEPRI register.
+// Additionally, the function also asserts that the interrupts are
+// NOT disabled upon the entry to the function.
+void QF_int_disable_(void) {
+__asm volatile (
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
+    "  CPSID   i                \n" // set PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MRS     r0,BASEPRI       \n" // r0 <- previous BASEPRI
+    "  MOVS    r1,#" STRINGIFY(QF_BASEPRI) "\n"
+    "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
+#endif                  //--------- ARMv7-M or higher
+    "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI == 0)
+    "  BNE     QF_int_disable_error\n"
+    "  BX      lr               \n"
+    "QF_int_disable_error:      \n"
+    "  LDR     r0,=QF_port_module_ \n"
+    "  MOVS    r1,#100          \n"
+    "  LDR     r2,=Q_onError    \n"
+    "  BX      r2               \n"
+    );
+}
+//............................................................................
+// Unconditionally enable interrupts.
+//
+// description:
+// On ARMv6-M, interrupts are enabled with the PRIMASK register.
+// On ARMv7-M and higer, interrupts are enabled with the BASEPRI register.
+// Additionally, the function also asserts that the interrupts ARE
+// disabled upon the entry to the function.
+//
+// NOTE:
+// QF_int_enable_() is NOT allowed to push anything on the stack
+// (see NOTE-1 at the end of QXK_thread_ret().
+void QF_int_enable_(void) {
+__asm volatile (
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MRS     r0,BASEPRI       \n" // r0 <- previous BASEPRI
+#endif                  //--------- ARMv7-M or higher
+    "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI != 0)
+    "  BEQ     QF_int_enable_error\n"
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  CPSIE   i                \n" // clear PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MOVS    r1,#0            \n"
+    "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
+#endif                  //--------- ARMv7-M or higher
+    "  BX      lr               \n"
+    "QF_int_enable_error:       \n"
+    "  LDR     r0,=QF_port_module_ \n"
+    "  MOVS    r1,#101          \n"
+    "  LDR     r2,=Q_onError    \n"
+    "  BX      r2               \n"
+    );
+}
+//............................................................................
+// Enter QF critical section.
+//
+// description:
+// On ARMv6-M, critical section is entered by disabling interrupts
+// with the PRIMASK register.
+// On ARMv7-M and higer, critical section is entered by disabling
+// interrupts *selectively* with the BASEPRI register.
+// Additionally, the function also asserts that the interrupts are
+// NOT disabled upon the entry to the function.
+//
+// NOTE:
+// The assertion means that this critical section CANNOT nest.
+void QF_crit_entry_(void) {
+__asm volatile (
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
+    "  CPSID   i                \n" // set PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MRS     r0,BASEPRI       \n" // r0 <- previous BASEPRI
+    "  MOVS    r1,#" STRINGIFY(QF_BASEPRI) "\n"
+    "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
+#endif                  //--------- ARMv7-M or higher
+    "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI == 0)
+    "  BNE     QF_crit_entry_error\n"
+    "  BX      lr               \n"
+    "QF_crit_entry_error:       \n"
+    "  LDR     r0,=QF_port_module_ \n"
+    "  MOVS    r1,#110          \n"
+    "  LDR     r2,=Q_onError    \n"
+    "  BX      r2               \n"
+    );
+}
+//............................................................................
+// Exit QF critical section.
+//
+// description:
+// On ARMv6-M, critical section is exited by enabling interrupts
+// with the PRIMASK register.
+// On ARMv7-M and higer, critical section is exited by enabling
+// interrupts with the BASEPRI register.
+// Additionally, the function also asserts that the interrupts ARE
+// disabled upon the entry to the function.
+//
+// NOTE:
+// The assertion means that this critical section CANNOT nest.
+void QF_crit_exit_(void) {
+__asm volatile (
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MRS     r0,BASEPRI       \n" // r0 <- previous BASEPRI
+#endif                  //--------- ARMv7-M or higher
+    "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI != 0)
+    "  BEQ     QF_crit_exit_error\n"
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  CPSIE   i                \n" // clear PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MOVS    r1,#0            \n"
+    "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
+#endif                  //--------- ARMv7-M or higher
+    "  BX      lr               \n"
+    "QF_crit_exit_error:        \n"
+    "  LDR     r0,=QF_port_module_ \n"
+    "  MOVS    r1,#111          \n"
+    "  LDR     r2,=Q_onError    \n"
+    "  BX      r2               \n"
+    );
+}
+
+//============================================================================
 // Initialize the exception priorities and IRQ priorities to safe values.
 //
-// Description:
-// On ARMv7-M or higher, this QXK port disables interrupts by means of the
+// description:
+// On ARMv7-M or higher, this QF port disables interrupts by means of the
 // BASEPRI register. However, this method cannot disable interrupt
 // priority zero, which is the default for all interrupts out of reset.
 // The following code changes the SysTick priority and all IRQ priorities
@@ -187,9 +342,9 @@ void QXK_init(void) {
 }
 
 //============================================================================
-// The PendSV_Handler exception handler is used for performing asynchronous
-// preemption in QXK. The use of the PendSV exception is the recommended and
-// most efficient method for performing context switches in ARM Cortex-M.
+// The PendSV exception is used for performing asynchronous preemption in QXK.
+// The use of the PendSV exception is the recommended and most efficient
+// method for performing context switches in ARM Cortex-M.
 //
 // The PendSV exception should have the lowest interrupt priority in the system
 // (0xFF, see QXK_init()). All other exceptions and interrupts should have
@@ -208,28 +363,22 @@ void PendSV_Handler(void) {
 __asm volatile (
 
     //<<<<<<<<<<<<<<<<<<<<<<< CRITICAL SECTION BEGIN <<<<<<<<<<<<<<<<<<<<<<<<
-#if (__ARM_ARCH == 6)               // if ARMv6-M...
-    "  CPSID   i                \n" // disable interrupts (set PRIMASK)
-#else                               // ARMv7-M or higher
-    "  MOVS    r0,#" STRINGIFY(QF_BASEPRI) "\n"
-    "  CPSID   i                \n" // selectively disable interrupts with BASEPRI
-    "  MSR     BASEPRI,r0       \n" // apply the workaround the Cortex-M7 erratum
-    "  CPSIE   i                \n" // 837070, see SDEN-1068427.
-#endif                              // ARMv7-M or higher
+    "  PUSH    {r0,lr}          \n" // save stack-aligner + EXC_RETURN
+    "  LDR     r0,=QF_int_disable_ \n"
+    "  BLX     r0               \n" // call QF_int_disable_()
 
 #ifdef QF_MEM_ISOLATE
-    "  PUSH    {r0,lr}          \n" // save the "aligner" and the EXC_RETURN value
     "  LDR     r0,=QF_onMemSys  \n"
     "  BLX     r0               \n" // call QF_onMemSys()
-    "  POP     {r0,r1}          \n" // restore the aligner + lr into r1
-    "  MOV     lr,r1            \n" // restore EXC_RETURN into lr
 #endif
+    "  POP     {r0,r1}          \n" // restore the aligner + EXC_RETURN in r1
+    "  MOV     lr,r1            \n" // restore EXC_RETURN into lr
 
     // The PendSV exception handler can be preempted by an interrupt,
     // which might pend PendSV exception again. The following write to
     // ICSR[27] un-pends any such spurious instance of PendSV.
     "  MOVS    r1,#1            \n"
-    "  LSLS    r1,r1,#27        \n" // r0 := (1 << 27) (UNPENDSVSET bit)
+    "  LSLS    r1,r1,#27        \n" // r1 := (1 << 27) (UNPENDSVSET bit)
     "  LDR     r2,=" STRINGIFY(SCB_ICSR) "\n" // Interrupt Control and State
     "  STR     r1,[r2]          \n" // ICSR[27] := 1 (unpend PendSV)
 
@@ -258,22 +407,22 @@ __asm volatile (
     "  VSTMDBEQ sp!,{s16-s31}   \n" // ... save VFP registers s16..s31
     "  PUSH    {r0,lr}          \n" // save the "aligner" and the EXC_RETURN value
 #endif                              // VFP available
-    // The QXK activator must be called in a thread context, while this code
-    // executes in the handler context of the PendSV exception. The switch
+    // The QXK activator must be called in a Thread mode, while this code
+    // executes in the Handler mode of the PendSV exception. The switch
     // to the Thread mode is accomplished by returning from PendSV using
     // a fabricated exception stack frame, where the return address is
     // QXK_activate_().
     //
     // NOTE: the QXK activator is called with interrupts DISABLED and also
-    // it returns with interrupts DISABLED.
+    // returns with interrupts DISABLED.
     "  MOVS    r3,#1            \n"
-    "  LSLS    r3,r3,#24        \n" // r3 := (1 << 24), set T bit  (new xpsr)
+    "  LSLS    r3,r3,#24        \n" // r3 := (1 << 24), set T bit (new xpsr)
     "  LDR     r2,=QXK_activate_\n" // address of QXK_activate_
-    "  SUBS    r2,r2,#1         \n" // align Thumb-address at half-word (new pc)
-    "  LDR     r1,=QXK_thread_ret\n" // return address after the call   (new lr)
+    "  SUBS    r2,r2,#1         \n" // align Thumb-address at halfword (new pc)
+    "  LDR     r1,=QXK_thread_ret\n" // return address after the call  (new lr)
 
     "  SUB     sp,sp,#(8*4)     \n" // reserve space for exception stack frame
-    "  ADD     r0,sp,#(5*4)     \n" // r0 := 5 registers below the top of stack
+    "  ADD     r0,sp,#(5*4)     \n" // r0 := 5 registers below the SP
     "  STM     r0!,{r1-r3}      \n" // save xpsr,pc,lr
 
     "  MOVS    r0,#6            \n"
@@ -367,30 +516,28 @@ __asm volatile (
     "  STR     r0,[r3,#" STRINGIFY(QXK_CURR) "]\n" // QXK_priv_.curr := 0
     "  STR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" // QXK_priv_.next := 0
 
-#if defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
-    "  MOVS    r0,#0            \n" // r0 := 0 (next is basic)
     "  PUSH    {r0,lr}          \n" // save the aligner + EXC_RETURN
+#if defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
+    // r0 is still 0 (parameter next) for QXK_contextSw_()
     "  LDR     r3,=QXK_contextSw_ \n"
     "  BLX     r3               \n" // call QXK_contextSw_()
 #ifdef QF_MEM_ISOLATE
     "  LDR     r3,=QF_onMemApp  \n"
     "  BLX     r3               \n" // call QF_onMemApp()
 #endif
-    "  POP     {r0,r1}          \n" // restore the aligner + EXC_RETURN
-    "  MOV     lr,r1            \n" // restore EXC_RETURN into lr
 #endif // defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
+    "  B       PendSV_return1   \n" // skip over saving aligner + EXC_RETURN
 
     // re-enable interrupts and return from PendSV
     "PendSV_return:             \n"
-#if (__ARM_ARCH == 6)               // if ARMv6-M...
-    "  CPSIE   i                \n" // enable interrupts (clear PRIMASK)
-#else                               // ARMv7-M or higher
-    "  MOVS    r0,#0            \n"
-    "  MSR     BASEPRI,r0       \n" // enable interrupts (clear BASEPRI)
-    "  DSB                      \n" // ARM Erratum 838869
-#endif                              // ARMv7-M or higher
+    "  PUSH    {r0,lr}          \n" // save the aligner + EXC_RETURN
+
+    "PendSV_return1:            \n"
+    "  LDR     r0,=QF_int_enable_ \n"
+    "  BLX     r0               \n" // call QF_int_enable_()
     //>>>>>>>>>>>>>>>>>>>>>>>> CRITICAL SECTION END >>>>>>>>>>>>>>>>>>>>>>>>>
-    "  BX      lr               \n" // return to the preempted AO-thread
+
+    "  POP     {r0,pc}          \n" // return to the preempted AO-thread
 
     //------------------------------------------------------------------------
     // Saving extended-thread
@@ -446,24 +593,25 @@ __asm volatile (
     "  MOVS    r0,#0            \n"
     "  STR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" // QXK_priv_.next := 0
 
+    "  PUSH    {r0-r2,lr}       \n" // save next, osObject, EXC_RETURN
 #if defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
-    "  MOV     r0,r12           \n" // r0 := next
-    "  PUSH    {r0-r2,lr}    \n" // save next, osObject, EXC_RETURN
+    "  MOV     r0,r12           \n" // parameter next
     "  LDR     r3,=QXK_contextSw_ \n"
     "  BLX     r3               \n" // call QXK_contextSw_()
 #ifdef QF_MEM_ISOLATE
     "  LDR     r3,=QF_onMemApp  \n"
     "  BLX     r3               \n" // call QF_onMemApp()
 #endif
-    "  POP     {r0-r3}          \n" // restore next, osObject, EXC_RETURN
-    "  MOV     lr,r3            \n" // restore the EXC_RETURN into lr
 #endif // defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
 
 
     // exit the critical section
-#if (__ARM_ARCH == 6)               // if ARMv6-M...
-    "  CPSIE   i                \n" // enable interrupts (clear PRIMASK)
+    "  LDR     r3,=QF_int_enable_ \n"
+    "  BLX     r3               \n" // call QF_int_enable_()
+    "  POP     {r0-r3}          \n" // restore next, osObject, EXC_RETURN
+    "  MOV     lr,r3            \n" // restore the EXC_RETURN into lr
 
+#if (__ARM_ARCH == 6)               // if ARMv6-M...
     "  MOVS    r0,r2            \n" // r2 := top of stack
     "  ADDS    r0,r0,#(4*4)     \n" // point r0 to the 4 high registers r7-r11
     "  LDMIA   r0!,{r4-r7}      \n" // pop the 4 high registers into low registers
@@ -478,8 +626,6 @@ __asm volatile (
     "  MVNS    r1,r1            \n" // r1 := ~2 == 0xFFFFFFFD
     "  MOV     lr,r1            \n" // make sure PSP is used
 #else                               // ARMv7-M or higher
-    "  MOVS    r1,#0            \n"
-    "  MSR     BASEPRI,r1       \n" // enable interrupts (clear BASEPRI)
 #ifdef __ARM_FP         //--------- if VFP available...
     "  LDMIA   r2!,{r1,lr}      \n" // restore aligner and EXC_RETURN into lr
     "  TST     lr,#(1 << 4)     \n" // is it return to the VFP exception frame?
@@ -504,9 +650,9 @@ __asm volatile (
 //============================================================================
 // QXK_thread_ret is a helper function executed when the QXK activator returns.
 //
-// NOTE: QXK_thread_ret does not execute in the PendSV context!
-// NOTE: QXK_thread_ret is entered with interrupts DISABLED.
-__stackless
+// NOTE: QXK_thread_ret() does not execute in the PendSV context!
+// NOTE: QXK_thread_ret() is entered with interrupts DISABLED.
+__attribute__ ((naked, used))
 void QXK_thread_ret(void) {
 __asm volatile (
 
@@ -526,12 +672,12 @@ __asm volatile (
     "  ISB                      \n" // ISB after MSR CONTROL (ARM AN321,Sect.4.16)
 #endif                  //--------- VFP available
 
+    // NOTE: the following function calls corrupt lr, but it is NOT
+    // used to return from QXK_thread_ret(). Instead QXK_thread_ret()
+    // "returns" by entering an exception (either NMI or IRQ).
 #ifdef QF_MEM_ISOLATE
-    "  PUSH    {r0,lr}          \n" // save the aligner + EXC_RETURN
     "  LDR     r0,=QF_onMemApp  \n"
     "  BLX     r0               \n" // call QF_onMemApp()
-    "  POP     {r0,r1}          \n" // restore the aligner + EXC_RETURN
-    "  MOV     lr,r1            \n" // restore EXC_RETURN into lr
 #endif
 
 #ifndef QXK_USE_IRQ_NUM //--------- IRQ NOT defined, use NMI by default
@@ -539,6 +685,7 @@ __asm volatile (
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#31        \n" // r1 := (1 << 31) (NMI bit)
     "  STR     r1,[r0]          \n" // ICSR[31] := 1 (pend NMI)
+    // NOTE! interrupts are still disabled when NMI is entered
 
 #else                   //--------- use the selected IRQ
     "  LDR     r0,=" STRINGIFY(NVIC_PEND + ((QXK_USE_IRQ_NUM >> 5) << 2)) "\n"
@@ -547,15 +694,16 @@ __asm volatile (
     "  STR     r1,[r0]          \n" // pend the IRQ
 
     // now enable interrupts so that pended IRQ can be entered
-#if (__ARM_ARCH == 6)   //--------- if ARMv6-M...
-    "  CPSIE   i                \n" // enable interrupts (clear PRIMASK)
-#else                   //--------- ARMv7-M and higher
-    "  MOVS    r0,#0            \n"
-    "  MSR     BASEPRI,r0       \n" // enable interrupts (clear BASEPRI)
-#endif                  //--------- ARMv7-M and higher
+    //
+    // NOTE-1:
+    // The IRQ preempts immediately after interrupts are enabled,
+    // without cleanly returning from QF_int_enable_(). Therefore
+    // QF_int_enable_() is NOT allowed to push anything on the stack
+    // because the stack is NOT restored when the IRQ preempts.
+    "  LDR     r0,=QF_int_enable_ \n"
+    "  BLX     r0               \n" // call QF_int_enable_()
 #endif                  //--------- use IRQ
 
-    // NOTE! interrupts are still disabled when NMI is used
     "  B       .                \n" // wait for preemption by NMI/IRQ
     );
 }
@@ -568,23 +716,34 @@ __asm volatile (
 __stackless
 #ifndef QXK_USE_IRQ_NUM //--------- IRQ NOT defined, use NMI by default
 
-// NOTE: The NMI_Handler() is entered with interrupts still disabled!
+// NOTE: The NMI_Handler() is entered with interrupts still DISABLED!
 void NMI_Handler(void) {
 __asm volatile (
-    // enable interrupts
-#if (__ARM_ARCH == 6)   //--------- if ARMv6-M...
-    "  CPSIE   i                \n" // enable interrupts (clear PRIMASK)
-#else                   //--------- ARMv7-M and higher
-    "  MOVS    r0,#0            \n"
-    "  MSR     BASEPRI,r0       \n" // enable interrupts (clear BASEPRI)
-#endif                  //--------- ARMv7-M and higher
+    // call QF_int_enable_(), NOTE: corrupts lr (EXC_RETURN)
+    // but see code after "BLX r0"
+    "  LDR     r0,=QF_int_enable_ \n"
+    "  BLX     r0               \n" // call QF_int_enable_()
+#ifdef __ARM_FP         //--------- if VFP available...
+    // When VFP is available, lr (EXC_RETURN) is restored from the stack
+    // before returning from exception, so the value in lr doesn't matter
+#else                   //--------- VFP NOT available
+    // lr (EXC_RETURN) can be synthesized because it is known (0xFFFFFFF9):
+    // - return to Thread mode;
+    // - exception return uses non-floating-point state from MSP;
+    // - execution uses MSP after return.
+    "  MOVS    r0,#6            \n"
+    "  MVNS    r0,r0            \n" // r0 := ~6 == 0xFFFFFFF9
+    "  MOV     lr,r0            \n" // lr := 0xFFFFFFF9 (EXC_RETURN)
+#endif                  //--------- VFP NOT available
 );
 
-#else                   //--------- use the selected IRQ
+#else                   //--------- IRQ defined, use the selected IRQ
 
-// NOTE: The IRQ Handler is entered with interrupts enabled
+// NOTE: The IRQ Handler is entered with interrupts already ENABLED
 void QXK_USE_IRQ_HANDLER(void) {
-#endif                  //--------- use IRQ
+#endif                  //--------- IRQ defined
+
+  // ...continue here from either NMI or IRQ
 __asm volatile (
     "  ADD     sp,sp,#(8*4)     \n" // remove one 8-register exception frame
 

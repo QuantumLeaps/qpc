@@ -10,7 +10,7 @@
       <TargetName>dpp-dbg</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6160000::V6.16::ARMCLANG</pCCUsed>
+      <pCCUsed>6190000::V6.19::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -186,6 +186,7 @@
             <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
             <RvdsCdeCp>0</RvdsCdeCp>
+            <nBranchProt>0</nBranchProt>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -332,7 +333,7 @@
             <v6LangP>3</v6LangP>
             <vShortEn>0</vShortEn>
             <vShortWch>0</vShortWch>
-            <v6Lto>1</v6Lto>
+            <v6Lto>0</v6Lto>
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
@@ -422,6 +423,11 @@
               <FileName>xthread2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\xthread2.c</FilePath>
+            </File>
+            <File>
+              <FileName>qp_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\qp_config.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -665,7 +671,7 @@
       <TargetName>dpp-rel</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6160000::V6.16::ARMCLANG</pCCUsed>
+      <pCCUsed>6190000::V6.19::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -841,6 +847,7 @@
             <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
             <RvdsCdeCp>0</RvdsCdeCp>
+            <nBranchProt>0</nBranchProt>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -1077,6 +1084,11 @@
               <FileName>xthread2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\xthread2.c</FilePath>
+            </File>
+            <File>
+              <FileName>qp_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\qp_config.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1320,7 +1332,7 @@
       <TargetName>dpp-spy</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6160000::V6.16::ARMCLANG</pCCUsed>
+      <pCCUsed>6190000::V6.19::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -1496,6 +1508,7 @@
             <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
             <RvdsCdeCp>0</RvdsCdeCp>
+            <nBranchProt>0</nBranchProt>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -1732,6 +1745,11 @@
               <FileName>xthread2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\xthread2.c</FilePath>
+            </File>
+            <File>
+              <FileName>qp_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\qp_config.h</FilePath>
             </File>
           </Files>
         </Group>

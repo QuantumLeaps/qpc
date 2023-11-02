@@ -107,10 +107,21 @@ if (QActive_defer(&amp;me-&gt;super, &amp;me-&gt;requestQueue, e)) {
     PRINTF_S(&quot;Request #%d deferred;\n&quot;,
            (int)Q_EVT_CAST(RequestEvt)-&gt;ref_num);
 }
-else {
-    // notify the request sender that his request was denied...
-    PRINTF_S(&quot;Request #%d IGNORED;\n&quot;,
-           (int)Q_EVT_CAST(RequestEvt)-&gt;ref_num);
+else { // deferred queue full
+    // option1: ignore the new request and do nothing here
+
+    // option2:
+    // flush the oldest request to make room for the new one
+    QEvt const *old_evt = QEQueue_get(&amp;me-&gt;requestQueue, 0U);
+    Q_ASSERT(old_evt != (QEvt *)0);
+    PRINTF_S(&quot;Previous request #%d DISCARDED;\n&quot;,
+             (int)((RequestEvt*)old_evt)-&gt;ref_num);
+    QF_gc(old_evt); // explicitly recycle old
+
+    // repeat the defer request after making room in the queue
+    if (!QActive_defer(&amp;me-&gt;super, &amp;me-&gt;requestQueue, e)) {
+        Q_ERROR(); // now it must succeed
+    }
 }</action>
       <tran_glyph conn="2,40,3,-1,26">
        <action box="0,-2,24,2"/>
@@ -187,7 +198,7 @@ QTimeEvt_armX(&amp;me-&gt;authorizedEvt, 2U*BSP_TICKS_PER_SEC, 0U);</entry>
 
 #include &quot;safe_std.h&quot; // portable &quot;safe&quot; &lt;stdio.h&gt;/&lt;string.h&gt; facilities
 
-//Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE
 
 //..........................................................................
 enum TServerSignals {

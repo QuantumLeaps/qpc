@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP example, NUCLEO-H743ZI board, QV kernel
-// Last updated for version 7.3.0
-// Last updated on  2023-08-22
+// Last updated for version 7.3.1
+// Last updated on  2023-11-30
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -170,67 +170,24 @@ void QF_onContextSw(QActive *prev, QActive *next) {
 }
 #endif // QF_ON_CONTEXT_SW
 
-//............................................................................
-// MPU setup for STM32H743ZI MCU
-static void STM32H743ZI_MPU_setup(void) {
-    // The following MPU configuration contains just a generic ROM
-    // region (with read-only access) and NULL-pointer protection region.
-    // Otherwise, the MPU will fall back on the background region (PRIVDEFENA).
-    //
-    static struct {
-        uint32_t rbar;
-        uint32_t rasr;
-    } const mpu_setup[] = {
-
-        { // region #0: Flash: base=0x0000'0000, size=512M=2^(28+1)
-          0x00000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 0U), // region #0
-          (28U << MPU_RASR_SIZE_Pos)        // 2^(18+1) region
-              | (0x6U << MPU_RASR_AP_Pos)   // PA:ro/UA:ro
-              | (1U << MPU_RASR_C_Pos)      // C=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
-
-        { // region #7: NULL-pointer: base=0x000'0000, size=128M=2^(26+1)
-          // NOTE: this region extends to  0x080'0000, which is where
-          // the ROM is re-mapped by STM32
-          //
-          0x00000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 7U), // region #7
-          (26U << MPU_RASR_SIZE_Pos)        // 2^(26+1)=128M region
-              | (0x0U << MPU_RASR_AP_Pos)   // PA:na/UA:na
-              | (1U << MPU_RASR_XN_Pos)     // XN=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
-    };
-
-    // enable the MemManage_Handler for MPU exception
-    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
-
-    __DSB();
-    MPU->CTRL = 0U; // disable the MPU
-    for (uint_fast8_t n = 0U; n < Q_DIM(mpu_setup); ++n) {
-        MPU->RBAR = mpu_setup[n].rbar;
-        MPU->RASR = mpu_setup[n].rasr;
-    }
-    MPU->CTRL = MPU_CTRL_ENABLE_Msk         // enable the MPU
-                | MPU_CTRL_PRIVDEFENA_Msk;  // enable background region
-    __ISB();
-    __DSB();
-}
-
 //============================================================================
 // BSP functions...
 
 void BSP_init(void) {
-    // setup the MPU...
-    STM32H743ZI_MPU_setup();
+    // Configure the MPU to prevent NULL-pointer dereferencing ...
+    MPU->RBAR = 0x0U                          // base address (NULL)
+                | MPU_RBAR_VALID_Msk          // valid region
+                | (MPU_RBAR_REGION_Msk & 7U); // region #7
+    MPU->RASR = (7U << MPU_RASR_SIZE_Pos)     // 2^(7+1) region
+                | (0x0U << MPU_RASR_AP_Pos)   // no-access region
+                | MPU_RASR_ENABLE_Msk;        // region enable
+    MPU->CTRL = MPU_CTRL_PRIVDEFENA_Msk       // enable background region
+                | MPU_CTRL_ENABLE_Msk;        // enable the MPU
+    __ISB();
+    __DSB();
 
-    // NOTE: SystemInit() has been already called from the startup code
-    // but SystemCoreClock needs to be updated
-    SystemCoreClockUpdate();
+    // enable the MemManage_Handler for MPU exception
+    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
 
     SCB_EnableICache(); // Enable I-Cache
     SCB_EnableDCache(); // Enable D-Cache
@@ -340,17 +297,14 @@ uint32_t BSP_random(void) { // a very cheap pseudo-random-number generator
     double volatile x = 3.1415926;
     x = x + 2.7182818;
 
-    // "Super-Duper" Linear Congruential Generator (LCG)
+    // NOTE: scheduler locking not needed in the QV kernel
+
     // LCG(2^32, 3*7*11*13*23, 0, seed)
     //
     uint32_t rnd = l_rndSeed * (3U*7U*11U*13U*23U);
     l_rndSeed = rnd; // set for the next time
 
     return (rnd >> 8U);
-}
-//............................................................................
-void BSP_terminate(int16_t result) {
-    (void)result;
 }
 //............................................................................
 void BSP_ledOn(void) {
@@ -360,11 +314,16 @@ void BSP_ledOn(void) {
 void BSP_ledOff(void) {
     BSP_LED_Off(LED1);
 }
+//............................................................................
+void BSP_terminate(int16_t result) {
+    (void)result;
+}
 
 //============================================================================
 // QF callbacks...
 void QF_onStartup(void) {
     // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
+    SystemCoreClockUpdate();
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
     // assign all priority bits for preemption-prio. and none to sub-prio.
@@ -372,8 +331,8 @@ void QF_onStartup(void) {
     NVIC_SetPriorityGrouping(0U);
 
     // set priorities of ALL ISRs used in the system, see NOTE1
-    NVIC_SetPriority(USART3_IRQn,  0U); // kernel unaware interrupt
-    NVIC_SetPriority(SysTick_IRQn, QF_AWARE_ISR_CMSIS_PRI + 0U);
+    NVIC_SetPriority(USART3_IRQn,    0U); // kernel UNAWARE interrupt
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 0U);
     // ...
 
     // enable IRQs...
@@ -389,17 +348,17 @@ void QV_onIdle(void) { // CATION: called with interrupts DISABLED, NOTE0
     // toggle the User LED on and then off, see NOTE2
     BSP_LED_On (LED3);
     BSP_LED_Off(LED3);
-    QF_INT_ENABLE();
 
     // Some floating point code is to exercise the VFP...
+    QF_INT_ENABLE();
     double volatile x = 1.73205;
     x = x * 1.73205;
+    QF_INT_DISABLE();
 
 #ifdef Q_SPY
-    QF_INT_DISABLE();
+    // interrupts still disabled
     QS_rxParse();  // parse all the received bytes
     QF_INT_ENABLE();
-    QF_CRIT_EXIT_NOP();
 
     if ((l_uartHandle.Instance->ISR & UART_FLAG_TXE) != 0U) { // TXE empty?
         QF_INT_DISABLE();
@@ -414,19 +373,7 @@ void QV_onIdle(void) { // CATION: called with interrupts DISABLED, NOTE0
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,
     // see the datasheet for your particular Cortex-M MCU.
-    //
-    // !!!CAUTION!!!
-    // The WFI instruction stops the CPU clock, which unfortunately disables
-    // the JTAG port, so the ST-Link debugger can no longer connect to the
-    // board. For that reason, the call to __WFI() has to be used with CAUTION.
-    //
-    // NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
-    // reset the board, then connect with ST-Link Utilities and erase the part.
-    // The trick with BOOT(0) is it gets the part to run the System Loader
-    // instead of your broken code. When done disconnect BOOT0, and start over.
-    //
-    //__WFI(); // Wait-For-Interrupt
-    QF_INT_ENABLE(); // for now, just enable interrupts
+    QV_CPU_SLEEP(); // atomically go to sleep and enable interrupts
 #else
     QF_INT_ENABLE(); // just enable interrupts
 #endif
@@ -455,7 +402,7 @@ uint8_t QS_onStartup(void const *arg) {
     l_uartHandle.Init.Mode       = UART_MODE_TX_RX;
     l_uartHandle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
     if (HAL_UART_Init(&l_uartHandle) != HAL_OK) {
-        return 0U; // return failure
+        return 0U; // failure
     }
 
     // Set UART to receive 1 byte at a time via interrupt
@@ -532,14 +479,14 @@ void QS_onCommand(uint8_t cmdId,
 //
 // Only ISRs prioritized at or below the QF_AWARE_ISR_CMSIS_PRI level (i.e.,
 // with the numerical values of priorities equal or higher than
-// QF_AWARE_ISR_CMSIS_PRI) are allowed to call the QK_ISR_ENTRY/QK_ISR_ENTRY
-// macros or any other QF services. These ISRs are "QF-aware".
+// QF_AWARE_ISR_CMSIS_PRI) are allowed to call any QF services. These ISRs
+// are "QF-aware".
 //
 // Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
 // level (i.e., with the numerical values of priorities less than
 // QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
-// Such "QF-unaware" ISRs cannot call any QF services. In particular they
-// can NOT call the macros QK_ISR_ENTRY/QK_ISR_ENTRY. The only mechanism
+// Such "QF-unaware" ISRs cannot call ANY QF/QV services. In particular they
+// can NOT call the macros QV_ISR_ENTRY/QV_ISR_ENTRY. The only mechanism
 // by which a "QF-unaware" ISR can communicate with the QF framework is by
 // triggering a "QF-aware" ISR, which can post/publish events.
 //

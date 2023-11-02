@@ -90,9 +90,9 @@ Q_NORETURN Q_onError(char const * const module, int_t const id) {
     // for debugging, hang on in an endless loop...
     for (;;) {
     }
-#endif
-
+#else
     NVIC_SystemReset();
+#endif
 }
 //............................................................................
 void assert_failed(char const * const module, int_t const id); // prototype

@@ -46,7 +46,7 @@
 //$declare${QK::QK} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${QK::QK} ..................................................................
-// @class QK
+//! @class QK
 typedef struct QK {
     //! @cond INTERNAL
     uint8_t dummy;
@@ -57,7 +57,7 @@ typedef struct QK {
 //$declare${QK::QSchedStatus} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${QK::QSchedStatus} ........................................................
-typedef uint_fast16_t QSchedStatus;
+typedef uint_fast8_t QSchedStatus;
 //$enddecl${QK::QSchedStatus} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //$declare${QK::QK-base} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -65,37 +65,50 @@ typedef uint_fast16_t QSchedStatus;
 //${QK::QK-base::Attr} .......................................................
 //! @class QK_Attr
 typedef struct {
-// public:
+// private:
 
     //! @memberof QK_Attr
     QPSet readySet;
+
+    //! @memberof QK_Attr
+    uint_fast8_t actPrio;
+
+    //! @memberof QK_Attr
+    uint_fast8_t nextPrio;
+
+    //! @memberof QK_Attr
+    uint_fast8_t actThre;
+
+    //! @memberof QK_Attr
+    uint_fast8_t lockCeil;
+
+    //! @memberof QK_Attr
+    uint_fast8_t intNest;
 
 #ifndef Q_UNSAFE
     //! @memberof QK_Attr
     QPSet readySet_dis;
 #endif // ndef Q_UNSAFE
 
+#ifndef Q_UNSAFE
     //! @memberof QK_Attr
-    uint_fast8_t volatile actPrio;
+    uint_fast8_t actPrio_dis;
+#endif // ndef Q_UNSAFE
 
+#ifndef Q_UNSAFE
     //! @memberof QK_Attr
-    uint_fast8_t volatile nextPrio;
+    uint_fast8_t nextPrio_dis;
+#endif // ndef Q_UNSAFE
 
+#ifndef Q_UNSAFE
     //! @memberof QK_Attr
-    uint_fast8_t volatile actThre;
+    uint_fast8_t actThre_dis;
+#endif // ndef Q_UNSAFE
 
-// private:
-
+#ifndef Q_UNSAFE
     //! @memberof QK_Attr
-    uint_fast8_t volatile lockCeil;
-
-// public:
-
-    //! @memberof QK_Attr
-    uint_fast8_t volatile lockHolder;
-
-    //! @memberof QK_Attr
-    uint_fast8_t volatile intNest;
+    uint_fast8_t lockCeil_dis;
+#endif // ndef Q_UNSAFE
 } QK_Attr;
 
 //${QK::QK-base::priv_} ......................................................
@@ -108,7 +121,7 @@ QSchedStatus QK_schedLock(uint_fast8_t const ceiling);
 
 //${QK::QK-base::schedUnlock} ................................................
 //! @static @public @memberof QK
-void QK_schedUnlock(QSchedStatus const stat);
+void QK_schedUnlock(QSchedStatus const prevCeil);
 
 //${QK::QK-base::onIdle} .....................................................
 //! @static @public @memberof QK

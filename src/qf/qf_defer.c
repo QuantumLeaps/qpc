@@ -152,18 +152,23 @@ bool QActive_recall(QActive * const me,
 //${QF::QActive::flushDeferred} ..............................................
 //! @protected @memberof QActive
 uint_fast16_t QActive_flushDeferred(QActive const * const me,
-    struct QEQueue * const eq)
+    struct QEQueue * const eq,
+    uint_fast16_t const num)
 {
     uint_fast16_t n = 0U;
-    for (QEvt const *e = QEQueue_get(eq, me->prio);
-         e != (QEvt *)0;
-         e = QEQueue_get(eq, me->prio))
-    {
-        ++n; // count the flushed event
+    while (n < num) {
+        QEvt const *e = QEQueue_get(eq, me->prio);
+        if (e != (QEvt *)0) {
+            ++n; // count one more flushed event
     #if (QF_MAX_EPOOL > 0U)
-        QF_gc(e); // garbage collect
+            QF_gc(e); // garbage collect
     #endif
+        }
+        else {
+            break;
+        }
     }
+
     return n;
 }
 //$enddef${QF::QActive::flushDeferred} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

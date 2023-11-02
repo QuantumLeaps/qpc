@@ -7,7 +7,7 @@
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005 Quantum Leaps, LLC. <state-machine.com>
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -134,8 +134,7 @@ LIBS      :=
 # defines
 DEFINES   := -DSTM32C031xx \
 	-DQF_ON_CONTEXT_SW \
-	-DQK_USE_IRQ_NUM=31 \
-	-DQK_USE_IRQ_HANDLER=Reserved31_IRQHandler
+	$(DEF)
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]

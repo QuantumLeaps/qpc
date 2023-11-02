@@ -133,8 +133,8 @@ else
 
 # NOTE:
 # For POSIX hosts (Linux, MacOS), you can choose:
-# - the single-threaded QP/C port (win32-qv) or
-# - the multithreaded QP/C port (win32).
+# - the single-threaded QP/C port (posix-qv) or
+# - the multithreaded QP/C port (posix).
 #
 QP_PORT_DIR := $(QPC)/ports/posix-qv
 #QP_PORT_DIR := $(QPC)/ports/posix

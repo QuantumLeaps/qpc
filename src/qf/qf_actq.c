@@ -86,7 +86,10 @@ bool QActive_post_(QActive * const me,
     QF_CRIT_ENTRY();
     QF_MEM_SYS();
 
-    Q_REQUIRE_INCRIT(102, QEvt_verify_(e));
+    #ifndef Q_UNSAFE
+    uint8_t const pcopy = (uint8_t)(~me->prio_dis);
+    Q_REQUIRE_INCRIT(102, (QEvt_verify_(e)) && (me->prio == pcopy));
+    #endif
 
     QEQueueCtr nFree = me->eQueue.nFree; // get volatile into temporary
 
@@ -225,7 +228,10 @@ void QActive_postLIFO_(QActive * const me,
     QF_CRIT_ENTRY();
     QF_MEM_SYS();
 
-    Q_REQUIRE_INCRIT(202, QEvt_verify_(e));
+    #ifndef Q_UNSAFE
+    uint8_t const pcopy = (uint8_t)(~me->prio_dis);
+    Q_REQUIRE_INCRIT(202, (QEvt_verify_(e)) && (me->prio == pcopy));
+    #endif
 
     #ifdef QXK_H_
     Q_REQUIRE_INCRIT(200, me->super.state.act != Q_ACTION_CAST(0));

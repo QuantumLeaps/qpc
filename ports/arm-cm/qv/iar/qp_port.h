@@ -5,7 +5,7 @@
 //                   ------------------------
 //                   Modern Embedded Software
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005 Quantum Leaps, LLC <state-machine.com>.
 //
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
@@ -27,8 +27,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-07
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-12-02
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QP/C port to ARM Cortex-M, cooperative QV kernel, IAR-ARM
@@ -58,18 +58,6 @@
 // QF interrupt disable/enable and log2()...
 #if (__ARM_ARCH == 6) // ARMv6-M?
 
-    // Cortex-M0/M0+/M1(v6-M, v6S-M) interrupt disabling policy, see NOTE2
-    #define QF_INT_DISABLE()    __disable_interrupt()
-    #define QF_INT_ENABLE()     __enable_interrupt()
-
-    // QF critical section entry/exit (save and restore interrupt status)
-    #define QF_CRIT_STAT        unsigned long primask_;
-    #define QF_CRIT_ENTRY() do {      \
-        (primask_) = __get_PRIMASK(); \
-        QF_INT_DISABLE(); \
-    } while (false)
-    #define QF_CRIT_EXIT()      __set_PRIMASK((primask_))
-
     // CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE4
     #define QF_AWARE_ISR_CMSIS_PRI 0
 
@@ -78,36 +66,25 @@
 
 #else // ARMv7-M or higher
 
-    // ARMv7-M or higher alternative interrupt disabling with PRIMASK
-    #define QF_PRIMASK_DISABLE() __disable_interrupt()
-    #define QF_PRIMASK_ENABLE()  __enable_interrupt()
-
-    // ARMv7-M or higher interrupt disabling policy, see NOTE3 and NOTE4
-    #define QF_INT_DISABLE() do {  \
-        QF_PRIMASK_DISABLE();      \
-        __set_BASEPRI(QF_BASEPRI); \
-        QF_PRIMASK_ENABLE();       \
-    } while (false)
-    #define QF_INT_ENABLE()     __set_BASEPRI(0U)
-
-    // QF critical section entry/exit (save and restore interrupt status)
-    #define QF_CRIT_STAT         unsigned long basepri_;
-    #define QF_CRIT_ENTRY() do {    \
-        basepri_ = __get_BASEPRI(); \
-        QF_INT_DISABLE();           \
-    } while (false)
-    #define QF_CRIT_EXIT()      __set_BASEPRI((basepri_))
-
     // BASEPRI threshold for "QF-aware" interrupts, see NOTE3
     #define QF_BASEPRI          0x3F
 
-    // CMSIS threshold for "QF-aware" interrupts, see NOTE5
+    // CMSIS threshold for "QF-aware" interrupts, see NOTE4
     #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
 
     // ARMv7-M or higher provide the CLZ instruction for fast LOG2
     #define QF_LOG2(n_) ((uint_fast8_t)(32U - __CLZ((unsigned long)(n_))))
 
 #endif
+
+// interrupt disabling policy, see NOTE2 and NOTE3
+#define QF_INT_DISABLE()        (QF_int_disable_())
+#define QF_INT_ENABLE()         (QF_int_enable_())
+
+// QF critical section, see NOTE1, NOTE2, and NOTE3
+#define QF_CRIT_STAT
+#define QF_CRIT_ENTRY()         (QF_crit_entry_())
+#define QF_CRIT_EXIT()          (QF_crit_exit_())
 
 #define QF_CRIT_EXIT_NOP()      __asm volatile ("isb" ::: "memory")
 
@@ -150,11 +127,11 @@
 
     // macro to put the CPU to sleep inside QV_onIdle()
     #define QV_CPU_SLEEP() do { \
-        QF_PRIMASK_DISABLE();   \
+        __disable_interrupt();  \
         QF_MEM_APP();           \
         QF_INT_ENABLE();        \
         __WFI();                \
-        QF_PRIMASK_ENABLE();    \
+        __enable_interrupt();   \
     } while (false)
 
     // The following macro implements the recommended workaround for the
@@ -172,7 +149,7 @@ void QV_init(void);
 #ifdef __ARM_FP         //--------- if VFP available...
 // When the FPU is configured, clear the FPCA bit in the CONTROL register
 // to prevent wasting the stack space for the FPU context.
-#define QV_START()       __set_CONTROL(0U)
+#define QV_START()     __set_CONTROL(0U)
 #endif
 
 // include files -------------------------------------------------------------
@@ -181,24 +158,42 @@ void QV_init(void);
 #include "qp.h"        // QP framework
 #include "qv.h"        // QV kernel
 
+// prototypes
+void QF_int_disable_(void);
+void QF_int_enable_(void);
+void QF_crit_entry_(void);
+void QF_crit_exit_(void);
+
+extern int32_t volatile QF_int_lock_nest_;
+
 //============================================================================
+// NOTE1:
+// The critical section policy does not use the "saving and restoring"
+// interrupt status policy (macro QF_CRIT_STAT is defined to nothing).
+// However, this the QF critical sections might still be able to nest,
+// depending on the implementation of the QF_crit_entry_()/QF_crit_exit_()
+// functions. They are defined as "weak" in the qv_port.c module,
+// so the application can provide a different implementation.
+// Please see the definitions of the interrupt and critical-section
+// funcctions in the qv_port.c module for details.
+//
 // NOTE2:
-// On Cortex-M0/M0+/M1 (architecture v6-M, v6S-M), the interrupt disabling
-// policy uses the PRIMASK register to disable interrupts globally. The
-// QF_AWARE_ISR_CMSIS_PRI level is zero, meaning that all interrupts are
-// "QF-aware".
+// On Cortex-M0/M0+/M1 (architecture ARMv6-M, ARMv6S-M), the interrupt
+// disabling policy uses the PRIMASK register to disable interrupts globally.
+// The QF_AWARE_ISR_CMSIS_PRI level is zero, meaning that all interrupts
+// are "kernel-aware".
 //
 // NOTE3:
 // On ARMv7-M or higher, the interrupt disable/enable policy uses the BASEPRI
-// register (which is not implemented in Cortex-M0/M0+/M1) to disable
-// interrupts only with priority lower than the threshold specified by the
-// QF_BASEPRI macro. The interrupts with priorities above QF_BASEPRI (i.e.,
-// with numerical priority values lower than QF_BASEPRI) are NOT disabled in
-// this method. These free-running interrupts have very low ("zero") latency,
-// but they are not allowed to call any QF services, because QF is unaware
-// of them ("QF-unaware" interrupts). Consequently, only interrupts with
+// register (which is not implemented in ARMv6-M) to disable interrupts only
+// with priority lower than the threshold specified by the QF_BASEPRI macro.
+// The interrupts with priorities above QF_BASEPRI (i.e., with numerical
+// priority values lower than QF_BASEPRI) are NOT disabled in this method.
+// These free-running interrupts have very low ("zero") latency, but they
+// are NOT allowed to call any QF services, because QF is unaware of them
+// ("kernel-unaware" interrupts). Consequently, only interrupts with
 // numerical values of priorities equal to or higher than QF_BASEPRI
-// ("QF-aware" interrupts ), can call QF services.
+// ("kernel-aware" interrupts ), can call QF services.
 //
 // NOTE4:
 // The QF_AWARE_ISR_CMSIS_PRI macro is useful as an offset for enumerating
@@ -213,12 +208,7 @@ void QV_init(void);
 // remains generic and not dependent on the number of implemented priority bits
 // implemented in the NVIC.
 //
-// NOTE5:
-// The selective disabling of "QF-aware" interrupts with the BASEPRI register
-// has a problem on ARM Cortex-M7 core r0p1 (see ARM-EPM-064408, errata
-// 837070). The workaround recommended by ARM is to surround MSR BASEPRI with
-// the CPSID i/CPSIE i pair, which is implemented in the QF_INT_DISABLE()
-// macro. This workaround works also for Cortex-M3/M4 cores.
+//
 
 #endif // QP_PORT_H_
 

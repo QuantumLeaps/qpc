@@ -155,6 +155,9 @@ bool QXMutex_lock(QXMutex * const me,
 
             // set thread's prio to that of the mutex
             curr->super.prio  = me->ao.prio;
+    #ifndef Q_UNSAFE
+            curr->super.prio_dis = (uint8_t)(~curr->super.prio);
+    #endif
         }
     }
     // is the mutex locked by this thread already (nested locking)?
@@ -299,6 +302,9 @@ bool QXMutex_tryLock(QXMutex * const me) {
 
             // set thread's prio to that of the mutex
             curr->prio  = me->ao.prio;
+    #ifndef Q_UNSAFE
+            curr->prio_dis = (uint8_t)(~curr->prio);
+    #endif
         }
     }
     // is the mutex locked by this thread already (nested locking)?
@@ -363,6 +369,9 @@ void QXMutex_unlock(QXMutex * const me) {
 
             // restore the holding thread's prio from the mutex
             curr->prio  = (uint8_t)me->ao.eQueue.head;
+    #ifndef Q_UNSAFE
+            curr->prio_dis = (uint8_t)(~curr->prio);
+    #endif
 
             // put the mutex back into the AO registry
             QActive_registry_[me->ao.prio] = &me->ao;

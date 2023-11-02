@@ -27,8 +27,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-07
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-11-30
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QP/C port to to POSIX (multithreaded with P-threads)
@@ -91,9 +91,15 @@ int QF_consoleWaitForKey(void);
     #define QF_SCHED_UNLOCK_()    ((void)0)
 
     // QF event queue customization for POSIX...
-    #define QACTIVE_EQUEUE_WAIT_(me_) \
-        while ((me_)->eQueue.frontEvt == (QEvt *)0) \
-            pthread_cond_wait(&(me_)->osObject, &QF_critSectMutex_)
+    #define QACTIVE_EQUEUE_WAIT_(me_) do { \
+        while ((me_)->eQueue.frontEvt == (QEvt *)0) { \
+            Q_ASSERT_INCRIT(301, QF_critSectNest_ == 1); \
+            --QF_critSectNest_; \
+            pthread_cond_wait(&(me_)->osObject, &QF_critSectMutex_); \
+            Q_ASSERT_INCRIT(302, QF_critSectNest_ == 0); \
+            ++QF_critSectNest_; \
+        } \
+    } while (false)
 
     #define QACTIVE_EQUEUE_SIGNAL_(me_) \
         pthread_cond_signal(&(me_)->osObject)
@@ -110,6 +116,7 @@ int QF_consoleWaitForKey(void);
 
     // mutex for QF critical section
     extern pthread_mutex_t QF_critSectMutex_;
+    extern int_t QF_critSectNest_;
 
 #endif // QP_IMPL
 
@@ -145,8 +152,9 @@ int QF_consoleWaitForKey(void);
 // NOTE2:
 // Scheduler locking (used inside QActive_publish_()) is NOT implemented
 // in this port. This means that event multicasting is NOT atomic, so thread
-// preemption CAN happen during that time. This can lead to (occasionally)
-// unexpected event sequences.
+// preemption CAN happen during that time, especially when a low-priority
+// thread publishes events to higher-priority threads. This can lead to
+// (occasionally) unexpected event sequences.
 //
 
 #endif // QP_PORT_H_

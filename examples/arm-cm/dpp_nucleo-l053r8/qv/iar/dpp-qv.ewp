@@ -226,7 +226,7 @@
                 </option>
                 <option>
                     <name>CCDefines</name>
-                    <state></state>
+                    <state>STM32L053xx</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -1149,7 +1149,7 @@
                 </option>
                 <option>
                     <name>OGLastSavedByProductVersion</name>
-                    <state>9.10.2.39304</state>
+                    <state>9.32.1.54977</state>
                 </option>
                 <option>
                     <name>OGChipSelectEditMenu</name>
@@ -1306,6 +1306,7 @@
                 <option>
                     <name>CCDefines</name>
                     <state>NDEBUG</state>
+                    <state>STM32L053xx</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -2386,6 +2387,7 @@
                     <name>CCDefines</name>
                     <state>Q_SPY</state>
                     <state>QF_ON_CONTEXT_SW</state>
+                    <state>STM32L053xx</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>

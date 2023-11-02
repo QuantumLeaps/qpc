@@ -96,11 +96,7 @@ void QF_poolInit(
     {
         uint8_t obj_name[9] = "EvtPool?";
         obj_name[7] = (uint8_t)((uint8_t)'0' + poolId + 1U);
-        QF_CRIT_ENTRY();
-        QF_MEM_SYS();
         QS_obj_dict_pre_(&QF_priv_.ePool_[poolId], (char const *)obj_name);
-        QF_MEM_APP();
-        QF_CRIT_EXIT();
     }
     #endif // Q_SPY
 }

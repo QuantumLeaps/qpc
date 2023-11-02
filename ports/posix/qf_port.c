@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-26
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-11-30
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QF/C port to POSIX (multithreaded with P-threads)
@@ -76,10 +76,25 @@ static void sigIntHandler(int dummy) {
 
 //============================================================================
 
-// NOTE: initialize the critical section mutex first with default
-// non-recursive initializer, but later in QF_init() it will be
-// re-initialized it as *recursive mutex* in a portable way
+// NOTE: initialize the critical section mutex as non-recursive,
+// but check that nesting of critical sections never occurs
+// (see QF_enterCriticalSection_()/QF_leaveCriticalSection_()
 pthread_mutex_t QF_critSectMutex_ = PTHREAD_MUTEX_INITIALIZER;
+int_t QF_critSectNest_;
+
+//............................................................................
+void QF_enterCriticalSection_(void) {
+    pthread_mutex_lock(&QF_critSectMutex_);
+    Q_ASSERT_INCRIT(100, QF_critSectNest_ == 0); // NO nesting of crit.sect!
+    ++QF_critSectNest_;
+}
+//............................................................................
+void QF_leaveCriticalSection_(void) {
+    Q_ASSERT_INCRIT(200, QF_critSectNest_ == 1); // crit.sect. must ballace!
+    if ((--QF_critSectNest_) == 0) {
+        pthread_mutex_unlock(&QF_critSectMutex_);
+    }
+}
 
 //............................................................................
 void QF_init(void) {
@@ -90,13 +105,13 @@ void QF_init(void) {
     // calling QF_run()
     pthread_mutex_lock(&l_startupMutex);
 
-    // initialize the critical section mutex QF_critSectMutex_ as a
-    // *recursive mutex* in a portable way according to the POSIX Standard
-    pthread_mutexattr_t attr;
-    pthread_mutexattr_init(&attr);
-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(&QF_critSectMutex_, &attr);
-    pthread_mutexattr_destroy(&attr);
+    for (uint_fast8_t tickRate = 0U;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, Q_USER_SIG, tickRate);
+    }
 
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default tick
@@ -109,18 +124,6 @@ void QF_init(void) {
     sigaction(SIGINT, &sig_act, NULL);
 }
 
-//............................................................................
-void QF_enterCriticalSection_(void) {
-    if (l_isRunning) {
-        pthread_mutex_lock(&QF_critSectMutex_);
-    }
-}
-//............................................................................
-void QF_leaveCriticalSection_(void) {
-    if (l_isRunning) {
-        pthread_mutex_unlock(&QF_critSectMutex_);
-    }
-}
 //............................................................................
 int QF_run(void) {
 
@@ -143,33 +146,48 @@ int QF_run(void) {
     // exit the startup critical section to unblock any active objects
     // started before calling QF_run()
     pthread_mutex_unlock(&l_startupMutex);
-
-    // get the absolute monotonic time for no-drift sleeping
-    static struct timespec next_tick;
-    clock_gettime(CLOCK_MONOTONIC, &next_tick);
-
-    // round down nanoseconds to the nearest configured period
-    next_tick.tv_nsec = (next_tick.tv_nsec / l_tick.tv_nsec) * l_tick.tv_nsec;
-
     l_isRunning = true;
-    while (l_isRunning) { // the clock tick loop...
 
-        // advance to the next tick (absolute time)
-        next_tick.tv_nsec += l_tick.tv_nsec;
-        if (next_tick.tv_nsec >= NSEC_PER_SEC) {
-            next_tick.tv_nsec -= NSEC_PER_SEC;
-            next_tick.tv_sec  += 1;
-        }
+    // The provided clock tick service configured?
+    if ((l_tick.tv_sec != 0) || (l_tick.tv_nsec != 0)) {
 
-        // sleep without drifting till next_time (absolute), see NOTE03
-        if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
-                            &next_tick, NULL) == 0) // success?
-        {
-            // clock tick callback (must call QTIMEEVT_TICK_X())
+        // get the absolute monotonic time for no-drift sleeping
+        static struct timespec next_tick;
+        clock_gettime(CLOCK_MONOTONIC, &next_tick);
+
+        // round down nanoseconds to the nearest configured period
+        next_tick.tv_nsec
+            = (next_tick.tv_nsec / l_tick.tv_nsec) * l_tick.tv_nsec;
+
+        while (l_isRunning) { // the clock tick loop...
+
+            // advance to the next tick (absolute time)
+            next_tick.tv_nsec += l_tick.tv_nsec;
+            if (next_tick.tv_nsec >= NSEC_PER_SEC) {
+                next_tick.tv_nsec -= NSEC_PER_SEC;
+                next_tick.tv_sec  += 1;
+            }
+
+            // sleep without drifting till next_time (absolute), see NOTE03
+            (void)clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
+                                  &next_tick, NULL);
+            // clock tick callback (must call QTIMEEVT_TICK_X() once)
             QF_onClockTick();
         }
     }
-    QF_onCleanup(); // cleanup callback
+    else { // The provided system clock tick NOT configured
+
+        while (l_isRunning) { // the clock tick loop...
+
+            // In case the application intentionally DISABLED the provided
+            // system clock, the QF_onClockTick() callback is used to let
+            // the application implement the alternative tick service.
+            // In that case the QF_onClockTick() must internally WAIT
+            // for the desired clock period before calling QTIMEEVT_TICK_X().
+            QF_onClockTick();
+        }
+    }
+    QF_onCleanup(); // application cleanup callback
     QS_EXIT();      // cleanup the QSPY connection
 
     pthread_mutex_destroy(&l_startupMutex);
@@ -183,8 +201,12 @@ void QF_stop(void) {
 }
 //............................................................................
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
-    Q_REQUIRE_ID(600, ticksPerSec != 0U);
-    l_tick.tv_nsec = NSEC_PER_SEC / ticksPerSec;
+    if (ticksPerSec != 0U) {
+        l_tick.tv_nsec = NSEC_PER_SEC / ticksPerSec;
+    }
+    else {
+        l_tick.tv_nsec = 0U; // means NO system clock tick
+    }
     l_tickPrio = tickPrio;
 }
 

@@ -53,10 +53,10 @@ typedef struct Ship {
 
 // public:
 } Ship;
+extern Ship Ship_inst;
 
 // public:
 static void Ship_ctor(Ship * const me);
-extern Ship Ship_inst;
 
 // protected:
 static QState Ship_initial(Ship * const me, void const * const par);

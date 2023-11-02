@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP example, NUCLEO-H743ZI board, QXK kernel
-// Last updated for version 7.3.0
-// Last updated on  2023-08-15
+// Last updated for version 7.3.1
+// Last updated on  2023-11-29
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -96,7 +96,6 @@ void assert_failed(char const * const module, int_t const id) {
     Q_onError(module, id);
 }
 
-
 // ISRs used in the application ============================================
 
 void SysTick_Handler(void); // prototype
@@ -190,10 +189,6 @@ void BSP_init(void) {
     // enable the MemManage_Handler for MPU exception
     SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
 
-    // NOTE: SystemInit() has been already called from the startup code
-    // but SystemCoreClock needs to be updated
-    SystemCoreClockUpdate();
-
     SCB_EnableICache(); // Enable I-Cache
     SCB_EnableDCache(); // Enable D-Cache
 
@@ -227,7 +222,9 @@ void BSP_init(void) {
 
     // setup the QS filters...
     QS_GLB_FILTER(QS_ALL_RECORDS);   // all records
-    QS_GLB_FILTER(-QS_QF_TICK);      // exclude the clock tick
+    QS_GLB_FILTER(-QS_QF_TICK);      // exclude
+    QS_GLB_FILTER(-QS_SCHED_LOCK);   // exclude
+    QS_GLB_FILTER(-QS_SCHED_UNLOCK); // exclude
 }
 //............................................................................
 void BSP_start(void) {
@@ -333,7 +330,7 @@ uint32_t BSP_random(void) { // a very cheap pseudo-random-number generator
 }
 //............................................................................
 void BSP_terminate(int16_t result) {
-    (void)result;
+    Q_UNUSED_PAR(result);
 }
 //............................................................................
 void BSP_ledOn(void) {
@@ -352,6 +349,7 @@ void QF_onStartup(void) {
     NVIC_SetPriorityGrouping(0U);
 
     // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
+    SystemCoreClockUpdate();
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
     // set priorities of ALL ISRs used in the system, see NOTE1
@@ -375,9 +373,14 @@ void QXK_onIdle(void) {
     BSP_LED_Off(LED3);
     QF_INT_ENABLE();
 
+    // exercise scheduler lock from idle thread
+    QSchedStatus lockStat = QXK_schedLock(1U); // 1U prio. ceiling
+
     // Some floating point code is to exercise the VFP...
     double volatile x = 1.73205;
     x = x * 1.73205;
+
+    QXK_schedUnlock(lockStat);
 
 #ifdef Q_SPY
     QF_INT_DISABLE();

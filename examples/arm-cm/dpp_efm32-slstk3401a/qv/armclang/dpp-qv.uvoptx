@@ -157,41 +157,25 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>157</LineNumber>
+          <LineNumber>169</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>5844</Address>
+          <Address>3624</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\..\..\..\..\src\qv\qv.c</Filename>
+          <Filename>..\..\..\..\..\ports\arm-cm\qv\armclang\qv_port.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\dpp_qv\../../../../../src/qv/qv.c\157</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>424</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>9240</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\bsp.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\dpp_qv\../bsp.c\424</Expression>
+          <Expression>\\dpp_qv\../../../../../ports/arm-cm/qv/armclang/qv_port.c\169</Expression>
         </Bp>
       </Breakpoint>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
-          <SubType>2</SubType>
-          <ItemText>0x20000200</ItemText>
+          <SubType>8</SubType>
+          <ItemText>0x00001F14</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
@@ -541,7 +525,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>/</Name>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>

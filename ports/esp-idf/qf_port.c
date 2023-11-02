@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-10
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-11-15
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief "Experimental" QF/C port to Espressif ESP-IDF (version 4.x)
@@ -150,7 +150,7 @@ void QActive_start_(QActive * const me,
     QF_CRIT_EXIT();
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
-    me->pthre = 0U; // preemption-threshold (not used)
+    me->pthre = 0U; // preemption-threshold (not used for AO registration)
     QActive_register_(me); // register this AO
 
     // top-most initial tran. (virtual call)
@@ -162,13 +162,37 @@ void QActive_start_(QActive * const me,
                              ? (char const *)me->thread.pxDummy1
                              : (char const *)"AO";
 
+    // The FreeRTOS priority of the AO thread can be specificed in two ways:
+    //
+    // 1. Implictily based on the AO's priority (by the forumla specified
+    //    in the macro FREERTOS_TASK_PRIO(), see qp_port.h). This option
+    //    is chosen, when the higher-byte of the prioSpec parameter is set
+    //    to zero.
+    //
+    // 2. Explicitly as the higher-byte of the prioSpec parameter.
+    //    This option is chosen when the prioSpec parameter is not-zero.
+    //    For example, Q_PRIO(10U, 5U) will explicitly specify AO priority
+    //    as 10 and FreeRTOS priority as 5.
+    //
+    //    NOTE: The explicit FreeRTOS priority is NOT sanity-checked,
+    //    so it is the responsibility of the application to ensure that
+    //    it is consistent witht the AO's priority. An example of
+    //    inconsistent setting would be assigning FreeRTOS priorities that
+    //    would result in a different relative priritization of AO's threads
+    //    than indicated by the AO priorities assigned.
+    //
+    UBaseType_t freertos_prio = (prioSpec >> 8U);
+    if (freertos_prio == 0U) {
+        freertos_prio = FREERTOS_TASK_PRIO(me->prio);
+    }
+
     // statically create the FreeRTOS task for the AO
     TaskHandle_t task = xTaskCreateStaticPinnedToCore(
         &task_function, // the task function
         taskName ,      // the name of the task
         stkSize/sizeof(portSTACK_TYPE), // stack length
         (void *)me,     // the 'pvParameters' parameter
-        FREERTOS_TASK_PRIO(me->prio), // FreeRTOS priority
+        freertos_prio,  // FreeRTOS priority
         (StackType_t *)stkSto,        // stack storage
         &me->thread,    // task buffer
         QPC_CPU_NUM);   // CPU number
@@ -585,7 +609,8 @@ QEvt IRAM_ATTR *QF_newXFromISR_(uint_fast16_t const evtSize,
 
     // was e allocated correctly?
     if (e != (QEvt *)0) {
-        QEvt_ctor(e, sig);
+        e->sig     = (QSignal)sig; // set the signal
+        e->refCtr_ = 0U; // initialize the reference counter to 0
         e->evtTag_ = (uint8_t)(QEVT_MARKER | (idx + 1U)); // pool ID
 
 #ifdef Q_SPY

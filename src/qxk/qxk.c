@@ -167,7 +167,9 @@ QActive * QXK_current(void) {
 //! @static @private @memberof QXK
 uint_fast8_t QXK_sched_(void) {
     Q_REQUIRE_INCRIT(402, QPSet_verify_(&QXK_priv_.readySet,
-                                         &QXK_priv_.readySet_dis));
+                                        &QXK_priv_.readySet_dis));
+
+    QActive const * const curr = QXK_priv_.curr;
     uint_fast8_t p;
     if (QPSet_isEmpty(&QXK_priv_.readySet)) {
         p = 0U; // no activation needed
@@ -176,7 +178,6 @@ uint_fast8_t QXK_sched_(void) {
         // find the highest-prio thread ready to run
         p = QPSet_findMax(&QXK_priv_.readySet);
         if (p <= QXK_priv_.lockCeil) {
-            // prio. of the thread holding the lock
             p = (uint_fast8_t)QActive_registry_[QXK_priv_.lockHolder]->prio;
             if (p != 0U) {
                 Q_ASSERT_INCRIT(410,
@@ -184,16 +185,12 @@ uint_fast8_t QXK_sched_(void) {
             }
         }
     }
-    QActive const * const curr = QXK_priv_.curr;
     QActive * const next = QActive_registry_[p];
-
-    // the next thread found must be registered in QF
-    Q_ASSERT_INCRIT(420, next != (QActive *)0);
 
     // is the current thread a basic-thread?
     if (curr == (QActive *)0) {
 
-        // is the new prio. above the active prio.?
+        // is the next prio. above the active prio.?
         if (p > QXK_priv_.actPrio) {
             QXK_priv_.next = next; // set the next AO to activate
 
@@ -202,7 +199,7 @@ uint_fast8_t QXK_sched_(void) {
                 p = 0U; // no activation needed
             }
         }
-        else { // below the pre-thre
+        else { // below the active prio.
             QXK_priv_.next = (QActive *)0;
             p = 0U; // no activation needed
         }
@@ -218,7 +215,6 @@ uint_fast8_t QXK_sched_(void) {
         }
         p = 0U; // no activation needed
     }
-
     return p;
 }
 
@@ -391,15 +387,22 @@ void QXK_threadExit_(void) {
 void QF_init(void) {
     QF_bzero_(&QF_priv_,                 sizeof(QF_priv_));
     QF_bzero_(&QXK_priv_,                sizeof(QXK_priv_));
-    QF_bzero_(&QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
     QF_bzero_(&QActive_registry_[0],     sizeof(QActive_registry_));
+
+    // setup the QXK scheduler as initially locked and not running
+    QXK_priv_.lockCeil = (QF_MAX_ACTIVE + 1U); // scheduler locked
 
     #ifndef Q_UNSAFE
     QPSet_update_(&QXK_priv_.readySet, &QXK_priv_.readySet_dis);
     #endif
 
-    // setup the QXK scheduler as initially locked and not running
-    QXK_priv_.lockCeil = (QF_MAX_ACTIVE + 1U); // scheduler locked
+    for (uint_fast8_t tickRate = 0U;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, (enum_t)Q_USER_SIG, tickRate);
+    }
 
     // QXK idle AO object (const in ROM)
     static QActive const idle_ao = { (struct QAsmVtable const *)0 };
@@ -441,16 +444,16 @@ int_t QF_run(void) {
     QF_INT_DISABLE();
     QF_MEM_SYS();
 
+    #ifdef QXK_START
+    QXK_START(); // port-specific startup of the QXK kernel
+    #endif
+
     QXK_priv_.lockCeil = 0U; // unlock the QXK scheduler
 
     // activate AOs to process events posted so far
     if (QXK_sched_() != 0U) {
         QXK_activate_();
     }
-
-    #ifdef QXK_START
-    QXK_START(); // port-specific startup of the QXK kernel
-    #endif
 
     QF_MEM_APP();
     QF_INT_ENABLE();
@@ -486,7 +489,7 @@ void QActive_start_(QActive * const me,
     QF_CRIT_EXIT();
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-prio. of the AO
-    me->pthre = 0U; // preemption-threshold NOT used
+    me->pthre = 0U; // not used
     QActive_register_(me); // make QF aware of this active object
 
     if (stkSto == (void *)0) { // starting basic thread (AO)?

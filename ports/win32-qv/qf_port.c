@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-21
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-11-30
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QF/C port to Win32-QV (single-threaded)
@@ -31,7 +31,7 @@
 #define QP_IMPL           // this is QP implementation
 #include "qp_port.h"      // QP port
 #include "qp_pkg.h"       // QP package-scope interface
-#include "qsafe.h"        // QP Functional Safety (FuSa) System
+#include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
 #ifdef Q_SPY              // QS software tracing enabled?
     #include "qs_port.h"  // QS port
     #include "qs_pkg.h"   // QS package-scope internal interface
@@ -45,7 +45,6 @@
 Q_DEFINE_THIS_MODULE("qf_port")
 
 // Local objects =============================================================
-static CRITICAL_SECTION l_win32CritSect;
 static DWORD l_tickMsec = 10U; // clock tick in msec (argument for Sleep())
 static int   l_tickPrio = 50;  // default priority of the "ticker" thread
 static bool  l_isRunning;      // flag indicating when QF is running
@@ -83,32 +82,45 @@ HANDLE QF_win32Event_; // Win32 event to signal events
 //============================================================================
 // QF functions
 
-//............................................................................
-void QF_init(void) {
-    QPSet_setEmpty(&QF_readySet_);
-#ifndef Q_UNSAFE
-    QPSet_update_(&QF_readySet_, &QF_readySet_dis_);
-#endif
-
-    InitializeCriticalSection(&l_win32CritSect);
-    QF_win32Event_ = CreateEvent(NULL, FALSE, FALSE, NULL);
-}
+static CRITICAL_SECTION l_win32CritSect;
+static int_t l_critSectNest;   // critical section nesting up-down counter
 
 //............................................................................
 void QF_enterCriticalSection_(void) {
-    if (l_isRunning) {
-        EnterCriticalSection(&l_win32CritSect);
-    }
+    EnterCriticalSection(&l_win32CritSect);
+    Q_ASSERT_INCRIT(100, l_critSectNest == 0); // NO nesting of crit.sect!
+    ++l_critSectNest;
 }
 //............................................................................
 void QF_leaveCriticalSection_(void) {
-    if (l_isRunning) {
+    Q_ASSERT_INCRIT(200, l_critSectNest == 1); // crit.sect. must ballace!
+    if ((--l_critSectNest) == 0) {
         LeaveCriticalSection(&l_win32CritSect);
     }
 }
 
 //............................................................................
+void QF_init(void) {
+    InitializeCriticalSection(&l_win32CritSect);
+    QF_win32Event_ = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+    QPSet_setEmpty(&QF_readySet_);
+#ifndef Q_UNSAFE
+    QPSet_update_(&QF_readySet_, &QF_readySet_dis_);
+#endif
+
+    for (uint_fast8_t tickRate = 0U;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, Q_USER_SIG, tickRate);
+    }
+}
+
+//............................................................................
 int QF_run(void) {
+    l_isRunning = true; // QF is running
 
     QF_onStartup(); // application-specific startup callback
 
@@ -130,9 +142,8 @@ int QF_run(void) {
     QS_BEGIN_PRE_(QS_QF_RUN, 0U)
     QS_END_PRE_()
 
-    l_isRunning = true; // QF is running
     while (l_isRunning) {
-        Q_ASSERT_INCRIT(200, QPSet_verify_(&QF_readySet_, &QF_readySet_dis_));
+        Q_ASSERT_INCRIT(300, QPSet_verify_(&QF_readySet_, &QF_readySet_dis_));
 
         // find the maximum priority AO ready to run
         if (QPSet_notEmpty(&QF_readySet_)) {
@@ -180,7 +191,7 @@ int QF_run(void) {
 }
 //............................................................................
 void QF_stop(void) {
-    l_isRunning = false; // terminate the main event-loop
+    l_isRunning = false; // this will exit the main event-loop
 
     // unblock the event-loop so it can terminate
     QPSet_insert(&QF_readySet_, 1U);

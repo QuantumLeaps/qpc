@@ -49,10 +49,10 @@ typedef struct Missile {
 
 // public:
 } Missile;
+extern Missile Missile_inst;
 
 // public:
 static void Missile_ctor(Missile * const me);
-extern Missile Missile_inst;
 
 // protected:
 static QState Missile_initial(Missile * const me, void const * const par);

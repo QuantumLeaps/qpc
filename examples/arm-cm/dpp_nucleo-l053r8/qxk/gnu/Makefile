@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for QP/C, DPP on NUCLEO-L053R8, QXK kernel, GNU-ARM
-# Last Updated for Version: 7.2.0
-# Date of the Last Update:  2022-12-13
+# Last Updated for Version: 7.3.1
+# Date of the Last Update:  2023-11-13
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -138,10 +138,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := \
-    -DQF_ON_CONTEXT_SW \
-	-DQXK_USE_IRQ_NUM=30 \
-	-DQXK_USE_IRQ_HANDLER=LCD_IRQHandler
+DEFINES   := -DSTM32L053xx
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]

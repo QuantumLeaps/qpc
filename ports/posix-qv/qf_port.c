@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-26
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-11-30
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QF/C port to POSIX-QV (single-threaded)
@@ -56,11 +56,6 @@
 Q_DEFINE_THIS_MODULE("qf_port")
 
 // Local objects =============================================================
-
-// NOTE: initialize the critical section mutex first with default
-// non-recursive initializer, but later in QF_init() it will be
-// re-initialized it as *recursive mutex* in a portable way
-static pthread_mutex_t l_critSectMutex_ = PTHREAD_MUTEX_INITIALIZER;
 
 static bool l_isRunning;       // flag indicating when QF is running
 static struct termios l_tsav;  // structure with saved terminal attributes
@@ -119,6 +114,26 @@ pthread_cond_t QF_condVar_; // Cond.var. to signal events
 //============================================================================
 // QF functions
 
+// NOTE: initialize the critical section mutex as non-recursive,
+// but check that nesting of critical sections never occurs
+// (see QF_enterCriticalSection_()/QF_leaveCriticalSection_()
+static pthread_mutex_t l_critSectMutex_ = PTHREAD_MUTEX_INITIALIZER;
+static int_t l_critSectNest;   // critical section nesting up-down counter
+
+//............................................................................
+void QF_enterCriticalSection_(void) {
+    pthread_mutex_lock(&l_critSectMutex_);
+    Q_ASSERT_INCRIT(100, l_critSectNest == 0); // NO nesting of crit.sect!
+    ++l_critSectNest;
+}
+//............................................................................
+void QF_leaveCriticalSection_(void) {
+    Q_ASSERT_INCRIT(200, l_critSectNest == 1); // crit.sect. must ballace!
+    if ((--l_critSectNest) == 0) {
+       pthread_mutex_unlock(&l_critSectMutex_);
+    }
+}
+
 //............................................................................
 void QF_init(void) {
     QPSet_setEmpty(&QF_readySet_);
@@ -129,16 +144,16 @@ void QF_init(void) {
     // lock memory so we're never swapped out to disk
     //mlockall(MCL_CURRENT | MCL_FUTURE); // un-comment when supported
 
-    // initialize the critical section mutex l_critSectMutex_ as a
-    // *recursive mutex* in a portable way according to the POSIX Standard
-    pthread_mutexattr_t attr;
-    pthread_mutexattr_init(&attr);
-    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(&l_critSectMutex_, &attr);
-    pthread_mutexattr_destroy(&attr);
-
     // init the global condition variable with the default initializer
     pthread_cond_init(&QF_condVar_, NULL);
+
+    for (uint_fast8_t tickRate = 0U;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, Q_USER_SIG, tickRate);
+    }
 
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default clock tick
@@ -149,19 +164,6 @@ void QF_init(void) {
     memset(&sig_act, 0, sizeof(sig_act));
     sig_act.sa_handler = &sigIntHandler;
     sigaction(SIGINT, &sig_act, NULL);
-}
-
-//............................................................................
-void QF_enterCriticalSection_(void) {
-    if (l_isRunning) {
-        pthread_mutex_lock(&l_critSectMutex_);
-    }
-}
-//............................................................................
-void QF_leaveCriticalSection_(void) {
-    if (l_isRunning) {
-        pthread_mutex_unlock(&l_critSectMutex_);
-    }
 }
 
 //............................................................................
@@ -220,7 +222,7 @@ int QF_run(void) {
 
     l_isRunning = true; // QF is running
     while (l_isRunning) {
-        Q_ASSERT_INCRIT(200, QPSet_verify_(&QF_readySet_, &QF_readySet_dis_));
+        Q_ASSERT_INCRIT(300, QPSet_verify_(&QF_readySet_, &QF_readySet_dis_));
 
         // find the maximum priority AO ready to run
         if (QPSet_notEmpty(&QF_readySet_)) {
@@ -251,7 +253,13 @@ int QF_run(void) {
             // for events. Instead, the POSIX-QV port efficiently waits until
             // QP events become available.
             while (QPSet_isEmpty(&QF_readySet_)) {
+                Q_ASSERT_INCRIT(390, l_critSectNest == 1);
+                --l_critSectNest;
+
                 pthread_cond_wait(&QF_condVar_, &l_critSectMutex_);
+
+                Q_ASSERT_INCRIT(391, l_critSectNest == 0);
+                ++l_critSectNest;
             }
         }
     }

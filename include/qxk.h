@@ -46,7 +46,7 @@
 //$declare${QXK::QXK} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${QXK::QXK} ................................................................
-// @class QXK
+//! @class QXK
 typedef struct QXK {
     //! @cond INTERNAL
     uint8_t dummy;
@@ -71,7 +71,7 @@ typedef uint_fast16_t QSchedStatus;
 //${QXK::QXK-base::Attr} .....................................................
 //! @class QXK_Attr
 typedef struct {
-// public:
+// private:
 
     //! @memberof QXK_Attr
     struct QActive * volatile curr;

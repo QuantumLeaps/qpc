@@ -85,9 +85,11 @@ Q_NORETURN Q_onError(char const *module, int_t const id) {
     // for debugging, hang on in an endless loop...
     for (;;) {
     }
-#endif
-
+#else
     NVIC_SystemReset();
+    for (;;) { // explicitly "no-return"
+    }
+#endif
 }
 //............................................................................
 void assert_failed(char const * const module, int_t const id); // prototype
@@ -96,6 +98,7 @@ void assert_failed(char const * const module, int_t const id) {
 }
 
 // ISRs used in the application ==========================================
+
 void SysTick_Handler(void); // prototype
 void SysTick_Handler(void) {
     QK_ISR_ENTRY();   // inform QK about entering an ISR
@@ -143,7 +146,7 @@ void SysTick_Handler(void) {
     QK_ISR_EXIT();  // inform QK about exiting an ISR
 }
 //............................................................................
-// interrupt handler for testing preemptions in QK
+// interrupt handler for testing preemptions
 void EXTI0_1_IRQHandler(void); // prototype
 void EXTI0_1_IRQHandler(void) {
     QK_ISR_ENTRY();   // inform QK about entering an ISR
@@ -575,7 +578,7 @@ void BSP_start(void) {
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
     Q_UNUSED_PAR(n);
 
-    if (stat[0] == 'h') {
+    if (stat[0] == 'e') {
         GPIOA->BSRR = (1U << LD4_PIN);  // turn LED on
     }
     else {
@@ -640,10 +643,11 @@ void QF_onStartup(void) {
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
     // assign all priority bits for preemption-prio. and none to sub-prio.
+    // NOTE: this might have been changed by STM32Cube.
     NVIC_SetPriorityGrouping(0U);
 
     // set priorities of ALL ISRs used in the system, see NOTE1
-    NVIC_SetPriority(USART2_IRQn,    0); // kernel UNAWARE interrupt
+    NVIC_SetPriority(USART2_IRQn,    0U); // kernel UNAWARE interrupt
     NVIC_SetPriority(EXTI0_1_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 0U);
     NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
     // ...
@@ -678,7 +682,7 @@ void QK_onIdle(void) {
 
     QF_INT_DISABLE();
     QF_MEM_SYS();
-    if ((USART2->ISR & (1U << 7U)) != 0U) {  // is TXE empty?
+    if ((USART2->ISR & (1U << 7U)) != 0U) { // is TXE empty?
         uint16_t b = QS_getByte();
         if (b != QS_EOD) {  // not End-Of-Data?
             USART2->TDR = b; // put into the DR register

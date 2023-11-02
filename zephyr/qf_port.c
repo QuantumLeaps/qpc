@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-19
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-11-15
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QF/C port to Zephyr RTOS (v 3.1.99)
@@ -119,7 +119,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     void const * const par)
 {
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
-    me->pthre = (uint8_t)(prioSpec >> 8U);   // preemption-threshold
+    me->pthre = 0U;   // preemption-threshold (not used for AO registration)
     QActive_register_(me); // register this AO
 
     // initialize the Zephyr message queue
@@ -129,8 +129,28 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     (*me->super.vptr->init)(&me->super, par, me->prio);
     QS_FLUSH(); // flush the trace buffer to the host
 
-    // Zephyr uses the reverse priority numbering than QP
-    int zprio = (int)QF_MAX_ACTIVE - (int)me->prio;
+    // The Zephyr priority of the AO thread can be specificed in two ways:
+    //
+    // 1. Implictily based on the AO's priority (Zephyr uses the reverse
+    //    priority numbering scheme than QP). This option is chosen, when
+    //    the higher-byte of the prioSpec parameter is set to zero.
+    //
+    // 2. Explicitly as the higher-byte of the prioSpec parameter.
+    //    This option is chosen when the prioSpec parameter is not-zero.
+    //    For example, Q_PRIO(10U, -1U) will explicitly specify AO priority
+    //    as 10 and Zephyr priority as -1.
+    //
+    //    NOTE: The explicit Zephyr priority is NOT sanity-checked,
+    //    so it is the responsibility of the application to ensure that
+    //    it is consistent witht the AO's priority. An example of
+    //    inconsistent setting would be assigning Zephyr priorities that
+    //    would result in a different relative priritization of AO's threads
+    //    than indicated by the AO priorities assigned.
+    //
+    int zephyr_prio = (int)((int16_t)qp_prio >> 8);
+    if (zephyr_prio == 0) {
+        zephyr_prio = (int)QF_MAX_ACTIVE - (int)me->prio;
+    }
 
     // extract data temporarily saved in me->thread by QActive_setAttr()
     uint32_t opt = me->thread.base.order_key;
@@ -149,7 +169,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     (void *)me, // p1
                     (void *)0,  // p2
                     (void *)0,  // p3
-                    zprio,      // Zephyr priority
+                    zephyr_prio,// Zephyr priority
                     opt,        // thread options
                     K_NO_WAIT); // start immediately
 

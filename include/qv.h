@@ -46,7 +46,7 @@
 //$declare${QV::QV} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${QV::QV} ..................................................................
-// @class QV
+//! @class QV
 typedef struct QV {
     //! @cond INTERNAL
     uint8_t dummy;
@@ -59,20 +59,36 @@ typedef struct QV {
 //${QV::QV-base::Attr} .......................................................
 //! @class QV_Attr
 typedef struct {
-// public:
+// private:
 
     //! @memberof QV_Attr
     QPSet readySet;
 
+    //! @memberof QV_Attr
+    uint_fast8_t schedCeil;
+
 #ifndef Q_UNSAFE
     //! @memberof QV_Attr
     QPSet readySet_dis;
+#endif // ndef Q_UNSAFE
+
+#ifndef Q_UNSAFE
+    //! @memberof QV_Attr
+    uint_fast8_t schedCeil_dis;
 #endif // ndef Q_UNSAFE
 } QV_Attr;
 
 //${QV::QV-base::priv_} ......................................................
 //! @static @private @memberof QV
 extern QV_Attr QV_priv_;
+
+//${QV::QV-base::schedDisable} ...............................................
+//! @static @public @memberof QV
+void QV_schedDisable(uint_fast8_t const ceiling);
+
+//${QV::QV-base::schedEnable} ................................................
+//! @static @public @memberof QV
+void QV_schedEnable(void);
 
 //${QV::QV-base::onIdle} .....................................................
 //! @static @public @memberof QV

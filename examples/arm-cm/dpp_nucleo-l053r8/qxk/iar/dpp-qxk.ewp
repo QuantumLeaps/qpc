@@ -229,6 +229,7 @@
                     <state>QXK_USE_IRQ_HANDLER=LCD_IRQHandler</state>
                     <state>QXK_USE_IRQ_NUM=30</state>
                     <state>QF_ON_CONTEXT_SW</state>
+                    <state>STM32L053xx</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -1308,6 +1309,7 @@
                 <option>
                     <name>CCDefines</name>
                     <state>NDEBUG</state>
+                    <state>STM32L053xx</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -2388,6 +2390,7 @@
                     <name>CCDefines</name>
                     <state>Q_SPY</state>
                     <state>QF_ON_CONTEXT_SW</state>
+                    <state>STM32L053xx</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>

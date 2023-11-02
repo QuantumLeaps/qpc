@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP example, NUCLEO-H743ZI board, QK kernel
-// Last updated for version 7.3.0
-// Last updated on  2023-08-22
+// Last updated for version 7.3.1
+// Last updated on  2023-11-29
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -96,35 +96,24 @@ void assert_failed(char const * const module, int_t const id) {
     Q_onError(module, id);
 }
 
-
 // ISRs used in the application ============================================
 
 void SysTick_Handler(void); // prototype
 void SysTick_Handler(void) {
     QK_ISR_ENTRY();   // inform QK about entering an ISR
 
-    uint32_t tmp;
-#ifdef Q_SPY
-    {
-        tmp = SysTick->CTRL; // clear SysTick_CTRL_COUNTFLAG
-        QS_tickTime_ += QS_tickPeriod_; // account for the clock rollover
-    }
-#endif
-
     QTIMEEVT_TICK_X(0U, &l_SysTick_Handler); // time events for rate 0
 
     // Perform the debouncing of buttons. The algorithm for debouncing
     // adapted from the book "Embedded Systems Dictionary" by Jack Ganssle
     // and Michael Barr, page 71.
-    //
-    // state of the button debouncing
     static struct {
         uint32_t depressed;
         uint32_t previous;
     } buttons = { 0U, 0U };
 
     uint32_t current = BSP_PB_GetState(BUTTON_USER); // read the User button
-    tmp = buttons.depressed; // save the depressed buttons
+    uint32_t tmp = buttons.depressed; // save the depressed buttons
     buttons.depressed |= (buttons.previous & current); // set depressed
     buttons.depressed &= (buttons.previous | current); // clear released
     buttons.previous   = current; // update the history
@@ -141,6 +130,11 @@ void SysTick_Handler(void) {
             QACTIVE_PUBLISH(&serveEvt, &l_SysTick_Handler);
         }
     }
+
+#ifdef Q_SPY
+    tmp = SysTick->CTRL; // clear SysTick_CTRL_COUNTFLAG
+    QS_tickTime_ += QS_tickPeriod_; // account for the clock rollover
+#endif
 
     QK_ISR_EXIT();  // inform QK about exiting an ISR
 }
@@ -176,67 +170,24 @@ void QF_onContextSw(QActive *prev, QActive *next) {
 }
 #endif // QF_ON_CONTEXT_SW
 
-//............................................................................
-// MPU setup for STM32H743ZI MCU
-static void STM32H743ZI_MPU_setup(void) {
-    // The following MPU configuration contains just a generic ROM
-    // region (with read-only access) and NULL-pointer protection region.
-    // Otherwise, the MPU will fall back on the background region (PRIVDEFENA).
-    //
-    static struct {
-        uint32_t rbar;
-        uint32_t rasr;
-    } const mpu_setup[] = {
-
-        { // region #0: Flash: base=0x0000'0000, size=512M=2^(28+1)
-          0x00000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 0U), // region #0
-          (28U << MPU_RASR_SIZE_Pos)        // 2^(18+1) region
-              | (0x6U << MPU_RASR_AP_Pos)   // PA:ro/UA:ro
-              | (1U << MPU_RASR_C_Pos)      // C=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
-
-        { // region #7: NULL-pointer: base=0x000'0000, size=128M=2^(26+1)
-          // NOTE: this region extends to  0x080'0000, which is where
-          // the ROM is re-mapped by STM32
-          //
-          0x00000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 7U), // region #7
-          (26U << MPU_RASR_SIZE_Pos)        // 2^(26+1)=128M region
-              | (0x0U << MPU_RASR_AP_Pos)   // PA:na/UA:na
-              | (1U << MPU_RASR_XN_Pos)     // XN=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
-    };
-
-    // enable the MemManage_Handler for MPU exception
-    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
-
-    __DSB();
-    MPU->CTRL = 0U; // disable the MPU
-    for (uint_fast8_t n = 0U; n < Q_DIM(mpu_setup); ++n) {
-        MPU->RBAR = mpu_setup[n].rbar;
-        MPU->RASR = mpu_setup[n].rasr;
-    }
-    MPU->CTRL = MPU_CTRL_ENABLE_Msk         // enable the MPU
-                | MPU_CTRL_PRIVDEFENA_Msk;  // enable background region
-    __ISB();
-    __DSB();
-}
-
 //============================================================================
 // BSP functions...
 
 void BSP_init(void) {
-    // setup the MPU...
-    STM32H743ZI_MPU_setup();
+    // Configure the MPU to prevent NULL-pointer dereferencing ...
+    MPU->RBAR = 0x0U                          // base address (NULL)
+                | MPU_RBAR_VALID_Msk          // valid region
+                | (MPU_RBAR_REGION_Msk & 7U); // region #7
+    MPU->RASR = (7U << MPU_RASR_SIZE_Pos)     // 2^(7+1) region
+                | (0x0U << MPU_RASR_AP_Pos)   // no-access region
+                | MPU_RASR_ENABLE_Msk;        // region enable
+    MPU->CTRL = MPU_CTRL_PRIVDEFENA_Msk       // enable background region
+                | MPU_CTRL_ENABLE_Msk;        // enable the MPU
+    __ISB();
+    __DSB();
 
-    // NOTE: SystemInit() has been already called from the startup code
-    // but SystemCoreClock needs to be updated
-    SystemCoreClockUpdate();
+    // enable the MemManage_Handler for MPU exception
+    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
 
     SCB_EnableICache(); // Enable I-Cache
     SCB_EnableDCache(); // Enable D-Cache
@@ -254,8 +205,7 @@ void BSP_init(void) {
     // Configure the User Button in GPIO Mode
     BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
 
-    //...
-    BSP_randomSeed(1234U);
+    BSP_randomSeed(1234U); // seed the random number generator
 
     // initialize the QS software tracing...
     if (!QS_INIT((void *)0)) {
@@ -272,7 +222,9 @@ void BSP_init(void) {
 
     // setup the QS filters...
     QS_GLB_FILTER(QS_ALL_RECORDS);   // all records
-    QS_GLB_FILTER(-QS_QF_TICK);      // exclude the clock tick
+    QS_GLB_FILTER(-QS_QF_TICK);      // exclude
+    QS_GLB_FILTER(-QS_SCHED_LOCK);   // exclude
+    QS_GLB_FILTER(-QS_SCHED_UNLOCK); // exclude
 }
 //............................................................................
 void BSP_start(void) {
@@ -304,14 +256,16 @@ void BSP_start(void) {
     static QEvt const *tableQueueSto[N_PHILO];
     Table_ctor();
     QACTIVE_START(AO_Table,
-        N_PHILO + 7U,            // QP prio. of the AO
-        tableQueueSto,           // event queue storage
-        Q_DIM(tableQueueSto),    // queue length [events]
-        (void *)0, 0U,           // no stack storage
-        (void *)0);              // no initialization param
+        N_PHILO + 7U,                // QP prio. of the AO
+        tableQueueSto,               // event queue storage
+        Q_DIM(tableQueueSto),        // queue length [events]
+        (void *)0, 0U,               // no stack storage
+        (void *)0);                  // no initialization param
 }
 //............................................................................
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
+    Q_UNUSED_PAR(n);
+
     if (stat[0] == 'e') {
         BSP_LED_On(LED1);
     }
@@ -361,7 +315,7 @@ uint32_t BSP_random(void) { // a very cheap pseudo-random-number generator
 }
 //............................................................................
 void BSP_terminate(int16_t result) {
-    (void)result;
+    Q_UNUSED_PAR(result);
 }
 //............................................................................
 void BSP_ledOn(void) {
@@ -375,17 +329,17 @@ void BSP_ledOff(void) {
 //============================================================================
 // QF callbacks...
 void QF_onStartup(void) {
-    // assign all priority bits for preemption-prio. and none to sub-prio.
-    // NOTE: this might have been changed by STM32Cube.
-    //
-    NVIC_SetPriorityGrouping(0U);
-
     // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
+    SystemCoreClockUpdate();
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
+    // assign all priority bits for preemption-prio. and none to sub-prio.
+    // NOTE: this might have been changed by STM32Cube.
+    NVIC_SetPriorityGrouping(0U);
+
     // set priorities of ALL ISRs used in the system, see NOTE1
-    NVIC_SetPriority(USART3_IRQn,  0U); // kernel unaware interrupt
-    NVIC_SetPriority(SysTick_IRQn, QF_AWARE_ISR_CMSIS_PRI);
+    NVIC_SetPriority(USART3_IRQn,    0U); // kernel UNAWARE interrupt
+    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 0U);
     // ...
 
     // enable IRQs...
@@ -404,17 +358,20 @@ void QK_onIdle(void) {
     BSP_LED_Off(LED3);
     QF_INT_ENABLE();
 
+    // exercise scheduler lock from idle thread
+    QSchedStatus lockStat = QK_schedLock(1U); // 1U prio. ceiling
+
     // Some floating point code is to exercise the VFP...
     double volatile x = 1.73205;
     x = x * 1.73205;
+
+    QK_schedUnlock(lockStat);
 
 #ifdef Q_SPY
     QF_INT_DISABLE();
     QS_rxParse();  // parse all the received bytes
     QF_INT_ENABLE();
-    QF_CRIT_EXIT_NOP();
 
-    QF_INT_DISABLE();
     if ((l_uartHandle.Instance->ISR & UART_FLAG_TXE) != 0U) { // TXE empty?
         QF_INT_DISABLE();
         uint16_t b = QS_getByte();
@@ -424,23 +381,11 @@ void QK_onIdle(void) {
             l_uartHandle.Instance->TDR = b;  // put into TDR
         }
     }
-    QF_INT_ENABLE();
 #elif defined NDEBUG
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,
     // see the datasheet for your particular Cortex-M MCU.
-    //
-    // !!!CAUTION!!!
-    // The WFI instruction stops the CPU clock, which unfortunately disables
-    // the JTAG port, so the ST-Link debugger can no longer connect to the
-    // board. For that reason, the call to __WFI() has to be used with CAUTION.
-    //
-    // NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
-    // reset the board, then connect with ST-Link Utilities and erase the part.
-    // The trick with BOOT(0) is it gets the part to run the System Loader
-    // instead of your broken code. When done disconnect BOOT0, and start over.
-    //
-    //__WFI(); // Wait-For-Interrupt
+    __WFI(); // Wait-For-Interrupt
 #endif
 }
 
@@ -467,7 +412,7 @@ uint8_t QS_onStartup(void const *arg) {
     l_uartHandle.Init.Mode       = UART_MODE_TX_RX;
     l_uartHandle.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
     if (HAL_UART_Init(&l_uartHandle) != HAL_OK) {
-        return 0U; // return failure
+        return 0U; // failure
     }
 
     // Set UART to receive 1 byte at a time via interrupt
@@ -482,7 +427,7 @@ uint8_t QS_onStartup(void const *arg) {
 void QS_onCleanup(void) {
 }
 //............................................................................
-QSTimeCtr QS_onGetTime(void) {  // NOTE: invoked with interrupts DISABLED
+QSTimeCtr QS_onGetTime(void) { // NOTE: invoked with interrupts DISABLED
     if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0) { // not set?
         return QS_tickTime_ - (QSTimeCtr)SysTick->VAL;
     }
@@ -517,7 +462,7 @@ void QS_onReset(void) {
     NVIC_SystemReset();
 }
 //............................................................................
-//! callback function to execute a user command
+// callback function to execute a user command
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
@@ -544,14 +489,14 @@ void QS_onCommand(uint8_t cmdId,
 // Conversely, any ISRs prioritized above the QF_AWARE_ISR_CMSIS_PRI priority
 // level (i.e., with the numerical values of priorities less than
 // QF_AWARE_ISR_CMSIS_PRI) are never disabled and are not aware of the kernel.
-// Such "QF-unaware" ISRs cannot call any QF services. In particular they
+// Such "QF-unaware" ISRs cannot call ANY QF services. In particular they
 // can NOT call the macros QK_ISR_ENTRY/QK_ISR_ENTRY. The only mechanism
 // by which a "QF-unaware" ISR can communicate with the QF framework is by
 // triggering a "QF-aware" ISR, which can post/publish events.
 //
 // NOTE2:
 // The User LED is used to visualize the idle loop activity. The brightness
-// of the LED is proportional to the frequency of invcations of the idle loop.
+// of the LED is proportional to the frequency of the idle loop.
 // Please note that the LED is toggled with interrupts locked, so no interrupt
 // execution time contributes to the brightness of the User LED.
 //

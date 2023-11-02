@@ -5,7 +5,7 @@
 //                   ------------------------
 //                   Modern Embedded Software
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005 Quantum Leaps, LLC <state-machine.com>.
 //
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
@@ -27,25 +27,181 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-17
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-12-03
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QV/C port to ARM Cortex-M, IAR-ARM
 
 #define QP_IMPL 1U
 #include "qp_port.h"
+#include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
 
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED18U)
 #define NVIC_IP      ((uint32_t volatile *)0xE000E400U)
 #define SCB_CPACR   *((uint32_t volatile *)0xE000ED88U)
 #define FPU_FPCCR   *((uint32_t volatile *)0xE000EF34U)
 
-//..........................................................................
+// helper macros to "stringify" values
+#define VAL(x) #x
+#define STRINGIFY(x) VAL(x)
+
+//============================================================================
+// interrupts and critical section...
+//
+// NOTE:
+// The following interrupt disabling/enabling as well as critical section
+// entry/exit functions are defined as "weak" so that they can be
+// re-implemented differently at the application level.
+//
+// NOTE:
+// For best performance, these functions are implemented in assembly,
+// but they can be implemented in C as well.
+
+#pragma weak QF_int_disable_
+#pragma weak QF_int_enable_
+#pragma weak QF_crit_entry_
+#pragma weak QF_crit_exit_
+
+//int32_t volatile QF_int_lock_nest_; // not used
+extern char const QF_port_module_[];
+char const QF_port_module_[] = "qv_port";
+
+//............................................................................
+// Unconditionally disable interrupts.
+//
+// description:
+// On ARMv6-M, interrupts are disabled with the PRIMASK register.
+// On ARMv7-M and higer, interrupts are disabled *selectively* with the
+// BASEPRI register.
+// Additionally, the function also asserts that the interrupts are
+// NOT disabled upon the entry to the function.
+void QF_int_disable_(void) {
+__asm volatile (
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
+    "  CPSID   i                \n" // set PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MRS     r0,BASEPRI       \n" // r0 <- previous BASEPRI
+    "  MOVS    r1,#" STRINGIFY(QF_BASEPRI) "\n"
+    "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
+#endif                  //--------- ARMv7-M or higher
+    "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI == 0)
+    "  BNE     QF_int_disable_error\n"
+    "  BX      lr               \n"
+    "QF_int_disable_error:      \n"
+    "  LDR     r0,=QF_port_module_ \n"
+    "  MOVS    r1,#100          \n"
+    "  LDR     r2,=Q_onError    \n"
+    "  BX      r2               \n"
+    );
+}
+//............................................................................
+// Unconditionally enable interrupts.
+//
+// description:
+// On ARMv6-M, interrupts are enabled with the PRIMASK register.
+// On ARMv7-M and higer, interrupts are enabled with the BASEPRI register.
+// Additionally, the function also asserts that the interrupts ARE
+// disabled upon the entry to the function.
+void QF_int_enable_(void) {
+__asm volatile (
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MRS     r0,BASEPRI       \n" // r0 <- previous BASEPRI
+#endif                  //--------- ARMv7-M or higher
+    "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI != 0)
+    "  BEQ     QF_int_enable_error\n"
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  CPSIE   i                \n" // clear PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MOVS    r1,#0            \n"
+    "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
+#endif                  //--------- ARMv7-M or higher
+    "  BX      lr               \n"
+    "QF_int_enable_error:       \n"
+    "  LDR     r0,=QF_port_module_ \n"
+    "  MOVS    r1,#101          \n"
+    "  LDR     r2,=Q_onError    \n"
+    "  BX      r2               \n"
+    );
+}
+//............................................................................
+// Enter QF critical section.
+//
+// description:
+// On ARMv6-M, critical section is entered by disabling interrupts
+// with the PRIMASK register.
+// On ARMv7-M and higer, critical section is entered by disabling
+// interrupts *selectively* with the BASEPRI register.
+// Additionally, the function also asserts that the interrupts are
+// NOT disabled upon the entry to the function.
+//
+// NOTE:
+// The assertion means that this critical section CANNOT nest.
+void QF_crit_entry_(void) {
+__asm volatile (
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
+    "  CPSID   i                \n" // set PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MRS     r0,BASEPRI       \n" // r0 <- previous BASEPRI
+    "  MOVS    r1,#" STRINGIFY(QF_BASEPRI) "\n"
+    "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
+#endif                  //--------- ARMv7-M or higher
+    "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI == 0)
+    "  BNE     QF_crit_entry_error\n"
+    "  BX      lr               \n"
+    "QF_crit_entry_error:       \n"
+    "  LDR     r0,=QF_port_module_ \n"
+    "  MOVS    r1,#110          \n"
+    "  LDR     r2,=Q_onError    \n"
+    "  BX      r2               \n"
+    );
+}
+//............................................................................
+// Exit QF critical section.
+//
+// description:
+// On ARMv6-M, critical section is exited by enabling interrupts
+// with the PRIMASK register.
+// On ARMv7-M and higer, critical section is exited by enabling
+// interrupts with the BASEPRI register.
+// Additionally, the function also asserts that the interrupts ARE
+// disabled upon the entry to the function.
+//
+// NOTE:
+// The assertion means that this critical section CANNOT nest.
+void QF_crit_exit_(void) {
+__asm volatile (
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MRS     r0,BASEPRI       \n" // r0 <- previous BASEPRI
+#endif                  //--------- ARMv7-M or higher
+    "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI != 0)
+    "  BEQ     QF_crit_exit_error\n"
+#if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
+    "  CPSIE   i                \n" // clear PRIMASK
+#else                   //--------- ARMv7-M or higher
+    "  MOVS    r1,#0            \n"
+    "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
+#endif                  //--------- ARMv7-M or higher
+    "  BX      lr               \n"
+    "QF_crit_exit_error:        \n"
+    "  LDR     r0,=QF_port_module_ \n"
+    "  MOVS    r1,#111          \n"
+    "  LDR     r2,=Q_onError    \n"
+    "  BX      r2               \n"
+    );
+}
+
+//============================================================================
 // Initialize the exception priorities and IRQ priorities to safe values.
 //
-// Description:
-// On ARMv7-M or higher, this QK port disables interrupts by means of the
+// description:
+// On ARMv7-M or higher, this QF port disables interrupts by means of the
 // BASEPRI register. However, this method cannot disable interrupt
 // priority zero, which is the default for all interrupts out of reset.
 // The following code changes the SysTick priority and all IRQ priorities

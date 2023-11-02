@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP example, NUCLEO-C031C6 board, QXK kernel, MPU isolation
-// Last updated for version 7.3.0
-// Last updated on  2023-08-28
+// Last updated for version 7.3.1
+// Last updated on  2023-12-03
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -71,8 +71,8 @@ typedef struct {
 //============================================================================
 // Error handler and ISRs...
 
-Q_NORETURN Q_onError(char const *module, int_t const id) {
-    // NOTE: this implementation of the assertion handler is intended only
+Q_NORETURN Q_onError(char const * const module, int_t const id) {
+    // NOTE: this implementation of the error handler is intended only
     // for debugging and MUST be changed for deployment of the application
     // (assuming that you ship your production code with assertions enabled).
     Q_UNUSED_PAR(module);
@@ -85,9 +85,11 @@ Q_NORETURN Q_onError(char const *module, int_t const id) {
     // for debugging, hang on in an endless loop...
     for (;;) {
     }
-#endif
-
+#else
     NVIC_SystemReset();
+    for (;;) { // explicitly "no-return"
+    }
+#endif
 }
 //............................................................................
 void assert_failed(char const * const module, int_t const id); // prototype
@@ -95,7 +97,8 @@ void assert_failed(char const * const module, int_t const id) {
     Q_onError(module, id);
 }
 
-// ISRs used in the application ==========================================
+// ISRs used in the application ==============================================
+
 void SysTick_Handler(void); // prototype
 void SysTick_Handler(void) {
     QXK_ISR_ENTRY();   // inform QXK about entering an ISR
@@ -143,7 +146,7 @@ void SysTick_Handler(void) {
     QXK_ISR_EXIT();  // inform QXK about exiting an ISR
 }
 //............................................................................
-// interrupt handler for testing preemptions in QXK
+// interrupt handler for testing preemptions
 void EXTI0_1_IRQHandler(void); // prototype
 void EXTI0_1_IRQHandler(void) {
     QXK_ISR_ENTRY();   // inform QXK about entering an ISR
@@ -227,7 +230,7 @@ void QF_onContextSw(QActive *prev, QActive *next) {
 
 // Table AO...................................................................
 // size of Table instance, as power-of-2
-#define TABLE_SIZE_POW2 ((uint32_t)6U)
+#define TABLE_SIZE_POW2 ((uint32_t)7U)
 
 __attribute__((aligned((1U << TABLE_SIZE_POW2))))
 static uint8_t Table_sto[1U << TABLE_SIZE_POW2];
@@ -257,9 +260,9 @@ static MPU_Region const MPU_Table[3] = {
 };
 #endif
 
-// Philo AOs................................................................
+// Philo AOs..................................................................
 // size of Philo instance, as power-of-2
-#define PHILO_SIZE_POW2 ((uint32_t)6U)
+#define PHILO_SIZE_POW2 ((uint32_t)7U)
 
 __attribute__((aligned((1U << PHILO_SIZE_POW2))))
 static uint8_t Philo_sto[N_PHILO][1U << PHILO_SIZE_POW2];
@@ -377,8 +380,8 @@ static MPU_Region const MPU_Philo[N_PHILO][3] = {
 #endif
 
 // XThread1 thread............................................................
-#define XTHREAD1_SIZE_POW2  ((uint32_t)9U)   // XThread1 instance + stack
-#define XTHREAD1_STACK_SIZE ((uint32_t)448U)  // Thread1 stack size
+#define XTHREAD1_SIZE_POW2  ((uint32_t)10U)  // XThread1 instance + stack
+#define XTHREAD1_STACK_SIZE ((uint32_t)400U) // XThread1 stack size
 
 __attribute__((aligned((1U << XTHREAD1_SIZE_POW2))))
 uint8_t XThread1_sto[1U << XTHREAD1_SIZE_POW2];
@@ -409,8 +412,8 @@ static MPU_Region const MPU_XThread1[3] = {
 #endif
 
 // XThread2 thread............................................................
-#define XTHREAD2_SIZE_POW2  ((uint32_t)9U)   // XThread2 instance + stack
-#define XTHREAD2_STACK_SIZE ((uint32_t)448U)  // Thread2 stack size
+#define XTHREAD2_SIZE_POW2  ((uint32_t)10U)  // XThread2 instance + stack
+#define XTHREAD2_STACK_SIZE ((uint32_t)400U) // XThread2 stack size
 
 __attribute__((aligned((1U << XTHREAD2_SIZE_POW2))))
 uint8_t XThread2_sto[1U << XTHREAD2_SIZE_POW2];
@@ -440,7 +443,7 @@ static MPU_Region const MPU_XThread2[3] = {
 };
 #endif
 
-// Shared Event-pools......................................................
+// Shared Event-pools.........................................................
 #define EPOOLS_SIZE_POW2 ((uint32_t)8U)
 
 __attribute__((aligned((1U << EPOOLS_SIZE_POW2))))

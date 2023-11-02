@@ -81,7 +81,7 @@ static inline TableEvt * TableEvt_ctor(TableEvt * const me,
 {
     if (me != (TableEvt *)0) {
         // don't call QEvt_ctor() because the initialization of all
-        // QEvt attributes is already done in QF_QF_newX_()
+        // QEvt attributes is already done in QF_newX_()
         me->philoId = id;
     }
     return me;
