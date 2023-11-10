@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<configuration xmlns:xs="http://www.w3.org/2001/XMLSchema-instance">
+
+  <packages/>
+
+  <device Dclock="40000000" Dcore="Cortex-M4" DcoreVersion="r0p1" Ddsp="NO_DSP" Dendian="Little-endian" Dfamily="EFM32PG1B Series" Dfpu="SP_FPU" Dmpu="MPU" Dname="EFM32PG1B200F128GM32" DsubFamily="EFM32PG1B200" Dtz="NO_TZ" Dvendor="Silicon Labs:21" info="ARM , 32 KB RAM, 128 KB ROM" url="https://www.keil.com/dd2/siliconlabs/efm32pg1b200f128gm32">
+
+    <package info="Silicon Labs EFM32PG1B Pearl Gecko Series Device Support." name="GeckoPlatform_EFM32PG1B_DFP" url="https://www.silabs.com/documents/public/cmsis-packs/" vendor="SiliconLabs" version="4.3.0"/>
+
+  </device>
+
+  <toolchain Tcompiler="IAR" Toutput="exe"/>
+
+  <components>
+
+    <component Cbundle="Quantum Leaps QP/C" Cbundleversion="7.3.0" Cclass="RTEF" Cgroup="Event Processor" Cvariant="qep" Cvendor="QuantumLeaps" Cversion="7.3.0">
+
+      <package name="qpc" url="https://github.com/QuantumLeaps/qpc/releases/download/v7.3.0/" vendor="QuantumLeaps" version="7.3.0"/>
+
+      <file category="doc" name="https://www.state-machine.com/qpc/srs_sm.html"/>
+
+      <file category="include" name="include/"/>
+
+      <file category="source" name="src/qf/qep_hsm.c"/>
+
+      <file category="source" name="src/qf/qep_msm.c"/>
+
+    </component>
+
+    <component Cbundle="Quantum Leaps QP/C" Cbundleversion="7.3.0" Cclass="RTEF" Cgroup="Framework" Cvariant="qf" Cvendor="QuantumLeaps" Cversion="7.3.0">
+
+      <package name="qpc" url="https://github.com/QuantumLeaps/qpc/releases/download/v7.3.0/" vendor="QuantumLeaps" version="7.3.0"/>
+
+      <file category="doc" name="https://www.state-machine.com/qpc/srs_ao.html"/>
+
+      <file category="source" name="src/qf/qf_act.c"/>
+
+      <file category="source" name="src/qf/qf_defer.c"/>
+
+      <file category="source" name="src/qf/qf_dyn.c"/>
+
+      <file category="source" name="src/qf/qf_mem.c"/>
+
+      <file category="source" name="src/qf/qf_ps.c"/>
+
+      <file category="source" name="src/qf/qf_qact.c"/>
+
+      <file category="source" name="src/qf/qf_qeq.c"/>
+
+      <file category="source" name="src/qf/qf_qmact.c"/>
+
+      <file category="source" name="src/qf/qf_time.c"/>
+
+    </component>
+
+    <component Cbundle="Quantum Leaps QP/C" Cbundleversion="7.3.0" Cclass="RTEF" Cgroup="Real-Time Kernel" Cvariant="qk" Cvendor="QuantumLeaps" Cversion="7.3.0">
+
+      <package name="qpc" url="https://github.com/QuantumLeaps/qpc/releases/download/v7.3.0/" vendor="QuantumLeaps" version="7.3.0"/>
+
+      <file category="doc" name="https://www.state-machine.com/qpc/srs_qk.html"/>
+
+      <file category="source" name="src/qf/qf_actq.c"/>
+
+      <file category="source" name="src/qk/qk.c"/>
+
+      <file attr="config" category="header" condition="CoreM" name="ports/arm-cm/qk/config/qp_config.h" version="7.3.0"/>
+
+      <file category="include" condition="CoreM_IAR" name="ports/arm-cm/qk/iar/"/>
+
+      <file category="source" condition="CoreM_IAR" name="ports/arm-cm/qk/iar/qk_port.c"/>
+
+    </component>
+
+    <component Cbundle="Quantum Leaps QP/C" Cbundleversion="7.3.0" Cclass="RTEF" Cgroup="Software tracing" Cvariant="qs" Cvendor="QuantumLeaps" Cversion="7.3.0">
+
+      <package name="qpc" url="https://github.com/QuantumLeaps/qpc/releases/download/v7.3.0/" vendor="QuantumLeaps" version="7.3.0"/>
+
+      <file category="doc" name="https://www.state-machine.com/qpc/srs_qs.html"/>
+
+      <file category="source" name="src/qs/qs.c"/>
+
+      <file category="source" name="src/qs/qs_64bit.c"/>
+
+      <file category="source" name="src/qs/qs_fp.c"/>
+
+      <file category="source" name="src/qs/qs_rx.c"/>
+
+      <file category="source" name="src/qs/qstamp.c"/>
+
+      <file category="source" name="src/qs/qutest.c"/>
+
+    </component>
+
+  </components>
+
+  <apis/>
+
+</configuration>
+

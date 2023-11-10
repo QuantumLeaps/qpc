@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-30
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-11-15
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QF/C port to embOS RTOS kernel, generic C11 compiler
@@ -113,12 +113,35 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                 (void *)&qSto[0]);
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
-    me->pthre = 0U; // preemption-threshold (not used)
+    me->pthre = 0U; // preemption-threshold (not used for AO registration)
     QActive_register_(me); // make QF aware of this AO
 
     // top-most initial tran. (virtual call)
     (*me->super.vptr->init)(&me->super, par, me->prio);
     QS_FLUSH(); // flush the trace buffer to the host
+
+    // The embOS priority of the AO thread can be specificed in two ways:
+    //
+    // 1. Implictily based on the AO's priority (embOS uses the same
+    //    priority numbering scheme as QP). This option is chosen when
+    //    the higher-byte of the prioSpec parameter is set to zero.
+    //
+    // 2. Explicitly as the higher-byte of the prioSpec parameter.
+    //    This option is chosen when the prioSpec parameter is not-zero.
+    //    For example, Q_PRIO(10U, 5U) will explicitly specify AO priority
+    //    as 10 and embOS priority as 5.
+    //
+    //    NOTE: The explicit embOS priority is NOT sanity-checked,
+    //    so it is the responsibility of the application to ensure that
+    //    it is consistent witht the AO's priority. An example of
+    //    inconsistent setting would be assigning embOS priorities that
+    //    would result in a different relative priritization of AO's threads
+    //    than indicated by the AO priorities assigned.
+    //
+    OS_PRIO embos_prio = (prioSpec >> 8U);
+    if (embos_prio == 0U) {
+        embos_prio = me->prio;
+    }
 
     // create an embOS task for the AO
     OS_TASK_CreateEx(&me->thread,
@@ -127,7 +150,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
 #elif
         "AO",            // a generic AO task name
 #endif
-        (OS_PRIO)me->prio, // embOS uses the same numbering as QP
+        embos_prio,      // embOS priority
         &thread_function,
         (void OS_STACKPTR *)stkSto,
         (OS_UINT)stkSize,

@@ -69,6 +69,61 @@ Q_DEFINE_THIS_MODULE("qv")
 
 //${QV::QV-base::priv_} ......................................................
 QV_Attr QV_priv_;
+
+//${QV::QV-base::schedDisable} ...............................................
+//! @static @public @memberof QV
+void QV_schedDisable(uint_fast8_t const ceiling) {
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    QF_MEM_SYS();
+
+    Q_ASSERT_INCRIT(102, QV_priv_.schedCeil
+                         == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
+
+    if (ceiling > QV_priv_.schedCeil) { // raising the scheduler ceiling?
+
+        QS_BEGIN_PRE_(QS_SCHED_LOCK, 0U)
+            QS_TIME_PRE_();   // timestamp
+            // the previous sched ceiling & new sched ceiling
+            QS_2U8_PRE_((uint8_t)QV_priv_.schedCeil,
+                        (uint8_t)ceiling);
+        QS_END_PRE_()
+
+        QV_priv_.schedCeil = ceiling;
+    #ifndef Q_UNSAFE
+        QV_priv_.schedCeil_dis = (uint_fast16_t)(~ceiling);
+    #endif
+    }
+    QF_MEM_APP();
+    QF_CRIT_EXIT();
+}
+
+//${QV::QV-base::schedEnable} ................................................
+//! @static @public @memberof QV
+void QV_schedEnable(void) {
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    QF_MEM_SYS();
+
+    Q_ASSERT_INCRIT(202, QV_priv_.schedCeil
+                         == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
+
+    if (QV_priv_.schedCeil != 0U) { // actually enabling the scheduler?
+
+        QS_BEGIN_PRE_(QS_SCHED_UNLOCK, 0U)
+            QS_TIME_PRE_(); // timestamp
+            // current sched ceiling (old), previous sched ceiling (new)
+            QS_2U8_PRE_((uint8_t)QV_priv_.schedCeil, 0U);
+        QS_END_PRE_()
+
+        QV_priv_.schedCeil = 0U;
+    #ifndef Q_UNSAFE
+        QV_priv_.schedCeil_dis = (uint_fast16_t)(~0U);
+    #endif
+    }
+    QF_MEM_APP();
+    QF_CRIT_EXIT();
+}
 //$enddef${QV::QV-base} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //$define${QV::QF-cust} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -78,12 +133,19 @@ QV_Attr QV_priv_;
 void QF_init(void) {
     QF_bzero_(&QF_priv_,                 sizeof(QF_priv_));
     QF_bzero_(&QV_priv_,                 sizeof(QV_priv_));
-    QF_bzero_(&QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
     QF_bzero_(&QActive_registry_[0],     sizeof(QActive_registry_));
 
     #ifndef Q_UNSAFE
     QPSet_update_(&QV_priv_.readySet, &QV_priv_.readySet_dis);
     #endif
+
+    for (uint_fast8_t tickRate = 0;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, (enum_t)Q_USER_SIG, tickRate);
+    }
 
     #ifdef QV_INIT
     QV_INIT(); // port-specific initialization of the QV kernel
@@ -120,25 +182,34 @@ int_t QF_run(void) {
     #endif
 
     #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
-    uint8_t pprev = 0U; // previously used prio.
+    uint_fast8_t pprev = 0U; // previously used prio.
+    #endif
+
+    QV_priv_.schedCeil = 0U;
+    #ifndef Q_UNSAFE
+    QV_priv_.schedCeil_dis = (uint_fast16_t)(~0U);
     #endif
 
     for (;;) { // QV event loop...
 
-         // check internal integrity (duplicate inverse storage)
-         Q_ASSERT_INCRIT(202, QPSet_verify_(&QV_priv_.readySet,
-                                             &QV_priv_.readySet_dis));
+        // check internal integrity (duplicate inverse storage)
+        Q_ASSERT_INCRIT(302, QPSet_verify_(&QV_priv_.readySet,
+                                           &QV_priv_.readySet_dis));
+        // check internal integrity (duplicate inverse storage)
+        Q_ASSERT_INCRIT(303, QV_priv_.schedCeil
+                             == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
 
         // find the maximum prio. AO ready to run
-        if (QPSet_notEmpty(&QV_priv_.readySet)) {
+        uint_fast8_t const p = QPSet_findMax(&QV_priv_.readySet);
 
-            uint8_t const p = (uint8_t)QPSet_findMax(&QV_priv_.readySet);
+        if (p > QV_priv_.schedCeil) { // is it above the sched ceiling?
             QActive * const a = QActive_registry_[p];
 
     #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
             QS_BEGIN_PRE_(QS_SCHED_NEXT, p)
                 QS_TIME_PRE_();     // timestamp
-                QS_2U8_PRE_(p, pprev); // scheduled prio & previous prio
+                QS_2U8_PRE_((uint8_t)p,
+                            (uint8_t)pprev);
             QS_END_PRE_()
 
     #ifdef QF_ON_CONTEXT_SW
@@ -176,7 +247,7 @@ int_t QF_run(void) {
             if (pprev != 0U) {
                 QS_BEGIN_PRE_(QS_SCHED_IDLE, pprev)
                     QS_TIME_PRE_();    // timestamp
-                    QS_U8_PRE_(pprev); // previous prio
+                    QS_U8_PRE_((uint8_t)pprev); // previous prio
                 QS_END_PRE_()
 
     #ifdef QF_ON_CONTEXT_SW
@@ -189,14 +260,12 @@ int_t QF_run(void) {
 
             QF_MEM_APP();
 
-            // QV_onIdle() must be called with interrupts DISABLED
-            // because the determination of the idle condition (all event
-            // queues empty) can change at any time by an interrupt posting
-            // events to a queue.
+            // QV_onIdle() must be called with interrupts DISABLED because
+            // the determination of the idle condition can change at any time
+            // by an interrupt posting events to a queue.
             //
-            // NOTE: QV_onIdle() MUST enable interrupts internally,
-            // ideally at the same time as putting the CPU into a power-
-            // saving mode.
+            // NOTE: QV_onIdle() MUST enable interrupts internally, ideally
+            // atomically with putting the CPU into a power-saving mode.
             QV_onIdle();
 
             QF_INT_DISABLE(); // disable interrupts before looping back

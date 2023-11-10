@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-26
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-10-15
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QF/C port to POSIX-QV (single-threaded)
@@ -139,6 +139,14 @@ void QF_init(void) {
 
     // init the global condition variable with the default initializer
     pthread_cond_init(&QF_condVar_, NULL);
+
+    for (uint_fast8_t tickRate = 0;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, Q_USER_SIG, tickRate);
+    }
 
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default clock tick

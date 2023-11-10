@@ -46,7 +46,7 @@
 //$declare${QXK::QXK} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${QXK::QXK} ................................................................
-// @class QXK
+//! @class QXK
 typedef struct QXK {
     //! @cond INTERNAL
     uint8_t dummy;

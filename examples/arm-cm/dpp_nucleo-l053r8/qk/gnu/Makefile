@@ -132,10 +132,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := \
-	-DQF_ON_CONTEXT_SW \
-	-DQK_USE_IRQ_HANDLER=LCD_IRQHandler \
-	-DQK_USE_IRQ_NUM=30
+DEFINES   := -DSTM32L053xx
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
 # ARM_CPU:   [cortex-m0 | cortex-m0plus | cortex-m1 | cortex-m3 | cortex-m4]

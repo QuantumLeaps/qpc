@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration xmlns:xs="http://www.w3.org/2001/XMLSchema-instance">
+  <packages/>
+  <device Dclock="40000000" Dcore="Cortex-M4" DcoreVersion="r0p1" Ddsp="NO_DSP" Dendian="Little-endian" Dfamily="EFM32PG1B Series" Dfpu="SP_FPU" Dmpu="MPU" Dname="EFM32PG1B200F128GM32" DsubFamily="EFM32PG1B200" Dtz="NO_TZ" Dvendor="Silicon Labs:21" info="ARM , 32 KB RAM, 128 KB ROM" url="https://www.keil.com/dd2/siliconlabs/efm32pg1b200f128gm32">
+    <package info="Silicon Labs EFM32PG1B Pearl Gecko Series Device Support." name="GeckoPlatform_EFM32PG1B_DFP" url="https://www.silabs.com/documents/public/cmsis-packs/" vendor="SiliconLabs" version="4.3.0"/>
+  </device>
+  <toolchain Tcompiler="IAR" Toutput="exe"/>
+  <components/>
+  <apis/>
+</configuration>

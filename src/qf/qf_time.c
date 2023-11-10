@@ -72,25 +72,24 @@ void QTimeEvt_ctorX(QTimeEvt * const me,
     enum_t const sig,
     uint_fast8_t const tickRate)
 {
-    me->next     = (QTimeEvt *)0;
-    me->act      = act;
-    me->ctr      = 0U;
-    me->interval = 0U;
-
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
     Q_REQUIRE_INCRIT(300, (sig != 0)
         && (tickRate < QF_MAX_TICK_RATE));
     QF_CRIT_EXIT();
 
-    // This default event constructor initializes the event
-    // as NOT allocated from any event-pool, which must be
-    // the case for Time Events.
-    (void)QEvt_ctor(&me->super, sig);
-
-    // The refCtr_ attribute is not used in time events, so it is
-    // reused to hold the tickRate as well as other information
+    // Initialize the QEvt superclass:
+    // NOTE: The refCtr_ attribute is not used in time events,
+    // so it is reused to hold the tickRate as well as other
+    // information about the status of the time event.
+    me->super.sig     = (QSignal)sig;
     me->super.refCtr_ = (uint8_t)tickRate;
+    me->super.evtTag_ = QEVT_MARKER;
+
+    me->next     = (QTimeEvt *)0;
+    me->act      = act;
+    me->ctr      = 0U;
+    me->interval = 0U;
 }
 
 //${QF::QTimeEvt::armX} ......................................................
@@ -302,11 +301,13 @@ void QTimeEvt_tick_(
     Q_UNUSED_PAR(sender);
     #endif
 
-    QTimeEvt *prev = &QTimeEvt_timeEvtHead_[tickRate];
-
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
     QF_MEM_SYS();
+
+    Q_REQUIRE_INCRIT(100, tickRate < Q_DIM(QTimeEvt_timeEvtHead_));
+
+    QTimeEvt *prev = &QTimeEvt_timeEvtHead_[tickRate];
 
     QS_BEGIN_PRE_(QS_QF_TICK, 0U)
         ++prev->ctr;
@@ -315,10 +316,11 @@ void QTimeEvt_tick_(
     QS_END_PRE_()
 
     // scan the linked-list of time events at this rate...
-    for (;;) {
-        QTimeEvt *t = prev->next; // advance down the time evt. list
+    uint_fast8_t limit = 2U*QF_MAX_ACTIVE; // iteration hard limit
+    for (; limit > 0U; --limit) {
+        QTimeEvt *e = prev->next; // advance down the time evt. list
 
-        if (t == (QTimeEvt *)0) { // end of the list?
+        if (e == (QTimeEvt *)0) { // end of the list?
 
             // any new time events armed since the last QTimeEvt_tick_()?
             if (QTimeEvt_timeEvtHead_[tickRate].act != (void *)0) {
@@ -327,17 +329,20 @@ void QTimeEvt_tick_(
                 Q_ASSERT_INCRIT(110, prev != (QTimeEvt *)0);
                 prev->next = (QTimeEvt *)QTimeEvt_timeEvtHead_[tickRate].act;
                 QTimeEvt_timeEvtHead_[tickRate].act = (void *)0;
-                t = prev->next; // switch to the new list
+                e = prev->next; // switch to the new list
             }
-            else {
-                break; // all currently armed time evts. processed
+            else { // all currently armed time events are processed
+                break; // terminate the for-loop
             }
         }
 
-        if (t->ctr == 0U) { // time event scheduled for removal?
-            prev->next = t->next;
-            // mark time event 't' as NOT linked
-            t->super.refCtr_ &= (uint8_t)(~QTE_IS_LINKED & 0xFFU);
+        // the time event 'e' must be valid
+        Q_ASSERT_INCRIT(112, QEvt_verify_(Q_EVT_CAST(QEvt)));
+
+        if (e->ctr == 0U) { // time event scheduled for removal?
+            prev->next = e->next;
+            // mark time event 'e' as NOT linked
+            e->super.refCtr_ &= (uint8_t)(~QTE_IS_LINKED & 0xFFU);
             // do NOT advance the prev pointer
             QF_MEM_APP();
             QF_CRIT_EXIT(); // exit crit. section to reduce latency
@@ -353,24 +358,24 @@ void QTimeEvt_tick_(
             QF_CRIT_EXIT_NOP();
         }
         else {
-            --t->ctr;
+            --e->ctr;
 
-            if (t->ctr == 0U) { // is time event about to expire?
-                QActive * const act = (QActive *)t->act;
+            if (e->ctr == 0U) { // is time event about to expire?
+                QActive * const act = (QActive *)e->act;
 
-                if (t->interval != 0U) { // periodic time evt?
-                    t->ctr = t->interval; // rearm the time event
-                    prev = t; // advance to this time event
+                if (e->interval != 0U) { // periodic time evt?
+                    e->ctr = e->interval; // rearm the time event
+                    prev = e; // advance to this time event
                 }
                 else { // one-shot time event: automatically disarm
-                    prev->next = t->next;
+                    prev->next = e->next;
 
-                    // mark time event 't' as NOT linked
-                    t->super.refCtr_ &= (uint8_t)(~QTE_IS_LINKED & 0xFFU);
+                    // mark time event 'e' as NOT linked
+                    e->super.refCtr_ &= (uint8_t)(~QTE_IS_LINKED & 0xFFU);
                     // do NOT advance the prev pointer
 
                     QS_BEGIN_PRE_(QS_QF_TIMEEVT_AUTO_DISARM, act->prio)
-                        QS_OBJ_PRE_(t);        // this time event object
+                        QS_OBJ_PRE_(e);        // this time event object
                         QS_OBJ_PRE_(act);      // the target AO
                         QS_U8_PRE_(tickRate);  // tick rate
                     QS_END_PRE_()
@@ -378,14 +383,14 @@ void QTimeEvt_tick_(
 
                 QS_BEGIN_PRE_(QS_QF_TIMEEVT_POST, act->prio)
                     QS_TIME_PRE_();            // timestamp
-                    QS_OBJ_PRE_(t);            // the time event object
-                    QS_SIG_PRE_(t->super.sig); // signal of this time event
+                    QS_OBJ_PRE_(e);            // the time event object
+                    QS_SIG_PRE_(e->super.sig); // signal of this time event
                     QS_OBJ_PRE_(act);          // the target AO
                     QS_U8_PRE_(tickRate);      // tick rate
                 QS_END_PRE_()
 
     #ifdef QXK_H_
-                if (t->super.sig < Q_USER_SIG) {
+                if (e->super.sig < Q_USER_SIG) {
                     QXThread_timeout_(act);
                 }
                 else {
@@ -393,18 +398,18 @@ void QTimeEvt_tick_(
                     QF_CRIT_EXIT(); // exit crit. section before posting
 
                     // QACTIVE_POST() asserts if the queue overflows
-                    QACTIVE_POST(act, &t->super, sender);
+                    QACTIVE_POST(act, &e->super, sender);
                 }
     #else
                 QF_MEM_APP();
                 QF_CRIT_EXIT(); // exit crit. section before posting
 
                 // QACTIVE_POST() asserts if the queue overflows
-                QACTIVE_POST(act, &t->super, sender);
+                QACTIVE_POST(act, &e->super, sender);
     #endif
             }
             else {
-                prev = t; // advance to this time event
+                prev = e; // advance to this time event
 
                 QF_MEM_APP();
                 QF_CRIT_EXIT(); // exit crit. section to reduce latency
@@ -417,6 +422,7 @@ void QTimeEvt_tick_(
         QF_MEM_SYS();
     }
 
+    Q_ENSURE_INCRIT(190, limit > 0U);
     QF_MEM_APP();
     QF_CRIT_EXIT();
 }

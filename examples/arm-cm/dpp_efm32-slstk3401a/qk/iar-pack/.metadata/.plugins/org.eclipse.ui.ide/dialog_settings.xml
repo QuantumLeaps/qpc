@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<list key="installedFeatures">
+		<item value="org.eclipse.emf.common:2.13.0.v20170609-0707"/>
+		<item value="org.eclipse.emf.ecore:2.13.0.v20170609-0707"/>
+		<item value="org.eclipse.help:2.2.104.v20180330-0640"/>
+		<item value="org.eclipse.platform:4.7.3.v20180330-0640"/>
+		<item value="org.eclipse.rcp:4.7.3.v20180330-0640"/>
+	</list>
+</section>

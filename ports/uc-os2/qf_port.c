@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-30
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-11-15
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QP/C port to uC-OS2, generic C11 compiler
@@ -109,7 +109,28 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     QS_FLUSH(); // flush the trace buffer to the host
 
     // map from QP to uC-OS2 priority
-    INT8U const p_ucos = (INT8U)(QF_MAX_ACTIVE - me->prio);
+    // The uC-OS2 priority of the AO thread can be specificed in two ways:
+    //
+    // 1. Implictily based on the AO's priority (uC-OS2 uses the reverse
+    //    priority numbering scheme than QP). This option is chosen when
+    //    the higher-byte of the prioSpec parameter is set to zero.
+    //
+    // 2. Explicitly as the higher-byte of the prioSpec parameter.
+    //    This option is chosen when the prioSpec parameter is not-zero.
+    //    For example, Q_PRIO(10U, 5U) will explicitly specify AO priority
+    //    as 10 and FreeRTOS priority as 5.
+    //
+    //    NOTE: The explicit uC-OS2 priority is NOT sanity-checked,
+    //    so it is the responsibility of the application to ensure that
+    //    it is consistent witht the AO's priority. An example of
+    //    inconsistent setting would be assigning uC-OS2 priorities that
+    //    would result in a different relative priritization of AO's threads
+    //    than indicated by the AO priorities assigned.
+    //
+    INT8U ucos2_prio = (prioSpec >> 8U);
+    if (ucos2_prio == 0U) {
+        ucos2_prio = (INT8U)(OS_LOWEST_PRIO - me->prio);
+    }
 
     // create AO's task...
     //
@@ -118,22 +139,22 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     // stack memory. This is correct only for CPUs with downward-growing
     // stack, but must be changed for CPUs with upward-growing stack
     INT8U const err = OSTaskCreateExt(&task_function, // the task function
-             (void *)me,     // the 'pdata' parameter
+        (void *)me,          // the 'pdata' parameter
 #if OS_STK_GROWTH
-             &((OS_STK *)stkSto)[(stkSize/sizeof(OS_STK)) - 1], // ptos
+        &((OS_STK *)stkSto)[(stkSize/sizeof(OS_STK)) - 1], // ptos
 #else
-             (OS_STK *)stkSto, // ptos
+        (OS_STK *)stkSto,    // ptos
 #endif
-             p_ucos,           // uC-OS2 task priority
-             (INT16U)me->prio, // the unique AO priority as task ID
+        ucos2_prio,          // uC-OS2 task priority
+        (INT16U)me->prio,    // the unique AO priority as task ID
 #if OS_STK_GROWTH
-             (OS_STK *)stkSto, // pbos
+        (OS_STK *)stkSto,    // pbos
 #else
-             &((OS_STK *)stkSto)[(stkSize/sizeof(OS_STK)) - 1], // pbos
+        &((OS_STK *)stkSto)[(stkSize/sizeof(OS_STK)) - 1], // pbos
 #endif
-             (INT32U)(stkSize/sizeof(OS_STK)), // stack size in OS_STK units
-             task_name,        // pext
-             (INT16U)me->thread); // task options, see NOTE1
+        (INT32U)(stkSize/sizeof(OS_STK)), // stack size in OS_STK units
+        task_name,           // pext
+        (INT16U)me->thread); // task options, see NOTE1
 
     QF_CRIT_ENTRY();
     // uC-OS2 task must be created correctly

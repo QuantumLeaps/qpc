@@ -49,10 +49,10 @@ typedef struct Mine2 {
 // public:
     uint8_t exp_ctr;
 } Mine2;
+extern Mine2 Mine2_inst[GAME_MINES_MAX];
 
 // public:
 static void Mine2_ctor(Mine2 * const me);
-extern Mine2 Mine2_inst[GAME_MINES_MAX];
 
 // protected:
 static QState Mine2_initial(Mine2 * const me, void const * const par);

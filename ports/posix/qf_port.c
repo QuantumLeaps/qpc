@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-26
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-11-18
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QF/C port to POSIX (multithreaded with P-threads)
@@ -98,6 +98,14 @@ void QF_init(void) {
     pthread_mutex_init(&QF_critSectMutex_, &attr);
     pthread_mutexattr_destroy(&attr);
 
+    for (uint_fast8_t tickRate = 0;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, Q_USER_SIG, tickRate);
+    }
+
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default tick
     l_tickPrio = sched_get_priority_min(SCHED_FIFO); // default ticker prio
@@ -143,33 +151,48 @@ int QF_run(void) {
     // exit the startup critical section to unblock any active objects
     // started before calling QF_run()
     pthread_mutex_unlock(&l_startupMutex);
-
-    // get the absolute monotonic time for no-drift sleeping
-    static struct timespec next_tick;
-    clock_gettime(CLOCK_MONOTONIC, &next_tick);
-
-    // round down nanoseconds to the nearest configured period
-    next_tick.tv_nsec = (next_tick.tv_nsec / l_tick.tv_nsec) * l_tick.tv_nsec;
-
     l_isRunning = true;
-    while (l_isRunning) { // the clock tick loop...
 
-        // advance to the next tick (absolute time)
-        next_tick.tv_nsec += l_tick.tv_nsec;
-        if (next_tick.tv_nsec >= NSEC_PER_SEC) {
-            next_tick.tv_nsec -= NSEC_PER_SEC;
-            next_tick.tv_sec  += 1;
-        }
+    // The provided clock tick service configured?
+    if ((l_tick.tv_sec != 0) || (l_tick.tv_nsec != 0)) {
 
-        // sleep without drifting till next_time (absolute), see NOTE03
-        if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
-                            &next_tick, NULL) == 0) // success?
-        {
-            // clock tick callback (must call QTIMEEVT_TICK_X())
+        // get the absolute monotonic time for no-drift sleeping
+        static struct timespec next_tick;
+        clock_gettime(CLOCK_MONOTONIC, &next_tick);
+
+        // round down nanoseconds to the nearest configured period
+        next_tick.tv_nsec
+            = (next_tick.tv_nsec / l_tick.tv_nsec) * l_tick.tv_nsec;
+
+        while (l_isRunning) { // the clock tick loop...
+
+            // advance to the next tick (absolute time)
+            next_tick.tv_nsec += l_tick.tv_nsec;
+            if (next_tick.tv_nsec >= NSEC_PER_SEC) {
+                next_tick.tv_nsec -= NSEC_PER_SEC;
+                next_tick.tv_sec  += 1;
+            }
+
+            // sleep without drifting till next_time (absolute), see NOTE03
+            (void)clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
+                                  &next_tick, NULL);
+            // clock tick callback (must call QTIMEEVT_TICK_X() once)
             QF_onClockTick();
         }
     }
-    QF_onCleanup(); // cleanup callback
+    else { // The provided system clock tick NOT configured
+
+        while (l_isRunning) { // the clock tick loop...
+
+            // In case the application intentionally DISABLED the provided
+            // system clock, the QF_onClockTick() callback is used to let
+            // the application implement the alternative tick service.
+            // In that case the QF_onClockTick() must internally WAIT
+            // for the desired clock period before calling QTIMEEVT_TICK_X().
+            QF_onClockTick();
+        }
+    }
+    QF_onCleanup(); // application cleanup callback
     QS_EXIT();      // cleanup the QSPY connection
 
     pthread_mutex_destroy(&l_startupMutex);
@@ -183,8 +206,12 @@ void QF_stop(void) {
 }
 //............................................................................
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
-    Q_REQUIRE_ID(600, ticksPerSec != 0U);
-    l_tick.tv_nsec = NSEC_PER_SEC / ticksPerSec;
+    if (ticksPerSec != 0U) {
+        l_tick.tv_nsec = NSEC_PER_SEC / ticksPerSec;
+    }
+    else {
+        l_tick.tv_nsec = 0U; // means NO system clock tick
+    }
     l_tickPrio = tickPrio;
 }
 

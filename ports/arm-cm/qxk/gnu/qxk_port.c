@@ -27,8 +27,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-16
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-10-30
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QXK/C port to ARM Cortex-M, GNU-ARM
@@ -55,8 +55,8 @@ _Static_assert(QXK_ACT_PRIO == offsetof(QXK_Attr, actPrio),
                "QXK_Attr.actPrio at unexpected offset");
 
 // offsets within struct QActive; NOTE: keep in synch with "qp.h" !!!
-#define QACTIVE_OSOBJ  28
-#define QACTIVE_PRIO   36
+#define QACTIVE_PRIO   12
+#define QACTIVE_OSOBJ  20
 
 // make sure that the offsets match the QActvie declaration in "qp.h"
 _Static_assert(QACTIVE_OSOBJ == offsetof(QActive, osObject),

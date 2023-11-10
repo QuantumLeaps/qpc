@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-21
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-10-15
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QF/C port to Win32 (multithreaded)
@@ -58,8 +58,15 @@ static DWORD WINAPI ao_thread(LPVOID arg);
 
 //............................................................................
 void QF_init(void) {
-    InitializeCriticalSection(&l_win32CritSect);
+    for (uint_fast8_t tickRate = 0;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, Q_USER_SIG, tickRate);
+    }
 
+    InitializeCriticalSection(&l_win32CritSect);
     // initialize and enter the startup critical section object to block
     // any active objects started before calling QF_run()
     InitializeCriticalSection(&l_startupCritSect);

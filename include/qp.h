@@ -44,11 +44,11 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION     730U
-#define QP_VERSION_STR "7.3.0"
+#define QP_VERSION     731U
+#define QP_VERSION_STR "7.3.1"
 
-//! Encrypted  current QP release (7.3.0) and date (2023-09-12)
-#define QP_RELEASE     0x765D9D25U
+//! Encrypted  current QP release (7.3.1) and date (2023-12-01)
+#define QP_RELEASE     0x76318414U
 
 //============================================================================
 //! @cond INTERNAL
@@ -143,7 +143,7 @@ typedef uint32_t QSignal;
 #define QEVT_DYNAMIC 0U
 
 //${QEP::QEvt} ...............................................................
-// ! @class QEvt
+//! @class QEvt
 typedef struct QEvt {
 // public:
 
@@ -789,26 +789,26 @@ typedef struct QActive {
 // protected:
     QAsm super;
 
-#ifdef QACTIVE_EQUEUE_TYPE
     //! @private @memberof QActive
-    QACTIVE_EQUEUE_TYPE eQueue;
-#endif // def QACTIVE_EQUEUE_TYPE
+    uint8_t prio;
 
-#ifdef QACTIVE_OS_OBJ_TYPE
     //! @private @memberof QActive
-    QACTIVE_OS_OBJ_TYPE osObject;
-#endif // def QACTIVE_OS_OBJ_TYPE
+    uint8_t pthre;
 
 #ifdef QACTIVE_THREAD_TYPE
     //! @private @memberof QActive
     QACTIVE_THREAD_TYPE thread;
 #endif // def QACTIVE_THREAD_TYPE
 
+#ifdef QACTIVE_OS_OBJ_TYPE
     //! @private @memberof QActive
-    uint8_t prio;
+    QACTIVE_OS_OBJ_TYPE osObject;
+#endif // def QACTIVE_OS_OBJ_TYPE
 
+#ifdef QACTIVE_EQUEUE_TYPE
     //! @private @memberof QActive
-    uint8_t pthre;
+    QACTIVE_EQUEUE_TYPE eQueue;
+#endif // def QACTIVE_EQUEUE_TYPE
 
 // private:
 } QActive;
@@ -942,7 +942,7 @@ void QMActive_ctor(QMActive * const me,
 
 //${QF::QTimeEvt} ............................................................
 //! @class QTimeEvt
-// @extends QEvt
+//! @extends QEvt
 typedef struct QTimeEvt {
 // protected:
     QEvt super;
@@ -1015,7 +1015,7 @@ bool QTimeEvt_noActive(uint_fast8_t const tickRate);
 
 //${QF::QTicker} .............................................................
 //! @class QTicker
-// @extends QActive
+//! @extends QActive
 typedef struct {
 // protected:
     QActive super;

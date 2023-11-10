@@ -277,14 +277,17 @@ void BSP_start(void) {
     static QSubscrList subscrSto[MAX_PUB_SIG];
     QActive_psInit(subscrSto, Q_DIM(subscrSto));
 
-    // instantiate and start AOs/threads...
+    // start AOs/threads...
+    // NOTE: The QP priorities don't start at 1 because
+    // the lowest priority levels are reserved for the internal
+    // uC-OS2 tasks.
 
     static QEvt const *philoQueueSto[N_PHILO][10];
     static OS_STK philoStack[N_PHILO][128]; // stacks for the Philos
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         Philo_ctor(n);
         QACTIVE_START(AO_Philo[n],
-            n + 3U,                  // QF-prio. of the AO
+            Q_PRIO(n + 1U, n + 4U),  // QP-prio., uC-OS2 prio.
             philoQueueSto[n],        // event queue storage
             Q_DIM(philoQueueSto[n]), // queue length [events]
             philoStack[n],           // private stack for uC/OS-II
@@ -296,7 +299,7 @@ void BSP_start(void) {
     static OS_STK tableStack[128]; // stack for the Table
     Table_ctor();
     QACTIVE_START(AO_Table,
-        N_PHILO + 7U,            // QP prio. of the AO
+        Q_PRIO(N_PHILO + 1U, N_PHILO + 4U), // QP-prio., uC-OS2 prio.
         tableQueueSto,           // event queue storage
         Q_DIM(tableQueueSto),    // queue length [events]
         tableStack,              // private stack for uC/OS-II

@@ -246,7 +246,7 @@ Contact information:
   </attribute>
   <!--${QEP::QEvt}-->
   <class name="QEvt">
-   <documentation>// ! @class QEvt</documentation>
+   <documentation>//! @class QEvt</documentation>
    <!--${QEP::QEvt::sig}-->
    <attribute name="sig" type="QSignal" visibility="0x00" properties="0x00">
     <documentation>//! @public @memberof QEvt</documentation>
@@ -433,7 +433,8 @@ me-&gt;temp.fun  = Q_STATE_CAST(0);</code>
    <documentation>//! @class QHsm
 //! @extends QAsm
 
-Human-generated State Machine</documentation>
+State machine implementation strategy suitable for
+manual coding</documentation>
    <!--${QEP::QHsm::ctor}-->
    <operation name="ctor" type="void" visibility="0x01" properties="0x00">
     <documentation>//! @protected @memberof QHsm
@@ -1016,7 +1017,9 @@ return Q_RET_IGNORED; // the top state ignores all events</code>
    <documentation>//! @class QMsm
 //! @extends QAsm
 
-Machine-generated State Machine</documentation>
+State machine implementation strategy requring support
+of a code generating tool and generally NOT suitable
+for manual coding</documentation>
    <!--${QEP::QMsm::ctor}-->
    <operation name="ctor" type="void" visibility="0x01" properties="0x00">
     <documentation>//! @protected @memberof QMsm
@@ -1838,7 +1841,7 @@ return r;</code>
  <package name="QF" stereotype="0x05">
   <!--${QF::QF}-->
   <attribute name="QF" type="typedef struct" visibility="0x04" properties="0x00">
-   <documentation>// @class QF</documentation>
+   <documentation>//! @class QF</documentation>
    <code>{
     //! @cond INTERNAL
     uint8_t dummy;
@@ -2050,24 +2053,24 @@ return (me-&gt;bits[0] == (QPSetBits)(~dis-&gt;bits[0]))
   <class name="QActive" superclass="QEP::QAsm">
    <documentation>//! @class QActive
 //! @extends QAsm</documentation>
-   <!--${QF::QActive::eQueue}-->
-   <attribute name="eQueue?def QACTIVE_EQUEUE_TYPE" type="QACTIVE_EQUEUE_TYPE" visibility="0x01" properties="0x00">
-    <documentation>//! @private @memberof QActive</documentation>
-   </attribute>
-   <!--${QF::QActive::osObject}-->
-   <attribute name="osObject?def QACTIVE_OS_OBJ_TYPE" type="QACTIVE_OS_OBJ_TYPE" visibility="0x01" properties="0x00">
-    <documentation>//! @private @memberof QActive</documentation>
-   </attribute>
-   <!--${QF::QActive::thread}-->
-   <attribute name="thread?def QACTIVE_THREAD_TYPE" type="QACTIVE_THREAD_TYPE" visibility="0x01" properties="0x00">
-    <documentation>//! @private @memberof QActive</documentation>
-   </attribute>
    <!--${QF::QActive::prio}-->
    <attribute name="prio" type="uint8_t" visibility="0x01" properties="0x00">
     <documentation>//! @private @memberof QActive</documentation>
    </attribute>
    <!--${QF::QActive::pthre}-->
    <attribute name="pthre" type="uint8_t" visibility="0x01" properties="0x00">
+    <documentation>//! @private @memberof QActive</documentation>
+   </attribute>
+   <!--${QF::QActive::thread}-->
+   <attribute name="thread?def QACTIVE_THREAD_TYPE" type="QACTIVE_THREAD_TYPE" visibility="0x01" properties="0x00">
+    <documentation>//! @private @memberof QActive</documentation>
+   </attribute>
+   <!--${QF::QActive::osObject}-->
+   <attribute name="osObject?def QACTIVE_OS_OBJ_TYPE" type="QACTIVE_OS_OBJ_TYPE" visibility="0x01" properties="0x00">
+    <documentation>//! @private @memberof QActive</documentation>
+   </attribute>
+   <!--${QF::QActive::eQueue}-->
+   <attribute name="eQueue?def QACTIVE_EQUEUE_TYPE" type="QACTIVE_EQUEUE_TYPE" visibility="0x01" properties="0x00">
     <documentation>//! @private @memberof QActive</documentation>
    </attribute>
    <!--${QF::QActive::registry_[QF_MAX_ACTIVE + 1U]}-->
@@ -2575,7 +2578,9 @@ if (QPSet_notEmpty(&amp;subscrSet)) { // any subscribers?
 
     QF_SCHED_STAT_
     QF_SCHED_LOCK_(p); // lock the scheduler up to AO's prio
+    uint_fast8_t limit = QF_MAX_ACTIVE + 1U;
     do { // loop over all subscribers
+        --limit;
 
         // QACTIVE_POST() asserts internally if the queue overflows
         QACTIVE_POST(a, e, sender);
@@ -2597,7 +2602,12 @@ if (QPSet_notEmpty(&amp;subscrSet)) { // any subscribers?
         else {
             p = 0U; // no more subscribers
         }
-    } while (p != 0U);
+    } while ((p != 0U) &amp;&amp; (limit &gt; 0U));
+
+    QF_CRIT_ENTRY();
+    Q_ENSURE_INCRIT(290, p == 0U);
+    QF_CRIT_EXIT();
+
     QF_SCHED_UNLOCK_(); // unlock the scheduler
 }
 
@@ -2876,7 +2886,7 @@ me-&gt;super.super.vptr = &amp;vtable; // hook vptr to QMActive vtable</code>
   <!--${QF::QTimeEvt}-->
   <class name="QTimeEvt" superclass="QEP::QEvt">
    <documentation>//! @class QTimeEvt
-// @extends QEvt</documentation>
+//! @extends QEvt</documentation>
    <!--${QF::QTimeEvt::next}-->
    <attribute name="next" type="struct QTimeEvt * volatile" visibility="0x02" properties="0x00">
     <documentation>//! @private @memberof QTimeEvt</documentation>
@@ -2908,25 +2918,24 @@ me-&gt;super.super.vptr = &amp;vtable; // hook vptr to QMActive vtable</code>
     <parameter name="sig" type="enum_t const"/>
     <!--${QF::QTimeEvt::ctorX::tickRate}-->
     <parameter name="tickRate" type="uint_fast8_t const"/>
-    <code>me-&gt;next     = (QTimeEvt *)0;
-me-&gt;act      = act;
-me-&gt;ctr      = 0U;
-me-&gt;interval = 0U;
-
-QF_CRIT_STAT
+    <code>QF_CRIT_STAT
 QF_CRIT_ENTRY();
 Q_REQUIRE_INCRIT(300, (sig != 0)
     &amp;&amp; (tickRate &lt; QF_MAX_TICK_RATE));
 QF_CRIT_EXIT();
 
-// This default event constructor initializes the event
-// as NOT allocated from any event-pool, which must be
-// the case for Time Events.
-(void)QEvt_ctor(&amp;me-&gt;super, sig);
+// Initialize the QEvt superclass:
+// NOTE: The refCtr_ attribute is not used in time events,
+// so it is reused to hold the tickRate as well as other
+// information about the status of the time event.
+me-&gt;super.sig     = (QSignal)sig;
+me-&gt;super.refCtr_ = (uint8_t)tickRate;
+me-&gt;super.evtTag_ = QEVT_MARKER;
 
-// The refCtr_ attribute is not used in time events, so it is
-// reused to hold the tickRate as well as other information
-me-&gt;super.refCtr_ = (uint8_t)tickRate;</code>
+me-&gt;next     = (QTimeEvt *)0;
+me-&gt;act      = act;
+me-&gt;ctr      = 0U;
+me-&gt;interval = 0U;</code>
    </operation>
    <!--${QF::QTimeEvt::armX}-->
    <operation name="armX" type="void" visibility="0x00" properties="0x00">
@@ -3147,11 +3156,13 @@ return ctr;</code>
 Q_UNUSED_PAR(sender);
 #endif
 
-QTimeEvt *prev = &amp;QTimeEvt_timeEvtHead_[tickRate];
-
 QF_CRIT_STAT
 QF_CRIT_ENTRY();
 QF_MEM_SYS();
+
+Q_REQUIRE_INCRIT(100, tickRate &lt; Q_DIM(QTimeEvt_timeEvtHead_));
+
+QTimeEvt *prev = &amp;QTimeEvt_timeEvtHead_[tickRate];
 
 QS_BEGIN_PRE_(QS_QF_TICK, 0U)
     ++prev-&gt;ctr;
@@ -3160,10 +3171,11 @@ QS_BEGIN_PRE_(QS_QF_TICK, 0U)
 QS_END_PRE_()
 
 // scan the linked-list of time events at this rate...
-for (;;) {
-    QTimeEvt *t = prev-&gt;next; // advance down the time evt. list
+uint_fast8_t limit = 2U*QF_MAX_ACTIVE; // iteration hard limit
+for (; limit &gt; 0U; --limit) {
+    QTimeEvt *e = prev-&gt;next; // advance down the time evt. list
 
-    if (t == (QTimeEvt *)0) { // end of the list?
+    if (e == (QTimeEvt *)0) { // end of the list?
 
         // any new time events armed since the last QTimeEvt_tick_()?
         if (QTimeEvt_timeEvtHead_[tickRate].act != (void *)0) {
@@ -3172,17 +3184,20 @@ for (;;) {
             Q_ASSERT_INCRIT(110, prev != (QTimeEvt *)0);
             prev-&gt;next = (QTimeEvt *)QTimeEvt_timeEvtHead_[tickRate].act;
             QTimeEvt_timeEvtHead_[tickRate].act = (void *)0;
-            t = prev-&gt;next; // switch to the new list
+            e = prev-&gt;next; // switch to the new list
         }
-        else {
-            break; // all currently armed time evts. processed
+        else { // all currently armed time events are processed
+            break; // terminate the for-loop
         }
     }
 
-    if (t-&gt;ctr == 0U) { // time event scheduled for removal?
-        prev-&gt;next = t-&gt;next;
-        // mark time event 't' as NOT linked
-        t-&gt;super.refCtr_ &amp;= (uint8_t)(~QTE_IS_LINKED &amp; 0xFFU);
+    // the time event 'e' must be valid
+    Q_ASSERT_INCRIT(112, QEvt_verify_(Q_EVT_CAST(QEvt)));
+
+    if (e-&gt;ctr == 0U) { // time event scheduled for removal?
+        prev-&gt;next = e-&gt;next;
+        // mark time event 'e' as NOT linked
+        e-&gt;super.refCtr_ &amp;= (uint8_t)(~QTE_IS_LINKED &amp; 0xFFU);
         // do NOT advance the prev pointer
         QF_MEM_APP();
         QF_CRIT_EXIT(); // exit crit. section to reduce latency
@@ -3198,24 +3213,24 @@ for (;;) {
         QF_CRIT_EXIT_NOP();
     }
     else {
-        --t-&gt;ctr;
+        --e-&gt;ctr;
 
-        if (t-&gt;ctr == 0U) { // is time event about to expire?
-            QActive * const act = (QActive *)t-&gt;act;
+        if (e-&gt;ctr == 0U) { // is time event about to expire?
+            QActive * const act = (QActive *)e-&gt;act;
 
-            if (t-&gt;interval != 0U) { // periodic time evt?
-                t-&gt;ctr = t-&gt;interval; // rearm the time event
-                prev = t; // advance to this time event
+            if (e-&gt;interval != 0U) { // periodic time evt?
+                e-&gt;ctr = e-&gt;interval; // rearm the time event
+                prev = e; // advance to this time event
             }
             else { // one-shot time event: automatically disarm
-                prev-&gt;next = t-&gt;next;
+                prev-&gt;next = e-&gt;next;
 
-                // mark time event 't' as NOT linked
-                t-&gt;super.refCtr_ &amp;= (uint8_t)(~QTE_IS_LINKED &amp; 0xFFU);
+                // mark time event 'e' as NOT linked
+                e-&gt;super.refCtr_ &amp;= (uint8_t)(~QTE_IS_LINKED &amp; 0xFFU);
                 // do NOT advance the prev pointer
 
                 QS_BEGIN_PRE_(QS_QF_TIMEEVT_AUTO_DISARM, act-&gt;prio)
-                    QS_OBJ_PRE_(t);        // this time event object
+                    QS_OBJ_PRE_(e);        // this time event object
                     QS_OBJ_PRE_(act);      // the target AO
                     QS_U8_PRE_(tickRate);  // tick rate
                 QS_END_PRE_()
@@ -3223,14 +3238,14 @@ for (;;) {
 
             QS_BEGIN_PRE_(QS_QF_TIMEEVT_POST, act-&gt;prio)
                 QS_TIME_PRE_();            // timestamp
-                QS_OBJ_PRE_(t);            // the time event object
-                QS_SIG_PRE_(t-&gt;super.sig); // signal of this time event
+                QS_OBJ_PRE_(e);            // the time event object
+                QS_SIG_PRE_(e-&gt;super.sig); // signal of this time event
                 QS_OBJ_PRE_(act);          // the target AO
                 QS_U8_PRE_(tickRate);      // tick rate
             QS_END_PRE_()
 
 #ifdef QXK_H_
-            if (t-&gt;super.sig &lt; Q_USER_SIG) {
+            if (e-&gt;super.sig &lt; Q_USER_SIG) {
                 QXThread_timeout_(act);
             }
             else {
@@ -3238,18 +3253,18 @@ for (;;) {
                 QF_CRIT_EXIT(); // exit crit. section before posting
 
                 // QACTIVE_POST() asserts if the queue overflows
-                QACTIVE_POST(act, &amp;t-&gt;super, sender);
+                QACTIVE_POST(act, &amp;e-&gt;super, sender);
             }
 #else
             QF_MEM_APP();
             QF_CRIT_EXIT(); // exit crit. section before posting
 
             // QACTIVE_POST() asserts if the queue overflows
-            QACTIVE_POST(act, &amp;t-&gt;super, sender);
+            QACTIVE_POST(act, &amp;e-&gt;super, sender);
 #endif
         }
         else {
-            prev = t; // advance to this time event
+            prev = e; // advance to this time event
 
             QF_MEM_APP();
             QF_CRIT_EXIT(); // exit crit. section to reduce latency
@@ -3262,6 +3277,7 @@ for (;;) {
     QF_MEM_SYS();
 }
 
+Q_ENSURE_INCRIT(190, limit &gt; 0U);
 QF_MEM_APP();
 QF_CRIT_EXIT();</code>
    </operation>
@@ -3303,7 +3319,7 @@ return inactive;</code>
   <!--${QF::QTicker}-->
   <class name="QTicker" superclass="QF::QActive">
    <documentation>//! @class QTicker
-// @extends QActive</documentation>
+//! @extends QActive</documentation>
    <!--${QF::QTicker::ctor}-->
    <operation name="ctor" type="void" visibility="0x00" properties="0x00">
     <documentation>//! @public @memberof QTicker
@@ -4616,7 +4632,7 @@ QF_gc(e); // recycle the referenced event
  <package name="QV" stereotype="0x05">
   <!--${QV::QV}-->
   <attribute name="QV" type="typedef struct" visibility="0x04" properties="0x00">
-   <documentation>// @class QV</documentation>
+   <documentation>//! @class QV</documentation>
    <code>{
     //! @cond INTERNAL
     uint8_t dummy;
@@ -4636,11 +4652,78 @@ QF_gc(e); // recycle the referenced event
     <attribute name="readySet_dis?ndef Q_UNSAFE" type="QPSet" visibility="0x00" properties="0x00">
      <documentation>//! @memberof QV_Attr</documentation>
     </attribute>
+    <!--${QV::QV-base::Attr::schedCeil}-->
+    <attribute name="schedCeil" type="uint_fast8_t" visibility="0x02" properties="0x00">
+     <documentation>//! @memberof QV_Attr</documentation>
+    </attribute>
+    <!--${QV::QV-base::Attr::schedCeil_dis}-->
+    <attribute name="schedCeil_dis?ndef Q_UNSAFE" type="uint_fast8_t" visibility="0x02" properties="0x00">
+     <documentation>//! @memberof QV_Attr</documentation>
+    </attribute>
    </class>
    <!--${QV::QV-base::priv_}-->
    <attribute name="priv_" type="QV_Attr" visibility="0x01" properties="0x00">
     <documentation>//! @static @private @memberof QV</documentation>
    </attribute>
+   <!--${QV::QV-base::schedDisable}-->
+   <operation name="schedDisable" type="void" visibility="0x00" properties="0x01">
+    <documentation>//! @static @public @memberof QV
+
+//! @static @public @memberof QV</documentation>
+    <!--${QV::QV-base::schedDisable::ceiling}-->
+    <parameter name="ceiling" type="uint_fast8_t const"/>
+    <code>QF_CRIT_STAT
+QF_CRIT_ENTRY();
+QF_MEM_SYS();
+
+Q_ASSERT_INCRIT(102, QV_priv_.schedCeil
+                     == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
+
+if (ceiling &gt; QV_priv_.schedCeil) { // raising the scheduler ceiling?
+
+    QS_BEGIN_PRE_(QS_SCHED_LOCK, 0U)
+        QS_TIME_PRE_();   // timestamp
+        // the previous sched ceiling &amp; new sched ceiling
+        QS_2U8_PRE_((uint8_t)QV_priv_.schedCeil,
+                    (uint8_t)ceiling);
+    QS_END_PRE_()
+
+    QV_priv_.schedCeil = ceiling;
+#ifndef Q_UNSAFE
+    QV_priv_.schedCeil_dis = (uint_fast16_t)(~ceiling);
+#endif
+}
+QF_MEM_APP();
+QF_CRIT_EXIT();</code>
+   </operation>
+   <!--${QV::QV-base::schedEnable}-->
+   <operation name="schedEnable" type="void" visibility="0x00" properties="0x01">
+    <documentation>//! @static @public @memberof QV
+
+//! @static @public @memberof QV</documentation>
+    <code>QF_CRIT_STAT
+QF_CRIT_ENTRY();
+QF_MEM_SYS();
+
+Q_ASSERT_INCRIT(202, QV_priv_.schedCeil
+                     == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
+
+if (QV_priv_.schedCeil != 0U) { // actually enabling the scheduler?
+
+    QS_BEGIN_PRE_(QS_SCHED_UNLOCK, 0U)
+        QS_TIME_PRE_(); // timestamp
+        // current sched ceiling (old), previous sched ceiling (new)
+        QS_2U8_PRE_((uint8_t)QV_priv_.schedCeil, 0U);
+    QS_END_PRE_()
+
+    QV_priv_.schedCeil = 0U;
+#ifndef Q_UNSAFE
+    QV_priv_.schedCeil_dis = (uint_fast16_t)(~0U);
+#endif
+}
+QF_MEM_APP();
+QF_CRIT_EXIT();</code>
+   </operation>
    <!--${QV::QV-base::onIdle}-->
    <operation name="onIdle" type="void" visibility="0x00" properties="0x01">
     <documentation>//! @static @public @memberof QV
@@ -4657,12 +4740,19 @@ QF_gc(e); // recycle the referenced event
 //! @static @public @memberof QF</documentation>
     <code>QF_bzero_(&amp;QF_priv_,                 sizeof(QF_priv_));
 QF_bzero_(&amp;QV_priv_,                 sizeof(QV_priv_));
-QF_bzero_(&amp;QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
 QF_bzero_(&amp;QActive_registry_[0],     sizeof(QActive_registry_));
 
 #ifndef Q_UNSAFE
 QPSet_update_(&amp;QV_priv_.readySet, &amp;QV_priv_.readySet_dis);
 #endif
+
+for (uint_fast8_t tickRate = 0;
+     tickRate &lt; Q_DIM(QTimeEvt_timeEvtHead_);
+     ++tickRate)
+{
+    QTimeEvt_ctorX(&amp;QTimeEvt_timeEvtHead_[tickRate],
+                   (QActive *)0, (enum_t)Q_USER_SIG, tickRate);
+}
 
 #ifdef QV_INIT
 QV_INIT(); // port-specific initialization of the QV kernel
@@ -4701,25 +4791,34 @@ QV_START(); // port-specific startup of the QV kernel
 #endif
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
-uint8_t pprev = 0U; // previously used prio.
+uint_fast8_t pprev = 0U; // previously used prio.
+#endif
+
+QV_priv_.schedCeil = 0U;
+#ifndef Q_UNSAFE
+QV_priv_.schedCeil_dis = (uint_fast16_t)(~0U);
 #endif
 
 for (;;) { // QV event loop...
 
-     // check internal integrity (duplicate inverse storage)
-     Q_ASSERT_INCRIT(202, QPSet_verify_(&amp;QV_priv_.readySet,
-                                         &amp;QV_priv_.readySet_dis));
+    // check internal integrity (duplicate inverse storage)
+    Q_ASSERT_INCRIT(302, QPSet_verify_(&amp;QV_priv_.readySet,
+                                       &amp;QV_priv_.readySet_dis));
+    // check internal integrity (duplicate inverse storage)
+    Q_ASSERT_INCRIT(303, QV_priv_.schedCeil
+                         == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
 
     // find the maximum prio. AO ready to run
-    if (QPSet_notEmpty(&amp;QV_priv_.readySet)) {
+    uint_fast8_t const p = QPSet_findMax(&amp;QV_priv_.readySet);
 
-        uint8_t const p = (uint8_t)QPSet_findMax(&amp;QV_priv_.readySet);
+    if (p &gt; QV_priv_.schedCeil) { // is it above the sched ceiling?
         QActive * const a = QActive_registry_[p];
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
         QS_BEGIN_PRE_(QS_SCHED_NEXT, p)
             QS_TIME_PRE_();     // timestamp
-            QS_2U8_PRE_(p, pprev); // scheduled prio &amp; previous prio
+            QS_2U8_PRE_((uint8_t)p,
+                        (uint8_t)pprev);
         QS_END_PRE_()
 
 #ifdef QF_ON_CONTEXT_SW
@@ -4757,7 +4856,7 @@ for (;;) { // QV event loop...
         if (pprev != 0U) {
             QS_BEGIN_PRE_(QS_SCHED_IDLE, pprev)
                 QS_TIME_PRE_();    // timestamp
-                QS_U8_PRE_(pprev); // previous prio
+                QS_U8_PRE_((uint8_t)pprev); // previous prio
             QS_END_PRE_()
 
 #ifdef QF_ON_CONTEXT_SW
@@ -4770,14 +4869,12 @@ for (;;) { // QV event loop...
 
         QF_MEM_APP();
 
-        // QV_onIdle() must be called with interrupts DISABLED
-        // because the determination of the idle condition (all event
-        // queues empty) can change at any time by an interrupt posting
-        // events to a queue.
+        // QV_onIdle() must be called with interrupts DISABLED because
+        // the determination of the idle condition can change at any time
+        // by an interrupt posting events to a queue.
         //
-        // NOTE: QV_onIdle() MUST enable interrupts internally,
-        // ideally at the same time as putting the CPU into a power-
-        // saving mode.
+        // NOTE: QV_onIdle() MUST enable interrupts internally, ideally
+        // atomically with putting the CPU into a power-saving mode.
         QV_onIdle();
 
         QF_INT_DISABLE(); // disable interrupts before looping back
@@ -4870,7 +4967,7 @@ QS_FLUSH(); // flush the trace buffer to the host</code>
  <package name="QK" stereotype="0x05">
   <!--${QK::QK}-->
   <attribute name="QK" type="typedef struct" visibility="0x04" properties="0x00">
-   <documentation>// @class QK</documentation>
+   <documentation>//! @class QK</documentation>
    <code>{
     //! @cond INTERNAL
     uint8_t dummy;
@@ -5166,12 +5263,19 @@ QF_onContextSw(QActive_registry_[pprev], a);
 //! @static @public @memberof QF</documentation>
     <code>QF_bzero_(&amp;QF_priv_,                 sizeof(QF_priv_));
 QF_bzero_(&amp;QK_priv_,                 sizeof(QK_priv_));
-QF_bzero_(&amp;QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
 QF_bzero_(&amp;QActive_registry_[0],     sizeof(QActive_registry_));
 
 #ifndef Q_UNSAFE
 QPSet_update_(&amp;QK_priv_.readySet, &amp;QK_priv_.readySet_dis);
 #endif
+
+for (uint_fast8_t tickRate = 0;
+     tickRate &lt; Q_DIM(QTimeEvt_timeEvtHead_);
+     ++tickRate)
+{
+    QTimeEvt_ctorX(&amp;QTimeEvt_timeEvtHead_[tickRate],
+                   (QActive *)0, (enum_t)Q_USER_SIG, tickRate);
+}
 
 // setup the QK scheduler as initially locked and not running
 QK_priv_.lockCeil = (QF_MAX_ACTIVE + 1U); // scheduler locked
@@ -5355,7 +5459,7 @@ QF_CRIT_EXIT();</code>
  <package name="QXK" stereotype="0x05">
   <!--${QXK::QXK}-->
   <attribute name="QXK" type="typedef struct" visibility="0x04" properties="0x00">
-   <documentation>// @class QXK</documentation>
+   <documentation>//! @class QXK</documentation>
    <code>{
     //! @cond INTERNAL
     uint8_t dummy;
@@ -5753,12 +5857,19 @@ QF_CRIT_EXIT();</code>
 //! @static @public @memberof QF</documentation>
     <code>QF_bzero_(&amp;QF_priv_,                 sizeof(QF_priv_));
 QF_bzero_(&amp;QXK_priv_,                sizeof(QXK_priv_));
-QF_bzero_(&amp;QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
 QF_bzero_(&amp;QActive_registry_[0],     sizeof(QActive_registry_));
 
 #ifndef Q_UNSAFE
 QPSet_update_(&amp;QXK_priv_.readySet, &amp;QXK_priv_.readySet_dis);
 #endif
+
+for (uint_fast8_t tickRate = 0;
+     tickRate &lt; Q_DIM(QTimeEvt_timeEvtHead_);
+     ++tickRate)
+{
+    QTimeEvt_ctorX(&amp;QTimeEvt_timeEvtHead_[tickRate],
+                   (QActive *)0, (enum_t)Q_USER_SIG, tickRate);
+}
 
 // setup the QXK scheduler as initially locked and not running
 QXK_priv_.lockCeil = (QF_MAX_ACTIVE + 1U); // scheduler locked
@@ -8568,11 +8679,11 @@ $declare1 ${QP-FuSa}
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION     730U
-#define QP_VERSION_STR &quot;7.3.0&quot;
+#define QP_VERSION     731U
+#define QP_VERSION_STR &quot;7.3.1&quot;
 
-//! Encrypted  current QP release (7.3.0) and date (2023-09-12)
-#define QP_RELEASE     0x765D9D25U
+//! Encrypted  current QP release (7.3.1) and date (2023-12-01)
+#define QP_RELEASE     0x76318414U
 
 //============================================================================
 //! @cond INTERNAL

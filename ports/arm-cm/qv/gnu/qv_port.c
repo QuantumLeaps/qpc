@@ -27,8 +27,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-17
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-10-17
+//! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
 //! @brief QV/C port to ARM Cortex-M, GNU-ARM
@@ -90,6 +90,7 @@ void QV_init(void) {
 // flags in the PSR.
 __attribute__ ((naked, optimize("-fno-stack-protector")))
 uint_fast8_t QF_qlog2(uint32_t x) {
+    Q_UNUSED_PAR(x);
 __asm volatile (
     "  MOV     r1,#0            \n"
 #if (QF_MAX_ACTIVE > 16U)

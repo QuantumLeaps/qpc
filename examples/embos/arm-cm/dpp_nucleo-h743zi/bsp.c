@@ -1,7 +1,7 @@
 //============================================================================
 // Product: "Dining Philosophers Problem" example, embOS kernel
-// Last updated for: @ref qpc_7_3_0
-// Last updated on  2023-08-22
+// Last updated for: @ref qpc_7_3_1
+// Last updated on  2023-11-15
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -280,7 +280,7 @@ void BSP_start(void) {
     for (uint8_t n = 0U; n < N_PHILO; ++n) {
         Philo_ctor(n);
         QACTIVE_START(AO_Philo[n],
-            n + 3U,                  // QF-prio. of the AO
+            Q_PRIO(n + 3U, 3U),      // QP-prio., embOS prio.
             philoQueueSto[n],        // event queue storage
             Q_DIM(philoQueueSto[n]), // queue length [events]
             philoStack[n],           // private stack for embOS
@@ -292,7 +292,7 @@ void BSP_start(void) {
     static OS_STACKPTR int tableStack[128];
     Table_ctor();
     QACTIVE_START(AO_Table,
-        N_PHILO + 7U,            // QP prio. of the AO
+        Q_PRIO(N_PHILO + 7U, 7U),// QP-prio., embOS prio.
         tableQueueSto,           // event queue storage
         Q_DIM(tableQueueSto),    // queue length [events]
         tableStack,              // private stack for embOS

@@ -1,7 +1,7 @@
 ##############################################################################
 # Product: Makefile for SYSTEM-Level tests of QP/C on NUCLEO-L053R8, GNU-ARM
-# Last Updated for Version: 7.3.0
-# Date of the Last Update:  2023-09-06
+# Last Updated for Version: 7.3.1
+# Date of the Last Update:  2023-11-13
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -137,7 +137,7 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DQP_API_VERSION=9999 \
+DEFINES   := -DSTM32L053xx \
 	-DQF_ON_CONTEXT_SW
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...

@@ -90,6 +90,15 @@ void QF_init(void) {
     QPSet_update_(&QF_readySet_, &QF_readySet_dis_);
 #endif
 
+    for (uint_fast8_t tickRate = 0;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, Q_USER_SIG, tickRate);
+    }
+
+
     InitializeCriticalSection(&l_win32CritSect);
     QF_win32Event_ = CreateEvent(NULL, FALSE, FALSE, NULL);
 }

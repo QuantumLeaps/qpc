@@ -89,10 +89,19 @@ Q_NORETURN Q_onError(char const * const module, int_t const id) {
     NVIC_SystemReset();
 }
 //............................................................................
+// assertion failure handler for the STM32 library, including the startup code
 void assert_failed(char const * const module, int_t const id); // prototype
 void assert_failed(char const * const module, int_t const id) {
     Q_onError(module, id);
 }
+
+//............................................................................
+#ifdef __UVISION_VERSION
+// dummy initialization of the ctors (not used in C)
+void _init(void);
+void _init(void) {
+}
+#endif // __UVISION_VERSION
 
 // ISRs used in the application ============================================
 

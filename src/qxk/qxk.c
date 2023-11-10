@@ -391,12 +391,19 @@ void QXK_threadExit_(void) {
 void QF_init(void) {
     QF_bzero_(&QF_priv_,                 sizeof(QF_priv_));
     QF_bzero_(&QXK_priv_,                sizeof(QXK_priv_));
-    QF_bzero_(&QTimeEvt_timeEvtHead_[0], sizeof(QTimeEvt_timeEvtHead_));
     QF_bzero_(&QActive_registry_[0],     sizeof(QActive_registry_));
 
     #ifndef Q_UNSAFE
     QPSet_update_(&QXK_priv_.readySet, &QXK_priv_.readySet_dis);
     #endif
+
+    for (uint_fast8_t tickRate = 0;
+         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
+         ++tickRate)
+    {
+        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
+                       (QActive *)0, (enum_t)Q_USER_SIG, tickRate);
+    }
 
     // setup the QXK scheduler as initially locked and not running
     QXK_priv_.lockCeil = (QF_MAX_ACTIVE + 1U); // scheduler locked

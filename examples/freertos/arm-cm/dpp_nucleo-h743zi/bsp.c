@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP example, NUCLEO-H743ZI board, FreeRTOS kernel
-// Last updated for version 7.3.0
-// Last updated on  2023-08-29
+// Last updated for version 7.3.1
+// Last updated on  2023-11-15
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -332,7 +332,7 @@ void BSP_start(void) {
         Philo_ctor(n); // instantiate all Philosopher active objects
         QActive_setAttr(AO_Philo[n], TASK_NAME_ATTR, "Philo");
         QACTIVE_START(AO_Philo[n],   // AO to start
-            n + 3U,                  // QP prio. of the AO
+            Q_PRIO(n + 3U, 3U),      // QP prio., FreeRTOS prio.
             philoQueueSto[n],        // event queue storage
             Q_DIM(philoQueueSto[n]), // queue length [events]
             philoStack[n],           // stack storage
@@ -345,7 +345,7 @@ void BSP_start(void) {
     Table_ctor(); // instantiate the Table active object
     QActive_setAttr(AO_Table, TASK_NAME_ATTR, "Table");
     QACTIVE_START(AO_Table,          // AO to start
-        N_PHILO + 7U,                // QP prio. of the AO
+        Q_PRIO(N_PHILO + 7U, 7U),    // QP prio., FreeRTOS prio.
         tableQueueSto,               // event queue storage
         Q_DIM(tableQueueSto),        // queue length [events]
         tableStack,                  // stack storage
