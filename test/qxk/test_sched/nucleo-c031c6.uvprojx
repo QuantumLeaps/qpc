@@ -519,14 +519,9 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
+              <FileName>qp_port.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\ports\arm-cm\qxk\armclang\qep_port.h</FilePath>
-            </File>
-            <File>
-              <FileName>qf_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\ports\arm-cm\qxk\armclang\qf_port.h</FilePath>
+              <FilePath>..\..\..\ports\arm-cm\qxk\armclang\qp_port.h</FilePath>
             </File>
             <File>
               <FileName>qs_port.h</FileName>
@@ -537,11 +532,6 @@
               <FileName>qxk_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\ports\arm-cm\qxk\armclang\qxk_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>qxk_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\ports\arm-cm\qxk\armclang\qxk_port.h</FilePath>
             </File>
           </Files>
         </Group>

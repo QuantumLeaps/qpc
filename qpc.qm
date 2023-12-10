@@ -2856,7 +2856,7 @@ return recalled;</code>
     <parameter name="num" type="uint_fast16_t const"/>
     <code>uint_fast16_t n = 0U;
 while (n &lt; num) {
-    QEvt const *e = QEQueue_get(eq, me-&gt;prio);
+    QEvt const * const e = QEQueue_get(eq, me-&gt;prio);
     if (e != (QEvt *)0) {
         ++n; // count one more flushed event
 #if (QF_MAX_EPOOL &gt; 0U)

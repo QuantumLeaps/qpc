@@ -565,19 +565,14 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\freertos\qep_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qf_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\freertos\qf_port.c</FilePath>
             </File>
             <File>
-              <FileName>qf_port.h</FileName>
+              <FileName>qp_port.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\freertos\qf_port.h</FilePath>
+              <FilePath>..\..\..\..\..\ports\freertos\qp_port.h</FilePath>
             </File>
             <File>
               <FileName>qs_port.h</FileName>
@@ -1266,19 +1261,14 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\freertos\qep_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qf_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\freertos\qf_port.c</FilePath>
             </File>
             <File>
-              <FileName>qf_port.h</FileName>
+              <FileName>qp_port.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\freertos\qf_port.h</FilePath>
+              <FilePath>..\..\..\..\..\ports\freertos\qp_port.h</FilePath>
             </File>
             <File>
               <FileName>qs_port.h</FileName>
@@ -1967,19 +1957,14 @@
           <GroupName>QP_port</GroupName>
           <Files>
             <File>
-              <FileName>qep_port.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\freertos\qep_port.h</FilePath>
-            </File>
-            <File>
               <FileName>qf_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\ports\freertos\qf_port.c</FilePath>
             </File>
             <File>
-              <FileName>qf_port.h</FileName>
+              <FileName>qp_port.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\..\..\..\ports\freertos\qf_port.h</FilePath>
+              <FilePath>..\..\..\..\..\ports\freertos\qp_port.h</FilePath>
             </File>
             <File>
               <FileName>qs_port.h</FileName>

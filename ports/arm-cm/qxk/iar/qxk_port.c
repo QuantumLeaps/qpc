@@ -27,7 +27,7 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-12-04
+//! @date Last updated on: 2023-12-10
 //! @version Last updated for: @ref qpc_7_3_1
 //!
 //! @file
@@ -652,7 +652,7 @@ __asm volatile (
 //
 // NOTE: QXK_thread_ret() does not execute in the PendSV context!
 // NOTE: QXK_thread_ret() is entered with interrupts DISABLED.
-__attribute__ ((naked, used))
+__stackless
 void QXK_thread_ret(void) {
 __asm volatile (
 

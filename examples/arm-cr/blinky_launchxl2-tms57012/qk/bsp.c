@@ -44,7 +44,7 @@
 #include "het.h"
 // add other drivers if necessary...
 
-Q_DEFINE_THIS_FILE
+//Q_DEFINE_THIS_FILE
 
 #ifdef Q_SPY
     #error Simple Blinky Application does not provide Spy build configuration
@@ -145,6 +145,8 @@ Q_NORETURN Q_onError(char const * const module, int_t const id) {
 
     QS_ASSERTION(module, id, 10000U); // report assertion to QS
     systemREG1->SYSECR = 0; // perform system reset
+    for (;;) { // explicitly no-return
+    }
 }
 //............................................................................
 void assert_failed(char const * const module, int_t const id); // prototype

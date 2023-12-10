@@ -3495,9 +3495,6 @@
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_mem.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\src\qf_pkg.h</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_ps.c</name>
         </file>
         <file>
@@ -3515,20 +3512,11 @@
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qk\qk.c</name>
         </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\src\qk_pkg.h</name>
-        </file>
     </group>
     <group>
         <name>QP_port</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qep_port.h</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qf_port.h</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qk_port.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qp_port.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\ports\msp430\qk\qs_port.h</name>
@@ -3545,9 +3533,6 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_fp.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\src\qs_pkg.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qs\qs_rx.c</name>

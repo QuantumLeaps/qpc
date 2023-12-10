@@ -3303,9 +3303,6 @@
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_mem.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\src\qf_pkg.h</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qf\qf_ps.c</name>
         </file>
         <file>
@@ -3323,23 +3320,14 @@
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\src\qk\qk.c</name>
         </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\src\qk_pkg.h</name>
-        </file>
     </group>
     <group>
         <name>QP_port</name>
         <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qep_port.h</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qf_port.h</name>
+            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qp_port.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qk_port.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qk_port.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\..\..\..\ports\arm-cm\qk\iar\qs_port.h</name>
