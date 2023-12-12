@@ -52,14 +52,17 @@ enum QHsmTstSignals {
 //${Shared::the_sm} ..........................................................
 extern QAsm * const the_sm;
 
-//${Shared::QHsmTst_ctor} ....................................................
-void QHsmTst_ctor(void);
-
 //${Shared::BSP_display} .....................................................
 void BSP_display(char const * msg);
 
 //${Shared::BSP_terminate} ...................................................
 void BSP_terminate(int16_t const result);
+
+//${Shared::QHsmTst_ctor} ....................................................
+void QHsmTst_ctor(void);
+
+//${Shared::QHsmTst_isIn} ....................................................
+bool QHsmTst_isIn(uint32_t const state_num);
 //$enddecl${Shared} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #endif // QHSMTST_H_

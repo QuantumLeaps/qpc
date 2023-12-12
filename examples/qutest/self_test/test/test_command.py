@@ -15,7 +15,7 @@ def on_teardown():
 # tests...
 test("Command")
 note('''
-this test invokes command(1,1,1)
+this test invokes command(<cmd>,<param1>,<param2>)
 ''')
 command("CMD_X", 1, 2, 3)
 expect("@timestamp COMMAND CMD_X 0")

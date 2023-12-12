@@ -27,11 +27,6 @@
    <documentation>opaque pointer to the test SM</documentation>
    <code>= &amp;QMsmTst_inst.super.super;</code>
   </attribute>
-  <!--${Shared::QMsmTst_ctor}-->
-  <operation name="QMsmTst_ctor" type="void" visibility="0x00" properties="0x00">
-   <code>QMsmTst *me = &amp;QMsmTst_inst;
-QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;QMsmTst_initial));</code>
-  </operation>
   <!--${Shared::BSP_display}-->
   <operation name="BSP_display" type="void" visibility="0x00" properties="0x00">
    <!--${Shared::BSP_display::msg}-->
@@ -41,6 +36,41 @@ QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;QMsmTst_initial));</code>
   <operation name="BSP_terminate" type="void" visibility="0x00" properties="0x00">
    <!--${Shared::BSP_terminate::result}-->
    <parameter name="result" type="int16_t const"/>
+  </operation>
+  <!--${Shared::QMsmTst_ctor}-->
+  <operation name="QMsmTst_ctor" type="void" visibility="0x00" properties="0x00">
+   <code>QMsmTst *me = &amp;QMsmTst_inst;
+QMsm_ctor(&amp;me-&gt;super, Q_STATE_CAST(&amp;QMsmTst_initial));</code>
+  </operation>
+  <!--${Shared::QMsmTst_isInState}-->
+  <operation name="QMsmTst_isInState" type="bool" visibility="0x00" properties="0x00">
+   <!--${Shared::QMsmTst_isInStat~::state_num}-->
+   <parameter name="state_num" type="uint32_t const"/>
+   <code>QMsm * const me = &amp;QMsmTst_inst.super;
+bool stat = false;
+switch (state_num) {
+case 0:
+    stat = QMsm_isInState(me, &amp;QMsmTst_s_s);
+    break;
+case 1:
+    stat = QMsm_isInState(me, &amp;QMsmTst_s1_s);
+    break;
+case 11:
+    stat = QMsm_isInState(me, &amp;QMsmTst_s11_s);
+    break;
+case 2:
+    stat = QMsm_isInState(me, &amp;QMsmTst_s2_s);
+    break;
+case 21:
+    stat = QMsm_isInState(me, &amp;QMsmTst_s21_s);
+    break;
+case 211:
+    stat = QMsm_isInState(me, &amp;QMsmTst_s211_s);
+    break;
+default:
+    Q_ERROR();
+}
+return stat;</code>
   </operation>
  </package>
  <!--${SMs}-->
@@ -349,9 +379,12 @@ $declare ${Shared}
    <text>#include &quot;qpc.h&quot;          // QP/C framework
 #include &quot;qmsmtst.h&quot;      // this application
 
+Q_DEFINE_THIS_FILE
+
 $declare ${SMs::QMsmTst}
 $define ${Shared::the_sm}
 $define ${Shared::QMsmTst_ctor}
+$define ${Shared::QMsmTst_isInState}
 $define ${SMs::QMsmTst}</text>
   </file>
  </directory>

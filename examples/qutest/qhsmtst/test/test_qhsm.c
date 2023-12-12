@@ -1,7 +1,7 @@
 //============================================================================
 // Purpose: Fixture for QUTEST
-// Last Updated for Version: 7.3.0
-// Date of the Last Update:  2023-08-25
+// Last Updated for Version: 7.3.1
+// Date of the Last Update:  2023-12-11
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -38,6 +38,7 @@ Q_DEFINE_THIS_FILE
 
 enum {
     BSP_DISPLAY = QS_USER,
+    CMD,
 };
 
 //----------------------------------------------------------------------------
@@ -56,6 +57,7 @@ int main(int argc, char *argv[]) {
     // dictionaries...
     QS_OBJ_DICTIONARY(the_sm);
     QS_USR_DICTIONARY(BSP_DISPLAY);
+    QS_USR_DICTIONARY(CMD);
 
     QHsmTst_ctor(); // instantiate the QHsmTst object
 
@@ -89,8 +91,18 @@ void QS_onCommand(uint8_t cmdId,
 
     //PRINTF_S("<TARGET> Command id=%d param=%d\n", (int)cmdId, (int)param);
     switch (cmdId) {
-       case 0U: {
-           break;
+        case 0U: {
+            QS_BEGIN_ID(CMD, 0U) // app-specific record
+            QS_END()
+            break;
+        }
+        case 1U: {
+            bool ret = QHsmTst_isIn(param1);
+            QS_BEGIN_ID(CMD, 0U) // app-specific record
+                QS_U8(0U, ret ? 1 : 0);
+                QS_U8(0U, (uint8_t)param1);
+            QS_END()
+            break;
        }
        default:
            break;

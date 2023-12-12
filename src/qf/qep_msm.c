@@ -366,15 +366,23 @@ bool QMsm_isInState(QMsm const * const me,
 {
     bool inState = false; // assume that this SM is not in 'state'
 
-    for (QMState const *s = me->super.state.obj;
-         s != (QMState *)0;
-         s = s->superstate)
-    {
-        if (s == stateObj) {
-            inState = true; // match found, return 'true'
+    QMState const *s = me->super.state.obj;
+    int_fast8_t limit = 6; // loop hard limit
+    for (; (s != (QMState *)0) && (limit > 0); --limit) {
+        if (s == stateObj) { // match found?
+            inState = true;
             break;
         }
+        else {
+            s = s->superstate; // advance to the superstate
+        }
     }
+
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_ENSURE_INCRIT(690, limit > 0);
+    QF_CRIT_EXIT();
+
     return inState;
 }
 
@@ -410,7 +418,7 @@ QMState const * QMsm_childStateObj(QMsm const * const me,
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_ASSERT_INCRIT(890, isFound);
+    Q_ENSURE_INCRIT(890, isFound);
     QF_CRIT_EXIT();
 
     return child; // return the child

@@ -18,6 +18,17 @@ expect("@timestamp BSP_DISPLAY s21-ENTRY;")
 expect("@timestamp BSP_DISPLAY s211-ENTRY;")
 expect("@timestamp Trg-Done QS_RX_EVENT")
 
+test("QHsmTst isIn", NORESET)
+command(1, 1)
+expect("@timestamp CMD 0 1");
+expect("@timestamp Trg-Done QS_RX_COMMAND")
+command(1, 21)
+expect("@timestamp CMD 1 21");
+expect("@timestamp Trg-Done QS_RX_COMMAND")
+command(1, 211)
+expect("@timestamp CMD 1 211");
+expect("@timestamp Trg-Done QS_RX_COMMAND")
+
 test("QHsmTst dispatch", NORESET)
 dispatch("A_SIG")
 expect("@timestamp BSP_DISPLAY s21-A;")

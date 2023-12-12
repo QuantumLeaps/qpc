@@ -31,6 +31,8 @@
 #include "qpc.h"          // QP/C framework
 #include "qmsmtst.h"      // this application
 
+Q_DEFINE_THIS_FILE
+
 //$declare${SMs::QMsmTst} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${SMs::QMsmTst} ............................................................
@@ -43,6 +45,7 @@ typedef struct QMsmTst {
 
 // public:
 } QMsmTst;
+
 extern QMsmTst QMsmTst_inst;
 
 // protected:
@@ -132,6 +135,37 @@ void QMsmTst_ctor(void) {
     QMsm_ctor(&me->super, Q_STATE_CAST(&QMsmTst_initial));
 }
 //$enddef${Shared::QMsmTst_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//$define${Shared::QMsmTst_isInState} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+//${Shared::QMsmTst_isInState} ...............................................
+bool QMsmTst_isInState(uint32_t const state_num) {
+    QMsm * const me = &QMsmTst_inst.super;
+    bool stat = false;
+    switch (state_num) {
+    case 0:
+        stat = QMsm_isInState(me, &QMsmTst_s_s);
+        break;
+    case 1:
+        stat = QMsm_isInState(me, &QMsmTst_s1_s);
+        break;
+    case 11:
+        stat = QMsm_isInState(me, &QMsmTst_s11_s);
+        break;
+    case 2:
+        stat = QMsm_isInState(me, &QMsmTst_s2_s);
+        break;
+    case 21:
+        stat = QMsm_isInState(me, &QMsmTst_s21_s);
+        break;
+    case 211:
+        stat = QMsm_isInState(me, &QMsmTst_s211_s);
+        break;
+    default:
+        Q_ERROR();
+    }
+    return stat;
+}
+//$enddef${Shared::QMsmTst_isInState} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //$define${SMs::QMsmTst} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${SMs::QMsmTst} ............................................................
