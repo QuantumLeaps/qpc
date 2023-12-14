@@ -80,7 +80,7 @@ QEvt const QEvt_reserved_[4] = {
 //$enddef${QEP::QEvt::reserved_[4]} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 enum {
-    // maximum depth of state nesting in a HSM (including the top level),
+    // maximum depth of state nesting in a QHsm (including the top level),
     // must be >= 3
     QHSM_MAX_NEST_DEPTH_ = 6
 };
@@ -124,7 +124,8 @@ void QHsm_ctor(QHsm * const me,
 {
     static struct QAsmVtable const vtable = { // QAsm virtual table
         &QHsm_init_,
-        &QHsm_dispatch_
+        &QHsm_dispatch_,
+        &QHsm_isIn_
     #ifdef Q_SPY
         ,&QHsm_getStateHandler_
     #endif
@@ -448,21 +449,22 @@ QStateHandler QHsm_getStateHandler_(QAsm * const me) {
 }
 #endif // def Q_SPY
 
-//${QEP::QHsm::isIn} .........................................................
-//! @public @memberof QHsm
-bool QHsm_isIn(QHsm * const me,
+//${QEP::QHsm::isIn_} ........................................................
+//! @private @memberof QHsm
+bool QHsm_isIn_(
+    QAsm * const me,
     QStateHandler const state)
 {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_REQUIRE_INCRIT(602, me->super.state.uint
-                      == (uintptr_t)(~me->super.temp.uint));
+    Q_REQUIRE_INCRIT(602, me->state.uint
+                      == (uintptr_t)(~me->temp.uint));
     QF_CRIT_EXIT();
 
     bool inState = false; // assume that this HSM is not in 'state'
 
     // scan the state hierarchy bottom-up
-    QStateHandler s = me->super.state.fun;
+    QStateHandler s = me->state.fun;
     int_fast8_t limit = QHSM_MAX_NEST_DEPTH_ + 1; // loop hard limit
     QState r = Q_RET_SUPER;
     for (; (r != Q_RET_IGNORED) && (limit > 0); --limit) {
@@ -472,7 +474,7 @@ bool QHsm_isIn(QHsm * const me,
         }
         else {
             r = QHSM_RESERVED_EVT_(s, Q_EMPTY_SIG);
-            s = me->super.temp.fun;
+            s = me->temp.fun;
         }
     }
 
@@ -481,7 +483,7 @@ bool QHsm_isIn(QHsm * const me,
     QF_CRIT_EXIT();
 
     #ifndef Q_UNSAFE
-    me->super.temp.uint = ~me->super.state.uint;
+    me->temp.uint = ~me->state.uint;
     #endif
 
     return inState; // return the status

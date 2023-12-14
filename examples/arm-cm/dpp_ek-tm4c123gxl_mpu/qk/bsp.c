@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP example, EK-TM4C123GXL board, QK kernel, MPU isolation
-// Last updated for version 7.3.0
-// Last updated on  2023-09-07
+// Last updated for version 7.3.2
+// Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -783,38 +783,27 @@ QSTimeCtr QS_onGetTime(void) {  // NOTE: invoked with interrupts DISABLED
     return TIMER5->TAV;
 }
 //............................................................................
+// NOTE:
+// No critical section in QS_onFlush() to avoid nesting of critical sections
+// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
     for (;;) {
-        QF_INT_DISABLE();
-        QF_MEM_SYS();
         uint16_t b = QS_getByte();
         if (b != QS_EOD) {
             while ((UART0->FR & UART_FR_TXFE) == 0U) { // while TXE not empty
-                QF_MEM_APP();
-                QF_INT_ENABLE();
-                QF_CRIT_EXIT_NOP();
-
-                QF_INT_DISABLE();
-                QF_MEM_SYS();
             }
             UART0->DR = b; // put into the DR register
-            QF_MEM_APP();
-            QF_INT_ENABLE();
         }
         else {
-            QF_MEM_APP();
-            QF_INT_ENABLE();
             break;
         }
     }
 }
 //............................................................................
-//! callback function to reset the target (to be implemented in the BSP)
 void QS_onReset(void) {
     NVIC_SystemReset();
 }
 //............................................................................
-//! callback function to execute a user command
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {

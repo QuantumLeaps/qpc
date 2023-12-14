@@ -44,11 +44,11 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION     731U
-#define QP_VERSION_STR "7.3.1"
+#define QP_VERSION     732U
+#define QP_VERSION_STR "7.3.2"
 
-//! Encrypted  current QP release (7.3.1) and date (2023-12-05)
-#define QP_RELEASE     0x7630E7D4U
+//! Encrypted  current QP release (7.3.2) and date (2023-12-14)
+#define QP_RELEASE     0x762F8843U
 
 //============================================================================
 //! @cond INTERNAL
@@ -300,6 +300,8 @@ struct QAsmVtable {
                  uint_fast8_t const qs_id);
     void (*dispatch)(QAsm * const me, QEvt const * const e,
                      uint_fast8_t const qs_id);
+    bool (*isIn)(QAsm * const me, QStateHandler const s);
+
 #ifdef Q_SPY
     QStateHandler (*getStateHandler)(QAsm * const me);
 #endif // Q_SPY
@@ -340,8 +342,9 @@ QStateHandler QHsm_getStateHandler_(QAsm * const me);
 
 // public:
 
-//! @public @memberof QHsm
-bool QHsm_isIn(QHsm * const me,
+//! @private @memberof QHsm
+bool QHsm_isIn_(
+    QAsm * const me,
     QStateHandler const state);
 
 //! @public @memberof QHsm
@@ -406,7 +409,12 @@ static inline QStateHandler QMsm_getStateHandler_(QAsm * const me) {
 }
 #endif // def Q_SPY
 
-//! @public @memberof QMsm
+//! @private @memberof QMsm
+bool QMsm_isIn_(
+    QAsm * const me,
+    QStateHandler const state);
+
+//! @deprecated instead use: QASM_IS_IN()
 bool QMsm_isInState(QMsm const * const me,
     QMState const * const stateObj);
 
@@ -473,6 +481,10 @@ QState QMsm_enterHistory_(
 #define QASM_DISPATCH(me_, e_, dummy) \
     (*((QAsm *)(me_))->vptr->dispatch)((QAsm *)(me_), (e_), 0U)
 #endif // ndef Q_SPY
+
+//${QEP-macros::QASM_IS_IN} ..................................................
+#define QASM_IS_IN(me_, state_) \
+    (*((QAsm *)(me_))->vptr->isIn)((QAsm *)(me_), (state_))
 
 //${QEP-macros::Q_ASM_UPCAST} ................................................
 #define Q_ASM_UPCAST(ptr_) ((QAsm *)(ptr_))

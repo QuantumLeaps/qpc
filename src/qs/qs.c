@@ -874,6 +874,7 @@ void QS_assertion_pre_(
     QS_endRec_();
     QS_onFlush();
 
+    // busy-wait until all QS data makes it over to the host
     for (uint32_t volatile delay_ctr = delay;
          delay_ctr > 0U; --delay_ctr)
     {}

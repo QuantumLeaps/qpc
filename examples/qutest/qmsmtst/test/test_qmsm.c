@@ -1,7 +1,7 @@
 //============================================================================
 // Purpose: Fixture for QUTEST
 // Last Updated for Version: 7.3.1
-// Date of the Last Update:  2023-12-11
+// Date of the Last Update:  2023-12-12
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -97,7 +97,7 @@ void QS_onCommand(uint8_t cmdId,
             break;
         }
         case 1U: {
-            bool ret = QMsmTst_isInState(param1);
+            bool ret = QMsmTst_isIn(param1);
             QS_BEGIN_ID(CMD, 0U) // app-specific record
                 QS_U8(0U, ret ? 1 : 0);
                 QS_U8(0U, (uint8_t)param1);

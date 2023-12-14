@@ -82,11 +82,6 @@ void XThread2_ctor(
 
 //${XThreads::XThread2::run} .................................................
 static void XThread2_run(QXThread * const thr) {
-    QS_OBJ_DICTIONARY(TH_XThread2);
-    QS_OBJ_DICTIONARY(&TH_XThread2->timeEvt);
-    QS_OBJ_DICTIONARY(&TH_sema);
-    QS_OBJ_DICTIONARY(&TH_mutex);
-
     // downcast the generic thr pointer to the specific thread
     //XThread2 *me = (XThread2 *)thr;
 

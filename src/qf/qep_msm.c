@@ -56,6 +56,11 @@
 
 Q_DEFINE_THIS_MODULE("qep_msm")
 
+enum {
+    // maximum depth of state nesting in a QMsm (including the top level)
+    QMSM_MAX_NEST_DEPTH_ = 6
+};
+
 // top-state object for QMsm-style state machines
 static struct QMState const l_msm_top_s = {
     (struct QMState *)0,
@@ -91,7 +96,8 @@ void QMsm_ctor(QMsm * const me,
 {
     static struct QAsmVtable const vtable = { // QAsm virtual table
         &QMsm_init_,
-        &QMsm_dispatch_
+        &QMsm_dispatch_,
+        &QMsm_isIn_
     #ifdef Q_SPY
         ,&QMsm_getStateHandler_
     #endif
@@ -359,15 +365,42 @@ void QMsm_dispatch_(
     #endif
 }
 
+//${QEP::QMsm::isIn_} ........................................................
+//! @private @memberof QMsm
+bool QMsm_isIn_(
+    QAsm * const me,
+    QStateHandler const state)
+{
+    bool inState = false; // assume that this SM is not in 'state'
+
+    QMState const *s = me->state.obj;
+    int_fast8_t limit = QMSM_MAX_NEST_DEPTH_ + 1; // loop hard limit
+    for (; (s != (QMState *)0) && (limit > 0); --limit) {
+        if (s->stateHandler == state) { // match found?
+            inState = true;
+            break;
+        }
+        else {
+            s = s->superstate; // advance to the superstate
+        }
+    }
+
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_ENSURE_INCRIT(690, limit > 0);
+    QF_CRIT_EXIT();
+
+    return inState;
+}
+
 //${QEP::QMsm::isInState} ....................................................
-//! @public @memberof QMsm
 bool QMsm_isInState(QMsm const * const me,
     QMState const * const stateObj)
 {
     bool inState = false; // assume that this SM is not in 'state'
 
     QMState const *s = me->super.state.obj;
-    int_fast8_t limit = 6; // loop hard limit
+    int_fast8_t limit = QMSM_MAX_NEST_DEPTH_ + 1; // loop hard limit
     for (; (s != (QMState *)0) && (limit > 0); --limit) {
         if (s == stateObj) { // match found?
             inState = true;
@@ -380,7 +413,7 @@ bool QMsm_isInState(QMsm const * const me,
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_ENSURE_INCRIT(690, limit > 0);
+    Q_ENSURE_INCRIT(790, limit > 0);
     QF_CRIT_EXIT();
 
     return inState;

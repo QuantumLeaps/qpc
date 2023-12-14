@@ -1,7 +1,7 @@
 //============================================================================
 // Product: "Dining Philosophers Problem" example, embOS kernel
-// Last updated for: @ref qpc_7_3_1
-// Last updated on  2023-11-15
+// Last updated for: @ref qpc_7_3_2
+// Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -420,14 +420,13 @@ QSTimeCtr QS_onGetTime(void) { // NOTE: invoked with interrupts DISABLED
     }
 }
 //............................................................................
+// NOTE:
+// No critical section in QS_onFlush() to avoid nesting of critical sections
+// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
-    while (true) {
+    for (;;) {
         // try to get next byte to transmit
-        QF_CRIT_STAT
-        QF_CRIT_ENTRY();
         uint16_t b = QS_getByte();
-        QF_CRIT_EXIT();
-
         if (b != QS_EOD) { // NOT end-of-data
             // busy-wait as long as TXE not set
             while ((l_uartHandle.Instance->ISR & UART_FLAG_TXE) == 0U) {
@@ -441,7 +440,6 @@ void QS_onFlush(void) {
     }
 }
 //............................................................................
-//! callback function to reset the target (to be implemented in the BSP)
 void QS_onReset(void) {
     NVIC_SystemReset();
 }

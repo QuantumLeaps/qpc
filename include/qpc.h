@@ -128,6 +128,9 @@ static inline void QF_psInit(
 //! @deprecated instead use: QASM_DISPATCH()
 #define QHSM_DISPATCH(me_, e_, qs_id_) QASM_DISPATCH((me_), (e_), (qs_id_))
 
+//! @deprecated instead use: QASM_IS_IN()
+#define QHsm_isIn(me_, state_)         QHsm_isIn_((QAsm *)(me_), (state_))
+
 //============================================================================
 #if (QP_API_VERSION < 691)
 

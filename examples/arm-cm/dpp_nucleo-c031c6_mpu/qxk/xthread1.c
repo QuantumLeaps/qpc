@@ -87,15 +87,27 @@ void XThread1_ctor(
     me->super.super.thread = mpu;
 }
 //$enddef${Shared-TH::XThread1_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//$define${Shared-TH::TH_obj_dict} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+//${Shared-TH::TH_obj_dict} ..................................................
+#ifdef Q_SPY
+void TH_obj_dict(void) {
+    QS_OBJ_DICTIONARY(TH_XThread1);
+    QS_OBJ_DICTIONARY(&TH_XThread1->timeEvt);
+
+    QS_OBJ_DICTIONARY(TH_XThread2);
+    QS_OBJ_DICTIONARY(&TH_XThread2->timeEvt);
+    QS_OBJ_DICTIONARY(&TH_sema);
+    QS_OBJ_DICTIONARY(&TH_mutex);
+}
+#endif // def Q_SPY
+//$enddef${Shared-TH::TH_obj_dict} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //$define${XThreads::XThread1} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${XThreads::XThread1} ......................................................
 
 //${XThreads::XThread1::run} .................................................
 static void XThread1_run(QXThread * const thr) {
-    QS_OBJ_DICTIONARY(TH_XThread1);
-    QS_OBJ_DICTIONARY(&TH_XThread1->timeEvt);
-
     // downcast the generic thr pointer to the specific thread
     XThread1 *me = (XThread1 *)thr;
 

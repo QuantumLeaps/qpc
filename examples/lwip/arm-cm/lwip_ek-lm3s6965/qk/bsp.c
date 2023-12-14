@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP with lwIP application, preemptive QK kernel
-// Last updated for version 6.9.3
-// Last updated on  2021-03-03
+// Last updated for version 7.3.2
+// Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -294,24 +294,21 @@ QSTimeCtr QS_onGetTime(void) { // invoked with interrupts disabled
     }
 }
 //............................................................................
+// NOTE:
+// No critical section in QS_onFlush() to avoid nesting of critical sections
+// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
     uint16_t fifo = UART_TXFIFO_DEPTH;  // Tx FIFO depth
     uint8_t const *block;
-    QF_INT_DISABLE();
     while ((block = QS_getBlock(&fifo)) != (uint8_t *)0) {
-        QF_INT_ENABLE();
-
         // busy-wait until TX FIFO empty
         while ((UART0->FR & UART_FR_TXFE) == 0) {
         }
-
-        while (fifo-- != 0) {     // any bytes in the block?
+        while (fifo-- != 0U) {    // any bytes in the block?
             UART0->DR = *block++; // put into the TX FIFO
         }
         fifo = UART_TXFIFO_DEPTH; // re-load the Tx FIFO depth
-        QF_INT_DISABLE();
     }
-    QF_INT_ENABLE();
 }
 #endif // Q_SPY
 //----------------------------------------------------------------------------

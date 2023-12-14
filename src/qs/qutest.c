@@ -115,14 +115,16 @@ Q_NORETURN Q_onError(
     char const * const module,
     int_t const id)
 {
+    // NOTE: called in a critical section
+
     QS_beginRec_((uint_fast8_t)QS_ASSERT_FAIL);
         QS_TIME_PRE_();
         QS_U16_PRE_(id);
         QS_STR_PRE_((module != (char *)0) ? module : "?");
     QS_endRec_();
-
     QS_onFlush();   // flush the assertion record to the host
-    QS_onCleanup(); // cleanup after the failure
+
+    QS_onCleanup(); // cleanup before resetting
     QS_onReset();   // reset the target to prevent the code from continuing
     for (;;) { // QS_onReset() should not return, but to ensure no-return
     }
@@ -357,7 +359,8 @@ void QTimeEvt_tick1_(
 void QHsmDummy_ctor(QHsmDummy * const me) {
     static struct QAsmVtable const vtable = {
         &QHsmDummy_init_,
-        &QHsmDummy_dispatch_
+        &QHsmDummy_dispatch_,
+        &QHsm_isIn_
     #ifdef Q_SPY
         ,&QHsm_getStateHandler_
     #endif
@@ -423,7 +426,8 @@ void QActiveDummy_ctor(QActiveDummy * const me) {
 
     static struct QAsmVtable const vtable = {
         &QActiveDummy_init_,
-        &QActiveDummy_dispatch_
+        &QActiveDummy_dispatch_,
+        &QHsm_isIn_
     #ifdef Q_SPY
         ,&QHsm_getStateHandler_
     #endif

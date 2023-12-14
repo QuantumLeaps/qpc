@@ -423,6 +423,8 @@ me-&gt;temp.fun  = Q_STATE_CAST(0);</code>
                  uint_fast8_t const qs_id);
     void (*dispatch)(QAsm * const me, QEvt const * const e,
                      uint_fast8_t const qs_id);
+    bool (*isIn)(QAsm * const me, QStateHandler const s);
+
 #ifdef Q_SPY
     QStateHandler (*getStateHandler)(QAsm * const me);
 #endif // Q_SPY
@@ -444,7 +446,8 @@ manual coding</documentation>
     <parameter name="initial" type="QStateHandler const"/>
     <code>static struct QAsmVtable const vtable = { // QAsm virtual table
     &amp;QHsm_init_,
-    &amp;QHsm_dispatch_
+    &amp;QHsm_dispatch_,
+    &amp;QHsm_isIn_
 #ifdef Q_SPY
     ,&amp;QHsm_getStateHandler_
 #endif
@@ -774,23 +777,25 @@ me-&gt;temp.uint = ~me-&gt;state.uint;
     <parameter name="me" type="QAsm * const"/>
     <code>return me-&gt;state.fun;</code>
    </operation>
-   <!--${QEP::QHsm::isIn}-->
-   <operation name="isIn" type="bool" visibility="0x00" properties="0x00">
-    <documentation>//! @public @memberof QHsm
+   <!--${QEP::QHsm::isIn_}-->
+   <operation name="isIn_" type="bool" visibility="0x00" properties="0x01">
+    <documentation>//! @private @memberof QHsm
 
-//! @public @memberof QHsm</documentation>
-    <!--${QEP::QHsm::isIn::state}-->
+//! @private @memberof QHsm</documentation>
+    <!--${QEP::QHsm::isIn_::me}-->
+    <parameter name="me" type="QAsm * const"/>
+    <!--${QEP::QHsm::isIn_::state}-->
     <parameter name="state" type="QStateHandler const"/>
     <code>QF_CRIT_STAT
 QF_CRIT_ENTRY();
-Q_REQUIRE_INCRIT(602, me-&gt;super.state.uint
-                  == (uintptr_t)(~me-&gt;super.temp.uint));
+Q_REQUIRE_INCRIT(602, me-&gt;state.uint
+                  == (uintptr_t)(~me-&gt;temp.uint));
 QF_CRIT_EXIT();
 
 bool inState = false; // assume that this HSM is not in 'state'
 
 // scan the state hierarchy bottom-up
-QStateHandler s = me-&gt;super.state.fun;
+QStateHandler s = me-&gt;state.fun;
 int_fast8_t limit = QHSM_MAX_NEST_DEPTH_ + 1; // loop hard limit
 QState r = Q_RET_SUPER;
 for (; (r != Q_RET_IGNORED) &amp;&amp; (limit &gt; 0); --limit) {
@@ -800,7 +805,7 @@ for (; (r != Q_RET_IGNORED) &amp;&amp; (limit &gt; 0); --limit) {
     }
     else {
         r = QHSM_RESERVED_EVT_(s, Q_EMPTY_SIG);
-        s = me-&gt;super.temp.fun;
+        s = me-&gt;temp.fun;
     }
 }
 
@@ -809,7 +814,7 @@ Q_ENSURE_INCRIT(690, limit &gt; 0);
 QF_CRIT_EXIT();
 
 #ifndef Q_UNSAFE
-me-&gt;super.temp.uint = ~me-&gt;super.state.uint;
+me-&gt;temp.uint = ~me-&gt;state.uint;
 #endif
 
 return inState; // return the status</code>
@@ -1039,7 +1044,8 @@ for manual coding</documentation>
     <parameter name="initial" type="QStateHandler const"/>
     <code>static struct QAsmVtable const vtable = { // QAsm virtual table
     &amp;QMsm_init_,
-    &amp;QMsm_dispatch_
+    &amp;QMsm_dispatch_,
+    &amp;QMsm_isIn_
 #ifdef Q_SPY
     ,&amp;QMsm_getStateHandler_
 #endif
@@ -1321,18 +1327,46 @@ me-&gt;temp.uint = ~me-&gt;state.uint;
     <parameter name="me" type="QAsm * const"/>
     <code>return me-&gt;state.obj-&gt;stateHandler;</code>
    </operation>
+   <!--${QEP::QMsm::isIn_}-->
+   <operation name="isIn_" type="bool" visibility="0x00" properties="0x01">
+    <documentation>//! @private @memberof QMsm
+
+//! @private @memberof QMsm</documentation>
+    <!--${QEP::QMsm::isIn_::me}-->
+    <parameter name="me" type="QAsm * const"/>
+    <!--${QEP::QMsm::isIn_::state}-->
+    <parameter name="state" type="QStateHandler const"/>
+    <code>bool inState = false; // assume that this SM is not in 'state'
+
+QMState const *s = me-&gt;state.obj;
+int_fast8_t limit = QMSM_MAX_NEST_DEPTH_ + 1; // loop hard limit
+for (; (s != (QMState *)0) &amp;&amp; (limit &gt; 0); --limit) {
+    if (s-&gt;stateHandler == state) { // match found?
+        inState = true;
+        break;
+    }
+    else {
+        s = s-&gt;superstate; // advance to the superstate
+    }
+}
+
+QF_CRIT_STAT
+QF_CRIT_ENTRY();
+Q_ENSURE_INCRIT(690, limit &gt; 0);
+QF_CRIT_EXIT();
+
+return inState;</code>
+   </operation>
    <!--${QEP::QMsm::isInState}-->
    <operation name="isInState" type="bool" visibility="0x00" properties="0x00">
     <specifiers>const</specifiers>
-    <documentation>//! @public @memberof QMsm
-
-//! @public @memberof QMsm</documentation>
+    <documentation>//! @deprecated instead use: QASM_IS_IN()</documentation>
     <!--${QEP::QMsm::isInState::stateObj}-->
     <parameter name="stateObj" type="QMState const * const"/>
     <code>bool inState = false; // assume that this SM is not in 'state'
 
 QMState const *s = me-&gt;super.state.obj;
-int_fast8_t limit = 6; // loop hard limit
+int_fast8_t limit = QMSM_MAX_NEST_DEPTH_ + 1; // loop hard limit
 for (; (s != (QMState *)0) &amp;&amp; (limit &gt; 0); --limit) {
     if (s == stateObj) { // match found?
         inState = true;
@@ -1345,7 +1379,7 @@ for (; (s != (QMState *)0) &amp;&amp; (limit &gt; 0); --limit) {
 
 QF_CRIT_STAT
 QF_CRIT_ENTRY();
-Q_ENSURE_INCRIT(690, limit &gt; 0);
+Q_ENSURE_INCRIT(790, limit &gt; 0);
 QF_CRIT_EXIT();
 
 return inState;</code>
@@ -1652,6 +1686,15 @@ return r;</code>
    <parameter name="dummy" type=""/>
    <code>\
     (*((QAsm *)(me_))-&gt;vptr-&gt;dispatch)((QAsm *)(me_), (e_), 0U)</code>
+  </operation>
+  <!--${QEP-macros::QASM_IS_IN}-->
+  <operation name="QASM_IS_IN" type="void" visibility="0x03" properties="0x00">
+   <!--${QEP-macros::QASM_IS_IN::me_}-->
+   <parameter name="me_" type="&lt;QAsm subclass*&gt;"/>
+   <!--${QEP-macros::QASM_IS_IN::state_}-->
+   <parameter name="state_" type="QStateHandler"/>
+   <code>\
+    (*((QAsm *)(me_))-&gt;vptr-&gt;isIn)((QAsm *)(me_), (state_))</code>
   </operation>
   <!--${QEP-macros::Q_ASM_UPCAST}-->
   <operation name="Q_ASM_UPCAST" type="" visibility="0x03" properties="0x00">
@@ -2133,7 +2176,8 @@ QHsm_ctor((QHsm *)(me), initial);
 // subclasses of QActive (e.g., in the debugger).
 static struct QAsmVtable const vtable = { // QActive virtual table
     &amp;QHsm_init_,
-    &amp;QHsm_dispatch_
+    &amp;QHsm_dispatch_,
+    &amp;QHsm_isIn_
 #ifdef Q_SPY
     ,&amp;QHsm_getStateHandler_
 #endif
@@ -2917,7 +2961,8 @@ QMsm_ctor((QMsm *)(me), initial);
 // subclasses of QActive (e.g., in the debugger).
 static struct QAsmVtable const vtable = { // QMActive virtual table
     &amp;QMsm_init_,
-    &amp;QMsm_dispatch_
+    &amp;QMsm_dispatch_,
+    &amp;QMsm_isIn_
 #ifdef Q_SPY
     ,&amp;QMsm_getStateHandler_
 #endif
@@ -3375,7 +3420,8 @@ return inactive;</code>
 
 static struct QAsmVtable const vtable = { // QTicker virtual table
     &amp;QTicker_init_,
-    &amp;QTicker_dispatch_
+    &amp;QTicker_dispatch_,
+    &amp;QHsm_isIn_
 #ifdef Q_SPY
     ,&amp;QHsm_getStateHandler_
 #endif
@@ -8094,7 +8140,8 @@ QS_CRIT_EXIT();</code>
 //! @public @memberof QHsmDummy</documentation>
      <code>static struct QAsmVtable const vtable = {
     &amp;QHsmDummy_init_,
-    &amp;QHsmDummy_dispatch_
+    &amp;QHsmDummy_dispatch_,
+    &amp;QHsm_isIn_
 #ifdef Q_SPY
     ,&amp;QHsm_getStateHandler_
 #endif
@@ -8170,7 +8217,8 @@ QActive_ctor(&amp;me-&gt;super, Q_STATE_CAST(0));
 
 static struct QAsmVtable const vtable = {
     &amp;QActiveDummy_init_,
-    &amp;QActiveDummy_dispatch_
+    &amp;QActiveDummy_dispatch_,
+    &amp;QHsm_isIn_
 #ifdef Q_SPY
     ,&amp;QHsm_getStateHandler_
 #endif
@@ -8787,11 +8835,11 @@ $declare1 ${QP-FuSa}
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION     731U
-#define QP_VERSION_STR &quot;7.3.1&quot;
+#define QP_VERSION     732U
+#define QP_VERSION_STR &quot;7.3.2&quot;
 
-//! Encrypted  current QP release (7.3.1) and date (2023-12-05)
-#define QP_RELEASE     0x7630E7D4U
+//! Encrypted  current QP release (7.3.2) and date (2023-12-14)
+#define QP_RELEASE     0x762F8843U
 
 //============================================================================
 //! @cond INTERNAL
@@ -9578,6 +9626,9 @@ static inline void QF_psInit(
 //! @deprecated instead use: QASM_DISPATCH()
 #define QHSM_DISPATCH(me_, e_, qs_id_) QASM_DISPATCH((me_), (e_), (qs_id_))
 
+//! @deprecated instead use: QASM_IS_IN()
+#define QHsm_isIn(me_, state_)         QHsm_isIn_((QAsm *)(me_), (state_))
+
 //============================================================================
 #if (QP_API_VERSION &lt; 691)
 
@@ -9686,7 +9737,7 @@ $define ${QEP::QP_versionStr[8]}
 $define ${QEP::QEvt::reserved_[4]}
 
 enum {
-    // maximum depth of state nesting in a HSM (including the top level),
+    // maximum depth of state nesting in a QHsm (including the top level),
     // must be &gt;= 3
     QHSM_MAX_NEST_DEPTH_ = 6
 };
@@ -9738,6 +9789,11 @@ $define ${QEP::QHsm}</text>
 //! @cond INTERNAL
 
 Q_DEFINE_THIS_MODULE(&quot;qep_msm&quot;)
+
+enum {
+    // maximum depth of state nesting in a QMsm (including the top level)
+    QMSM_MAX_NEST_DEPTH_ = 6
+};
 
 // top-state object for QMsm-style state machines
 static struct QMState const l_msm_top_s = {
@@ -10856,6 +10912,7 @@ void QS_assertion_pre_(
     QS_endRec_();
     QS_onFlush();
 
+    // busy-wait until all QS data makes it over to the host
     for (uint32_t volatile delay_ctr = delay;
          delay_ctr &gt; 0U; --delay_ctr)
     {}
@@ -12230,14 +12287,16 @@ Q_NORETURN Q_onError(
     char const * const module,
     int_t const id)
 {
+    // NOTE: called in a critical section
+
     QS_beginRec_((uint_fast8_t)QS_ASSERT_FAIL);
         QS_TIME_PRE_();
         QS_U16_PRE_(id);
         QS_STR_PRE_((module != (char *)0) ? module : &quot;?&quot;);
     QS_endRec_();
-
     QS_onFlush();   // flush the assertion record to the host
-    QS_onCleanup(); // cleanup after the failure
+
+    QS_onCleanup(); // cleanup before resetting
     QS_onReset();   // reset the target to prevent the code from continuing
     for (;;) { // QS_onReset() should not return, but to ensure no-return
     }

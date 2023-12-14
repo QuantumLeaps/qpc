@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP example, NUCLEO-C031C6 board, QXK kernel, MPU isolation
-// Last updated for version 7.3.1
-// Last updated on  2023-12-03
+// Last updated for version 7.3.2
+// Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -595,6 +595,7 @@ void BSP_init(void) {
     QS_USR_DICTIONARY(PAUSED_STAT);
 
     QS_ONLY(produce_sig_dict());
+    QS_ONLY(TH_obj_dict());
 
     // setup the QS filters...
     QS_GLB_FILTER(QS_ALL_RECORDS);   // all records
@@ -744,9 +745,9 @@ void QF_onStartup(void) {
     NVIC_SetPriorityGrouping(0U);
 
     // set priorities of ALL ISRs used in the system, see NOTE1
-    NVIC_SetPriority(USART2_IRQn,    0); // kernel UNAWARE interrupt
-    NVIC_SetPriority(EXTI0_1_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 0U);
-    NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
+    NVIC_SetPriority(USART2_IRQn,     0U); // kernel UNAWARE interrupt
+    NVIC_SetPriority(EXTI0_1_IRQn,    QF_AWARE_ISR_CMSIS_PRI + 0U);
+    NVIC_SetPriority(SysTick_IRQn,    QF_AWARE_ISR_CMSIS_PRI + 1U);
     // ...
 
     // enable IRQs...
@@ -791,18 +792,7 @@ void QXK_onIdle(void) {
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,
     // see the datasheet for your particular Cortex-M MCU.
-    //
-    // !!!CAUTION!!!
-    // The WFI instruction stops the CPU clock, which unfortunately disables
-    // the JTAG port, so the ST-Link debugger can no longer connect to the
-    // board. For that reason, the call to __WFI() has to be used with CAUTION.
-    //
-    // NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
-    // reset the board, then connect with ST-Link Utilities and erase the part.
-    // The trick with BOOT(0) is it gets the part to run the System Loader
-    // instead of your broken code. When done disconnect BOOT0, and start over.
-    //
-    //__WFI(); // Wait-For-Interrupt
+    __WFI(); // Wait-For-Interrupt
 #endif
 }
 
@@ -882,38 +872,27 @@ QSTimeCtr QS_onGetTime(void) { // NOTE: invoked with interrupts DISABLED
     }
 }
 //............................................................................
+// NOTE:
+// No critical section in QS_onFlush() to avoid nesting of critical sections
+// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
     for (;;) {
-        QF_INT_DISABLE();
-        QF_MEM_SYS();
         uint16_t b = QS_getByte();
         if (b != QS_EOD) {
             while ((USART2->ISR & (1U << 7U)) == 0U) { // while TXE not empty
-                QF_MEM_APP();
-                QF_INT_ENABLE();
-                QF_CRIT_EXIT_NOP();
-
-                QF_INT_DISABLE();
-                QF_MEM_SYS();
             }
             USART2->TDR = b; // put into the DR register
-            QF_MEM_APP();
-            QF_INT_ENABLE();
         }
         else {
-            QF_MEM_APP();
-            QF_INT_ENABLE();
             break;
         }
     }
 }
 //............................................................................
-//! callback function to reset the target (to be implemented in the BSP)
 void QS_onReset(void) {
     NVIC_SystemReset();
 }
 //............................................................................
-//! callback function to execute a user command
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {

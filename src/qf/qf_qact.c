@@ -82,7 +82,8 @@ void QActive_ctor(QActive * const me,
     // subclasses of QActive (e.g., in the debugger).
     static struct QAsmVtable const vtable = { // QActive virtual table
         &QHsm_init_,
-        &QHsm_dispatch_
+        &QHsm_dispatch_,
+        &QHsm_isIn_
     #ifdef Q_SPY
         ,&QHsm_getStateHandler_
     #endif

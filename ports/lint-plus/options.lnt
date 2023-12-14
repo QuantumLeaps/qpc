@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-08
-//! @version Last updated for version: 7.3.0
+//! @date Last updated on: 2023-12-12
+//! @version Last updated for version: 7.3.1
 //!
 //! @file
 //! @brief PC-Lint-Plus option file for linting QP/C source code
@@ -92,6 +92,11 @@ qpc.lnt             // QP/C options
 //! @tr{DVR-QP-MC4-R11_05}
 -emacro(9079,
  Q_EVT_CAST)
+
+//! M4-R8.13(A) parameter of function could be pointer to const
+//! @tr{DVR-QP-MC4-R08_13}
+-efunc(818,
+ QMsm_isIn_)
 
 // QF ------------------------------------------------------------------------
 

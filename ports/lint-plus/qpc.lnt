@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-01
-//! @version Last updated for version: 7.3.0
+//! @date Last updated on: 2023-12-12
+//! @version Last updated for version: 7.3.1
 //!
 //! @file
 //! @brief PC-Lint-Plus option file for analysing both **QP/C**
@@ -97,7 +97,8 @@
  Q_STATE_CAST,
  Q_ACTION_CAST,
  QASM_INIT,
- QASM_DISPATCH)
+ QASM_DISPATCH,
+ QASM_IS_IN)
 
 //! M4-D4.9(A) function-like macro
 //! @tr{DVP-QP-MC4-D04_09B} (correct identification)

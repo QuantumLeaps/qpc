@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP example, NUCLEO-L053R8 board, QV kernel
-// Last updated for version 7.3.0
-// Last updated on  2023-08-23
+// Last updated for version 7.3.2
+// Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -460,13 +460,12 @@ QSTimeCtr QS_onGetTime(void) { // NOTE: invoked with interrupts DISABLED
     }
 }
 //............................................................................
+// NOTE:
+// No critical section in QS_onFlush() to avoid nesting of critical sections
+// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
     for (;;) {
-        QF_CRIT_STAT
-        QF_CRIT_ENTRY();
         uint16_t b = QS_getByte();
-        QF_CRIT_EXIT();
-
         if (b != QS_EOD) { // NOT end-of-data
             // busy-wait as long as TX has data to transmit
             while ((USART2->ISR & (1U << 7U)) == 0U) {
@@ -479,12 +478,10 @@ void QS_onFlush(void) {
     }
 }
 //............................................................................
-//! callback function to reset the target (to be implemented in the BSP)
 void QS_onReset(void) {
     NVIC_SystemReset();
 }
 //............................................................................
-//! callback function to execute a user command
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {

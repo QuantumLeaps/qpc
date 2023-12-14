@@ -61,8 +61,8 @@ void BSP_terminate(int16_t const result);
 //${Shared::QMsmTst_ctor} ....................................................
 void QMsmTst_ctor(void);
 
-//${Shared::QMsmTst_isInState} ...............................................
-bool QMsmTst_isInState(uint32_t const state_num);
+//${Shared::QMsmTst_isIn} ....................................................
+bool QMsmTst_isIn(uint32_t const state_num);
 //$enddecl${Shared} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #endif // QMSMTST_H_

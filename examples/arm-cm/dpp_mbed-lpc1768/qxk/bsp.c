@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP example, NXP mbed-LPC1768 board, QXK kernel
-// Last updated for version 7.3.0
-// Last updated on  2023-08-15
+// Last updated for version 7.3.2
+// Last updated on  2023-12-16
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -478,11 +478,12 @@ QSTimeCtr QS_onGetTime(void) {  // NOTE: invoked with interrupts DISABLED
     }
 }
 //............................................................................
+// NOTE:
+// No critical section in QS_onFlush() to avoid nesting of critical sections
+// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
     for (;;) {
-        QF_INT_DISABLE();
         uint16_t b = QS_getByte();
-        QF_INT_ENABLE();
         if (b != QS_EOD) {
             while ((LPC_UART0->LSR & 0x20U) == 0U) { // while THR empty...
             }
@@ -494,7 +495,6 @@ void QS_onFlush(void) {
     }
 }
 //............................................................................
-//! callback function to reset the target (to be implemented in the BSP)
 void QS_onReset(void) {
     NVIC_SystemReset();
 }

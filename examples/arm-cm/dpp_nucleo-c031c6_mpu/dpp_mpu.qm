@@ -136,6 +136,16 @@ me-&gt;super.super.thread = mpu;</code>
    <documentation>// NOTE: kernel objects can be allocated outside any memory regions
 // accessible to the threads.</documentation>
   </attribute>
+  <!--${Shared-TH::TH_obj_dict}-->
+  <operation name="TH_obj_dict?def Q_SPY" type="void" visibility="0x00" properties="0x00">
+   <code>QS_OBJ_DICTIONARY(TH_XThread1);
+QS_OBJ_DICTIONARY(&amp;TH_XThread1-&gt;timeEvt);
+
+QS_OBJ_DICTIONARY(TH_XThread2);
+QS_OBJ_DICTIONARY(&amp;TH_XThread2-&gt;timeEvt);
+QS_OBJ_DICTIONARY(&amp;TH_sema);
+QS_OBJ_DICTIONARY(&amp;TH_mutex);</code>
+  </operation>
  </package>
  <!--${AOs}-->
  <package name="AOs" stereotype="0x02">
@@ -500,10 +510,7 @@ me-&gt;fork[n] = FREE;</action>
    <operation name="run" type="void" visibility="0x02" properties="0x01">
     <!--${XThreads::XThread1::run::thr}-->
     <parameter name="thr" type="QXThread * const"/>
-    <code>QS_OBJ_DICTIONARY(TH_XThread1);
-QS_OBJ_DICTIONARY(&amp;TH_XThread1-&gt;timeEvt);
-
-// downcast the generic thr pointer to the specific thread
+    <code>// downcast the generic thr pointer to the specific thread
 XThread1 *me = (XThread1 *)thr;
 
 // subscribe to the EAT signal (from the application)
@@ -542,12 +549,7 @@ for (;;) {
    <operation name="run" type="void" visibility="0x02" properties="0x01">
     <!--${XThreads::XThread2::run::thr}-->
     <parameter name="thr" type="QXThread * const"/>
-    <code>QS_OBJ_DICTIONARY(TH_XThread2);
-QS_OBJ_DICTIONARY(&amp;TH_XThread2-&gt;timeEvt);
-QS_OBJ_DICTIONARY(&amp;TH_sema);
-QS_OBJ_DICTIONARY(&amp;TH_mutex);
-
-// downcast the generic thr pointer to the specific thread
+    <code>// downcast the generic thr pointer to the specific thread
 //XThread2 *me = (XThread2 *)thr;
 
 // initialize the semaphore before using it
@@ -673,6 +675,7 @@ $define ${Shared-TH::TH_mutex}
 
 $declare ${XThreads::XThread1}
 $define ${Shared-TH::XThread1_ctor}
+$define ${Shared-TH::TH_obj_dict}
 $define ${XThreads::XThread1}</text>
   </file>
   <!--${qxk::xthread2.c}-->

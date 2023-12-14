@@ -85,22 +85,22 @@ bool QHsmTst_isIn(uint32_t const state_num) {
     bool stat = false;
     switch (state_num) {
     case 0:
-        stat = QHsm_isIn(me, Q_STATE_CAST(&QHsmTst_s));
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QHsmTst_s));
         break;
     case 1:
-        stat = QHsm_isIn(me, Q_STATE_CAST(&QHsmTst_s1));
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QHsmTst_s1));
         break;
     case 11:
-        stat = QHsm_isIn(me, Q_STATE_CAST(&QHsmTst_s11));
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QHsmTst_s11));
         break;
     case 2:
-        stat = QHsm_isIn(me, Q_STATE_CAST(&QHsmTst_s2));
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QHsmTst_s2));
         break;
     case 21:
-        stat = QHsm_isIn(me, Q_STATE_CAST(&QHsmTst_s21));
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QHsmTst_s21));
         break;
     case 211:
-        stat = QHsm_isIn(me, Q_STATE_CAST(&QHsmTst_s211));
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QHsmTst_s211));
         break;
     default:
         Q_ERROR();

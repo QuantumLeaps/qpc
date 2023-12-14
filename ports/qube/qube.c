@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-07-27
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-12-13
+//! @version Last updated for: @ref qpc_7_3_2
 //!
 //! @file
 //! @brief Qube command-line QP execution environment
@@ -425,6 +425,9 @@ void QS_onReset(void) {
     exit(0);
 }
 //............................................................................
+// NOTE:
+// No critical section in QS_onFlush() to avoid nesting of critical sections
+// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
     for (;;) {
         uint16_t nBytes = 1024U;

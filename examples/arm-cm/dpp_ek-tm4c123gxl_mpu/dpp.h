@@ -138,6 +138,11 @@ extern QXSemaphore TH_sema;
 // NOTE: kernel objects can be allocated outside any memory regions
 // accessible to the threads.
 extern QXMutex TH_mutex;
+
+//${Shared-TH::TH_obj_dict} ..................................................
+#ifdef Q_SPY
+void TH_obj_dict(void);
+#endif // def Q_SPY
 //$enddecl${Shared-TH} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #endif // QXK_H_
 

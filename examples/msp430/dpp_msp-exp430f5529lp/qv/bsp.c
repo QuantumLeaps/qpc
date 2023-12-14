@@ -1,7 +1,7 @@
 //============================================================================
 // Product: DPP on MSP-EXP430F5529LP, QV kernel
-// Last updated for version 7.3.0
-// Last updated on  2023-08-15
+// Last updated for version 7.3.2
+// Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -332,26 +332,28 @@ QSTimeCtr QS_onGetTime(void) {  // invoked with interrupts DISABLED
     }
 }
 //............................................................................
+// NOTE:
+// No critical section in QS_onFlush() to avoid nesting of critical sections
+// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
-    uint16_t b;
-    QF_INT_DISABLE();
-    while ((b = QS_getByte()) != QS_EOD) { // next QS byte available?
-        QF_INT_ENABLE();
-        while ((UCA1STAT & UCBUSY) != 0U) { // TX busy?
+    for (;;) {
+        uint16_t b = QS_getByte();
+        if (b != QS_EOD) {
+            while ((UCA1STAT & UCBUSY) != 0U) { // TX busy?
+            }
+            UCA1TXBUF = (uint8_t)b; // stick the byte to the TX BUF
         }
-        UCA1TXBUF = (uint8_t)b; // stick the byte to the TX BUF
-        QF_INT_DISABLE();
+        else {
+            break;
+        }
     }
-    QF_INT_ENABLE();
 }
 //............................................................................
-//! callback function to reset the target (to be implemented in the BSP)
 void QS_onReset(void) {
     // write invalid password to WDT: cause a password-validation RESET
     WDTCTL = 0xDEAD;
 }
 //............................................................................
-//! callback function to execute a user command (to be implemented in BSP)
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {

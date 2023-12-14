@@ -376,7 +376,8 @@ void QTicker_ctor(QTicker * const me,
 
     static struct QAsmVtable const vtable = { // QTicker virtual table
         &QTicker_init_,
-        &QTicker_dispatch_
+        &QTicker_dispatch_,
+        &QHsm_isIn_
     #ifdef Q_SPY
         ,&QHsm_getStateHandler_
     #endif

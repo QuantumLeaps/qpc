@@ -135,37 +135,37 @@ void QMsmTst_ctor(void) {
     QMsm_ctor(&me->super, Q_STATE_CAST(&QMsmTst_initial));
 }
 //$enddef${Shared::QMsmTst_ctor} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//$define${Shared::QMsmTst_isInState} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+//$define${Shared::QMsmTst_isIn} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-//${Shared::QMsmTst_isInState} ...............................................
-bool QMsmTst_isInState(uint32_t const state_num) {
+//${Shared::QMsmTst_isIn} ....................................................
+bool QMsmTst_isIn(uint32_t const state_num) {
     QMsm * const me = &QMsmTst_inst.super;
     bool stat = false;
     switch (state_num) {
     case 0:
-        stat = QMsm_isInState(me, &QMsmTst_s_s);
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QMsmTst_s));
         break;
     case 1:
-        stat = QMsm_isInState(me, &QMsmTst_s1_s);
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QMsmTst_s1));
         break;
     case 11:
-        stat = QMsm_isInState(me, &QMsmTst_s11_s);
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QMsmTst_s11));
         break;
     case 2:
-        stat = QMsm_isInState(me, &QMsmTst_s2_s);
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QMsmTst_s2));
         break;
     case 21:
-        stat = QMsm_isInState(me, &QMsmTst_s21_s);
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QMsmTst_s21));
         break;
     case 211:
-        stat = QMsm_isInState(me, &QMsmTst_s211_s);
+        stat = QASM_IS_IN(me, Q_STATE_CAST(&QMsmTst_s211));
         break;
     default:
         Q_ERROR();
     }
     return stat;
 }
-//$enddef${Shared::QMsmTst_isInState} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//$enddef${Shared::QMsmTst_isIn} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //$define${SMs::QMsmTst} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${SMs::QMsmTst} ............................................................

@@ -1,7 +1,7 @@
 //============================================================================
 // BSP for DPP example, Microstick II board, cooperative QV kernel, XC32
-// Last updated for version 7.3.0
-// Last updated on  2023-08-21
+// Last updated for version 7.3.2
+// Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
@@ -328,21 +328,27 @@ uint8_t QS_onStartup(void const *arg) {
 void QS_onCleanup(void) {
 }
 //............................................................................
+// NOTE:
+// No critical section in QS_onFlush() to avoid nesting of critical sections
+// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
-    uint16_t b;
-    while ((b = QS_getByte()) != QS_EOD) { // next QS trace byte available?
-        while (U2STAbits.UTXBF) { // TX Buffer full?
+    for (;;) {
+        uint16_t b = QS_getByte();
+        if (b != QS_EOD) {
+            while (U2STAbits.UTXBF) { // TX Buffer full?
+            }
+            U2TXREG = b; // stick the byte to TXREG for transmission
         }
-        U2TXREG = b; // stick the byte to TXREG for transmission
+        else {
+            break;
+        }
     }
 }
 //............................................................................
-// NOTE: works properly with interrupts enabled or disabled
 QSTimeCtr QS_onGetTime(void) {
     return __builtin_mfc0(_CP0_COUNT, _CP0_COUNT_SELECT);
 }
 //............................................................................
-//! callback function to reset the target (to be implemented in the BSP)
 void QS_onReset(void) {
     // perform a system unlock sequence ,starting critical sequence
     SYSKEY = 0x00000000; //write invalid key to force lock
@@ -355,7 +361,6 @@ void QS_onReset(void) {
     // prevent any unwanted code execution until reset occurs
 }
 //............................................................................
-//! callback function to execute a user command (to be implemented in BSP)
 void QS_onCommand(uint8_t cmdId,
                   uint32_t param1, uint32_t param2, uint32_t param3)
 {
