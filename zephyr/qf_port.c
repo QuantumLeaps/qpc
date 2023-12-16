@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-11-15
-//! @version Last updated for: @ref qpc_7_3_1
+//! @date Last updated on: 2024-01-03
+//! @version Last updated for: @ref qpc_7_3_2
 //!
 //! @file
 //! @brief QF/C port to Zephyr RTOS (v 3.1.99)
@@ -147,7 +147,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     //    would result in a different relative priritization of AO's threads
     //    than indicated by the AO priorities assigned.
     //
-    int zephyr_prio = (int)((int16_t)qp_prio >> 8);
+    int zephyr_prio = (int)((int16_t)prioSpec >> 8);
     if (zephyr_prio == 0) {
         zephyr_prio = (int)QF_MAX_ACTIVE - (int)me->prio;
     }
