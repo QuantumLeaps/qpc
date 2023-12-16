@@ -1,4 +1,4 @@
-[![QP Zephyr Module](../doxygen/images/qp-zephyr.jpg)](https://www.state-machine.com/qpc/zephyr.html)
+[![QP Zephyr Module](./qp-zephyr.jpg)](https://www.state-machine.com/qpc/zephyr.html)
 
 # About the QPC Zephyr Module
 This directory defines the
