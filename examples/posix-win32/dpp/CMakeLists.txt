@@ -20,8 +20,10 @@ else()
 endif()
 
 # set up configurable options
-set(QPC_CFG_KERNEL QV CACHE STRING "set to the kernel to use (QV, QK, QXK) (default: QV)")
 set(PROJECT_NAME dpp CACHE STRING "set to the project name of the qpc library project (default: QPC)")
+set(QPC_CFG_KERNEL QV CACHE STRING "set to the kernel to use (QV, QK, QXK) (default: QV)")
+set(QPC_DIR "${CMAKE_SOURCE_DIR}/../../.." QV CACHE STRING "set to the source path of QPC (default: ../../..)")
+
 option(QPC_CFG_QSPY       "set to ON, if QSPY monitoring shall be compiled in (default: OFF)" OFF)
 option(QPC_QFG_UNIT_TEST  "set to ON, if Q_UTEST shall be enabled (default: OFF)" OFF)
 option(QPC_CFG_GUI        "set to ON, if a Windows (TM) GUI shall be compiled in (default: OFF)" ON)
@@ -77,25 +79,11 @@ target_link_options(dpp
         $<$<BOOL:${CONFIG_VERBOSE}>:-v>
 )
 
-if(NOT (DEFINED QPC_DIR OR DEFINED ENV{QPC_DIR}))
-    find_path(QPC_DIR
-        PATHS "$ENV{HOME}/Projects" "$ENV{HOME}" ENV HOME "/usr/lib" "/opt"
-        NAMES "include/qpc.h" "qpc.qm"
-        PATH_SUFFIXES "qpc" "Qpc" "QPC"
-        REQUIRED
-    )
-elseif((NOT DEFINED QPC_DIR) AND DEFINED ENV{QPC_DIR})
-    set(QPC_DIR $ENV{QPC_DIR})
-endif()
-
-if(QPC_DIR)
-    set(QPC_PROJECT qpc_${PROJECT_NAME})
-
-    add_subdirectory(${QPC_DIR} ${CMAKE_BINARY_DIR}/qpc)
-    target_link_libraries(dpp PRIVATE qpc)
-else()
-    message(FATAL_ERROR "QPC_DIR not found!")
-endif()
+# the qpc library
+set(QPC_PROJECT qpc_${PROJECT_NAME})
+# also add the binary directory for qpc, as QPC_DIR is not a subdirectory of this example
+add_subdirectory(${QPC_DIR} ${CMAKE_BINARY_DIR}/qpc)
+target_link_libraries(dpp PRIVATE qpc)
 
 # set position independent code compile/link parameters
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
