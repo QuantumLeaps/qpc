@@ -1,0 +1,15 @@
+# ports/arm-cm
+string(TOLOWER ${CMAKE_C_COMPILER_ID} _compiler_)
+set(qx_port_c ${KERNEL}_port.c)
+
+if(QPC_CFG_UNIT_TEST)
+    target_include_directories(qpc PUBLIC qutest)
+else()
+    target_include_directories(qpc PUBLIC ${KERNEL}/${_compiler_})
+endif()
+
+if(EXISTS ${KERNEL}/config)
+    target_include_directories(qpc PRIVATE ${KERNEL}/config)
+endif()
+target_sources(qpc PRIVATE ${KERNEL}/${_compiler_}/${qx_port_c})
+

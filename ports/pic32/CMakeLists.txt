@@ -1,0 +1,11 @@
+# ports/os_xxx
+if(CONFIG_UNIT_TEST)
+    target_include_directories(qpc PUBLIC qutest/xc32)
+elseif(KERNEL MATCHES "q[vk]")
+    target_include_directories(qpc PUBLIC ${Kernel}/xc32)
+    if(KERNEL STREQUAL qk)
+        target_sources(qpc PRIVATE qk_port.c)
+    endif()
+else()
+    message(FATAL_ERROR "Kernel ${KERNEL} is not supported!")
+endif()
