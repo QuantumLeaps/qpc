@@ -22,7 +22,7 @@ endif()
 # set up configurable options
 set(PROJECT_NAME dpp CACHE STRING "set to the project name of the qpc library project (default: QPC)")
 set(QPC_CFG_KERNEL QV CACHE STRING "set to the kernel to use (QV, QK, QXK) (default: QV)")
-set(QPC_DIR "${CMAKE_SOURCE_DIR}/../../.." QV CACHE STRING "set to the source path of QPC (default: ../../..)")
+set(QPC_DIR "${CMAKE_SOURCE_DIR}/../../.." CACHE STRING "set to the source path of QPC (default: ../../..)")
 
 option(QPC_CFG_QSPY       "set to ON, if QSPY monitoring shall be compiled in (default: OFF)" OFF)
 option(QPC_QFG_UNIT_TEST  "set to ON, if Q_UTEST shall be enabled (default: OFF)" OFF)
@@ -117,7 +117,7 @@ message(STATUS
     CONFIG_DEBUG                = ${CONFIG_DEBUG}
 
     QPC_CFG_KERNEL              = ${QPC_CFG_KERNEL}
-    QPLIB                       = qpc
+    QPC_DIR                     = ${QPC_DIR}
 
  System information:
     CMAKE_VERSION               = ${CMAKE_VERSION}
