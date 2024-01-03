@@ -28,10 +28,10 @@ if(NOT DEFINED QPC_PROJECT)
     # set up configurable options
     set(QPC_CFG_KERNEL QV CACHE STRING "set to the kernel to use (QV, QK, QXK) (default: QV)")
     set(QPC_PROJECT QPC CACHE STRING "set to the project name of the qpc library project (default: QPC)")
-    option(QPC_CFG_QSPY      "set to ON, if QSPY monitoring shall be compiled in (default: OFF)" OFF)
     option(QPC_QFG_UNIT_TEST "set to ON, if Q_UTEST shall be enabled (default: OFF)" OFF)
     option(QPC_CFG_GUI       "set to ON, if a Windows (TM) GUI shall be compiled in (default: OFF)" OFF)
     option(QPC_CFG_VERBOSE   "set to ON, to enable more verbosity. (default: OFF)" OFF)
+    option(QPC_CFG_DEBUG     "set to ON, to enable debug settings. (default: ON)" ON)
 
     project(
         ${QPC_PROJECT}
@@ -73,7 +73,7 @@ endif()
 
 list(APPEND PORTLIST arm-cm arm-cr embos esp-idf)
 list(APPEND PORTLIST freertos msp430 pic32 posix)
-list(APPEND PORTLIST qep-only qube riscv threadx)
+list(APPEND PORTLIST qep-only qube risc-v threadx)
 list(APPEND PORTLIST uc-os2 win32)
 if(NOT (${PORT} IN_LIST PORTLIST))
     if(DEFINED PORT)
@@ -84,10 +84,6 @@ if(NOT (${PORT} IN_LIST PORTLIST))
 	message(FATAL_ERROR ${MSG})
     unset(MSG)
 endif()
-if(PORT STREQUAL win32)
-    set(QPC_CFG_GUI TRUE)
-endif()
-
 
 # check/set Qx real time kernel
 if(NOT (QPC_CFG_KERNEL MATCHES "[Qq]([VvKk]|[Xx][Kk])"))
@@ -97,24 +93,28 @@ if(NOT (QPC_CFG_KERNEL MATCHES "[Qq]([VvKk]|[Xx][Kk])"))
 endif()
 string(TOLOWER ${QPC_CFG_KERNEL} KERNEL)
 
-if(CONFIG_DEBUG)
-    set(CMAKE_BUILD_TYPE "Debug")
-else()
-    set(CMAKE_BUILD_TYPE "Release")
+if(CMAKE_BUILD_TYPE STREQUAL "")
+    if(QPC_CFG_DEBUG)
+        set(CMAKE_BUILD_TYPE DEBUG)
+    elseif(QPC_QFG_UNIT_TEST)
+        set(CMAKE_BUILD_TYPE SPY)
+    else()
+        set(CMAKE_BUILD_TYPE RELEASE)
+    endif()
 endif()
 
-if(QPC_QFG_UNIT_TEST)
-	set(QPC_CFG_QSPY ON CACHE BOOL "set to ON, if QSPY monitoring shall be compiled in (default: OFF)" FORCE)
+if((DEFINED CMAKE_CONFIGURATION_TYPES) AND (NOT ("SPY" IN_LIST CMAKE_CONFIGURATION_TYPES)))
+    list(APPEND CMAKE_CONFIGURATION_TYPES SPY)
 endif()
 
-add_library(qpc STATIC "")
+add_library(qpc OBJECT "")
 
 # set general defines
 target_compile_definitions(qpc
 	PRIVATE
 	    $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
         $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
-        $<$<BOOL:${QPC_CFG_QSPY}>:Q_SPY>
+        $<$<CONFIG:Spy>:Q_SPY>
         $<$<BOOL:${QPC_CFG_UNIT_TEST}>:Q_UTEST>
 )
 
@@ -159,7 +159,6 @@ if(QPC_CFG_VERBOSE)
   Configuration Options set:
     message(STATUS
     QPC_CFG_GUI                 = ${QPC_CFG_GUI}
-    QPC_CFG_QSPY                = ${QPC_CFG_QSPY}
     QPC_QFG_UNIT_TEST           = ${QPC_QFG_UNIT_TEST}
     QPC_CFG_KERNEL              = ${QPC_CFG_KERNEL}
     CONFIG_DEBUG                = ${CONFIG_DEBUG}
@@ -183,6 +182,7 @@ if(QPC_CFG_VERBOSE)
     UNIX                        = ${UNIX}
     LINUX                       = ${LINUX}
 
+    CMAKE_BUILD_TYPE            = ${CMAKE_BUILD_TYPE}
     CMAKE_C_COMPILER            = ${CMAKE_C_COMPILER}
     CMAKE_C_COMPILER_ID         = ${CMAKE_C_COMPILER_ID}
     CMAKE_C_COMPILER_VERSION    = ${CMAKE_C_COMPILER_VERSION}

@@ -1,12 +1,7 @@
 # qpc/src
 add_subdirectory(qf)
-if(QPC_CFG_QSPY)
-    add_subdirectory(qs)
-endif()
-if(
-    (${PORT} MATCHES "^arm-") OR
-    (${PORT} STREQUAL pic32) OR
-    (${PORT} STREQUAL risc-v)
-)
+add_subdirectory(qs)
+if(${PORT} MATCHES "^(arm-|pic32|risc-v)")
+    message(STATUS "adding subdir '${KERNEL}' for port '${PORT}'")
     add_subdirectory(${KERNEL})
 endif()

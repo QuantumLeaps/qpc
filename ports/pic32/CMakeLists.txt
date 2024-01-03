@@ -2,7 +2,7 @@
 if(CONFIG_UNIT_TEST)
     target_include_directories(qpc PUBLIC qutest/xc32)
 elseif(KERNEL MATCHES "q[vk]")
-    target_include_directories(qpc PUBLIC ${Kernel}/xc32)
+    target_include_directories(qpc PUBLIC ${KERNEL}/xc32)
     if(KERNEL STREQUAL qk)
         target_sources(qpc PRIVATE qk_port.c)
     endif()

@@ -36,7 +36,7 @@ project(
     ${PROJECT_NAME}
     VERSION ${SW_VERSION}
     DESCRIPTION "Dining Philosophers Problem (dpp) using qpc@win32"
-    LANGUAGES C ASM
+    LANGUAGES C RC
 )
 
 # update the module search path
@@ -62,17 +62,25 @@ add_executable(dpp bsp.c main.c philo.c table.c Resource.rc)
 target_compile_definitions(dpp
 	PRIVATE
 	    $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
-	    $<$<BOOL:${QPC_CFG_GUI}>:-DQWIN_GUI>
+	    $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
+        $<$<CONFIG:Spy>:Q_SPY>
 )
 
 target_compile_options(dpp
     PRIVATE
+        $<$<C_COMPILER_ID:GNU>:-mwindows>
         $<$<BOOL:${CONFIG_VERBOSE}>:-v>
 )
 
 target_link_options(dpp
     PRIVATE
+        $<$<C_COMPILER_ID:GNU>:-mwindows>
         $<$<BOOL:${CONFIG_VERBOSE}>:-v>
+)
+
+target_link_libraries(dpp
+    PRIVATE
+        $<$<CONFIG:Spy>:ws2_32>
 )
 
 # the qpc library
@@ -140,6 +148,10 @@ message(STATUS
     CMAKE_C_COMPILER_ID         = ${CMAKE_C_COMPILER_ID}
     CMAKE_C_COMPILER_VERSION    = ${CMAKE_C_COMPILER_VERSION}
     CMAKE_C_FLAGS               = ${CMAKE_C_FLAGS}
+    CMAKE_C_COMPILE_OBJECT      = ${CMAKE_C_COMPILE_OBJECT}
+
+    CMAKE_RC_COMPILER           = ${CMAKE_RC_COMPILER}
+    CMAKE_RC_COMPILE_OBJECT     = ${CMAKE_RC_COMPILE_OBJECT}
 
     CMAKE_CXX_COMPILER          = ${CMAKE_CXX_COMPILER}
     CMAKE_CXX_FLAGS             = ${CMAKE_CXX_FLAGS}

@@ -26,7 +26,10 @@ set(QPC_DIR "${CMAKE_SOURCE_DIR}/../../.." CACHE STRING "set to the source path 
 
 option(QPC_CFG_QSPY       "set to ON, if QSPY monitoring shall be compiled in (default: OFF)" OFF)
 option(QPC_QFG_UNIT_TEST  "set to ON, if Q_UTEST shall be enabled (default: OFF)" OFF)
-option(QPC_CFG_GUI        "set to ON, if a Windows (TM) GUI shall be compiled in (default: OFF)" ON)
+option(QPC_CFG_GUI        "set to ON, if a Windows (TM) GUI shall be compiled in (default: ON)" OFF)
+option(QPC_CFG_VERBOSE   "set to ON, to enable more verbosity. (default: OFF)" OFF)
+option(QPC_CFG_DEBUG     "set to ON, to enable debug settings. (default: ON)" ON)
+
 
 if(NOT SW_VERSION)
     set(SW_VERSION "1.0.0" CACHE STRING "Software Version")
@@ -36,7 +39,7 @@ project(
     ${PROJECT_NAME}
     VERSION ${SW_VERSION}
     DESCRIPTION "Dining Philosophers Problem (dpp) using qpc@win32"
-    LANGUAGES C ASM
+    LANGUAGES C
 )
 
 # update the module search path
@@ -45,6 +48,20 @@ if(CMAKE_HOST_WIN32)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${HOME_PATH}/cmake;${CMAKE_MODULE_PATH}")
 else()
     set(CMAKE_MODULE_PATH $ENV{HOME}/cmake;${PROJECT_SOURCE_DIR}/cmake;${PROJECT_SOURCE_DIR};${CMAKE_MODULE_PATH})
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "")
+    if(QPC_CFG_DEBUG)
+        set(CMAKE_BUILD_TYPE DEBUG)
+    elseif(QPC_QFG_UNIT_TEST)
+        set(CMAKE_BUILD_TYPE SPY)
+    else()
+        set(CMAKE_BUILD_TYPE RELEASE)
+    endif()
+endif()
+
+if((DEFINED CMAKE_CONFIGURATION_TYPES) AND (NOT ("SPY" IN_LIST CMAKE_CONFIGURATION_TYPES)))
+    list(APPEND CMAKE_CONFIGURATION_TYPES SPY)
 endif()
 
 include(CTest)
@@ -66,21 +83,27 @@ add_executable(dpp
 # set general defines
 target_compile_definitions(dpp
 	PRIVATE
-	    $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
+        $<$<CONFIG:Spy>:Q_SPY>
+        $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
 )
 
 target_compile_options(dpp
     PRIVATE
-        $<$<BOOL:${CONFIG_VERBOSE}>:-v>
+        $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
 )
 
 target_link_options(dpp
     PRIVATE
-        $<$<BOOL:${CONFIG_VERBOSE}>:-v>
+        $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
+)
+
+target_link_libraries(dpp
+    PRIVATE
+        $<$<CONFIG:Spy>:ws2_32>
 )
 
 # the qpc library
-set(QPC_PROJECT qpc_${PROJECT_NAME})
+set(QPC_PROJECT ${PROJECT_NAME})
 # also add the binary directory for qpc, as QPC_DIR is not a subdirectory of this example
 add_subdirectory(${QPC_DIR} ${CMAKE_BINARY_DIR}/qpc)
 target_link_libraries(dpp PRIVATE qpc)
@@ -139,6 +162,9 @@ message(STATUS
     MINGW                       = ${MINGW}
     UNIX                        = ${UNIX}
     LINUX                       = ${LINUX}
+
+    CMAKE_BUILD_TYPE            = ${CMAKE_BUILD_TYPE}
+    CMAKE_CONFIGURATION_TYPES   = ${CMAKE_CONFIGURATION_TYPES}
 
     CMAKE_C_COMPILER            = ${CMAKE_C_COMPILER}
     CMAKE_C_COMPILER_ID         = ${CMAKE_C_COMPILER_ID}

@@ -5,5 +5,5 @@ target_sources(
     PRIVATE
         qf_port.c
         $<$<BOOL:${QPC_CFG_GUI}>:${CMAKE_CURRENT_SOURCE_DIR}/qwin_gui.c>
-        $<$<BOOL:${QPC_CFG_QSPY}>:${CMAKE_CURRENT_SOURCE_DIR}/qs_port.c>
+        $<$<CONFIG:Spy>:${CMAKE_CURRENT_SOURCE_DIR}/qs_port.c>
 )
