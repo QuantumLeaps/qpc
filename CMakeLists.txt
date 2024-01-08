@@ -109,7 +109,7 @@ if(NOT (QPC_CFG_KERNEL MATCHES "[Qq]([VvKk]|[Xx][Kk])"))
 endif()
 string(TOLOWER ${QPC_CFG_KERNEL} KERNEL)
 
-add_library(qpc OBJECT "")
+add_library(qpc STATIC "")
 
 # set general defines
 target_compile_definitions(qpc
