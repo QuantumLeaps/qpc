@@ -1,76 +1,28 @@
 # USC2 QM project root CMakeLists.txt
+macro(init_port_list OUT)
+    list(APPEND ${OUT} arm-cm arm-cr embos esp-idf)
+    list(APPEND ${OUT} freertos msp430 pic32 posix)
+    list(APPEND ${OUT} qep-only qube risc-v threadx)
+    list(APPEND ${OUT} uc-os2 win32)
+endmacro()
 
-if(NOT DEFINED QPC_PROJECT)
-    # these settings are applied to a stand-alone configuration of the QPC lib
-    # if qpc shall be integrated into the wider scope of an application project, set QPC_PROJECT to non-false value.
-    # The QPC configuration, settings to ensure out-of-source builds, setting the project specific module search path
-    # or inclusion of needed modules (e.g. CTest, ...) should be done by the main projects's CMakeLists.txt
-
-    # use a recent CMake version
-    cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
-    cmake_policy(VERSION 3.13)
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
-        cmake_policy(SET CMP0083 NEW)
-    endif()
-
-    # first of all protect against in-source builds
-    get_filename_component(_srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
-    get_filename_component(_bindir "${CMAKE_BINARY_DIR}" REALPATH)
-
-    if(${_srcdir} STREQUAL ${_bindir})
-        message(FATAL_ERROR "  FATAL: In-source builds are not allowed!
-            You should create a separate directory for build files.")
-    else()
-        unset(_srcdir)
-        unset(_bindir)
-    endif()
-
-    # set up configurable options
+macro(init_qpc_vars)
     set(QPC_CFG_KERNEL QV CACHE STRING "set to the kernel to use (QV, QK, QXK) (default: QV)")
-    set(QPC_PROJECT QPC CACHE STRING "set to the project name of the qpc library project (default: QPC)")
     option(QPC_QFG_UNIT_TEST "set to ON, if Q_UTEST shall be enabled (default: OFF)" OFF)
     option(QPC_CFG_GUI       "set to ON, if a Windows (TM) GUI shall be compiled in (default: OFF)" OFF)
     option(QPC_CFG_VERBOSE   "set to ON, to enable more verbosity. (default: OFF)" OFF)
     option(QPC_CFG_DEBUG     "set to ON, to enable debug settings. (default: ON)" ON)
+endmacro()
 
-    project(
-        ${QPC_PROJECT}
-        VERSION "1.0.0"
-        DESCRIPTION "QPC library"
-        LANGUAGES C ASM
-    )
+project(
+    qpc
+    VERSION "1.0.0"
+    DESCRIPTION "QPC library"
+    LANGUAGES C ASM
+)
 
-    # update the module search path
-    if(CMAKE_HOST_WIN32)
-        string(REPLACE "\\" "/" HOME_PATH "$ENV{HOMEDRIVE}$ENV{HOMEPATH}")
-        set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${HOME_PATH}/cmake;${CMAKE_MODULE_PATH}")
-    else()
-        set(CMAKE_MODULE_PATH $ENV{HOME}/cmake;${PROJECT_SOURCE_DIR}/cmake;${PROJECT_SOURCE_DIR};${CMAKE_MODULE_PATH})
-    endif()
-
-    get_property(isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-    if(isMultiConfig)
-        unset(CMAKE_BUILD_TYPE)
-        set(CMAKE_CONFIGURATION_TYPES "DEBUG;RELEASE;SPY")
-    else()
-        if(CMAKE_BUILD_TYPE STREQUAL "")
-            if(QPC_CFG_DEBUG)
-                set(CMAKE_BUILD_TYPE DEBUG)
-            elseif(QPC_QFG_UNIT_TEST)
-                set(CMAKE_BUILD_TYPE SPY)
-            else()
-                set(CMAKE_BUILD_TYPE RELEASE)
-            endif()
-        endif()
-    endif()
-
-    include(CTest)
-    include(CheckIncludeFile)
-    include(CheckLibraryExists)
-    
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
-        include(CheckPIESupported)
-    endif()
+if(NOT QPC_CFG_KERNEL)
+    init_qpc_vars()
 endif()
 
 # check target port plausibility
@@ -87,10 +39,7 @@ else()
     string(TOLOWER ${PORT} PORT)
 endif()
 
-list(APPEND PORTLIST arm-cm arm-cr embos esp-idf)
-list(APPEND PORTLIST freertos msp430 pic32 posix)
-list(APPEND PORTLIST qep-only qube risc-v threadx)
-list(APPEND PORTLIST uc-os2 win32)
+init_port_list(PORTLIST)
 if(NOT (${PORT} IN_LIST PORTLIST))
     if(DEFINED PORT)
         set(MSG "Target port '${PORT}' not found!")
@@ -132,6 +81,7 @@ target_link_options(qpc
 
 # set position independent code compile/link parameters
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
+    include(CheckPIESupported)
     check_pie_supported()
 endif()
 set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
