@@ -2,7 +2,7 @@
 # target may be "Windows", "Posix", "TLE984x"
 set(PORT_DIR ${PORT})
 if((PORT STREQUAL win32) OR (PORT STREQUAL posix))
-	if(CONFIG_UNIT_TEST)
+	if(QPC_CFG_UNIT_TEST)
 		set(PORT_DIR ${PORT_DIR}-qutest)
 	elseif(KERNEL STREQUAL qv)
         set(PORT_DIR ${PORT_DIR}-qv)

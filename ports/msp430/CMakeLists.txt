@@ -1,5 +1,5 @@
 # ports/os_xxx
-if(CONFIG_UNIT_TEST)
+if(QPC_CFG_UNIT_TEST)
     target_include_directories(qpc PUBLIC qutest)
 elseif(KERNEL MATCHES "q[vk]")
     target_include_directories(qpc PUBLIC ${Kernel})
