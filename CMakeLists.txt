@@ -6,13 +6,15 @@ macro(init_port_list OUT)
     list(APPEND ${OUT} uc-os2 win32)
 endmacro()
 
-macro(init_qpc_vars)
-    set(QPC_CFG_KERNEL QV CACHE STRING "set to the kernel to use (QV, QK, QXK) (default: QV)")
-    option(QPC_QFG_UNIT_TEST "set to ON, if Q_UTEST shall be enabled (default: OFF)" OFF)
-    option(QPC_CFG_GUI       "set to ON, if a Windows (TM) GUI shall be compiled in (default: OFF)" OFF)
-    option(QPC_CFG_VERBOSE   "set to ON, to enable more verbosity. (default: OFF)" OFF)
-    option(QPC_CFG_DEBUG     "set to ON, to enable debug settings. (default: ON)" ON)
-endmacro()
+if (DEFINED ENV{QPC_CFG_KERNEL} AND (NOT QPC_CFG_KERNEL))
+    set(QPC_CFG_KERNEL $ENV{QPC_CFG_KERNEL})
+    message("Using QPC_CFG_KERNEL from environment ('${QPC_CFG_KERNEL}')")
+endif ()
+
+if (DEFINED ENV{QPC_CFG_PORT} AND (NOT QPC_CFG_PORT))
+    set(QPC_CFG_PORT $ENV{QPC_CFG_PORT})
+    message("Using QPC_CFG_PORT from environment ('${QPC_CFG_PORT}')")
+endif ()
 
 project(
     qpc
@@ -21,14 +23,40 @@ project(
     LANGUAGES C ASM
 )
 
-if(NOT QPC_CFG_KERNEL)
-    init_qpc_vars()
+if (DEFINED ENV{QPC_CFG_KERNEL} AND (NOT QPC_CFG_KERNEL))
+    set(QPC_CFG_KERNEL $ENV{QPC_CFG_KERNEL})
+    message("Using QPC_CFG_KERNEL from environment ('${QPC_CFG_KERNEL}')")
+elseif(NOT QPC_CFG_KERNEL)
+    set(QPC_CFG_KERNEL qv)
+    message("Set QPC_CFG_KERNEL to ('${QPC_CFG_KERNEL}') since not specified")
+endif ()
+
+if (DEFINED ENV{QPC_CFG_PORT} AND (NOT QPC_CFG_PORT))
+    set(QPC_CFG_PORT $ENV{QPC_CFG_PORT})
+    message("Using QPC_CFG_PORT from environment ('${QPC_CFG_PORT}')")
+endif ()
+
+if(NOT QPC_CFG_UNIT_TEST)
+    set(QPC_CFG_UNIT_TEST OFF CACHE BOOL "enable detailled unit testing support")
+    message("Set QPC_CFG_UNIT_TEST to ('${QPC_CFG_UNIT_TEST}') since not specified")
+endif()
+
+if(NOT QPC_CFG_DEBUG)
+    set(QPC_CFG_DEBUG ON CACHE BOOL "enable debug sessions")
+    message("Set QPC_CFG_DEBUG to ('${QPC_CFG_DEBUG}') since not specified")
+endif()
+
+if(NOT QPC_CFG_VERBOSE)
+    set(QPC_CFG_VERBOSE OFF CACHE BOOL "enable verbose build output")
+    message("Set QPC_CFG_VERBOSE to ('${QPC_CFG_VERBOSE}') since not specified")
 endif()
 
 # check target port plausibility
-if(NOT PORT)
+if(NOT QPC_CFG_PORT)
     message(WARNING "No PORT is configured! Falling back to target system '${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}'.")
-    if((CMAKE_SYSTEM_NAME STREQUAL Generic) AND (CMAKE_SYSTEM_PROCESSOR STREQUAL Arm))
+    string(TOLOWER ${CMAKE_SYSTEM_NAME} sysName)
+    string(TOLOWER ${CMAKE_SYSTEM_PROCESSOR} sysProc)
+    if((sysName STREQUAL generic) AND (sysProc STREQUAL arm))
         set(PORT arm-cm)
     elseif(WIN32)
         set(PORT win32)
@@ -36,7 +64,7 @@ if(NOT PORT)
         set(PORT posix)
     endif()
 else()
-    string(TOLOWER ${PORT} PORT)
+    string(TOLOWER ${QPC_CFG_PORT} PORT)
 endif()
 
 init_port_list(PORTLIST)
@@ -49,6 +77,20 @@ if(NOT (${PORT} IN_LIST PORTLIST))
 	message(FATAL_ERROR ${MSG})
     unset(MSG)
 endif()
+set(QPC_CFG_PORT ${PORT} CACHE STRING "The QPC target port for the system platform")
+message("Set QPC_CFG_PORT to ('${QPC_CFG_PORT}')")
+
+if(NOT QPC_CFG_GUI)
+    if(QPC_CFG_PORT STREQUAL win32)    
+        set(QPC_CFG_GUI ON)
+        message("Set QPC_CFG_GUI to ('${QPC_CFG_GUI}') since win32 port found")
+    else()
+        set(QPC_CFG_GUI OFF)
+        message("Set QPC_CFG_GUI to ('${QPC_CFG_GUI}') since not specified")
+    endif()
+endif()
+
+
 
 # check/set Qx real time kernel
 if(NOT (QPC_CFG_KERNEL MATCHES "[Qq]([VvKk]|[Xx][Kk])"))
@@ -57,6 +99,7 @@ if(NOT (QPC_CFG_KERNEL MATCHES "[Qq]([VvKk]|[Xx][Kk])"))
     set(QPC_CFG_KERNEL QV CACHE STRING "set to ON, if the QV micro kernel shall be configured. Leave OFF for host based configurations. (default: OFF)" FORCE)
 endif()
 string(TOLOWER ${QPC_CFG_KERNEL} KERNEL)
+set(QPC_CFG_KERNEL "${QPC_CFG_KERNEL}" CACHE STRING "The QPC kernel")
 
 add_library(qpc STATIC "")
 
@@ -66,17 +109,17 @@ target_compile_definitions(qpc
 	    $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
         $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
         $<$<CONFIG:Spy>:Q_SPY>
-        $<$<BOOL:${QPC_CFG_UNIT_TEST}>:Q_UTEST>
+        $<$<AND:$<CONFIG:Spy>,$<BOOL:${QPC_CFG_UNIT_TEST}>>:Q_UTEST>
 )
 
 target_compile_options(qpc
     PRIVATE
-        $<$<BOOL:${CONFIG_VERBOSE}>:-v>
+        $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
 )
 
 target_link_options(qpc
     PRIVATE
-        $<$<BOOL:${CONFIG_VERBOSE}>:-v>
+        $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
 )
 
 # set position independent code compile/link parameters
