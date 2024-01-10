@@ -156,7 +156,7 @@ if(QPC_CFG_VERBOSE)
     QPC_CFG_GUI                 = ${QPC_CFG_GUI}
     QPC_QFG_UNIT_TEST           = ${QPC_QFG_UNIT_TEST}
     QPC_CFG_KERNEL              = ${QPC_CFG_KERNEL}
-    CONFIG_DEBUG                = ${CONFIG_DEBUG}
+    QPC_CFG_DEBUG               = ${QPC_CFG_DEBUG}
 
     CMAKE_C_CPPCHECK            = ${CMAKE_C_CPPCHECK}
 
