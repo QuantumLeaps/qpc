@@ -14,7 +14,5 @@ else()
 	message(FATAL_ERROR "Target port dir '${CMAKE_CURRENT_SOURCE_DIR}/${PORT_DIR}' not found!")
 endif()
 
-target_link_libraries(qpc PUBLIC $<$<AND:$<CONFIG:Spy>,$<STREQUAL:win32,${PORT}>>:ws2_32>)
-
 add_subdirectory(${PORT_DIR})
 target_include_directories(qpc PRIVATE config)

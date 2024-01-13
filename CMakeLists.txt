@@ -36,6 +36,11 @@ if (DEFINED ENV{QPC_CFG_PORT} AND (NOT QPC_CFG_PORT))
     message("Using QPC_CFG_PORT from environment ('${QPC_CFG_PORT}')")
 endif ()
 
+if(NOT QPC_CFG_GUI)
+    set(QPC_CFG_GUI OFF CACHE BOOL "enable GUI support for matching ports (e.g. win32 or posix & GTK)")
+    message("Set QPC_CFG_GUI to ('${QPC_CFG_GUI}') since not specified")
+endif()
+
 if(NOT QPC_CFG_UNIT_TEST)
     set(QPC_CFG_UNIT_TEST OFF CACHE BOOL "enable detailled unit testing support")
     message("Set QPC_CFG_UNIT_TEST to ('${QPC_CFG_UNIT_TEST}') since not specified")
@@ -88,16 +93,6 @@ endif()
 set(QPC_CFG_PORT ${PORT} CACHE STRING "The QPC target port for the system platform")
 message("Set QPC_CFG_PORT to ('${QPC_CFG_PORT}')")
 
-if(NOT QPC_CFG_GUI)
-    if(QPC_CFG_PORT STREQUAL win32)    
-        set(QPC_CFG_GUI ON)
-        message("Set QPC_CFG_GUI to ('${QPC_CFG_GUI}') since win32 port found")
-    else()
-        set(QPC_CFG_GUI OFF)
-        message("Set QPC_CFG_GUI to ('${QPC_CFG_GUI}') since not specified")
-    endif()
-endif()
-
 # check/set Qx real time kernel
 if(NOT (QPC_CFG_KERNEL MATCHES "[Qq]([VvKk]|[Xx][Kk])"))
     message(WARNING "No KERNEL (QV, QK or QXK) is configured!"
@@ -105,7 +100,6 @@ if(NOT (QPC_CFG_KERNEL MATCHES "[Qq]([VvKk]|[Xx][Kk])"))
     set(QPC_CFG_KERNEL QV CACHE STRING "set to ON, if the QV micro kernel shall be configured. Leave OFF for host based configurations. (default: OFF)" FORCE)
 endif()
 string(TOLOWER ${QPC_CFG_KERNEL} KERNEL)
-set(QPC_CFG_KERNEL "${QPC_CFG_KERNEL}" CACHE STRING "The QPC kernel")
 
 add_library(qpc STATIC "")
 
@@ -140,6 +134,24 @@ target_link_options(qpc
     PRIVATE
         $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
 )
+
+target_link_libraries(qpc
+    PUBLIC
+        $<$<AND:$<CONFIG:Spy>,$<STREQUAL:win32,${PORT}>>:ws2_32>
+)
+
+# set position independent code compile/link parameters
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
+    include(CheckPIESupported)
+    check_pie_supported()
+endif()
+set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
+
+# add subdirectories with source/header files
+
+target_include_directories(qpc PUBLIC src include)
+add_subdirectory(src)
+add_subdirectory(ports)
 
 # print configuration
 message(STATUS
