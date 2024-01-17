@@ -54,8 +54,16 @@ endif()
 # check target port plausibility
 if(NOT QPC_CFG_PORT)
     message(WARNING "No PORT is configured! Falling back to target system '${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}'.")
-    string(TOLOWER ${CMAKE_SYSTEM_NAME} sysName)
-    string(TOLOWER ${CMAKE_SYSTEM_PROCESSOR} sysProc)
+    if(CMAKE_SYSTEM_NAME)
+        string(TOLOWER ${CMAKE_SYSTEM_NAME} sysName)
+    else()
+        set(sysName generic)
+    endif()
+    if(CMAKE_SYSTEM_PROCESSOR)
+        string(TOLOWER ${CMAKE_SYSTEM_PROCESSOR} sysProc)
+    else()
+        set(sysproc none)
+    endif()
     if((sysName STREQUAL generic) AND (sysProc STREQUAL arm))
         set(PORT arm-cm)
     elseif(WIN32)
@@ -90,8 +98,6 @@ if(NOT QPC_CFG_GUI)
     endif()
 endif()
 
-
-
 # check/set Qx real time kernel
 if(NOT (QPC_CFG_KERNEL MATCHES "[Qq]([VvKk]|[Xx][Kk])"))
     message(WARNING "No KERNEL (QV, QK or QXK) is configured!"
@@ -102,6 +108,19 @@ string(TOLOWER ${QPC_CFG_KERNEL} KERNEL)
 set(QPC_CFG_KERNEL "${QPC_CFG_KERNEL}" CACHE STRING "The QPC kernel")
 
 add_library(qpc STATIC "")
+
+# set position independent code compile/link parameters
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
+    include(CheckPIESupported)
+    check_pie_supported()
+endif()
+set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
+
+# add subdirectories with source/header files
+
+target_include_directories(qpc PUBLIC src include)
+add_subdirectory(src)
+add_subdirectory(ports)
 
 # set general defines
 target_compile_definitions(qpc
@@ -121,19 +140,6 @@ target_link_options(qpc
     PRIVATE
         $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
 )
-
-# set position independent code compile/link parameters
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
-    include(CheckPIESupported)
-    check_pie_supported()
-endif()
-set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
-
-# add subdirectories with source/header files
-
-target_include_directories(qpc PUBLIC src include)
-add_subdirectory(src)
-add_subdirectory(ports)
 
 # print configuration
 message(STATUS

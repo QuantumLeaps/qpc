@@ -22,11 +22,18 @@ endif()
 # set up configurable options
 set(PROJECT_NAME dpp CACHE STRING "set to the project name of the qpc library project (default: QPC)")
 set(QPC_CFG_KERNEL QV CACHE STRING "set to the kernel to use (QV, QK, QXK) (default: QV)")
-set(QPC_DIR "${CMAKE_SOURCE_DIR}/../../.." CACHE STRING "set to the source path of QPC (default: ../../..)")
+set(QPC_SDK_PATH "${CMAKE_SOURCE_DIR}/../../.." CACHE STRING "set to the source path of QPC (default: ../../..)")
 
-option(QPC_CFG_QSPY       "set to ON, if QSPY monitoring shall be compiled in (default: OFF)" OFF)
 option(QPC_QFG_UNIT_TEST  "set to ON, if Q_UTEST shall be enabled (default: OFF)" OFF)
 option(QPC_CFG_GUI        "set to ON, if a Windows (TM) GUI shall be compiled in (default: OFF)" ON)
+option(QPC_CFG_VERBOSE   "set to ON, to enable more verbosity. (default: OFF)" OFF)
+option(QPC_CFG_DEBUG     "set to ON, to enable debug settings. (default: ON)" ON)
+
+# update CMAKE_MODULE_PATH
+list(PREPEND CMAKE_MODULE_PATH ${QPC_SDK_PATH}/3rd_party/cmake ${CMAKE_SOURCE_DIR}/Source/cmake ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR} ${HOME_PATH}/cmake)
+
+# import QPC SDK; download from git, if necessary
+include(qpc_sdk_import)
 
 if(NOT SW_VERSION)
     set(SW_VERSION "1.0.0" CACHE STRING "Software Version")
@@ -51,17 +58,22 @@ include(CTest)
 include(CheckIncludeFile)
 include(CheckLibraryExists)
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
-    include(CheckPIESupported)
-endif()
-
 # the project target
 add_executable(dpp bsp.c main.c philo.c table.c Resource.rc)
+
+# set position independent code compile/link parameters
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
+    include(CheckPIESupported)
+    check_pie_supported()
+    set_property(TARGET dpp PROPERTY POSITION_INDEPENDENT_CODE FALSE)
+endif()
+
+# add the qpc library to the project
+qpc_sdk_init()
 
 # set general defines
 target_compile_definitions(dpp
 	PRIVATE
-	    $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
 	    $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
         $<$<CONFIG:Spy>:Q_SPY>
 )
@@ -78,56 +90,32 @@ target_link_options(dpp
         $<$<BOOL:${CONFIG_VERBOSE}>:-v>
 )
 
+# link the library with the application
 target_link_libraries(dpp
     PRIVATE
+        qpc
         $<$<CONFIG:Spy>:ws2_32>
 )
 
-# the qpc library
-set(QPC_PROJECT qpc_${PROJECT_NAME})
-# also add the binary directory for qpc, as QPC_DIR is not a subdirectory of this example
-add_subdirectory(${QPC_DIR} ${CMAKE_BINARY_DIR}/qpc)
-target_link_libraries(dpp PRIVATE qpc)
-
-# set position independent code compile/link parameters
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
-    check_pie_supported()
-endif()
-set_property(TARGET dpp PROPERTY POSITION_INDEPENDENT_CODE FALSE)
-set_property(TARGET dpp PROPERTY POSITION_INDEPENDENT_CODE FALSE)
-
 # show configuration results
-get_target_property(TGT_COMPILE_OPTS dpp COMPILE_OPTIONS)
-get_target_property(TGT_COMPILE_DEFS dpp COMPILE_DEFINITIONS)
-get_target_property(TGT_LIB_DEFS dpp INTERFACE_COMPILE_DEFINITIONS)
-get_target_property(TGT_INCLUDES dpp INCLUDE_DIRECTORIES)
-get_target_property(TGT_LIB_INCS dpp INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(TGT_SYS_INCS dpp INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
-get_target_property(TGT_LINK_OPTS dpp LINK_OPTIONS)
-get_target_property(TGT_LINK_LIBS dpp LINK_LIBRARIES)
-get_target_property(TGT_SOURCES dpp SOURCES)
-
-get_target_property(LIB_COMPILE_DEFS qpc COMPILE_DEFINITIONS)
-get_target_property(LIB_LIB_DEFS qpc INTERFACE_COMPILE_DEFINITIONS)
-get_target_property(LIB_INCLUDES qpc INCLUDE_DIRECTORIES)
-get_target_property(LIB_LIB_INCS qpc INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(LIB_SYS_INCS qpc INTERFACE_SYSTEM_INCLUDE_DIRECTORIES)
-
 message(STATUS
 "Configured project ${PROJECT_NAME} for ${PORT}
  Configuration options set:
     PROJECT_NAME                = ${QPC_PROJECT}
     SW_VERSION                  = ${SW_VERSION}
     
-    QPC_CFG_GUI                 = ${QPC_CFG_GUI}
-    QPC_CFG_QSPY                = ${QPC_CFG_QSPY}
-    QPC_CFG_UNIT_TEST           = ${QPC_CFG_UNIT_TEST}
+    CONFIG_GUI                  = ${QPC_CFG_GUI}
+    CONFIG_QSPY                 = ${QPC_CFG_QSPY}
+    CONFIG_UNIT_TEST            = ${QPC_CFG_UNIT_TEST}
     CONFIG_DEBUG                = ${CONFIG_DEBUG}
 
     QPC_CFG_KERNEL              = ${QPC_CFG_KERNEL}
-    QPC_DIR                     = ${QPC_DIR}
+    QPC_DIR                     = ${QPC_DIR}"
+)
 
- System information:
+if(QPC_CFG_VERBOSE)
+message(STATUS
+" System information:
     CMAKE_VERSION               = ${CMAKE_VERSION}
     CMAKE_CROSSCOMPILING        = ${CMAKE_CROSSCOMPILING}
     CMAKE_HOST_SYSTEM           = ${CMAKE_HOST_SYSTEM}
@@ -144,14 +132,13 @@ message(STATUS
     UNIX                        = ${UNIX}
     LINUX                       = ${LINUX}
 
+    CMAKE_BUILD_TYPE            = ${CMAKE_BUILD_TYPE}
+    CMAKE_CONFIGURATION_TYPES   = ${CMAKE_CONFIGURATION_TYPES}
+
     CMAKE_C_COMPILER            = ${CMAKE_C_COMPILER}
     CMAKE_C_COMPILER_ID         = ${CMAKE_C_COMPILER_ID}
     CMAKE_C_COMPILER_VERSION    = ${CMAKE_C_COMPILER_VERSION}
     CMAKE_C_FLAGS               = ${CMAKE_C_FLAGS}
-    CMAKE_C_COMPILE_OBJECT      = ${CMAKE_C_COMPILE_OBJECT}
-
-    CMAKE_RC_COMPILER           = ${CMAKE_RC_COMPILER}
-    CMAKE_RC_COMPILE_OBJECT     = ${CMAKE_RC_COMPILE_OBJECT}
 
     CMAKE_CXX_COMPILER          = ${CMAKE_CXX_COMPILER}
     CMAKE_CXX_FLAGS             = ${CMAKE_CXX_FLAGS}
@@ -159,3 +146,4 @@ message(STATUS
     CMAKE_ASM_COMPILER          = ${CMAKE_ASM_COMPILER}
     CMAKE_ASM_FLAGS             = ${CMAKE_ASM_FLAGS}"
 )
+endif()

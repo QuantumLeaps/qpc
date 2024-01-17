@@ -19,6 +19,12 @@
       }
     },
     {
+      "name": "gui",
+      "cacheVariables": {
+        "QPC_CFG_GUI": "ON"
+      }
+    },
+    {
       "name": "dpp",
       "inherits": "gen",
       "binaryDir": "${sourceDir}/Build/dpp"
@@ -30,8 +36,26 @@
       "description": "Build for MinGW",
       "binaryDir": "${sourceDir}/Build/dpp-mingw",
       "toolchainFile": "${sourceParentDir}/../../3rd_party/cmake/toolchain/tc_mingwgcc.cmake"
-    }
-  ],
+    },
+    {
+      "name": "dpp-gui",
+      "inherits": [
+        "gen",
+        "gui"
+      ],
+      "binaryDir": "${sourceDir}/Build/dppGui"
+    },
+    {
+      "name": "mingw-gui",
+      "inherits": [
+        "gen",
+        "gui"
+      ],
+      "displayName": "MinGW config",
+      "description": "Build for MinGW",
+      "binaryDir": "${sourceDir}/Build/dppGui-mingw",
+      "toolchainFile": "${sourceParentDir}/../../3rd_party/cmake/toolchain/tc_mingwgcc.cmake"
+    }  ],
 
   "buildPresets": [
     {
@@ -41,6 +65,14 @@
     {
       "name": "mingw",
       "configurePreset": "mingw"
+    },
+    {
+      "name": "dpp-gui",
+      "configurePreset": "dpp-gui"
+    },
+    {
+      "name": "mingw-gui",
+      "configurePreset": "mingw-gui"
     }
  ]
 }

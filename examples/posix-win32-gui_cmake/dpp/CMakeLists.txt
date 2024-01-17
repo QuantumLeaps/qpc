@@ -46,6 +46,10 @@ project(
     LANGUAGES C
 )
 
+if(QPC_CFG_GUI AND (CMAKE_SYSTEM_NAME STREQUAL Windows OR WIN32))
+    enable_language(RC)
+endif()
+
 # update the module search path
 if(CMAKE_HOST_WIN32)
     string(REPLACE "\\" "/" HOME_PATH "$ENV{HOMEDRIVE}$ENV{HOMEPATH}")
@@ -63,7 +67,20 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
 endif()
 
 # the project target
-add_executable(dpp bsp.c main.c philo.c table.c)
+add_executable(dpp main.c philo.c table.c)
+if(QPC_CFG_GUI)
+    if(CMAKE_SYSTEM_NAME STREQUAL Linux OR UNIX OR USE_GTK)
+        # use GTK3+
+        target_sources(dpp PRIVATE bsp-gtk.c)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL Windows OR WIN32)
+        # use Win32 GUI
+        target_sources(dpp PRIVATE bsp-gui.c Resource.rc)
+    else()
+        message(FATAL_ERROR "no GUI support available for this build!")
+    endif()
+else()
+    target_sources(dpp PRIVATE bsp.c)
+endif()
 
 # set position independent code compile/link parameters
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
@@ -75,6 +92,51 @@ endif()
 # add the qpc library to the project
 qpc_sdk_init()
 
+# add GTK+-3.0 support
+if(QPC_CFG_GUI AND (USE_GTK OR (DEFINED QPC_CFG PORT AND QPC_CFG_PORT MATCHES posix) OR (CMAKE_SYSTEM_NAME STREQUAL Linux OR UNIX)))
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GTK3 gtk+-3.0) # QUIET IMPORTED_TARGET)
+
+    if (NOT GTK3_FOUND)
+        message(FATAL_ERROR "The package GTK3, required for this build, could not be found on the system!")
+    endif()
+
+    # Add other flags to the compiler
+    target_compile_options(dpp PRIVATE ${GTK3_CFLAGS_OTHER})
+
+    # Setup CMake to use GTK+, tell the compiler where to look for headers
+    # and to the linker where to look for libraries
+    target_include_directories(dpp PRIVATE ${GTK3_INCLUDE_DIRS})
+    target_link_directories(dpp PRIVATE ${GTK3_LIBRARY_DIRS})
+    target_link_options(dpp PRIVATE ${GTK3_LDFLAGS_OTHER})
+
+    # Link the target to the GTK+ libraries
+    target_link_libraries(dpp PRIVATE ${GTK3_LIBRARIES}) # PkgConfig::GTK3)
+
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/dppImages.c ${CMAKE_CURRENT_SOURCE_DIR}/dppImages.h
+        MAIN_DEPENDENCY dppImages.xml
+        COMMAND  glib-compile-resources.exe
+                 --generate-source
+                 --sourcedir=./Res
+                 --internal
+                 --c-name=dppImg
+                 --compiler=gcc
+                 dppImages.xml
+        COMMAND  glib-compile-resources.exe
+                 --generate-header
+                 --sourcedir=./Res
+                 --internal
+                 --c-name=dppImg
+                 --compiler=gcc
+                 dppImages.xml
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT Create GTK+3 Resources
+        VERBATIM
+    )
+    target_sources(dpp PRIVATE dppImages.c)
+endif()
+
 # set general defines and options
 target_compile_definitions(dpp
 	PRIVATE
@@ -85,11 +147,14 @@ target_compile_definitions(dpp
 target_compile_options(dpp
     PRIVATE
         $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
+        $<$<C_COMPILER_ID:GNU>:$<IF:$<BOOL:${QPC_CFG_GUI}>,-mwindows,-mconsole>>
 )
 
 target_link_options(dpp
     PRIVATE
         $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
+        $<$<C_COMPILER_ID:GNU>:$<IF:$<BOOL:${QPC_CFG_GUI}>,-mwindows,-mconsole>>
+        LINKER:-Map=${CMAKE_PROJECT_NAME}.map
 )
 
 # link the library with the application
@@ -106,10 +171,10 @@ message(STATUS
     PROJECT_NAME                = ${QPC_PROJECT}
     SW_VERSION                  = ${SW_VERSION}
     
-    CONFIG_GUI                  = ${QPC_CFG_GUI}
-    CONFIG_QSPY                 = ${QPC_CFG_QSPY}
-    CONFIG_UNIT_TEST            = ${QPC_CFG_UNIT_TEST}
-    CONFIG_DEBUG                = ${CONFIG_DEBUG}
+    QPC_CFG_GUI                 = ${QPC_CFG_GUI}
+    QPC_CFG_QSPY                = ${QPC_CFG_QSPY}
+    QPC_CFG_UNIT_TEST           = ${QPC_CFG_UNIT_TEST}
+    QPC_CFG_DEBUG               = ${QPC_CFG_DEBUG}
 
     QPC_CFG_KERNEL              = ${QPC_CFG_KERNEL}
     QPC_DIR                     = ${QPC_DIR}"

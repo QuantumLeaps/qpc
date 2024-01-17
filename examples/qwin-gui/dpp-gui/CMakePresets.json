@@ -8,149 +8,39 @@
 
   "configurePresets": [
     {
-      "name": "dft",
-      "displayName": "Default Config",
-      "description": "Default build using Ninja generator",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/Build/debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "DEBUG"
-        },
-        "QPC_CFG_GUI": "ON"
-      }
-    },
-    {
-      "name": "dft-dbg",
-      "inherits": "dft"
-    },
-    {
-      "name": "dft-rel",
-      "inherits": "dft",
-      "binaryDir": "${sourceDir}/Build/release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "RELEASE"
-        }
-      }
-    },
-    {
-      "name": "dft-spy",
-      "inherits": "dft",
-      "binaryDir": "${sourceDir}/Build/spy",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "SPY"
-        }
-      }
-    },
-    {
-      "name": "dft-multi",
-      "inherits": "dft",
-      "description": "Default build using Ninja Multi-Config generator",
+      "name": "gen",
+      "hidden": true,
       "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/Build/multi",
       "cacheVariables": {
         "CMAKE_CONFIGURATION_TYPES": {
-          "type": "LIST",
-          "value": "DEBUG;RELEASE;SPY"
+          "type": "STRING",
+          "value": "Debug;Release;Spy"
         }
       }
+    },
+    {
+      "name": "dpp",
+      "inherits": "gen",
+      "binaryDir": "${sourceDir}/Build/dpp"
     },
     {
       "name": "mingw",
-      "inherits": "dft",
+      "inherits": "gen",
       "displayName": "MinGW config",
       "description": "Build for MinGW",
-      "binaryDir": "${sourceDir}/Build/mingw/debug",
+      "binaryDir": "${sourceDir}/Build/dpp-mingw",
       "toolchainFile": "${sourceParentDir}/../../3rd_party/cmake/toolchain/tc_mingwgcc.cmake"
-    },
-    {
-      "name": "mingw-dbg",
-      "inherits": "mingw"
-    },
-    {
-      "name": "mingw-rel",
-      "inherits": "mingw",
-      "binaryDir": "${sourceDir}/Build/mingw/release",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "RELEASE"
-        }
-      }
-    },
-    {
-      "name": "mingw-spy",
-      "inherits": "mingw",
-      "binaryDir": "${sourceDir}/Build/mingw/spy",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "SPY"
-        }
-      }
-    },
-    {
-      "name": "mingw-multi",
-      "inherits": "mingw",
-      "description": "MinGW build using Ninja Multi-Config generator",
-      "generator": "Ninja Multi-Config",
-      "binaryDir": "${sourceDir}/Build/mingw/multi",
-      "cacheVariables": {
-        "CMAKE_CONFIGURATION_TYPES": {
-          "type": "LIST",
-          "value": "DEBUG;RELEASE;SPY"
-        }
-      }
     }
   ],
 
   "buildPresets": [
     {
-      "name": "dft",
-      "configurePreset": "dft"
-    },
-    {
-      "name": "dft-dbg",
-      "configurePreset": "dft-dbg"
-    },
-    {
-      "name": "dft-rel",
-      "configurePreset": "dft-rel"
-    },
-    {
-      "name": "dft-spy",
-      "configurePreset": "dft-spy"
-    },
-    {
-      "name": "dft-multi",
-      "configurePreset": "dft-multi",
-      "configuration": "debug"
+      "name": "dpp",
+      "configurePreset": "dpp"
     },
     {
       "name": "mingw",
       "configurePreset": "mingw"
-    },
-    {
-      "name": "mingw-dbg",
-      "configurePreset": "mingw-dbg"
-    },
-    {
-      "name": "mingw-rel",
-      "configurePreset": "mingw-rel"
-    },
-    {
-      "name": "mingw-spy",
-      "configurePreset": "mingw-spy"
-    },
-    {
-      "name": "mingw-multi",
-      "configurePreset": "mingw-multi",
-      "configuration": "debug"
     }
-  ]
+ ]
 }

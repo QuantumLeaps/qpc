@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/dpp/example/pics">
+    <file alias="eat">eating.bmp</file>
+    <file alias="think">thinking.bmp</file>
+    <file alias="hungry">hungry.bmp</file>
+  </gresource>
+  <gresource prefix="/dpp/example/icons">
+    <file alias="qp">qp.ico</file>
+  </gresource>
+</gresources>
