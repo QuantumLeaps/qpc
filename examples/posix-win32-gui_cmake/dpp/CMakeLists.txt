@@ -69,7 +69,7 @@ endif()
 # the project target
 add_executable(dpp main.c philo.c table.c)
 if(QPC_CFG_GUI)
-    if(CMAKE_SYSTEM_NAME STREQUAL Linux OR UNIX OR USE_GTK)
+    if(USE_GTK OR CMAKE_SYSTEM_NAME STREQUAL Linux OR UNIX)
         # use GTK3+
         target_sources(dpp PRIVATE bsp-gtk.c)
     elseif(CMAKE_SYSTEM_NAME STREQUAL Windows OR WIN32)
@@ -113,28 +113,36 @@ if(QPC_CFG_GUI AND (USE_GTK OR (DEFINED QPC_CFG PORT AND QPC_CFG_PORT MATCHES po
     # Link the target to the GTK+ libraries
     target_link_libraries(dpp PRIVATE ${GTK3_LIBRARIES}) # PkgConfig::GTK3)
 
+    find_program(GLIB_COMPILE_RESOURCES
+       NAMES glib-compile-resources glib-compile-resources.exe
+    )
+    if(NOT GLIB_COMPILE_RESOURCES)
+        message(FATAL_ERROR "Program 'glib-compile-resources' cannot be found. Aborting!")
+    endif()
     add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/dppImages.c ${CMAKE_CURRENT_SOURCE_DIR}/dppImages.h
+        OUTPUT dppImages.c dppImages.h
         MAIN_DEPENDENCY dppImages.xml
-        COMMAND  glib-compile-resources.exe
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/dppImages.xml ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND  ${GLIB_COMPILE_RESOURCES}
                  --generate-source
-                 --sourcedir=./Res
+                 --sourcedir=${CMAKE_CURRENT_SOURCE_DIR}/Res
                  --internal
                  --c-name=dppImg
                  --compiler=gcc
                  dppImages.xml
-        COMMAND  glib-compile-resources.exe
+        COMMAND  ${GLIB_COMPILE_RESOURCES}
                  --generate-header
-                 --sourcedir=./Res
+                 --sourcedir=${CMAKE_CURRENT_SOURCE_DIR}/Res
                  --internal
                  --c-name=dppImg
                  --compiler=gcc
                  dppImages.xml
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        COMMENT Create GTK+3 Resources
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Create GTK+3 Resources"
         VERBATIM
     )
     target_sources(dpp PRIVATE dppImages.c)
+    target_include_directories(dpp PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 # set general defines and options
@@ -147,23 +155,32 @@ target_compile_definitions(dpp
 target_compile_options(dpp
     PRIVATE
         $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
-        $<$<C_COMPILER_ID:GNU>:$<IF:$<BOOL:${QPC_CFG_GUI}>,-mwindows,-mconsole>>
 )
 
 target_link_options(dpp
     PRIVATE
         $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
-        $<$<C_COMPILER_ID:GNU>:$<IF:$<BOOL:${QPC_CFG_GUI}>,-mwindows,-mconsole>>
         LINKER:-Map=${CMAKE_PROJECT_NAME}.map
 )
 
-# link the library with the application
 target_link_libraries(dpp
     PRIVATE
         qpc
-        $<$<CONFIG:Spy>:ws2_32>
 )
 
+if(CMAKE_SYSTEM_NAME STREQUAL Windows OR WIN32)
+    target_compile_options(dpp
+        PRIVATE
+            $<IF:$<BOOL:${QPC_CFG_GUI}>,-mwindows,-mconsole>
+    )
+
+    target_link_options(dpp
+        PRIVATE
+            $<$<C_COMPILER_ID:GNU>:$<IF:$<BOOL:${QPC_CFG_GUI}>,-mwindows,-mconsole>>
+    )
+endif()
+
+# link the library with the application
 # show configuration results
 message(STATUS
 "Configured project ${PROJECT_NAME} for ${PORT}

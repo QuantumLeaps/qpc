@@ -36,11 +36,12 @@
 #include "bsp.h"          // Board Support Package
 
 //............................................................................
-int main(
-#if !defined QWIN_GUI
-    int argc, char *argv[]
+#if defined QWIN_GUI
+int main_gui(void)
+#else
+int main(int argc, char *argv[])
 #endif
-) {
+{
     QF_init();            // initialize the framework
 #if defined QWIN_GUI
     BSP_init();

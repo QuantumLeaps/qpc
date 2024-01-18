@@ -57,17 +57,15 @@ static GRand *myRnd;
 static guint32 l_rnd;
 static gchar *l_cmdline = NULL;
 static gboolean run = TRUE;
-static gchar const *play =  "media-playback-start";
-static gchar const *pause = "media-playback-pause";
+static gchar const *iconPlay =  "media-playback-start";
+static gchar const *iconPause = "media-playback-pause";
 static const gchar *philoPics[3] = {
     "/dpp/example/pics/think",
     "/dpp/example/pics/hungry",
     "/dpp/example/pics/eat"
 };
 static guint8 philoPos[N_PHILO][2] = {
-    {2, 0},
-    {0, 1}, {4, 1},
-    {1, 2}, {3, 2} 
+    {2, 0}, {4, 1}, {3, 2}, {1, 2}, {0, 1}
 };
 static gint philoState[N_PHILO] = {-1, -1, -1, -1, -1};
 
@@ -197,8 +195,13 @@ static gint theApp(GtkApplication* app, gpointer user_data)
 
     GtkWidget *btnBox = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     GtkWidget *editBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
+    GString *winTitle = g_string_new("DPP Example");
 
     grid = gtk_grid_new();
+    gtk_grid_set_column_homogeneous(GTK_GRID(grid), TRUE);
+    gtk_grid_set_column_spacing(GTK_GRID(grid), 4);
+    // gtk_grid_set_row_homogeneous(GTK_GRID(grid), TRUE);
+    gtk_grid_set_row_spacing(GTK_GRID(grid), 4);
 
     gtk_label_set_markup(GTK_LABEL(smLabel), "<span foreground=\"blue\" size=\"smaller\"><i>https://www.state-machine.com</i></span>");
 
@@ -207,14 +210,14 @@ static gint theApp(GtkApplication* app, gpointer user_data)
     gtk_entry_set_text(GTK_ENTRY(texts[0]), "Edit1...");
     gtk_entry_set_text(GTK_ENTRY(texts[1]), gtk_entry_get_text(GTK_ENTRY(texts[0])));
 
-    gtk_window_set_title (GTK_WINDOW (window), "DPP Example");
-    gtk_window_set_default_size (GTK_WINDOW (window), 400, 250);
+    g_string_append_printf (winTitle, " GTK %u.%u", gtk_get_major_version(), gtk_get_minor_version());
+    gtk_window_set_title (GTK_WINDOW (window), (const gchar *)winTitle->str);
     gtk_window_set_resizable(GTK_WINDOW (window), FALSE);
-
+    gtk_window_set_default_size (GTK_WINDOW (window), 420, 250);
     gtk_window_set_icon(GTK_WINDOW (window), icon);
 
     gtk_button_set_always_show_image(GTK_BUTTON(btnQuit), TRUE);
-    gtk_button_set_image(GTK_BUTTON(button), gtk_image_new_from_icon_name(pause, GTK_ICON_SIZE_BUTTON));
+    gtk_button_set_image(GTK_BUTTON(button), gtk_image_new_from_icon_name(iconPause, GTK_ICON_SIZE_BUTTON));
     gtk_button_set_always_show_image(GTK_BUTTON(button), TRUE);
 
     gtk_button_box_set_layout(GTK_BUTTON_BOX(btnBox), GTK_BUTTONBOX_END);
@@ -230,8 +233,8 @@ static gint theApp(GtkApplication* app, gpointer user_data)
         gtk_grid_attach(GTK_GRID(grid), philos[i], philoPos[i][0], philoPos[i][1], 1, 1);
     }
 
-    gtk_grid_attach(GTK_GRID(grid), btnQuit, 4, 0, 1, 1);
-    gtk_grid_attach(GTK_GRID(grid), button, 2, 1, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), btnQuit, 3, 0, 2, 1);
+    gtk_grid_attach(GTK_GRID(grid), button, 1, 1, 3, 1);
     gtk_grid_attach(GTK_GRID(grid), empty, 0, 3, 5, 1);
     gtk_grid_attach(GTK_GRID(grid), editBox, 0, 4, 5, 1);
     gtk_grid_attach(GTK_GRID(grid), smLabel, 0, 5, 5, 1);
@@ -243,7 +246,7 @@ static gint theApp(GtkApplication* app, gpointer user_data)
 
     gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(grid));
 
-    g_timeout_add_full(G_PRIORITY_HIGH, 100, (GSourceFunc)eventHandler, app, NULL);
+    g_timeout_add_full(G_PRIORITY_HIGH, 50, (GSourceFunc)eventHandler, app, NULL);
 
     tlThread = g_task_new(NULL, NULL, appThreadReadyCallback, NULL);
     if ((GTask *)(0) == tlThread)
@@ -253,12 +256,6 @@ static gint theApp(GtkApplication* app, gpointer user_data)
     g_task_set_task_data(tlThread, app, NULL);
     g_task_set_return_on_cancel (tlThread, TRUE);
     g_task_run_in_thread (tlThread, appThread);
-#if 0
-    if(NULL == g_thread_try_new(NULL, (GThreadFunc)appThread, NULL, NULL))
-    {
-        Q_ERROR();
-    }
-#endif
     gtk_widget_show_all (window);
 
     return 0;
@@ -302,12 +299,12 @@ static void ButtonClicked(GtkButton *btn, GtkWidget *widget)
     if(run)
     {
         peIdx = 0;
-        btnImg = gtk_image_new_from_icon_name(play, GTK_ICON_SIZE_BUTTON);
+        btnImg = gtk_image_new_from_icon_name(iconPlay, GTK_ICON_SIZE_BUTTON);
     }
     else
     {
         peIdx = 1;
-        btnImg = gtk_image_new_from_icon_name(pause, GTK_ICON_SIZE_BUTTON);
+        btnImg = gtk_image_new_from_icon_name(iconPause, GTK_ICON_SIZE_BUTTON);
     }
 
     gtk_button_set_image(GTK_BUTTON(btn), btnImg);

@@ -38,6 +38,7 @@
 
 #if defined QWIN_GUI
     void BSP_init(void);
+    int main_gui(void);
 #else
     void BSP_init(int argc, char *argv[]);
 #endif

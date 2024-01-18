@@ -1,4 +1,11 @@
-# USC2 QM project root CMakeLists.txt
+# use a recent CMake version
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+cmake_policy(VERSION 3.13)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
+    cmake_policy(SET CMP0083 NEW)
+endif()
+
+# QPC SDK project root CMakeLists.txt
 macro(init_port_list OUT)
     list(APPEND ${OUT} arm-cm arm-cr embos esp-idf)
     list(APPEND ${OUT} freertos msp430 pic32 posix)
@@ -6,23 +13,7 @@ macro(init_port_list OUT)
     list(APPEND ${OUT} uc-os2 win32)
 endmacro()
 
-if (DEFINED ENV{QPC_CFG_KERNEL} AND (NOT QPC_CFG_KERNEL))
-    set(QPC_CFG_KERNEL $ENV{QPC_CFG_KERNEL})
-    message("Using QPC_CFG_KERNEL from environment ('${QPC_CFG_KERNEL}')")
-endif ()
-
-if (DEFINED ENV{QPC_CFG_PORT} AND (NOT QPC_CFG_PORT))
-    set(QPC_CFG_PORT $ENV{QPC_CFG_PORT})
-    message("Using QPC_CFG_PORT from environment ('${QPC_CFG_PORT}')")
-endif ()
-
-project(
-    qpc
-    VERSION "1.0.0"
-    DESCRIPTION "QPC library"
-    LANGUAGES C ASM
-)
-
+# project configuration
 if (DEFINED ENV{QPC_CFG_KERNEL} AND (NOT QPC_CFG_KERNEL))
     set(QPC_CFG_KERNEL $ENV{QPC_CFG_KERNEL})
     message("Using QPC_CFG_KERNEL from environment ('${QPC_CFG_KERNEL}')")
@@ -56,6 +47,13 @@ if(NOT QPC_CFG_VERBOSE)
     message("Set QPC_CFG_VERBOSE to ('${QPC_CFG_VERBOSE}') since not specified")
 endif()
 
+project(
+    qpc
+    VERSION "1.0.0"
+    DESCRIPTION "QPC library"
+    LANGUAGES C ASM
+)
+
 # check target port plausibility
 if(NOT QPC_CFG_PORT)
     message(WARNING "No PORT is configured! Falling back to target system '${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}'.")
@@ -73,8 +71,10 @@ if(NOT QPC_CFG_PORT)
         set(PORT arm-cm)
     elseif(WIN32)
         set(PORT win32)
-    else()
+    elseif(UNIX)
         set(PORT posix)
+    else()
+        message(FATAL_ERROR No valid target port could be found. Aborting!)
     endif()
 else()
     string(TOLOWER ${QPC_CFG_PORT} PORT)
@@ -90,6 +90,7 @@ if(NOT (${PORT} IN_LIST PORTLIST))
 	message(FATAL_ERROR ${MSG})
     unset(MSG)
 endif()
+
 set(QPC_CFG_PORT ${PORT} CACHE STRING "The QPC target port for the system platform")
 message("Set QPC_CFG_PORT to ('${QPC_CFG_PORT}')")
 
@@ -111,7 +112,6 @@ endif()
 set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
 
 # add subdirectories with source/header files
-
 target_include_directories(qpc PUBLIC src include)
 add_subdirectory(src)
 add_subdirectory(ports)
@@ -147,12 +147,6 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
 endif()
 set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
 
-# add subdirectories with source/header files
-
-target_include_directories(qpc PUBLIC src include)
-add_subdirectory(src)
-add_subdirectory(ports)
-
 # print configuration
 message(STATUS
 "========================================================
@@ -170,7 +164,6 @@ if(QPC_CFG_VERBOSE)
     message(STATUS
 "========================================================
   Configuration Options set:
-    message(STATUS
     QPC_CFG_GUI                 = ${QPC_CFG_GUI}
     QPC_QFG_UNIT_TEST           = ${QPC_QFG_UNIT_TEST}
     QPC_CFG_KERNEL              = ${QPC_CFG_KERNEL}
