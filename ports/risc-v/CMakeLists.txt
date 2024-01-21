@@ -1,4 +1,4 @@
-# ports/arm-cm
+# ports/threadx
 string(TOLOWER ${CMAKE_C_COMPILER_ID} _compiler_)
 
 if((KERNEL STREQUAL qv) AND (${_compiler_} STREQUAL gnu))

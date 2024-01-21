@@ -1,4 +1,4 @@
-# ports/posix
+# ports/posix-qv
 target_include_directories(qpc PUBLIC .)
 target_sources(
     qpc

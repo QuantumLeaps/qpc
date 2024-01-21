@@ -80,8 +80,8 @@ else()
     string(TOLOWER ${QPC_CFG_PORT} PORT)
 endif()
 
-init_port_list(PORTLIST)
-if(NOT (${PORT} IN_LIST PORTLIST))
+init_port_list(portList)
+if(NOT (${PORT} IN_LIST portList))
     if(DEFINED PORT)
         set(MSG "Target port '${PORT}' not found!")
     else()
@@ -90,17 +90,23 @@ if(NOT (${PORT} IN_LIST PORTLIST))
 	message(FATAL_ERROR ${MSG})
     unset(MSG)
 endif()
+unset(portList)
 
 set(QPC_CFG_PORT ${PORT} CACHE STRING "The QPC target port for the system platform")
 message("Set QPC_CFG_PORT to ('${QPC_CFG_PORT}')")
 
 # check/set Qx real time kernel
-if(NOT (QPC_CFG_KERNEL MATCHES "[Qq]([VvKk]|[Xx][Kk])"))
-    message(WARNING "No KERNEL (QV, QK or QXK) is configured!"
-                    "Falling back to QV kernel.")
-    set(QPC_CFG_KERNEL QV CACHE STRING "set to ON, if the QV micro kernel shall be configured. Leave OFF for host based configurations. (default: OFF)" FORCE)
-endif()
 string(TOLOWER ${QPC_CFG_KERNEL} KERNEL)
+list (APPEND kernList qv qk qxk)
+if(NOT (${KERNEL} IN_LIST kernList))
+    if(QPC_CFG_KERNEL)
+        message(WARNING "Unknown kernel '${QPC_CFG_KERNEL}' specified!
+    Falling back to QV kernel")
+    endif()
+    set(QPC_CFG_KERNEL QV CACHE STRING "set to ON, if the QV micro kernel shall be configured. Leave OFF for host based configurations. (default: OFF)" FORCE)
+    set(KERNEL qv)
+endif()
+unset(kernList)
 
 add_library(qpc STATIC "")
 

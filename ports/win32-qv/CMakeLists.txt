@@ -1,4 +1,4 @@
-# ports/posix
+# ports/win32-qv
 target_include_directories(qpc PUBLIC .)
 target_sources(
     qpc
