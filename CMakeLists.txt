@@ -162,6 +162,12 @@ message(STATUS
     IMAGE                       = ${IMAGE}
     SW_VERSION                  = ${SW_VERSION}
     PORT                        = ${PORT}
+
+    QPC_CFG_GUI                 = ${QPC_CFG_GUI}
+    QPC_CFG_UNIT_TEST           = ${QPC_CFG_UNIT_TEST}
+    QPC_CFG_KERNEL              = ${QPC_CFG_KERNEL}
+    QPC_CFG_DEBUG               = ${QPC_CFG_DEBUG}
+    CMAKE_C_CPPCHECK            = ${CMAKE_C_CPPCHECK}
 -- ========================================================
 "
 )
@@ -169,14 +175,6 @@ message(STATUS
 if(QPC_CFG_VERBOSE)
     message(STATUS
 "========================================================
-  Configuration Options set:
-    QPC_CFG_GUI                 = ${QPC_CFG_GUI}
-    QPC_QFG_UNIT_TEST           = ${QPC_QFG_UNIT_TEST}
-    QPC_CFG_KERNEL              = ${QPC_CFG_KERNEL}
-    QPC_CFG_DEBUG               = ${QPC_CFG_DEBUG}
-
-    CMAKE_C_CPPCHECK            = ${CMAKE_C_CPPCHECK}
-
   System information:
     CMAKE_VERSION               = ${CMAKE_VERSION}
     CMAKE_CROSSCOMPILING        = ${CMAKE_CROSSCOMPILING}
