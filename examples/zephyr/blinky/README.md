@@ -3,7 +3,7 @@
 # Overview
 
 Blinks an on-board LED once per second. The blinking is performed
- by an Active Object (Blinky) wiht a state machine.
+ by an Active Object (Blinky) with a state machine.
 
 
 

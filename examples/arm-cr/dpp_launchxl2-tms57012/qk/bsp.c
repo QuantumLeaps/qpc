@@ -114,7 +114,7 @@ void assert_failed(char const * const module, int_t const id) {
 // CAUTION: ISRs MUST be both __stackless and __arm!
 QK_IRQ_BEGIN(rtiCompare0)
 
-    rtiREG1->INTFLAG = 1U;    // clear the interrutp source
+    rtiREG1->INTFLAG = 1U;    // clear the interrupt source
     QTIMEEVT_TICK_X(0U, (void *)0); // time events at rate 0
 
     // Perform the debouncing of buttons. The algorithm for debouncing

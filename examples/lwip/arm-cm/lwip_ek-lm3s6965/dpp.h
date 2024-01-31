@@ -41,12 +41,12 @@ enum DPPSignals {
    BTN_DOWN_SIG,    // published by ISR_SysTick when user button is pressed
    BTN_UP_SIG,     // published by ISR_SysTick when user button is released
 
-   DISPLAY_IPADDR_SIG,         // published by lwIPMgr to display IP addres
+   DISPLAY_IPADDR_SIG,        // published by lwIPMgr to display IP address
    DISPLAY_CGI_SIG,             // published by lwIPMgr to display CGI text
    DISPLAY_UDP_SIG,             // published by lwIPMgr to display UDP text
    MAX_PUB_SIG,                                // the last published signal
 
-   HUNGRY_SIG,          // posted direclty to Table from hungry Philosopher
+   HUNGRY_SIG,          // posted directly to Table from hungry Philosopher
    SEND_UDP_SIG,         // posted directly to lwIPMgr to send text via UDP
    LWIP_DRIVER_GROUP,                           // LwIP driver signal group
    LWIP_DRIVER_END = LWIP_DRIVER_GROUP + 10,          // reserve 10 signals

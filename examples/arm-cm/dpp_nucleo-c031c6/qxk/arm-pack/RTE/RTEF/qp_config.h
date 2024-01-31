@@ -1,5 +1,5 @@
 //============================================================================
-// QP configuration file (QK on ARM Cortex-M)
+// QP configuration file (QXK on ARM Cortex-M)
 // Last updated for version: 7.3.0
 // Last updated on: 2023-10-30
 //
@@ -113,7 +113,7 @@
 
 // <o>Maximum # event pools (QF_MAX_EPOOL)
 // <0=>0 no event pools
-// <1=>1 <2=>2 <3=>3 (deafult) <4=>4 <5=>5
+// <1=>1 <2=>2 <3=>3 (default) <4=>4 <5=>5
 // <6=>6 <7=>7 <8=>8 <9=>9 <10=>10 <11=>11
 // <12=>12 <13=>13 <14=>14 <15=>15
 // <i>Maximum # Event Pools <1..15>
@@ -226,7 +226,7 @@
 // </h>
 
 //..........................................................................
-// <h>QK Preemptive Non-Blocking Kernel
+// <h>QXK Preemptive Dual-Mode Kernel
 // <i>Preemptive non-blocking/blocking RTOS kernel.
 
 // <h>Context switch callback (QF_ON_CONTEXT_SW)
@@ -242,9 +242,9 @@
 // <c2>Context switch callback WITH QS
 // <i>Enable context switch callback QF_onContextSw()
 // <i>When Q_SPY is defined.
-#ifdef Q_SPY
-#define QF_ON_CONTEXT_SW
-#endif
+//#ifdef Q_SPY
+//#define QF_ON_CONTEXT_SW
+//#endif
 // </c>
 
 // </h>
@@ -255,13 +255,13 @@
 //#define QF_MEM_ISOLATE
 // </c>
 
-// <c4>Use IRQ handler for QK return-from-preemption
+// <c4>Use IRQ handler for QXK return-from-preemption
 // <i>Enable this option only if the NMI handler is used in the project.
-// <i>If enabled, provide the otherwise unused IRQ number (QK_USE_IRQ_NUM)
-// <i>and the corresponding IRQ handler name (QK_USE_IRQ_HANDLER)
+// <i>If enabled, provide the otherwise unused IRQ number (QXK_USE_IRQ_NUM)
+// <i>and the corresponding IRQ handler name (QXK_USE_IRQ_HANDLER)
 // <i>in the "Text Editor" mode.
-//#define QK_USE_IRQ_NUM     31
-//#define QK_USE_IRQ_HANDLER Reserved31_IRQHandler
+//#define QXK_USE_IRQ_NUM     31
+//#define QXK_USE_IRQ_HANDLER Reserved31_IRQHandler
 // </c>
 
 // </h>

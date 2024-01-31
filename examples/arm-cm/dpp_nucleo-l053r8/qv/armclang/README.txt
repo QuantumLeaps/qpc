@@ -24,7 +24,7 @@ command-line options for the ARM assembler (see the Asm tab in
 the "Options for Target" dialog box in uVision). Specifically,
 you should define symbols: Stack_Size=xxx Heap_Size=yyy, where
 xxx represents a numerical value of stack size and yyy the
-numberical value of the heap size.
+numerical value of the heap size.
 
 
 Startup Code
@@ -58,7 +58,7 @@ Adjusting the CPU Clock Speed
 =============================
 The current setting is to run at 2MHz from the MSI (internal oscillator),
 but the CPU clock speed can be modified by editing the file
-system_stm32l1xx.c. Ther file system_stm32l0xx.c.pll provides an example
+system_stm32l1xx.c. The file system_stm32l0xx.c.pll provides an example
 of clock setting using the PLL driven from the MSE.
 
 ***

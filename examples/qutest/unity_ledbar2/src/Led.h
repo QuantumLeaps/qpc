@@ -3,7 +3,7 @@
 
 enum { MAX_LED = 5 };
 
-// turns a given LED on and retruns the power drawn by it in uW
+// turns a given LED on and returns the power drawn by it in uW
 uint32_t Led_on(uint8_t index);
 
 // turns a given LED off

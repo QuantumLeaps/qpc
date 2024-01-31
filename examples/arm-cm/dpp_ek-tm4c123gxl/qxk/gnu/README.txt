@@ -11,9 +11,6 @@ The provided Makefile should be easy to adapt for your own projects.
 It contains three build configurations: Debug (default), Release, and
 Spy.
 
-Also, the Makefile has been specifically designed to work as an external
-Makefile with the Eclipse CDT.
-
 The various build configurations are built as follows:
 
 make
@@ -31,10 +28,21 @@ to be adjusted in the provided Makefile, by editing the symbol: GNU_ARM.
 As described in the comment for this symbol, the GNU-ARM toolset is taken
 from: http://gnutoolchains.com/arm-eabi
 
-It is highly recommened to use the same GNU-ARM distribution, especially
+It is highly recommended to use the same GNU-ARM distribution, especially
 for ARM Cortex-M4F projects, due to the support for the hardware FPU
 (float-abi=hard).
 ***
+
+The CCS Project
+===============
+This directory contains also the CCS project which can be imported to the
+CCS (Code Composer Studio) IDE based on Eclipse. To import the project,
+use the section "General -> Existing Project into Workspace" and select this
+directory as the "root directory". For example, the "Select root directory"
+might be: C:\qp-dev\qpc\examples\arm-cm\dpp_ek-tm4c123gxl\qxk\gnu
+
+Once you press "Browse", the project (dpp-qk, dpp-qv, or dpp-qxk) should
+become visible. Click on "Select All" and then "Finish".
 
 
 Adjusting Stack and Heap Sizes

@@ -94,7 +94,7 @@ ifeq ($(QPC),)
 QPC := ../../../..
 endif
 
-# location of the QTOOLS directory (if not provided in an environemnt var.)
+# location of the QTOOLS directory (if not provided in an environment var.)
 ifeq ($(QTOOLS),)
 QTOOLS := c:/qp/qtools
 endif

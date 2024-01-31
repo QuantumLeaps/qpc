@@ -57,7 +57,7 @@ PROJECT     := lwip-qv
 # project directories
 #
 
-# location of the QP/C framework (if not provided in an environemnt var.)
+# location of the QP/C framework (if not provided in an environment var.)
 ifeq ($(QPC),)
 QPC := ../../../../../..
 endif
@@ -190,7 +190,7 @@ RM    := rm
 # build options for various configurations for ARM Cortex-M4F
 #
 
-# combine all the soruces...
+# combine all the sources...
 C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
 

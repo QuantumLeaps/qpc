@@ -109,10 +109,10 @@ int QF_consoleWaitForKey(void);
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qs_id_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qs_id_)))
-    #define QF_EPOOL_PUT_(p_, e_, qs_id_) \
-        (QMPool_put(&(p_), (e_), (qs_id_)))
+    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+    #define QF_EPOOL_PUT_(p_, e_, qsId_) \
+        (QMPool_put(&(p_), (e_), (qsId_)))
 
     #include <pthread.h> // POSIX-thread API
 
@@ -134,7 +134,7 @@ int QF_consoleWaitForKey(void);
 //
 // These functions are implemented in the qf_port.c module, where they
 // manipulate the file-scope POSIX mutex object l_critSectMutex_
-// to protect all critical sections. Using the single mutex for all crtical
+// to protect all critical sections. Using the single mutex for all critical
 // section guarantees that only one thread at a time can execute inside a
 // critical section. This prevents race conditions and data corruption.
 //

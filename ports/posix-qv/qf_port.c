@@ -180,7 +180,7 @@ int QF_run(void) {
 
         // SCHED_FIFO corresponds to real-time preemptive priority-based
         // scheduler.
-        // NOTE: This scheduling policy requires the superuser priviledges
+        // NOTE: This scheduling policy requires the superuser privileges
         pthread_attr_setschedpolicy (&attr, SCHED_FIFO);
         pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
         pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);

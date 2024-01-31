@@ -67,7 +67,7 @@ examples\arm-cm\dpp_ek-tm4c123gxl
 |
 ```
 
-# Builing the example
+# Building the example
 
 ### GNU/ARM
 - open terminal window

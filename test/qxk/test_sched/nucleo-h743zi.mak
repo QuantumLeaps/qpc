@@ -33,7 +33,7 @@
 ##############################################################################
 #
 # examples of invoking this Makefile:
-# make -f nucleo-h743zi.mak USB=g: # make, uplaod to USB drive, run the tests
+# make -f nucleo-h743zi.mak USB=g: # make, upload to USB drive, run the tests
 # make -f nucleo-h743zi.mak USB=g: TESTS=philo*.py  # make and run the selected tests
 # make -f nucleo-h743zi.mak USB=g: HOST=localhost:7705 # connect to host:port
 # make -f nucleo-h743zi.mak USB=g: norun   # only make but not run the tests
@@ -215,7 +215,7 @@ endif
 # build options
 #
 
-# combine all the soruces...
+# combine all the sources...
 C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
 

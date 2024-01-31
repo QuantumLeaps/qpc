@@ -120,7 +120,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     (*me->super.vptr->init)(&me->super, par, me->prio);
     QS_FLUSH(); // flush the trace buffer to the host
 
-    // The embOS priority of the AO thread can be specificed in two ways:
+    // The embOS priority of the AO thread can be specified in two ways:
     //
     // 1. Implictily based on the AO's priority (embOS uses the same
     //    priority numbering scheme as QP). This option is chosen when
@@ -133,7 +133,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     //
     //    NOTE: The explicit embOS priority is NOT sanity-checked,
     //    so it is the responsibility of the application to ensure that
-    //    it is consistent witht the AO's priority. An example of
+    //    it is consistent with the AO's priority. An example of
     //    inconsistent setting would be assigning embOS priorities that
     //    would result in a different relative priritization of AO's threads
     //    than indicated by the AO priorities assigned.
@@ -211,12 +211,12 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_OBJ_PRE_(sender); // the sender object
             QS_SIG_PRE_(e->sig); // the signal of the event
             QS_OBJ_PRE_(me);     // this active object (recipient)
-            QS_2U8_PRE_(QEvt_getPoolId_(e), e->refCtr_); // pool-Id&ref-Count
+            QS_2U8_PRE_(QEvt_getPoolNum_(e), e->refCtr_); // pool-Id&ref-Count
             QS_EQC_PRE_(nFree);  // # free entries
             QS_EQC_PRE_(0U);     // min # free entries (unknown)
         QS_END_PRE_()
 
-        if (QEvt_getPoolId_(e) != 0U) { // is it a pool event?
+        if (QEvt_getPoolNum_(e) != 0U) { // is it a pool event?
             QEvt_refCtr_inc_(e); // increment the reference counter
         }
         QF_CRIT_EXIT();
@@ -234,7 +234,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_OBJ_PRE_(sender); // the sender object
             QS_SIG_PRE_(e->sig); // the signal of the event
             QS_OBJ_PRE_(me);     // this active object (recipient)
-            QS_2U8_PRE_(QEvt_getPoolId_(e), e->refCtr_); // pool-Id&ref-Count
+            QS_2U8_PRE_(QEvt_getPoolNum_(e), e->refCtr_); // pool-Id&ref-Count
             QS_EQC_PRE_(nFree);  // # free entries
             QS_EQC_PRE_(margin); // margin requested
         QS_END_PRE_()
@@ -253,12 +253,12 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QS_TIME_PRE_();          // timestamp
         QS_SIG_PRE_(e->sig);     // the signal of this event
         QS_OBJ_PRE_(me);         // this active object
-        QS_2U8_PRE_(QEvt_getPoolId_(e), e->refCtr_); // pool-Id&ref-Count
+        QS_2U8_PRE_(QEvt_getPoolNum_(e), e->refCtr_); // pool-Id&ref-Count
         QS_EQC_PRE_(me->eQueue.maxMsg - me->eQueue.nofMsg); // # free
         QS_EQC_PRE_(0U);         // min # free entries (unknown)
     QS_END_PRE_()
 
-    if (QEvt_getPoolId_(e) != 0U) { // is it a pool event?
+    if (QEvt_getPoolNum_(e) != 0U) { // is it a pool event?
         QEvt_refCtr_inc_(e); // increment the reference counter
     }
     QF_CRIT_EXIT();
@@ -281,7 +281,7 @@ QEvt const *QActive_get_(QActive * const me) {
         QS_TIME_PRE_();          // timestamp
         QS_SIG_PRE_(e->sig);     // the signal of this event
         QS_OBJ_PRE_(me);         // this active object
-        QS_2U8_PRE_(QEvt_getPoolId_(e), e->refCtr_); // pool-Id&ref-Count
+        QS_2U8_PRE_(QEvt_getPoolNum_(e), e->refCtr_); // pool-Id&ref-Count
         QS_EQC_PRE_(me->eQueue.maxMsg - me->eQueue.nofMsg);// # free
     QS_END_PRE_()
     QS_CRIT_EXIT();

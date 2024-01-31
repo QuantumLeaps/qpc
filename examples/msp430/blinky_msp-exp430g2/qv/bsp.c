@@ -94,7 +94,7 @@ void QF_onStartup(void) {
     CCTL0 = CCIE;  // CCR0 interrupt enabled
 }
 //............................................................................
-void QV_onIdle(void) { // NOTE: called with interrutps DISABLED, see NOTE1
+void QV_onIdle(void) { // NOTE: called with interrupts DISABLED, see NOTE1
     // toggle LED2 on and then off, see NOTE2
     P1OUT |=  LED2;        // turn LED2 on
     P1OUT &= ~LED2;        // turn LED2 off

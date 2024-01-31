@@ -33,8 +33,8 @@
 #include "lwip/mem.h"
 
 // NOTE: all the following modules contain conditional compilation protection,
-// so tht code will be actually generated only if the appropriate options are
-// set in the lwipopts.h header file included from lwip/opt.h.
+// so that code will be actually generated only if the appropriate options
+// are set in the lwipopts.h header file included from lwip/opt.h.
 //
 
 // Core lwIP TCP/IP stack ..................................................
@@ -109,7 +109,7 @@ struct pbuf *pbuf_new(u8_t *data, u16_t len) {
     while ((q != (struct pbuf *)0) && (len >= q->len)) {
         memcpy(q->payload, data, q->len);         // copy data into payload
         len  -= q->len;                                 // remaining length
-        data += q->len;                              // remainig data chunk
+        data += q->len;                              // remaining data chunk
         q = q->next;                                       // get next pbuf
     }
     return p;

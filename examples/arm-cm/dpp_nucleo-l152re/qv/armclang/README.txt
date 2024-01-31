@@ -24,7 +24,7 @@ command-line options for the ARM assembler (see the Asm tab in
 the "Options for Target" dialog box in uVision). Specifically,
 you should define symbols: Stack_Size=xxx Heap_Size=yyy, where
 xxx represents a numerical value of stack size and yyy the
-numberical value of the heap size (for most embedded projects
+numerical value of the heap size (for most embedded projects
 yyy should be 0, as the using the heap is not recommended).
 
 
@@ -67,7 +67,7 @@ SystemCoreClock variable to 32000000 (32MHz). However, the NUCLEO-L152RE
 board appears to run actually only at 16MHz. As a quick fix, the
 projects in the qpc\examples directory set the HSE_VALUE to only 4MHz
 (HSE_VALUE=4000000) in the command-line options to the compiler, to match
-the reporeted SystemCoreClock to the actual speed of the clock (16MHz).
+the reported SystemCoreClock to the actual speed of the clock (16MHz).
 At this point it is not clear why the CPU clock is set to only half of the
 expected speed.
 ***

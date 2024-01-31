@@ -31,7 +31,6 @@ examples\arm-cm\blinky_ek-tm4c123gxl
 |
 +---qk             // preemptive QK kernel
 |   +---gnu        // GNU-ARM toolchain
-|   |   \---targetConfigs
 |   |       Makefile          // Makefile for GNU-ARM
 |   +---armclang   // ARM/KEIL toolchain with Compiler 6 (ARM/CLANG)
 |   |       blinky-qk.uvprojx // uVision project
@@ -40,7 +39,6 @@ examples\arm-cm\blinky_ek-tm4c123gxl
 |
 \---qv             // cooperative QK kernel
 |   +---gnu        // GNU-ARM toolchain
-|   |   \---targetConfigs
 |   |       Makefile          // Makefile for GNU-ARM
 |   +---armclang   // ARM/KEIL toolchain with Compiler 6 (ARM/CLANG)
 |   |       blinky-qv.uvprojx // uVision project
@@ -48,7 +46,7 @@ examples\arm-cm\blinky_ek-tm4c123gxl
 |           blinky-qv.eww     // IAR EW-ARM workspace
 ```
 
-# Builing the example
+# Building the example
 
 ### GNU/ARM
 - open terminal window

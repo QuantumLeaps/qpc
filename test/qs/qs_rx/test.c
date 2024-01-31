@@ -75,11 +75,11 @@ uint_fast16_t QF_poolGetMaxBlockSize(void) {
 }
 //..........................................................................
 void QActive_publish_(QEvt const * const e,
-                      void const * const sender, uint_fast8_t const qs_id)
+                      void const * const sender, uint_fast8_t const qsId)
 {
     (void)e;
     (void)sender;
-    (void)qs_id;
+    (void)qsId;
 }
 //..........................................................................
 void QTimeEvt_tick_(uint_fast8_t const tickRate, void const * const sender) {

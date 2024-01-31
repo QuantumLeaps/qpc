@@ -39,7 +39,7 @@ enum DPPSignals {
     TEST_SIG,       // published by BSP to test the application
     MAX_PUB_SIG,    // the last published signal
 
-    HUNGRY_SIG,     // posted direclty to Table from hungry Philo
+    HUNGRY_SIG,     // posted directly to Table from hungry Philo
     TIMEOUT_SIG,    // used by Philosophers for time events
     MAX_SIG         // the last signal
 };

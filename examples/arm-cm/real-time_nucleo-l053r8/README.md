@@ -41,7 +41,7 @@ The example QP application consists of 2 periodic threads (Active Objects) and t
 
 - directory `qv-tt`: cooperative run-to-completion QV kernel with time-triggered tasks
 
-# Builing the Examples
+# Building the Examples
 
 ## ARM/KEIL MDK
 - Open one of the provided KEIL uVision projects (e.g., `rt-qk.uvprojx`) in Keil uVision IDE. Build/Debug/Download to the board from the IDE.
@@ -58,7 +58,7 @@ The NUCLEO-L053R8 needs to be conntected to a logic analyzer as shown in the pic
 </p>
 
 
-The logic analyzer needs to be configured as follwos:
+The logic analyzer needs to be configured as follows:
 - sampling rate: several MHz (e.g., 24MHz)
 - trigger: Sporadic (PC.13 on the NUCLEO-L053R8), falling edge
 - pre-trigger capture ratio: 20%

@@ -177,7 +177,7 @@ void assert_failed(char const * const module, int_t const id) {
 //
 // NOTE02:
 // One of the LEDs is used to visualize the idle loop activity. The brightness
-// of the LED is proportional to the frequency of invcations of the idle loop.
+// of the LED is proportional to the frequency of invocations of the idle loop.
 // Please note that the LED is toggled with interrupts locked, so no interrupt
 // execution time contributes to the brightness of the User LED.
 //

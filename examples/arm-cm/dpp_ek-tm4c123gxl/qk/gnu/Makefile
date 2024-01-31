@@ -1,13 +1,13 @@
 ##############################################################################
 # Product: Makefile for QP/C on EK-TM4C123GXL, QK kernel, GNU-ARM
-# Last Updated for Version: 7.3.0
-# Date of the Last Update:  2023-09-02
+# Last Updated for Version: 7.3.3
+# Date of the Last Update:  2024-01-29
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
 #                    Modern Embedded Software
 #
-# Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+# Copyright (C) 2005 Quantum Leaps, LLC. <state-machine.com>
 #
 # This program is open source software: you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -56,7 +56,7 @@ PROJECT     := dpp-qk
 # project directories
 #
 
-# location of the QP/C framework (if not provided in an environemnt var.)
+# location of the QP/C framework (if not provided in an environment var.)
 ifeq ($(QPC),)
 QPC := ../../../../..
 endif
@@ -141,8 +141,8 @@ DEFINES   := -DQP_CONFIG
 # FLOAT_ABI: [ | soft | softfp | hard]
 #
 ARM_CPU   := -mcpu=cortex-m4
-ARM_FPU   := -mfpu=vfp
-FLOAT_ABI := -mfloat-abi=softfp
+ARM_FPU   := -mfpu=fpv4-sp-d16
+FLOAT_ABI := -mfloat-abi=hard
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
@@ -163,6 +163,7 @@ AS    := $(GNU_ARM)/bin/arm-none-eabi-as
 LINK  := $(GNU_ARM)/bin/arm-none-eabi-gcc
 BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
+
 ##############################################################################
 # Typically you should not need to change anything below this line
 
@@ -176,7 +177,7 @@ RM    := rm
 # build options for various configurations for ARM Cortex-M
 #
 
-# combine all the soruces...
+# combine all the sources...
 C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
 
@@ -231,6 +232,7 @@ LINKFLAGS = -T$(LD_SCRIPT) $(ARM_CPU) $(ARM_FPU) $(FLOAT_ABI) -mthumb \
 	-specs=nosys.specs -specs=nano.specs \
 	-Wl,-Map,$(BIN_DIR)/$(OUTPUT).map,--cref,--gc-sections $(LIB_DIRS)
 
+
 ASM_OBJS     := $(patsubst %.s,%.o,  $(notdir $(ASM_SRCS)))
 C_OBJS       := $(patsubst %.c,%.o,  $(notdir $(C_SRCS)))
 CPP_OBJS     := $(patsubst %.cpp,%.o,$(notdir $(CPP_SRCS)))
@@ -252,14 +254,8 @@ endif
 # rules
 #
 
-.PHONY : run norun flash
-
-ifeq ($(MAKECMDGOALS),norun)
-all : $(TARGET_BIN)
-norun : all
-else
-all : $(TARGET_BIN) run
-endif
+all: $(TARGET_BIN)
+#all: $(TARGET_ELF)
 
 $(TARGET_BIN): $(TARGET_ELF)
 	$(BIN) -O binary $< $@

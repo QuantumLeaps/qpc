@@ -35,7 +35,7 @@
    <operation name="eval" type="bool" visibility="0x02" properties="0x00">
     <documentation>// guard function to evaluate the current expression
 * taking into account the precedence of operands.
-* return: true if evaluation successfull
+* return: true if evaluation successful
 * false when error encountered
 </documentation>
     <!--${SMs::Calc::eval::op}-->
@@ -168,7 +168,7 @@ BSP_clear();</action>
      <!--${SMs::Calc::SM::on::error}-->
      <state name="error">
       <documentation>// Error state after evaluation of an expression.
-This state can be exited only throgh the inherited C (Clear) event.
+This state can be exited only through the inherited C (Clear) event.
 </documentation>
       <entry>BSP_message(&quot;error-ENTRY;&quot;);</entry>
       <exit>BSP_message(&quot;error-EXIT;&quot;);</exit>

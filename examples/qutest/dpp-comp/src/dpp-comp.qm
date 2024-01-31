@@ -6,7 +6,7 @@ The model demonstrates the following features:
 
 1. Partitioning the application into Container and Components
 2. Packages for Container (Cont) and Components (Comp)
-3. External packages with speparate QM-package model files
+3. External packages with separate QM-package model files
 4. CompTimeEvt class for private time evnents of Components
 5. Container to Component communication via synchronous event dispatching
 6. Component to Container communication via asynchronous event posting using the LIFO policy.</documentation>
@@ -315,7 +315,7 @@ me-&gt;fork[n] = FREE;</action>
  <package name="Comp" stereotype="0x02">
   <!--${Comp::CompTimeEvt}-->
   <class name="CompTimeEvt" superclass="qpc::QTimeEvt">
-   <documentation>Specialized time event for components. The time evnet can be owned by a component and can dispatch itself to the component.</documentation>
+   <documentation>Specialized time event for components. The time event can be owned by a component and can dispatch itself to the component.</documentation>
    <!--${Comp::CompTimeEvt::compNum}-->
    <attribute name="compNum" type="uint16_t" visibility="0x00" properties="0x00"/>
    <!--${Comp::CompTimeEvt::ctor}-->

@@ -13,7 +13,7 @@ void Led_off(uint8_t index) {
     printf("Led_off %d\n", index);
 }
 
-// turns a given LED on and retruns the power drawn by it in [uW]
+// turns a given LED on and returns the power drawn by it in [uW]
 uint32_t Led_on(uint8_t index) {
     uint32_t ret = led_power[index];
     printf("Led_on %d %d\n", ret, index);

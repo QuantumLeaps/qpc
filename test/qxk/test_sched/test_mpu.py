@@ -86,7 +86,7 @@ test("Below-Start SRAM-write -> ASSERT", NORESET)
 command("RAM_WRITE", (-0x4 & 0xFFFFFFFF), MEM_START, 123) # BSP_ramWrite(param1, param2, param3);
 expect("@timestamp =ASSERT= Mod=*")
 
-# wrtiting to RAM does not need to be tested becasue the fact
+# wrtiting to RAM does not need to be tested because the fact
 # that the test fixture runs at all means that RAM works.
 skip(1)
 test("Middle-of SRAM-write")

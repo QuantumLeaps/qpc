@@ -58,7 +58,7 @@ the code on the board from the EWARM IDE.
 
 Running the QP-lwIP Example
 ---------------------------
-Connect the EK-LM3S6965 board to the wired Ehternet and power it up by
+Connect the EK-LM3S6965 board to the wired Ethernet and power it up by
 plugging in the USB cable. Immediately after the power-up, you should see
 the startup screen on the OLED-display. The status of the Dining Philosophers
 should be changing.

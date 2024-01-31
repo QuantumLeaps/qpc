@@ -12,7 +12,7 @@
 # information about the addresses of the Philosopher objects and the states
 # of their state machines.
 #
-# NOTE: this is a desktop appliction, which you cannot reset (and restarted).
+# NOTE: this is a desktop application, which you cannot reset (and restarted).
 # Therefore, the desktop applications must be started *after* the QView is
 # already running and is attached to the QSPY host application.
 
@@ -55,7 +55,7 @@ class DPP:
         # to start with resetting the Target, to start clean with
         # Qs dictionaries, etc.
         #
-        # Howver, this is a desktop appliction, which you cannot reset
+        # However, this is a desktop application, which you cannot reset
         # (and restart). Therefore, the desktop applications must be started
         # *after* the QView is already running.
         #reset_target()

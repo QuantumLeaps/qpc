@@ -1,7 +1,7 @@
 ::============================================================================
 :: Batch file to load the DPP program to the flash of STM32 boards
 ::
-:: NOTE: requires the ST-LINK utlity from ST, see:
+:: NOTE: requires the ST-LINK utility from ST, see:
 :: http://www.st.com/en/embedded-software/stsw-link004.html
 ::
 @echo off

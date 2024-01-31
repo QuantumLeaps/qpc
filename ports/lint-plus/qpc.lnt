@@ -43,7 +43,7 @@
  -qxk.h,
  -qs.h)
 
-// Functinal Safety (FuSa) System --------------------------------------------
+// Functional Safety (FuSa) System --------------------------------------------
 
 // "no return" semantics for error/failure callbacks
 -sem(Q_onError, r_no)

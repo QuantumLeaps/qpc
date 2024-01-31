@@ -67,7 +67,7 @@ examples\arm-cm\dpp_efm32-slstk3401a
 |
 ```
 
-# Builing the example
+# Building the example
 
 ### GNU/ARM
 - open terminal window

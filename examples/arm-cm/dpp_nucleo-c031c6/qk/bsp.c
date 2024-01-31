@@ -1,6 +1,6 @@
 //============================================================================
 // Product: DPP example, NUCLEO-C031C6 board, QK kernel
-// Last updated for version 7.3.2
+// Last updated for version 7.3.3
 // Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
@@ -47,6 +47,7 @@ Q_DEFINE_THIS_FILE  // define the name of this file for assertions
 // Button pins available on the board (just one user Button B1 on PC.13)
 #define B1_PIN   13U
 
+// Local-scope objects -----------------------------------------------------
 static uint32_t l_rndSeed;
 
 #ifdef Q_SPY
@@ -56,6 +57,7 @@ static uint32_t l_rndSeed;
 
     // QSpy source IDs
     static QSpyId const l_SysTick_Handler = { 0U };
+    static QSpyId const l_EXTI0_1_IRQHandler = { 0U };
 
     enum AppRecords { // application-specific trace records
         PHILO_STAT = QS_USER,
@@ -87,6 +89,7 @@ Q_NORETURN Q_onError(char const * const module, int_t const id) {
     NVIC_SystemReset();
 }
 //............................................................................
+// assertion failure handler for the STM32 library, including the startup code
 void assert_failed(char const * const module, int_t const id); // prototype
 void assert_failed(char const * const module, int_t const id) {
     Q_onError(module, id);
@@ -141,7 +144,7 @@ void EXTI0_1_IRQHandler(void) {
     QK_ISR_ENTRY();   // inform QK about entering an ISR
 
     static QEvt const testEvt = QEVT_INITIALIZER(TEST_SIG);
-    QACTIVE_POST(AO_Table, &testEvt, (void *)0);
+    QACTIVE_POST(AO_Table, &testEvt, &l_EXTI0_1_IRQHandler);
 
     QK_ISR_EXIT();    // inform QK about exiting an ISR
 }
@@ -156,7 +159,7 @@ void EXTI0_1_IRQHandler(void) {
 void USART2_IRQHandler(void); // prototype
 void USART2_IRQHandler(void) { // used in QS-RX (kernel UNAWARE interrutp)
     // is RX register NOT empty?
-    if ((USART2->ISR & (1U << 5)) != 0) {
+    if ((USART2->ISR & (1U << 5U)) != 0U) {
         uint32_t b = USART2->RDR;
         QS_RX_PUT(b);
     }
@@ -175,6 +178,7 @@ void QF_onContextSw(QActive *prev, QActive *next) {
     QS_END_INCRIT()
 }
 #endif // QF_ON_CONTEXT_SW
+
 
 //============================================================================
 // BSP functions...
@@ -357,6 +361,7 @@ void QF_onStartup(void) {
 //............................................................................
 void QF_onCleanup(void) {
 }
+
 //............................................................................
 void QK_onIdle(void) {
     // toggle an LED on and then off (not enough LEDs, see NOTE2)
@@ -383,18 +388,7 @@ void QK_onIdle(void) {
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,
     // see the datasheet for your particular Cortex-M MCU.
-    //
-    // !!!CAUTION!!!
-    // The WFI instruction stops the CPU clock, which unfortunately disables
-    // the JTAG port, so the ST-Link debugger can no longer connect to the
-    // board. For that reason, the call to __WFI() has to be used with CAUTION.
-    //
-    // NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
-    // reset the board, then connect with ST-Link Utilities and erase the part.
-    // The trick with BOOT(0) is it gets the part to run the System Loader
-    // instead of your broken code. When done disconnect BOOT0, and start over.
-    //
-    //__WFI(); // Wait-For-Interrupt
+    __WFI(); // Wait-For-Interrupt
 #endif
 }
 
@@ -463,7 +457,7 @@ QSTimeCtr QS_onGetTime(void) { // NOTE: invoked with interrupts DISABLED
     if ((SysTick->CTRL & 0x00010000U) == 0U) { // not set?
         return QS_tickTime_ - (QSTimeCtr)SysTick->VAL;
     }
-    else { // the rollover occured, but the SysTick_ISR did not run yet
+    else { // the rollover occurred, but the SysTick_ISR did not run yet
         return QS_tickTime_ + QS_tickPeriod_ - (QSTimeCtr)SysTick->VAL;
     }
 }

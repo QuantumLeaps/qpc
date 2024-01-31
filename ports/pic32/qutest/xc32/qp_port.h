@@ -96,9 +96,9 @@
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qs_id_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qs_id_)))
-    #define QF_EPOOL_PUT_(p_, e_, qs_id_) (QMPool_put(&(p_), (e_), (qs_id_)))
+    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+    #define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
 
 #endif // QP_IMPL
 

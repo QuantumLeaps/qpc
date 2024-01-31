@@ -28,7 +28,7 @@ return me;</code>
  <package name="Components" stereotype="0x02">
   <!--${Components::Cruncher}-->
   <class name="Cruncher" superclass="qpc::QActive">
-   <documentation>&quot;Nmber Cruncher&quot; AO</documentation>
+   <documentation>&quot;Number Cruncher&quot; AO</documentation>
    <!--${Components::Cruncher::sum}-->
    <attribute name="sum" type="double" visibility="0x02" properties="0x00">
     <documentation>// internal variable</documentation>
@@ -192,7 +192,7 @@ void BSP_onKeyboardInput(uint8_t key) {
         case 'e': { // echo the progress so far
             // NOTE:
             // The following Q_NEW_X() allocation might potentially fail
-            // but this is acceptable becasue the &quot;ECHO&quot; event is not
+            // but this is acceptable because the &quot;ECHO&quot; event is not
             // considered critical. This code illustrates the Q_NEW_X()
             // API and its use.
             #ifdef QEVT_DYN_CTOR

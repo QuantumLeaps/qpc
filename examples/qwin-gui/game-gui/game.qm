@@ -341,7 +341,7 @@ me-&gt;blink_ctr = 0U; // init the blink counter</entry>
 QTimeEvt_disarm(&amp;me-&gt;screenTimeEvt);</exit>
       <!--${AOs::Tunnel::SM::active::demo::BLINK_TIMEOUT}-->
       <tran trig="BLINK_TIMEOUT">
-       <action>me-&gt;blink_ctr ^= 1U; // toggle the blink cunter</action>
+       <action>me-&gt;blink_ctr ^= 1U; // toggle the blink counter</action>
        <tran_glyph conn="4,42,3,-1,14">
         <action box="0,-2,13,2"/>
        </tran_glyph>
@@ -653,7 +653,7 @@ sev = Q_NEW(ScoreEvt, SCORE_SIG);
 sev-&gt;score = me-&gt;score;
 QACTIVE_POST(AO_Tunnel, (QEvt *)sev, me);
 
-// lauch the ship from the initial position
+// launch the ship from the initial position
 me-&gt;x = GAME_SHIP_X;
 me-&gt;y = (GAME_SHIP_Y &lt;&lt; 2);</entry>
       <!--${AOs::Ship::SM::active::flying::TIME_TICK}-->
@@ -1392,7 +1392,7 @@ $define ${AOs::Missile}</text>
 #define SHIP_WIDTH  5
 #define SHIP_HEIGHT 3
 
-// encapsulated delcaration of the Ship active object ----------------------
+// encapsulated declaration of the Ship active object ----------------------
 $declare ${AOs::Ship}
 
 // Public-scope objects ----------------------------------------------------
@@ -1428,7 +1428,7 @@ $define ${AOs::Tunnel}</text>
 
 Q_DEFINE_THIS_FILE
 
-// encapsulated delcaration of the Mine1 HSM -------------------------------
+// encapsulated declaration of the Mine1 HSM -------------------------------
 $declare ${AOs::Mine1}
 
 // helper macro to provide the ID of this mine
@@ -1446,7 +1446,7 @@ $define ${AOs::Mine1}</text>
 
 Q_DEFINE_THIS_FILE
 
-// encapsulated delcaration of the Mine2 HSM -------------------------------
+// encapsulated declaration of the Mine2 HSM -------------------------------
 $declare ${AOs::Mine2}
 
 // helper macro to provide the ID of this mine

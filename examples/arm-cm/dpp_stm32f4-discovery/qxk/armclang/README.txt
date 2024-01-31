@@ -18,7 +18,7 @@ command-line options for the ARM assembler (see the Asm tab in
 the "Options for Target" dialog box in uVision). Specifically,
 you should define symbols: Stack_Size=xxx Heap_Size=yyy, where
 xxx represents a numerical value of stack size and yyy the
-numberical value of the heap size (for most embedded projects
+numerical value of the heap size (for most embedded projects
 yyy should be 0, as the using the heap is not recommended).
 
   

@@ -1021,32 +1021,32 @@
     </boards>
     <apis/>
     <components>
-      <component Cbundle="Quantum Leaps QP/C" Cclass="RTEF" Cgroup="Event Processor" Cvariant="qep" Cvendor="QuantumLeaps" Cversion="7.3.0">
-        <package name="qpc" schemaVersion="1.7.27" url="https://github.com/QuantumLeaps/releases/download/v7.3.0/" vendor="QuantumLeaps" version="7.3.0"/>
+      <component Cbundle="QuantumLeaps QP/C" Cclass="RTEF" Cgroup="Event Processor" Cvariant="qep" Cvendor="QuantumLeaps" Cversion="7.3.2">
+        <package name="qpc" schemaVersion="1.7.28" url="https://raw.githubusercontent.com/QuantumLeaps/cmsis-packs/main/" vendor="QuantumLeaps" version="7.3.2"/>
         <targetInfos>
           <targetInfo name="dpp-dbg"/>
           <targetInfo name="dpp-rel"/>
           <targetInfo name="dpp-spy"/>
         </targetInfos>
       </component>
-      <component Cbundle="Quantum Leaps QP/C" Cclass="RTEF" Cgroup="Framework" Cvariant="qf" Cvendor="QuantumLeaps" Cversion="7.3.0">
-        <package name="qpc" schemaVersion="1.7.27" url="https://github.com/QuantumLeaps/releases/download/v7.3.0/" vendor="QuantumLeaps" version="7.3.0"/>
+      <component Cbundle="QuantumLeaps QP/C" Cclass="RTEF" Cgroup="Framework" Cvariant="qf" Cvendor="QuantumLeaps" Cversion="7.3.2" condition="Comp_qep">
+        <package name="qpc" schemaVersion="1.7.28" url="https://raw.githubusercontent.com/QuantumLeaps/cmsis-packs/main/" vendor="QuantumLeaps" version="7.3.2"/>
         <targetInfos>
           <targetInfo name="dpp-dbg"/>
           <targetInfo name="dpp-rel"/>
           <targetInfo name="dpp-spy"/>
         </targetInfos>
       </component>
-      <component Cbundle="Quantum Leaps QP/C" Cclass="RTEF" Cgroup="Real-Time Kernel" Cvariant="qv" Cvendor="QuantumLeaps" Cversion="7.3.0">
-        <package name="qpc" schemaVersion="1.7.27" url="https://github.com/QuantumLeaps/releases/download/v7.3.0/" vendor="QuantumLeaps" version="7.3.0"/>
+      <component Cbundle="QuantumLeaps QP/C" Cclass="RTEF" Cgroup="Real-Time Kernel" Cvariant="qv" Cvendor="QuantumLeaps" Cversion="7.3.2" condition="Comp_qf">
+        <package name="qpc" schemaVersion="1.7.28" url="https://raw.githubusercontent.com/QuantumLeaps/cmsis-packs/main/" vendor="QuantumLeaps" version="7.3.2"/>
         <targetInfos>
           <targetInfo name="dpp-dbg"/>
           <targetInfo name="dpp-rel"/>
           <targetInfo name="dpp-spy"/>
         </targetInfos>
       </component>
-      <component Cbundle="Quantum Leaps QP/C" Cclass="RTEF" Cgroup="Software tracing" Cvariant="qs" Cvendor="QuantumLeaps" Cversion="7.3.0">
-        <package name="qpc" schemaVersion="1.7.27" url="https://github.com/QuantumLeaps/releases/download/v7.3.0/" vendor="QuantumLeaps" version="7.3.0"/>
+      <component Cbundle="QuantumLeaps QP/C" Cclass="RTEF" Cgroup="Software tracing" Cvariant="qs" Cvendor="QuantumLeaps" Cversion="7.3.2" condition="Comp_qep">
+        <package name="qpc" schemaVersion="1.7.28" url="https://raw.githubusercontent.com/QuantumLeaps/cmsis-packs/main/" vendor="QuantumLeaps" version="7.3.2"/>
         <targetInfos>
           <targetInfo excluded="1" name="dpp-dbg"/>
           <targetInfo excluded="1" name="dpp-rel"/>
@@ -1055,10 +1055,10 @@
       </component>
     </components>
     <files>
-      <file attr="config" category="header" condition="CoreM" name="ports\arm-cm\qv\config\qp_config.h" version="7.3.0">
+      <file attr="config" category="header" condition="CoreM" name="ports\arm-cm\qv\config\qp_config.h" version="7.3.2">
         <instance index="0">RTE\RTEF\qp_config.h</instance>
-        <component Cbundle="Quantum Leaps QP/C" Cclass="RTEF" Cgroup="Real-Time Kernel" Cvariant="qv" Cvendor="QuantumLeaps" Cversion="7.3.0"/>
-        <package name="qpc" schemaVersion="1.7.27" url="https://github.com/QuantumLeaps/qpc/releases/download/v7.3.0/" vendor="QuantumLeaps" version="7.3.0"/>
+        <component Cbundle="QuantumLeaps QP/C" Cclass="RTEF" Cgroup="Real-Time Kernel" Cvariant="qv" Cvendor="QuantumLeaps" Cversion="7.3.2" condition="Comp_qf"/>
+        <package name="qpc" schemaVersion="1.7.28" url="https://raw.githubusercontent.com/QuantumLeaps/cmsis-packs/main/" vendor="QuantumLeaps" version="7.3.2" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.28/schema/PACK.xsd"/>
         <targetInfos>
           <targetInfo name="dpp-dbg"/>
           <targetInfo name="dpp-rel"/>
