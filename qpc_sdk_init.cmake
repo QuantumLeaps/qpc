@@ -33,7 +33,7 @@ if (NOT TARGET _qpc_sdk_pre_init_marker)
 
     get_filename_component(QPC_SDK_PATH "${QPC_SDK_PATH}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
 
-    set(QPC_SDK_PATH ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "Path to the Raspberry Pi Pico SDK" FORCE)
+    set(QPC_SDK_PATH ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "Path to the QP/C SDK" FORCE)
 
     list(APPEND CMAKE_MODULE_PATH ${QPC_SDK_PATH}/cmake)
 

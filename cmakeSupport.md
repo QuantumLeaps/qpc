@@ -1,0 +1,103 @@
+# cmake Support in QP/C
+
+This branch adds comprehensive cmake support to QP/C
+
+## Quick Start
+
+create your project with a root `CMakeLists.txt` file, following this blueprint.
+1. copy [qpc_sdk_import.cmake](3rd_party/cmake/qpc_sdk_import.cmake) into your project. Make sure, it can be found by `cmake` as an included script
+2. Setup your 1<sup>st</sup> `CMakeLists.txt`:
+```
+# use a recent CMake version
+cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
+cmake_policy(VERSION 3.23...3.28)
+cmake_policy(SET CMP0083 NEW)
+cmake_policy(SET CMP0105 NEW)
+cmake_policy(SET CMP0116 NEW)
+cmake_policy(SET CMP0128 NEW)
+
+# include general project config & import qpc
+set(QPC_SDK_PATH ${CMAKE_SOURCE_DIR}/Source/qpc-sdk)
+# set(QPC_FETCH_FROM_GIT ON)
+# set(QPC_FETCH_FROM_GIT_PATH ${CMAKE_SOURCE_DIR}/Source/qpc-sdk)
+include(qpc_sdk_import)
+
+# default image/project name is trafficlight
+# Give a special name via -DIMAGE=<image>
+# the main project
+project(myProject
+    VERSION "1.0.0""
+    DESCRIPTION "my 1st qpc project"
+    LANGUAGES C CXX)
+
+# the project target(s)
+add_executable(qpcApp main.c qpcApp.c)
+
+include(${QPC_SDK_PATH}/qpc_sdk_init.cmake)
+set(QPC_PROJECT qpcPrj)
+set(QPC_CFG_KERNEL QV)
+set(QPC_CFG_GUI TRUE)
+set(QPC_CFG_PORT win32)
+qpc_sdk_init()
+
+target_link_libraries(qpcApp PRIVATE qpc)
+``` 
+3. configure your project with
+   `cmake -B Build .`
+4. build
+   `cmake --build Build`
+
+## Usage
+### `qpc_sdk_import.cmake`
+This file prepares your project for integrating qpc.
+Before adding this file to your project with `include(qpc_sdk_import)` make sure to set `CMAKE_MODULE_PATH` accordingly.
+
+To configure the integration of qpc you can provide information either with cmake variables or via environment variables of the very same names.
+
+* Mandatory variables (only one of the two must be set)
+  - `QPC_SDK_PATH` - set this variable to point to the full path of an already installed qpc instance.
+  - `QPC_FETCH_FROM_GIT` - set this variable to ON or TRUE, if no pre-installed qpc directory exists. QPC
+    will then be downloaded from git automatically. The download URL is pre-defined in `qpc_sdk_import.cmake`
+* Optional variables
+  - `QPC_FETCH_FROM_GIT_PATH` - set this variable to download qpc from git (`QPC_FETCH_FROM_GIT`) into the
+    specified directory
+  - `QPC_URL`- set this variable to the URL to download qpc from. This must point to a remote git
+    repository
+
+### `qpc_sdk_init.cmake`
+This file is situated in the root directory of qpc. It performs a pre-initialization of the qpc package and provides the function `qpc_sdk_init`. Call this function from your project's `CMakeLists.txt` file to perform the final integration of qpc into your project. To configure qpc to your projects requirements set these variables before calling `qpc_sdk_init()`
+
+* `QPC_CFG_KERNEL` - set this variable to the QPC kernel for your project. Valid values are QV, QK or QXK
+* `QPC_CFG_PORT` - set this variable to reflect the target platform of your project. Valid values are:
+  + `arm-cm`, `arm-cr` - Arm CortexM or CortexR micro controllers. Tested with GNU cross compiler environments.
+  + `freertos`, `esp-idf`, `emb-os`, `threadx`, `uc-os2` - real time OS
+  + `msp430`, `pic32` - TI MSP430 or PIC32 micro controllers
+  + `riscv`- Risc V µC
+  + `qep-only`, `qube` - test environments
+  + `win32`, `posix` - host environments MS Winows, Linux (Posix compatible systems)
+* `QPC-CFG-GUI` - set this boolean variable to ON/TRUE, if GUI support (win32) shall be compiled in.
+* `QPC_CFG_UNIT_TEST` - set this to ON/TRUE to support qutest, if build configuration `Spy` is active
+* `QPC_CFG_VERBOSE` - set this to enable more verbosity in message output
+
+### General usage hints
+1. Set `QPC_SDK_PATH` or `QPC_FETCH_FROM_GIT` either in your `CMakeLists.txt` file or as an environment variable.
+2. Optionally the configuration variable(s)
+3. Include `qpc_sdk_import` __before__ defining the cmake `project()`
+4. Define the project
+5. Define the cmake target (executable or library)
+6. Include `qpc_sdk_init.cmake`
+7. configure the qpc SDK
+8. call `qpc_sdk_init`
+9. Add the qpc library to your cmake target:
+   `target_link_libraries(<target>> PRIVATE qpc)`
+
+Generate and build your cmake project
+
+### Generation and building hints
+* Generate with configuration support
+  The recommendation is to use a multi-configuration cmake generator like `"Ninja Multi-Config"` and set the cmake variable `CMAKE_CONFIGURATION_TYPES` to `"Debug;Release;Spy"`.
+  Then you can build with `cmake --build <build directory> --config=<config>.
+* Use `CMakePresets.json`
+  Define the build configurations for your projects in a presets definitions file.
+  Refer to the [CMakePresets.json manual](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html) for further details.
+  Then you generate with `cmake --preset=<preset> .` from your project directory. The build then can be started with `cmake --build --preset=<preset>`.
