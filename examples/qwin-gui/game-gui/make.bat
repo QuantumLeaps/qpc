@@ -6,7 +6,7 @@
 ::
 @setlocal
 
-:: specifiy project and build configuration (Debug|Release|Spy)
+:: specify project and build configuration (Debug|Release|Spy)
 @set PROJ=game-gui
 @set CONF=Debug
 

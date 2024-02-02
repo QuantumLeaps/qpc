@@ -160,9 +160,9 @@ QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
                       uint_fast16_t const margin, enum_t const sig);
 
 void *QMPool_getFromISR(QMPool * const me, uint_fast16_t const margin,
-                        uint_fast8_t const qs_id);
+                        uint_fast8_t const qsId);
 void QMPool_putFromISR(QMPool * const me, void *block,
-                        uint_fast8_t const qs_id);
+                        uint_fast8_t const qsId);
 
 enum FreeRTOS_TaskAttrs {
     TASK_NAME_ATTR
@@ -201,10 +201,10 @@ enum FreeRTOS_TaskAttrs {
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qs_id_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qs_id_)))
-    #define QF_EPOOL_PUT_(p_, e_, qs_id_) \
-        (QMPool_put(&(p_), (e_), (qs_id_)))
+    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+    #define QF_EPOOL_PUT_(p_, e_, qsId_) \
+        (QMPool_put(&(p_), (e_), (qsId_)))
 
 #endif // QP_IMPL
 

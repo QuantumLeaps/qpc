@@ -73,7 +73,7 @@
 		<link>
 			<name>main.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/main.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/main.c</locationURI>
 		</link>
 		<link>
 			<name>philo.c</name>
@@ -81,24 +81,14 @@
 			<locationURI>PARENT-2-PROJECT_LOC/philo.c</locationURI>
 		</link>
 		<link>
-			<name>qstamp.c</name>
+			<name>qp_config.h</name>
 			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/src/qs/qstamp.c</locationURI>
-		</link>
-		<link>
-			<name>rom.h</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/3rd_party/ek-tm4c123gxl/rom.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/qp_config.h</locationURI>
 		</link>
 		<link>
 			<name>startup_TM4C123GH6PM.c</name>
 			<type>1</type>
 			<locationURI>PARENT-5-PROJECT_LOC/3rd_party/ek-tm4c123gxl/gnu/startup_TM4C123GH6PM.c</locationURI>
-		</link>
-		<link>
-			<name>sysctl.h</name>
-			<type>1</type>
-			<locationURI>PARENT-5-PROJECT_LOC/3rd_party/ek-tm4c123gxl/sysctl.h</locationURI>
 		</link>
 		<link>
 			<name>system_TM4C123GH6PM.c</name>

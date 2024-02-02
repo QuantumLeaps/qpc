@@ -88,11 +88,11 @@
 //!
 
 // NOTE:
-// STM32Cube's initialization calls the weakly defiend HAL_InitTick(), which
+// STM32Cube's initialization calls the weakly defined HAL_InitTick(), which
 // by default configures and starts the Systick interrupt. This is TOO EARLY,
-// because the system os NOT ready yet to handle interrutps.
+// because the system os NOT ready yet to handle interrupts.
 // To avoid problems, a dummy definition for HAL_InitTick() is provided
-// in the fiel stm32l5xx_hal_msp.c. The SystTick is configured and
+// in the file stm32l5xx_hal_msp.c. The SystTick is configured and
 // started later in QF_onStartup().
 //
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
@@ -162,7 +162,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *huart)
     // this is delayed till QF_onCleanup()
 }
 
-// dummy legacy callacks for STM32CubeH7
+// dummy legacy callbacks for STM32CubeH7
 void HAL_UARTEx_RxFifoFullCallback(UART_HandleTypeDef *huart) {
     (void)huart; // unused parameter
 }

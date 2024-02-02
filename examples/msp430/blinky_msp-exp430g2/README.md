@@ -17,7 +17,7 @@ The QP/C framework is configured as follows:
 ## Minimal QP/C port
 
 The minimal QP/C configuration is NOT taken from the
-offical QP/C port to MSP430 because that port uses more
+official QP/C port to MSP430 because that port uses more
 features. Instead, the minimal port is co-located with
 this example in the qv_mini directory. Here are the files
 and most important QP configuration settings:

@@ -3,11 +3,11 @@
 
 note('''
 This test group demonstrates testing of the start sequence.
-Specifically, a "Gizmo" AO needs to start either in the sate
+Specifically, a "Gizmo" AO needs to start either in the state
 "on_mains", when the AO detects at runtime that main power
 is available, or in the state "on_battery", when it is not.
 However, the state machine semantics does not allow guard
-conditions on the initial transition itself. A workaroudn is
+conditions on the initial transition itself. A workaround is
 to self-post a START event, which then triggers a transition
 with a guard.
 ''')

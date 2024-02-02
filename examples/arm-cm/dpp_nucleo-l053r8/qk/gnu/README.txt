@@ -31,7 +31,7 @@ to be adjusted in the provided Makefile, by editing the symbol: GNU_ARM.
 As described in the comment for this symbol, the GNU-ARM toolset is taken
 from: http://gnutoolchains.com/arm-eabi
 
-It is highly recommened to use the same GNU-ARM distribution, especially
+It is highly recommended to use the same GNU-ARM distribution, especially
 for ARM Cortex-M projects, due to the support for the hardware FPU
 (float-abi=hard).
 ***
@@ -93,7 +93,7 @@ Adjusting the CPU Clock Speed
 =============================
 The current setting is to run at 2MHz from the MSI (internal oscillator),
 but the CPU clock speed can be modified by editing the file
-system_stm32l1xx.c. Ther file system_stm32l0xx.c.pll provides an example
+system_stm32l1xx.c. The file system_stm32l0xx.c.pll provides an example
 of clock setting using the PLL driven from the MSE.
 
 ***

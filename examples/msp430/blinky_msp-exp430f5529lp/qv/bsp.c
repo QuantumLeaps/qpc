@@ -104,7 +104,7 @@ void QF_onStartup(void) {
 void QF_onCleanup(void) {
 }
 //............................................................................
-void QV_onIdle(void) { // NOTE: called with interrutps DISABLED, see NOTE1
+void QV_onIdle(void) { // NOTE: called with interrupts DISABLED, see NOTE1
     // toggle LED2 on and then off, see NOTE2
     P4OUT |=  LED2;        // turn LED2 on
     P4OUT &= ~LED2;        // turn LED2 off
@@ -153,7 +153,7 @@ void assert_failed(char const * const module, int_t const id) {
 //
 // NOTE2:
 // One of the LEDs is used to visualize the idle loop activity. The brightness
-// of the LED is proportional to the frequency of invcations of the idle loop.
+// of the LED is proportional to the frequency of invocations of the idle loop.
 // Please note that the LED is toggled with interrupts locked, so no interrupt
 // execution time contributes to the brightness of the User LED.
 //

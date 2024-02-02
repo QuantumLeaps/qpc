@@ -381,7 +381,7 @@ static QState Tunnel_demo(Tunnel * const me, QEvt const * const e) {
         }
         //${AOs::Tunnel::SM::active::demo::BLINK_TIMEOUT}
         case BLINK_TIMEOUT_SIG: {
-            me->blink_ctr ^= 1U; // toggle the blink cunter
+            me->blink_ctr ^= 1U; // toggle the blink counter
             status_ = Q_HANDLED();
             break;
         }

@@ -34,7 +34,7 @@
 
 Q_DEFINE_THIS_FILE
 
-// encapsulated delcaration of the Mine2 HSM -------------------------------
+// encapsulated declaration of the Mine2 HSM -------------------------------
 //$declare${AOs::Mine2} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${AOs::Mine2} ..............................................................

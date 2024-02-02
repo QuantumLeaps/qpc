@@ -37,7 +37,7 @@
 #define SHIP_WIDTH  5
 #define SHIP_HEIGHT 3
 
-// encapsulated delcaration of the Ship active object ----------------------
+// encapsulated declaration of the Ship active object ----------------------
 //$declare${AOs::Ship} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${AOs::Ship} ...............................................................
@@ -169,7 +169,7 @@ static QState Ship_flying(Ship * const me, QEvt const * const e) {
             sev->score = me->score;
             QACTIVE_POST(AO_Tunnel, (QEvt *)sev, me);
 
-            // lauch the ship from the initial position
+            // launch the ship from the initial position
             me->x = GAME_SHIP_X;
             me->y = (GAME_SHIP_Y << 2);
             status_ = Q_HANDLED();

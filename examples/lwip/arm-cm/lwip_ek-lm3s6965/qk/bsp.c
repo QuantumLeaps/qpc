@@ -168,7 +168,7 @@ void QF_onStartup(void) {
     // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
-    // assing all priority bits for preemption-prio. and none to sub-prio.
+    // assign all priority bits for preemption-prio. and none to sub-prio.
     NVIC_SetPriorityGrouping(0U);
 
     // set priorities of ALL ISRs used in the system, see NOTE1
@@ -289,7 +289,7 @@ QSTimeCtr QS_onGetTime(void) { // invoked with interrupts disabled
     if ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0) { // not set?
         return QS_tickTime_ - (QSTimeCtr)SysTick->VAL;
     }
-    else { // the rollover occured, but the SysTick_ISR did not run yet
+    else { // the rollover occurred, but the SysTick_ISR did not run yet
         return QS_tickTime_ + QS_tickPeriod_ - (QSTimeCtr)SysTick->VAL;
     }
 }
@@ -334,7 +334,7 @@ void QS_onFlush(void) {
 //
 // NOTE2:
 // The User LED is used to visualize the idle loop activity. The brightness
-// of the LED is proportional to the frequency of invcations of the idle loop.
+// of the LED is proportional to the frequency of invocations of the idle loop.
 // Please note that the LED is toggled with interrupts locked, so no interrupt
 // execution time contributes to the brightness of the User LED.
 //

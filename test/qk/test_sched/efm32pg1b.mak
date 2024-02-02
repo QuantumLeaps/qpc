@@ -174,7 +174,7 @@ BIN   := $(GNU_ARM)/bin/arm-none-eabi-objcopy
 
 #-----------------------------------------------------------------------------
 # FLASH tool (NOTE: Requires the JLINK utility)
-# NOTE: subsitution of '/' to '\' is necessary to run the batch file
+# NOTE: substitution of '/' to '\' is necessary to run the batch file
 
 FLASH := $(subst /,\,$(TARGET_DIR)/flash.bat)
 
@@ -198,7 +198,7 @@ endif
 # build options
 #
 
-# combine all the soruces...
+# combine all the sources...
 C_SRCS += $(QP_SRCS)
 ASM_SRCS += $(QP_ASMS)
 

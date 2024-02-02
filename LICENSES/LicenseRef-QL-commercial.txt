@@ -2,7 +2,7 @@ Quantum Leaps Commercial Licenses
 
 Copyright (C) 2005 Quantum Leaps, LLC <https://www.state-machine.com>
 
-Quantum Leaps commercial licenses are traditinal closed-source, paid-for
+Quantum Leaps commercial licenses are traditional closed-source, paid-for
 licenses designed for licensees interested in retaining the proprietary
 status of their code.
 
@@ -17,17 +17,17 @@ Quantum Leaps commercial licensing options are described below:
 
 Single Product License
 ----------------------
-Single Product License allows a given company (“Licensee”) to embed the
+Single Product License allows a given company ("Licensee") to embed the
 specified type(s) of the QP Real-Time Embedded Framework(s) into one end-
 product of the Licensee (Single Product). Licensee can distribute/sell an
 unlimited number of units of the Single Product (royalty-free licensing),
 for the life of the Single Product. A different Single Product license is
 required for each different end product (i.e. model) even if the end-product
 is in the same family as a previously licensed end product. This license
-is specific to the Licensee and the name and model of the Signle Product,
+is specific to the Licensee and the name and model of the Single Product,
 which needs to be defined in the license. The general rule we apply is:
 
-If you consider it a separate product…so do we!
+If you consider it a separate product... so do we!
 
 Volume discounts are offered if several Single Products are licensed at once
 with one license agreement.
@@ -35,7 +35,7 @@ with one license agreement.
 
 Product Line License
 --------------------
-Product Line License allows a given company (“Licensee”) to embed the
+Product Line License allows a given company ("Licensee") to embed the
 specified type(s) of the QP Real-Time Embedded Framework(s) into any number
 of end-products within a family of related products (Product Line). Licensee
 can distribute/sell an unlimited number of units of each of those products
@@ -46,7 +46,7 @@ similar functions within the same Product Line.
 
 Any-Product License
 -------------------
-Any-Product License allows a given company (“Licensee”) to embed the
+Any-Product License allows a given company ("Licensee") to embed the
 specified type(s) of the QP Real-Time Embedded Framework(s) into any end-
 product of that company. The Licensee can distribute/sell an unlimited number
 of the products containing the licensed QP framework type(s) (royalty-free
@@ -55,7 +55,7 @@ licensing).
 
 Site License
 ------------
-Site-License allows a given company (“Licensee”) to embed the specified
+Site-License allows a given company ("Licensee") to embed the specified
 type(s) of the QP Real-Time Embedded Framework(s) into any end-customer
 product, as long as the products are designed at a given physical location
 (Site), which must be defined in the license. This license gives the
@@ -66,7 +66,7 @@ software for other companies.
 
 OEM License
 -----------
-OEM License allows a given company (“Licensee”) to embed the specified
+OEM License allows a given company ("Licensee") to embed the specified
 type(s) of the QP Real-Time Embedded Framework(s) in any product of that
 company (Original Equipment Manufacturer) and gives limited sublicensing
 rights to system integrators, subsystem vendors, subcontractors, and other
@@ -77,7 +77,7 @@ licensing needs of a given Licensee.
 Education License
 -----------------
 Education License allows a given accredited educational institution
-(“Licensee”) to use and embed the specified type(s) of the QP Real-Time
+("Licensee") to use and embed the specified type(s) of the QP Real-Time
 Embedded Framework(s) in any project completed at that educational
 institution. To be eligible for this license, the institution must be
 focused mainly on teaching students. The Education Licenses are free

@@ -7,7 +7,7 @@ To "lint" the application, invoke the batch "lin.bat"  without parameters.
 Optionally, you can supply the parameter -dQ_SPY to include the QS
 instrumentation in the "linting" process.
 
-The output from the "linting" is saved in the fle "lin_out.log".
+The output from the "linting" is saved in the file "lin_out.log".
 
 ***
 NOTE: You need to adjust the symbol PCLP at the top of the lin.bat

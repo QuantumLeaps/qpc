@@ -1,6 +1,6 @@
 //============================================================================
 // Product: DPP example, NUCLEO-C031C6 board, QV kernel
-// Last updated for version 7.3.2
+// Last updated for version 7.3.3
 // Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
@@ -202,6 +202,10 @@ void BSP_init(void) {
     __ISB();
     __DSB();
 
+    // NOTE: SystemInit() has been already called from the startup code
+    // but SystemCoreClock needs to be updated
+    SystemCoreClockUpdate();
+
     // enable GPIOA clock port for the LED LD4
     RCC->IOPENR |= (1U << 0U);
 
@@ -335,7 +339,6 @@ void BSP_terminate(int16_t result) {
 // QF callbacks...
 void QF_onStartup(void) {
     // set up the SysTick timer to fire at BSP_TICKS_PER_SEC rate
-    SystemCoreClockUpdate();
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
     // assign all priority bits for preemption-prio. and none to sub-prio.
@@ -371,7 +374,7 @@ void QV_onIdle(void) { // CATION: called with interrupts DISABLED, see NOTE0
     QS_rxParse();  // parse all the received bytes
     QF_INT_ENABLE();
 
-    if ((USART2->ISR & (1U << 7U)) != 0U) { // is TXE empty?
+    if ((USART2->ISR & (1U << 7U)) != 0U) { // TXE empty?
         QF_INT_DISABLE();
         uint16_t b = QS_getByte();
         QF_INT_ENABLE();
@@ -455,7 +458,7 @@ QSTimeCtr QS_onGetTime(void) { // NOTE: invoked with interrupts DISABLED
     if ((SysTick->CTRL & 0x00010000U) == 0U) { // not set?
         return QS_tickTime_ - (QSTimeCtr)SysTick->VAL;
     }
-    else { // the rollover occured, but the SysTick_ISR did not run yet
+    else { // the rollover occurred, but the SysTick_ISR did not run yet
         return QS_tickTime_ + QS_tickPeriod_ - (QSTimeCtr)SysTick->VAL;
     }
 }
@@ -469,7 +472,7 @@ void QS_onFlush(void) {
         if (b != QS_EOD) {
             while ((USART2->ISR & (1U << 7U)) == 0U) { // while TXE not empty
             }
-            USART2->TDR = b; // put into the DR register
+            USART2->TDR = b;
         }
         else {
             break;

@@ -257,7 +257,7 @@ for (uint8_t n = 0U; n &lt; N_PHILO; ++n) {
      </tran>
      <!--${AOs::Table::SM::active::serving}-->
      <state name="serving">
-      <entry brief="give pending permitions to eat">// give permissions to eat...
+      <entry brief="give pending permissions to eat">// give permissions to eat...
 for (uint8_t n = 0U; n &lt; N_PHILO; ++n) {
     if (me-&gt;isHungry[n]
         &amp;&amp; (me-&gt;fork[left(n)] == FREE)

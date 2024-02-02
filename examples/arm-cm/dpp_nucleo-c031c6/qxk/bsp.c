@@ -1,6 +1,6 @@
 //============================================================================
 // Product: DPP example, NUCLEO-C031C6 board, QXK kernel
-// Last updated for version 7.3.2
+// Last updated for version 7.3.3
 // Last updated on  2023-12-13
 //
 //                   Q u a n t u m  L e a P s
@@ -47,14 +47,17 @@ Q_DEFINE_THIS_FILE  // define the name of this file for assertions
 // Button pins available on the board (just one user Button B1 on PC.13)
 #define B1_PIN   13U
 
+// Local-scope objects -----------------------------------------------------
 static uint32_t l_rndSeed;
 
 #ifdef Q_SPY
+
     QSTimeCtr QS_tickTime_;
     QSTimeCtr QS_tickPeriod_;
 
     // QSpy source IDs
     static QSpyId const l_SysTick_Handler = { 0U };
+    static QSpyId const l_EXTI0_1_IRQHandler = { 0U };
 
     enum AppRecords { // application-specific trace records
         PHILO_STAT = QS_USER,
@@ -86,12 +89,14 @@ Q_NORETURN Q_onError(char const * const module, int_t const id) {
     NVIC_SystemReset();
 }
 //............................................................................
+// assertion failure handler for the STM32 library, including the startup code
 void assert_failed(char const * const module, int_t const id); // prototype
 void assert_failed(char const * const module, int_t const id) {
     Q_onError(module, id);
 }
 
-// ISRs used in the application ==========================================
+// ISRs used in the application ============================================
+
 void SysTick_Handler(void); // prototype
 void SysTick_Handler(void) {
     QXK_ISR_ENTRY();   // inform QXK about entering an ISR
@@ -139,7 +144,7 @@ void EXTI0_1_IRQHandler(void) {
     QXK_ISR_ENTRY();   // inform QXK about entering an ISR
 
     static QEvt const testEvt = QEVT_INITIALIZER(TEST_SIG);
-    QACTIVE_POST(AO_Table, &testEvt, (void *)0);
+    QACTIVE_POST(AO_Table, &testEvt, &l_EXTI0_1_IRQHandler);
 
     QXK_ISR_EXIT();    // inform QXK about exiting an ISR
 }
@@ -154,7 +159,7 @@ void EXTI0_1_IRQHandler(void) {
 void USART2_IRQHandler(void); // prototype
 void USART2_IRQHandler(void) { // used in QS-RX (kernel UNAWARE interrutp)
     // is RX register NOT empty?
-    if ((USART2->ISR & (1U << 5)) != 0) {
+    if ((USART2->ISR & (1U << 5U)) != 0U) {
         uint32_t b = USART2->RDR;
         QS_RX_PUT(b);
     }
@@ -173,6 +178,7 @@ void QF_onContextSw(QActive *prev, QActive *next) {
     QS_END_INCRIT()
 }
 #endif // QF_ON_CONTEXT_SW
+
 
 //============================================================================
 // BSP functions...
@@ -288,7 +294,7 @@ void BSP_start(void) {
 void BSP_displayPhilStat(uint8_t n, char const *stat) {
     Q_UNUSED_PAR(n);
 
-    if (stat[0] == 'h') {
+    if (stat[0] == 'e') {
         GPIOA->BSRR = (1U << LD4_PIN);  // turn LED on
     }
     else {
@@ -323,7 +329,7 @@ void BSP_randomSeed(uint32_t seed) {
 //............................................................................
 uint32_t BSP_random(void) { // a very cheap pseudo-random-number generator
 
-    QSchedStatus lockStat = QXK_schedLock(N_PHILO);
+    QSchedStatus lockStat = QXK_schedLock(N_PHILO); // N_PHILO prio. ceiling
     // "Super-Duper" Linear Congruential Generator (LCG)
     // LCG(2^32, 3*7*11*13*23, 0, seed)
     //
@@ -334,11 +340,11 @@ uint32_t BSP_random(void) { // a very cheap pseudo-random-number generator
     return (rnd >> 8U);
 }
 //............................................................................
-void BSP_ledOn() {
+void BSP_ledOn(void) {
     GPIOA->BSRR = (1U << LD4_PIN);  // turn LED on
 }
 //............................................................................
-void BSP_ledOff() {
+void BSP_ledOff(void) {
     GPIOA->BSRR = (1U << (LD4_PIN + 16U));  // turn LED off
 }
 //............................................................................
@@ -353,10 +359,11 @@ void QF_onStartup(void) {
     SysTick_Config(SystemCoreClock / BSP_TICKS_PER_SEC);
 
     // assign all priority bits for preemption-prio. and none to sub-prio.
+    // NOTE: this might have been changed by STM32Cube.
     NVIC_SetPriorityGrouping(0U);
 
     // set priorities of ALL ISRs used in the system, see NOTE1
-    NVIC_SetPriority(USART2_IRQn,    0); // kernel UNAWARE interrupt
+    NVIC_SetPriority(USART2_IRQn,    0U); // kernel UNAWARE interrupt
     NVIC_SetPriority(EXTI0_1_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 0U);
     NVIC_SetPriority(SysTick_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
     // ...
@@ -371,9 +378,10 @@ void QF_onStartup(void) {
 //............................................................................
 void QF_onCleanup(void) {
 }
+
 //............................................................................
 void QXK_onIdle(void) {
-    // toggle an LED on and then off (not enough LEDs, see NOTE02)
+    // toggle an LED on and then off (not enough LEDs, see NOTE2)
     //QF_INT_DISABLE();
     //GPIOA->BSRR = (1U << LD4_PIN);         // turn LED[n] on
     //GPIOA->BSRR = (1U << (LD4_PIN + 16U)); // turn LED[n] off
@@ -383,32 +391,21 @@ void QXK_onIdle(void) {
     QF_INT_DISABLE();
     QS_rxParse();  // parse all the received bytes
     QF_INT_ENABLE();
-    QF_CRIT_EXIT_NOP();
 
-    QF_INT_DISABLE();
-    if ((USART2->ISR & (1U << 7U)) != 0U) {  // is TXE empty?
+    if ((USART2->ISR & (1U << 7U)) != 0U) { // TXE empty?
+        QF_INT_DISABLE();
         uint16_t b = QS_getByte();
+        QF_INT_ENABLE();
+
         if (b != QS_EOD) {   // not End-Of-Data?
             USART2->TDR = b; // put into the DR register
         }
     }
-    QF_INT_ENABLE();
 #elif defined NDEBUG
     // Put the CPU and peripherals to the low-power mode.
     // you might need to customize the clock management for your application,
     // see the datasheet for your particular Cortex-M MCU.
-    //
-    // !!!CAUTION!!!
-    // The WFI instruction stops the CPU clock, which unfortunately disables
-    // the JTAG port, so the ST-Link debugger can no longer connect to the
-    // board. For that reason, the call to __WFI() has to be used with CAUTION.
-    //
-    // NOTE: If you find your board "frozen" like this, strap BOOT0 to VDD and
-    // reset the board, then connect with ST-Link Utilities and erase the part.
-    // The trick with BOOT(0) is it gets the part to run the System Loader
-    // instead of your broken code. When done disconnect BOOT0, and start over.
-    //
-    //__WFI(); // Wait-For-Interrupt
+    __WFI(); // Wait-For-Interrupt
 #endif
 }
 
@@ -474,10 +471,10 @@ void QS_onCleanup(void) {
 }
 //............................................................................
 QSTimeCtr QS_onGetTime(void) { // NOTE: invoked with interrupts DISABLED
-    if ((SysTick->CTRL & 0x00010000) == 0) {  // COUNT no set?
+    if ((SysTick->CTRL & 0x00010000U) == 0U) { // not set?
         return QS_tickTime_ - (QSTimeCtr)SysTick->VAL;
     }
-    else { // the rollover occured, but the SysTick_ISR did not run yet
+    else { // the rollover occurred, but the SysTick_ISR did not run yet
         return QS_tickTime_ + QS_tickPeriod_ - (QSTimeCtr)SysTick->VAL;
     }
 }
@@ -491,7 +488,7 @@ void QS_onFlush(void) {
         if (b != QS_EOD) {
             while ((USART2->ISR & (1U << 7U)) == 0U) { // while TXE not empty
             }
-            USART2->TDR = b; // put into the DR register
+            USART2->TDR = b;
         }
         else {
             break;

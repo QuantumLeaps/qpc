@@ -31,7 +31,7 @@ to be adjusted in the provided Makefile, by editing the symbol: GNU_ARM.
 As described in the comment for this symbol, the GNU-ARM toolset is taken
 from: http://gnutoolchains.com/arm-eabi
 
-It is highly recommened to use the same GNU-ARM distribution, especially
+It is highly recommended to use the same GNU-ARM distribution, especially
 for ARM Cortex-M4F projects, due to the support for the hardware FPU
 (float-abi=hard).
 ***

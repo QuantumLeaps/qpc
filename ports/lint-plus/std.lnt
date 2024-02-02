@@ -27,7 +27,6 @@
 //!
 //! @file
 //! @brief PC-Lint-Plus standard option file
-//! @ingroup lint
 
 // message formatting options...
 -hF1            // output: a single line

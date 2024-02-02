@@ -9,6 +9,13 @@ This example demonstrates the [Dining Philosophers Problem (DPP) application](ht
 <b>STM32 NUCLEO-C031C6</b>
 </p>
 
+> **NOTE**
+This example can be used as a starting point for any other ARM Cortex-M MCU, including those based on different Cortex-M cores (M0/M0+/M3/M4/M7/M23/M33/M55/M85...) The most simplifying factor is that the QP-ports to Cortex-M don't need to change at all (the correct port is selected automatically based on the standard preprocessor macros provided by the compiler).
+
+<p align="center">
+<img src="../qp_arm-cm.jpg"/>
+</p>
+
 ## Features Demonstrated
 - multiple cooperating active objects
 - immutable (const) events
@@ -61,13 +68,13 @@ examples\arm-cm\dpp_nucleo-c031c6
 |   |   \---targetConfigs
 |   |       Makefile          // Makefile for GNU-ARM
 |   +---armclang   // ARM/KEIL toolchain with Compiler 6 (ARM/CLANG)
-|   |       dpp-qk.uvprojx // uVision project
+|   |       dpp-qxk.uvprojx // uVision project
 |   \---iar        // IAR EWARM
-|           dpp-qk.eww     // IAR EW-ARM workspace
+|           dpp-qxk.eww     // IAR EW-ARM workspace
 |
 ```
 
-# Builing the example
+# Building the example
 
 ### GNU/ARM
 - open terminal window
@@ -104,6 +111,17 @@ in Keil uVision IDE. Build/Debug/Download to the board from the IDE.
 - Open the provided IAR EWARM workspace (either `dpp-qk.eww`, `dpp-qv.eww`, or `dpp-qxk.eww`)
 in IAR EWARM IDE. Build/Debug/Download to the board from the IDE.
 - Change the build configuration in the "Project Configuration" drop-down menu.
+
+
+# Uploading the Binary to the Board
+The STM32 NUCLEO boards enumerate as a USB drive when connected to the host computer. The boards then can be programmed by **copying** the binary to that USB drive. This can be useful for the command-line GNU/ARM build. For example, to program the binary produced for the Debug configuration, you can type:
+
+```
+copy dbg\dpp-qk.bin E:
+```
+NOTE: The above command assumes that the NUCLEO board enumerated as drive E:. Of course you need to adjust the command for your specific drive letter.
+
+Alternatively, if you use IDEs, such as KEIL-MDK or IAR EWARM, you can program the board from the IDE (e.g., by starting a debug session).
 
 
 # Tracing with QP/Spy

@@ -57,12 +57,12 @@ PROJECT     := dpp
 # project directories
 #
 
-# location of the QP/C framework (if not provided in an environemnt var.)
+# location of the QP/C framework (if not provided in an environment var.)
 ifeq ($(QPC),)
 QPC := ../../../../..
 endif
 
-# location of the FREERTOS (if not provided in an environemnt var.)
+# location of the FREERTOS (if not provided in an environment var.)
 ifeq ($(FREERTOS),)
 FREERTOS := $(QPC)/3rd_party/FreeRTOS-Kernel
 endif
@@ -202,7 +202,7 @@ RM    := rm
 # build options for various configurations for ARM Cortex-M
 #
 
-# combine all the soruces...
+# combine all the sources...
 C_SRCS += $(QP_SRCS) $(RTOS_SRCS)
 ASM_SRCS += $(QP_ASMS)
 

@@ -123,7 +123,7 @@ $(error this example is for POSIX only and does not build or run on Windows)
 else
 
 # NOTE:
-# Ths example is only for multithreaded POSIX (NOT for POSIX-QV)
+# This example is only for multithreaded POSIX (NOT for POSIX-QV)
 #
 QP_PORT_DIR := $(QPCPP)/ports/posix
 

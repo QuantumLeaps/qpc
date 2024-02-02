@@ -223,7 +223,7 @@ void BSP_displayPhilStat(uint8_t n, char const *stat) {
 }
 //............................................................................
 void BSP_displayPaused(uint8_t const paused) {
-    // not enouhg LEDs to implement this feature
+    // not enough LEDs to implement this feature
     if (paused != 0U) {
         //P1OUT |=  LED1;
     }
@@ -361,7 +361,7 @@ QSTimeCtr QS_onGetTime(void) {  // invoked with interrupts DISABLED
     if ((TA0CTL & TAIFG) == 0U) {  // interrupt not pending?
         return QS_tickTime_ + TA0R;
     }
-    else { // the rollover occured, but the timerA_ISR did not run yet
+    else { // the rollover occurred, but the timerA_ISR did not run yet
         return QS_tickTime_
            + (((BSP_SMCLK/8U) + BSP_TICKS_PER_SEC/2U)/BSP_TICKS_PER_SEC) + 1U
            + TA0R;

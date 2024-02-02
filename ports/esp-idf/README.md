@@ -4,7 +4,7 @@ IoT Framework, which is loosely based on the [FreeRTOS kernel][2].
 
 ---------------------------------------------------------------------------
 # About QP/C Port to ESP-IDF
-"Experimental" means that the port has not been thouroughly tested at
+"Experimental" means that the port has not been thoroughly tested at
 Quantum Leaps and no working examples are provided.
 
 

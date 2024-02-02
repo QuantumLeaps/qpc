@@ -53,5 +53,5 @@ cpu.lnt             // for the chosen CPU
 qpc.lnt               // QP/C options
 
 //============================================================================
-// additional supporession rules for bulding this application
+// additional suppression rules for building this application
 

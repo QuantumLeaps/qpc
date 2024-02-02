@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 
     // initialize the QS software tracing
     if (QS_INIT(argc > 1 ? argv[1] : (void *)0) == 0U) {
-        Q_ERROR(); // no point in continuing if QS initialzation fails
+        Q_ERROR(); // no point in continuing if QS initialization fails
     }
 
     BSP_init(); // initialize the BSP
