@@ -81,7 +81,7 @@ This file is situated in the root directory of qpc. It performs a pre-initializa
 
 ### General usage hints
 1. Set `QPC_SDK_PATH` or `QPC_FETCH_FROM_GIT` either in your `CMakeLists.txt` file or as an environment variable.
-2. Optionally the configuration variable(s)
+2. Optionally set the configuration variable(s)
 3. Include `qpc_sdk_import` __before__ defining the cmake `project()`
 4. Define the project
 5. Define the cmake target (executable or library)
