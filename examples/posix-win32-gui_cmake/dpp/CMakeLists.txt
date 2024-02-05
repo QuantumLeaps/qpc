@@ -1,4 +1,10 @@
-# dpp
+# dpp example implementing cmake controlled generation and build for
+#   dpp example on console
+#   dpp GUI example, win32 GUI (MS Windows) or GTK+3 GUI (MS Windows or Linux)
+#   with all required configurations Debug, Release Spy
+# and qutest support according to the dpp qutest example
+# the following presets are defined in CMakePresets.json
+
 
 # use a recent CMake version
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
@@ -7,6 +13,41 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
     cmake_policy(SET CMP0083 NEW)
 endif()
 
+message(STATUS
+"----- Intro ------------------------------------------------------------------------------------
+This qpc example implements a CMAKE controlled generation and build of
+all configurations available in the qpc examples for host systems (win32, posix).
+The generation and build is selectable via the presets defined in 'CMakePresets.json'.
+The following presets are available:
+    - dpp - this builds for console output, using the predefined system compiler.
+    - mingw - this builds for console output, using a MinGW toolchain via a toolchains file.
+    - dpp-gui - this builds for GUI output, using the predefined system compiler. The GUI is
+      selected automatically. Win32 on MS Windows, GTK+3 on Posix. Force GTK+3 on MS Windows by
+      setting the configuration variable 'USE_GTK'.
+      e.g. generate with 'cmake --preset=dpp-gui -DUSE_GTK=TRUE'
+    - mingw-gui - as above, using a MinGW toolchain via a toolchains file.
+
+To configure and build one of these presets, do:
+    'cmake --preset=<preset>', then build with 'cmake --build --preset=<preset>'
+    This builds the 'Debug' configuration by default. You can build any of the standard qpc
+    configurations ('Debug', 'Relase' or 'Spy') by doing
+    'cmake --build --preset=<preset> --config=<config>'
+    This behaviour is achieved by the 'Ninja Multi-Config' generator for those build presets.
+
+To configure and build one of the test presets do
+    'cmake --preset=test_<dpp|philo|table>' then build with
+    'cmake --preset=test_<test>'
+    The test presets use the 'Ninja' generator with the 'Spy' configuration and the C preprocessor
+    macro 'Q_UTEST' predefined in 'CMakePresets.json'.
+
+The following test configurations can be selected via preset
+    - test_dpp - the qutest scenario from <QPC>/examples/qutest/dpp/test_dpp.
+    - test_philo - the qutest scenario from <QPC>/examples/qutest/dpp/test_philo.
+    - test_table - the qutest scenario from <QPC>/examples/qutest/dpp/test_table.
+
+-- ------------------------------------------------------------------------------------------------
+"
+)
 # first of all protect against in-source builds
 get_filename_component(_srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
 get_filename_component(_bindir "${CMAKE_BINARY_DIR}" REALPATH)
@@ -46,10 +87,6 @@ project(
     LANGUAGES C
 )
 
-if(QPC_CFG_GUI AND (CMAKE_SYSTEM_NAME STREQUAL Windows OR WIN32))
-    enable_language(RC)
-endif()
-
 # update the module search path
 if(CMAKE_HOST_WIN32)
     string(REPLACE "\\" "/" HOME_PATH "$ENV{HOMEDRIVE}$ENV{HOMEPATH}")
@@ -67,19 +104,40 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
 endif()
 
 # the project target
-add_executable(dpp main.c philo.c table.c)
-if(QPC_CFG_GUI)
-    if(USE_GTK OR CMAKE_SYSTEM_NAME STREQUAL Linux OR UNIX)
-        # use GTK3+
-        target_sources(dpp PRIVATE bsp-gtk.c)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL Windows OR WIN32)
-        # use Win32 GUI
-        target_sources(dpp PRIVATE bsp-gui.c Resource.rc)
+if(QPC_CFG_UNIT_TEST)
+    message(STATUS "UNIT test for '${CFG_QUTEST_TARGET}'")
+    if(CFG_QUTEST_TARGET)
+        if(NOT EXISTS qutest/test_${CFG_QUTEST_TARGET}.c)
+            message(FATAL_ERROR "test configuration '${CFG_QUTEST_TARGET} not found!")
+        else()
+            add_executable(dpp qutest/bsp.c qutest/test_${CFG_QUTEST_TARGET}.c)
+            if((CFG_QUTEST_TARGET STREQUAL philo) OR (CFG_QUTEST_TARGET STREQUAL table))
+                target_sources(dpp PRIVATE ${CFG_QUTEST_TARGET}.c)
+            else()
+                target_sources(dpp PRIVATE philo.c table.c)
+            endif()
+            set_property(TARGET dpp PROPERTY OUTPUT_NAME ${CFG_QUTEST_TARGET}_test)
+            target_include_directories(dpp PRIVATE ${CMAKE_SOURCE_DIR})
+        endif()
     else()
-        message(FATAL_ERROR "no GUI support available for this build!")
+        message(FATAL_ERROR "'CFG_QUTEST_TARGET' not set! Set this to 'dpp', 'philo' or 'table'.")
     endif()
 else()
-    target_sources(dpp PRIVATE bsp.c)
+    add_executable(dpp main.c philo.c table.c)
+    if(QPC_CFG_GUI)
+        if(USE_GTK OR CMAKE_SYSTEM_NAME STREQUAL Linux OR UNIX)
+            # use GTK3+
+            target_sources(dpp PRIVATE bsp-gtk.c)
+        elseif(CMAKE_SYSTEM_NAME STREQUAL Windows OR WIN32)
+            # use Win32 GUI
+            enable_language(RC)
+            target_sources(dpp PRIVATE bsp-gui.c Resource.rc)
+        else()
+            message(FATAL_ERROR "no GUI support available for this build!")
+        endif()
+    else()
+        target_sources(dpp PRIVATE bsp.c)
+    endif()
 endif()
 
 # set position independent code compile/link parameters
@@ -150,6 +208,7 @@ target_compile_definitions(dpp
 	PRIVATE
         $<$<CONFIG:Spy>:Q_SPY>
         $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
+        $<$<BOOL:${QPC_CFG_UNIT_TEST}>:Q_UTEST>
 )
 
 target_compile_options(dpp
