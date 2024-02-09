@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-11-30
-//! @version Last updated for: @ref qpc_7_3_1
+//! @date Last updated on: 2024-02-15
+//! @version Last updated for: @ref qpc_7_3_3
 //!
 //! @file
 //! @brief QF/C port to Win32 (multithreaded)
@@ -40,7 +40,6 @@
 #endif // Q_SPY
 
 #include <limits.h>       // limits of dynamic range for integers
-#include <conio.h>        // console input/output
 
 Q_DEFINE_THIS_MODULE("qf_port")
 
@@ -61,7 +60,7 @@ static int_t l_critSectNest;   // critical section nesting up-down counter
 //............................................................................
 void QF_enterCriticalSection_(void) {
     EnterCriticalSection(&l_win32CritSect);
-    Q_ASSERT_INCRIT(100, l_critSectNest == 0); // NO nesting of crit.sect.!
+    Q_ASSERT_INCRIT(100, l_critSectNest == 0); // NO nesting of crit.sect!
     ++l_critSectNest;
 }
 //............................................................................
@@ -140,7 +139,11 @@ void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
     l_tickPrio = tickPrio;
 }
 
-//............................................................................
+// console access ============================================================
+#ifdef QF_CONSOLE
+
+#include <conio.h>        // console input/output
+
 void QF_consoleSetup(void) {
 }
 //............................................................................
@@ -157,6 +160,8 @@ int QF_consoleGetKey(void) {
 int QF_consoleWaitForKey(void) {
     return (int)_getwch();
 }
+
+#endif // #ifdef QF_CONSOLE
 
 // QActive functions =========================================================
 

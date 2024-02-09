@@ -47,8 +47,8 @@
 #define QP_VERSION     733U
 #define QP_VERSION_STR "7.3.3"
 
-//! Encrypted  current QP release (7.3.3) and date (2024-01-31)
-#define QP_RELEASE     0x70DEE7F2U
+//! Encrypted  current QP release (7.3.3) and date (2024-03-01)
+#define QP_RELEASE     0x70C4F752U
 
 //============================================================================
 //! @cond INTERNAL

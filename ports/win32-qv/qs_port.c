@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-12-13
-//! @version Last updated for: @ref qpc_7_3_2
+//! @date Last updated on: 2024-02-15
+//! @version Last updated for: @ref qpc_7_3_3
 //!
 //! @file
 //! @brief QS/C port for Win32 API
@@ -41,7 +41,6 @@
 #include "safe_std.h" // portable "safe" <stdio.h>/<string.h> facilities
 #include <stdlib.h>
 #include <time.h>
-#include <conio.h>
 
 // Minimum required Windows version is Windows-XP or newer (0x0501)
 #ifdef WINVER

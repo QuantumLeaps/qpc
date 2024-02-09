@@ -293,6 +293,24 @@ void QS_rxParse(void) {
     }
 }
 
+//${QS::QS-RX::setCurrObj} ...................................................
+//! @static @public @memberof QS
+void QS_setCurrObj(
+    uint8_t const obj_kind,
+    void * const obj_ptr)
+{
+    QS_CRIT_STAT
+    QS_CRIT_ENTRY();
+    Q_REQUIRE_INCRIT(300, obj_kind < Q_DIM(QS_rxPriv_.currObj));
+
+    QS_MEM_SYS();
+
+    QS_rxPriv_.currObj[obj_kind] = obj_ptr;
+
+    QS_MEM_APP();
+    QS_CRIT_EXIT();
+}
+
 //${QS::QS-RX::rxGetNfree} ...................................................
 //! @static @public @memberof QS
 uint16_t QS_rxGetNfree(void) {

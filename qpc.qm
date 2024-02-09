@@ -291,7 +291,7 @@ return me;</code>
     <code>return (me != (QEvt const *)0)
        &amp;&amp; ((me-&gt;evtTag_ &amp; 0xF0U) == QEVT_MARKER);</code>
    </operation>
-   <!--${QEP::QEvt::getPoolId_}-->
+   <!--${QEP::QEvt::getPoolNum_}-->
    <operation name="getPoolNum_" type="uint_fast8_t" visibility="0x02" properties="0x02">
     <specifiers>const</specifiers>
     <documentation>//! @private @memberof QEvt
@@ -513,23 +513,27 @@ QS_MEM_APP();
 QF_CRIT_EXIT();
 
 // drill down into the state hierarchy with initial transitions...
+int_fast8_t limit = QHSM_MAX_NEST_DEPTH_; // loop hard limit
 do {
     QStateHandler path[QHSM_MAX_NEST_DEPTH_]; // tran entry path array
     int_fast8_t ip = 0; // tran entry path index
 
     path[0] = me-&gt;temp.fun;
     (void)QHSM_RESERVED_EVT_(me-&gt;temp.fun, Q_EMPTY_SIG);
-    while (me-&gt;temp.fun != t) {
+    while ((me-&gt;temp.fun != t) &amp;&amp; (ip &lt; (QHSM_MAX_NEST_DEPTH_ - 1))) {
         ++ip;
-        QF_CRIT_ENTRY();
-        Q_ASSERT_INCRIT(220, ip &lt; QHSM_MAX_NEST_DEPTH_);
-        QF_CRIT_EXIT();
         path[ip] = me-&gt;temp.fun;
         (void)QHSM_RESERVED_EVT_(me-&gt;temp.fun, Q_EMPTY_SIG);
     }
+    QF_CRIT_ENTRY();
+    // The initial transition source state must be reached
+    // Too many state nesting levels or &quot;malformed&quot; HSM.
+    Q_ASSERT_INCRIT(220, me-&gt;temp.fun == t);
+    QF_CRIT_EXIT();
+
     me-&gt;temp.fun = path[0];
 
-    // nested initial tran.; drill into the target hierarchy...
+    // retrace the entry path in reverse (desired) order...
     do {
         // enter path[ip]
         if (QHSM_RESERVED_EVT_(path[ip], Q_ENTRY_SIG)
@@ -558,9 +562,14 @@ do {
     }
 #endif // Q_SPY
 
-} while (r == Q_RET_TRAN);
+    --limit;
+} while ((r == Q_RET_TRAN) &amp;&amp; (limit &gt; 0));
 
-QS_CRIT_ENTRY();
+QF_CRIT_ENTRY();
+// Loop limit must not be reached.
+// Too many state nesting levels or likely &quot;malformed&quot; HSM
+Q_ENSURE_INCRIT(290, limit &gt; 0);
+
 QS_MEM_SYS();
 QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, qsId)
     QS_TIME_PRE_();    // time stamp
@@ -568,7 +577,8 @@ QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, qsId)
     QS_FUN_PRE_(t);    // the new active state
 QS_END_PRE_()
 QS_MEM_APP();
-QS_CRIT_EXIT();
+
+QF_CRIT_EXIT();
 
 me-&gt;state.fun = t;   // change the current active state
 #ifndef Q_UNSAFE
@@ -613,6 +623,7 @@ QF_CRIT_EXIT();
 // process the event hierarchically...
 QState r;
 me-&gt;temp.fun = s;
+int_fast8_t limit = QHSM_MAX_NEST_DEPTH_; // loop hard limit
 do {
     s = me-&gt;temp.fun;
     r = (*s)(me, e); // invoke state handler s
@@ -631,7 +642,13 @@ do {
 
         r = QHSM_RESERVED_EVT_(s, Q_EMPTY_SIG); // superstate of s
     }
-} while (r == Q_RET_SUPER);
+
+    --limit;
+} while ((r == Q_RET_SUPER) &amp;&amp; (limit &gt; 0));
+
+QF_CRIT_ENTRY();
+Q_ASSERT_INCRIT(310, limit &gt; 0);
+QF_CRIT_EXIT();
 
 if (r &gt;= Q_RET_TRAN) { // regular tran. taken?
     QStateHandler path[QHSM_MAX_NEST_DEPTH_];
@@ -641,14 +658,20 @@ if (r &gt;= Q_RET_TRAN) { // regular tran. taken?
     path[2] = s; // tran. source
 
     // exit current state to tran. source s...
-    for (; t != s; t = me-&gt;temp.fun) {
+    limit = QHSM_MAX_NEST_DEPTH_; // loop hard limit
+    for (; (t != s) &amp;&amp; (limit &gt; 0); t = me-&gt;temp.fun) {
         // exit from t
         if (QHSM_RESERVED_EVT_(t, Q_EXIT_SIG) == Q_RET_HANDLED) {
             QS_STATE_EXIT_(t, qsId);
             // find superstate of t
             (void)QHSM_RESERVED_EVT_(t, Q_EMPTY_SIG);
         }
+        --limit;
     }
+    QF_CRIT_ENTRY();
+    Q_ASSERT_INCRIT(320, limit &gt; 0);
+    QF_CRIT_EXIT();
+
     int_fast8_t ip = QHsm_tran_(me, path, qsId); // take the tran.
 
 #ifdef Q_SPY
@@ -696,18 +719,19 @@ if (r &gt;= Q_RET_TRAN) { // regular tran. taken?
         // find superstate
         (void)QHSM_RESERVED_EVT_(me-&gt;temp.fun, Q_EMPTY_SIG);
 
-        while (me-&gt;temp.fun != t) {
+        while ((me-&gt;temp.fun != t) &amp;&amp; (ip &lt; (QHSM_MAX_NEST_DEPTH_ - 1))) {
             ++ip;
             path[ip] = me-&gt;temp.fun;
             // find superstate
             (void)QHSM_RESERVED_EVT_(me-&gt;temp.fun, Q_EMPTY_SIG);
         }
-        me-&gt;temp.fun = path[0];
-
-        // entry path must not overflow
         QF_CRIT_ENTRY();
-        Q_ASSERT_INCRIT(410, ip &lt; QHSM_MAX_NEST_DEPTH_);
+        // The initial transition source state must be reached.
+        // Too many state nesting levels or &quot;malformed&quot; HSM.
+        Q_ASSERT_INCRIT(330, me-&gt;temp.fun == t);
         QF_CRIT_EXIT();
+
+        me-&gt;temp.fun = path[0];
 
         // retrace the entry path in reverse (correct) order...
         do {
@@ -931,16 +955,13 @@ else {
 
                 // find target-&gt;super-&gt;super...
                 QState r = QHSM_RESERVED_EVT_(path[1], Q_EMPTY_SIG);
-                while (r == Q_RET_SUPER) {
+                while ((r == Q_RET_SUPER)
+                       &amp;&amp; (ip &lt; (QHSM_MAX_NEST_DEPTH_ - 1)))
+                {
                     ++ip;
                     path[ip] = me-&gt;temp.fun; // store the entry path
                     if (me-&gt;temp.fun == s) { // is it the source?
                         iq = 1; // indicate that the LCA found
-
-                        // entry path must not overflow
-                        QF_CRIT_ENTRY();
-                        Q_ASSERT_INCRIT(510, ip &lt; QHSM_MAX_NEST_DEPTH_);
-                        QF_CRIT_EXIT();
                         --ip; // do not enter the source
                         r = Q_RET_HANDLED; // terminate the loop
                     }
@@ -948,14 +969,14 @@ else {
                         r = QHSM_RESERVED_EVT_(me-&gt;temp.fun, Q_EMPTY_SIG);
                     }
                 }
+                QF_CRIT_ENTRY();
+                // Tran. source must be found within the nesting depth
+                // Too many state nesting levels or &quot;malformed&quot; HSM.
+                Q_ASSERT_INCRIT(510, r != Q_RET_SUPER);
+                QF_CRIT_EXIT();
 
                 // the LCA not found yet?
                 if (iq == 0) {
-                    // entry path must not overflow
-                    QF_CRIT_ENTRY();
-                    Q_ASSERT_INCRIT(520, ip &lt; QHSM_MAX_NEST_DEPTH_);
-                    QF_CRIT_EXIT();
-
                     // exit source s
                     if (QHSM_RESERVED_EVT_(s, Q_EXIT_SIG)
                         == Q_RET_HANDLED)
@@ -983,6 +1004,7 @@ else {
                         // (g) check each source-&gt;super-&gt;...
                         // for each target-&gt;super...
                         r = Q_RET_IGNORED; // keep looping
+                        int_fast8_t limit = QHSM_MAX_NEST_DEPTH_;
                         do {
                             // exit from t
                             if (QHSM_RESERVED_EVT_(t, Q_EXIT_SIG)
@@ -1005,13 +1027,21 @@ else {
                                     --iq;
                                 }
                             } while (iq &gt;= 0);
-                        } while (r != Q_RET_HANDLED);
+
+                            --limit;
+                        } while ((r != Q_RET_HANDLED) &amp;&amp; (limit &gt; 0));
+                        QF_CRIT_ENTRY();
+                        Q_ASSERT_INCRIT(530, limit &gt; 0);
+                        QF_CRIT_EXIT();
                     }
                 }
             }
         }
     }
 }
+QF_CRIT_ENTRY();
+Q_ENSURE_INCRIT(590, ip &lt; QHSM_MAX_NEST_DEPTH_);
+QF_CRIT_EXIT();
 return ip;</code>
    </operation>
    <!--${QEP::QHsm::top}-->
@@ -1098,12 +1128,16 @@ QF_CRIT_EXIT();
 me-&gt;state.obj = me-&gt;temp.tatbl-&gt;target;
 
 // drill down into the state hierarchy with initial transitions...
+int_fast8_t limit = QMSM_MAX_NEST_DEPTH_; // loop hard limit
 do {
     // execute the tran. table
     r = QMsm_execTatbl_(me, me-&gt;temp.tatbl, qsId);
-} while (r &gt;= Q_RET_TRAN_INIT);
+    --limit;
+} while ((r &gt;= Q_RET_TRAN_INIT) &amp;&amp; (limit &gt; 0));
 
-QS_CRIT_ENTRY();
+QF_CRIT_ENTRY();
+Q_ENSURE_INCRIT(290, limit &gt; 0);
+
 QS_MEM_SYS();
 QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, qsId)
     QS_TIME_PRE_();    // time stamp
@@ -1111,7 +1145,8 @@ QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, qsId)
     QS_FUN_PRE_(me-&gt;state.obj-&gt;stateHandler); // the new current state
 QS_END_PRE_()
 QS_MEM_APP();
-QS_CRIT_EXIT();
+
+QF_CRIT_EXIT();
 
 #ifndef Q_UNSAFE
 me-&gt;temp.uint = ~me-&gt;state.uint;
@@ -1154,6 +1189,7 @@ QF_CRIT_EXIT();
 
 // scan the state hierarchy up to the top state...
 QState r;
+int_fast8_t limit = QMSM_MAX_NEST_DEPTH_; // loop hard limit
 do {
     r = (*t-&gt;stateHandler)(me, e); // call state handler function
 
@@ -1186,7 +1222,11 @@ do {
 
         t = t-&gt;superstate; // advance to the superstate
     }
-} while (t != (QMState *)0);
+    --limit;
+} while ((t != (QMState *)0) &amp;&amp; (limit &gt; 0));
+QF_CRIT_ENTRY();
+Q_ASSERT_INCRIT(310, limit &gt; 0);
+QF_CRIT_EXIT();
 
 if (r &gt;= Q_RET_TRAN) { // any kind of tran. taken?
 #ifdef Q_SPY
@@ -1198,6 +1238,7 @@ if (r &gt;= Q_RET_TRAN) { // any kind of tran. taken?
     QF_CRIT_EXIT();
 #endif // Q_SPY
 
+    limit = QMSM_MAX_NEST_DEPTH_; // loop hard limit
     do {
         // save the tran-action table before it gets clobbered
         struct QMTranActTable const * const tatbl = me-&gt;temp.tatbl;
@@ -1262,10 +1303,12 @@ if (r &gt;= Q_RET_TRAN) { // any kind of tran. taken?
         }
 
         t = s; // set target to the current state
+       --limit;
+    } while ((r &gt;= Q_RET_TRAN) &amp;&amp; (limit &gt; 0));
 
-    } while (r &gt;= Q_RET_TRAN);
+    QF_CRIT_ENTRY();
+    Q_ASSERT_INCRIT(320, limit &gt; 0);
 
-    QS_CRIT_ENTRY();
     QS_MEM_SYS();
     QS_BEGIN_PRE_(QS_QEP_TRAN, qsId)
         QS_TIME_PRE_();                 // time stamp
@@ -1275,7 +1318,8 @@ if (r &gt;= Q_RET_TRAN) { // any kind of tran. taken?
         QS_FUN_PRE_(s-&gt;stateHandler);   // the new active state
     QS_END_PRE_()
     QS_MEM_APP();
-    QS_CRIT_EXIT();
+
+    QF_CRIT_EXIT();
 }
 
 #ifdef Q_SPY
@@ -1339,7 +1383,7 @@ me-&gt;temp.uint = ~me-&gt;state.uint;
     <code>bool inState = false; // assume that this SM is not in 'state'
 
 QMState const *s = me-&gt;state.obj;
-int_fast8_t limit = QMSM_MAX_NEST_DEPTH_ + 1; // loop hard limit
+int_fast8_t limit = QMSM_MAX_NEST_DEPTH_; // loop hard limit
 for (; (s != (QMState *)0) &amp;&amp; (limit &gt; 0); --limit) {
     if (s-&gt;stateHandler == state) { // match found?
         inState = true;
@@ -1352,7 +1396,7 @@ for (; (s != (QMState *)0) &amp;&amp; (limit &gt; 0); --limit) {
 
 QF_CRIT_STAT
 QF_CRIT_ENTRY();
-Q_ENSURE_INCRIT(690, limit &gt; 0);
+Q_ENSURE_INCRIT(490, limit &gt; 0);
 QF_CRIT_EXIT();
 
 return inState;</code>
@@ -1366,7 +1410,7 @@ return inState;</code>
     <code>bool inState = false; // assume that this SM is not in 'state'
 
 QMState const *s = me-&gt;super.state.obj;
-int_fast8_t limit = QMSM_MAX_NEST_DEPTH_ + 1; // loop hard limit
+int_fast8_t limit = QMSM_MAX_NEST_DEPTH_; // loop hard limit
 for (; (s != (QMState *)0) &amp;&amp; (limit &gt; 0); --limit) {
     if (s == stateObj) { // match found?
         inState = true;
@@ -1379,7 +1423,7 @@ for (; (s != (QMState *)0) &amp;&amp; (limit &gt; 0); --limit) {
 
 QF_CRIT_STAT
 QF_CRIT_ENTRY();
-Q_ENSURE_INCRIT(790, limit &gt; 0);
+Q_ENSURE_INCRIT(590, limit &gt; 0);
 QF_CRIT_EXIT();
 
 return inState;</code>
@@ -1403,7 +1447,11 @@ return inState;</code>
 bool isFound = false; // start with the child not found
 QMState const *s;
 
-for (s = me-&gt;super.state.obj; s != (QMState *)0; s = s-&gt;superstate) {
+int_fast8_t limit = QMSM_MAX_NEST_DEPTH_; // loop hard limit
+for (s = me-&gt;super.state.obj;
+     (s != (QMState *)0) &amp;&amp; (limit &gt; 0);
+     s = s-&gt;superstate)
+{
     if (s == parent) {
         isFound = true; // child is found
         break;
@@ -1411,9 +1459,19 @@ for (s = me-&gt;super.state.obj; s != (QMState *)0; s = s-&gt;superstate) {
     else {
         child = s;
     }
+    --limit;
 }
+QF_CRIT_STAT
+QF_CRIT_ENTRY();
+Q_ASSERT_INCRIT(610, limit &gt; 0);
+QF_CRIT_EXIT();
+
 if (!isFound) { // still not found?
-    for (s = me-&gt;super.temp.obj; s != (QMState *)0; s = s-&gt;superstate) {
+    limit = QMSM_MAX_NEST_DEPTH_; // loop hard limit
+    for (s = me-&gt;super.temp.obj;
+         (s != (QMState *)0) &amp;&amp; (limit &gt; 0);
+         s = s-&gt;superstate)
+    {
         if (s == parent) {
             isFound = true; // child is found
             break;
@@ -1421,12 +1479,12 @@ if (!isFound) { // still not found?
         else {
             child = s;
         }
+        --limit;
     }
 }
 
-QF_CRIT_STAT
 QF_CRIT_ENTRY();
-Q_ENSURE_INCRIT(890, isFound);
+Q_ENSURE_INCRIT(690, isFound &amp;&amp; (limit &gt; 0));
 QF_CRIT_EXIT();
 
 return child; // return the child</code>
@@ -1450,14 +1508,13 @@ QF_CRIT_STAT
 QF_CRIT_ENTRY();
 // precondition:
 // - the tran-action table pointer must not be NULL
-Q_REQUIRE_INCRIT(400, tatbl != (struct QMTranActTable *)0);
+Q_REQUIRE_INCRIT(700, tatbl != (struct QMTranActTable *)0);
 QF_CRIT_EXIT();
 
 QState r = Q_RET_NULL;
-for (QActionHandler const *a = &amp;tatbl-&gt;act[0];
-     *a != Q_ACTION_CAST(0);
-     ++a)
-{
+int_fast8_t limit = QMSM_MAX_TRAN_LENGTH_; // loop hard limit
+QActionHandler const *a = &amp;tatbl-&gt;act[0];
+for (; (*a != Q_ACTION_CAST(0)) &amp;&amp; (limit &gt; 0); ++a) {
     r = (*(*a))(me); // call the action through the 'a' pointer
 #ifdef Q_SPY
     QS_CRIT_ENTRY();
@@ -1501,7 +1558,11 @@ for (QActionHandler const *a = &amp;tatbl-&gt;act[0];
     QS_MEM_APP();
     QS_CRIT_EXIT();
 #endif // Q_SPY
+    --limit;
 }
+QF_CRIT_ENTRY();
+Q_ENSURE_INCRIT(790, *a == Q_ACTION_CAST(0));
+QF_CRIT_EXIT();
 
 me-&gt;state.obj = (r &gt;= Q_RET_TRAN)
     ? me-&gt;temp.tatbl-&gt;target
@@ -1529,7 +1590,8 @@ QF_CRIT_STAT
 
 // exit states from the current state to the tran. source state
 QMState const *s = cs;
-while (s != ts) {
+int_fast8_t limit = QMSM_MAX_NEST_DEPTH_; // loop hard limit
+for (; (s != ts) &amp;&amp; (limit &gt; 0); --limit) {
     // exit action provided in state 's'?
     if (s-&gt;exitAction != Q_ACTION_CAST(0)) {
         // execute the exit action
@@ -1550,10 +1612,13 @@ while (s != ts) {
     if (s == (QMState *)0) { // reached the top of a submachine?
         s = me-&gt;temp.obj; // the superstate from QM_SM_EXIT()
         QF_CRIT_ENTRY();
-        Q_ASSERT_INCRIT(510, s != (QMState *)0); // must be valid
+        Q_ASSERT_INCRIT(810, s != (QMState *)0); // must be valid
         QF_CRIT_EXIT();
     }
-}</code>
+}
+QF_CRIT_ENTRY();
+Q_ENSURE_INCRIT(890, limit &gt; 0);
+QF_CRIT_EXIT();</code>
    </operation>
    <!--${QEP::QMsm::enterHistory_}-->
    <operation name="enterHistory_" type="QState" visibility="0x02" properties="0x01">
@@ -1587,11 +1652,8 @@ QS_MEM_APP();
 QS_CRIT_EXIT();
 
 int_fast8_t i = 0; // tran. entry path index
-while (s != ts) {
+while ((s != ts) &amp;&amp; (i &lt; QMSM_MAX_ENTRY_DEPTH_)) {
     if (s-&gt;entryAction != Q_ACTION_CAST(0)) {
-        QF_CRIT_ENTRY();
-        Q_ASSERT_INCRIT(620, i &lt; QMSM_MAX_ENTRY_DEPTH_);
-        QF_CRIT_EXIT();
         epath[i] = s;
         ++i;
     }
@@ -1600,6 +1662,9 @@ while (s != ts) {
         ts = s; // force exit from the for-loop
     }
 }
+QF_CRIT_ENTRY();
+Q_ASSERT_INCRIT(910, s == ts);
+QF_CRIT_EXIT();
 
 // retrace the entry path in reverse (desired) order...
 while (i &gt; 0) {
@@ -7828,6 +7893,26 @@ while (QS_rxPriv_.head != tail) { // QS-RX buffer NOT empty?
     }
 }</code>
    </operation>
+   <!--${QS::QS-RX::setCurrObj}-->
+   <operation name="setCurrObj" type="void" visibility="0x00" properties="0x00">
+    <documentation>//! @static @public @memberof QS
+
+//! @static @public @memberof QS</documentation>
+    <!--${QS::QS-RX::setCurrObj::obj_kind}-->
+    <parameter name="obj_kind" type="uint8_t const"/>
+    <!--${QS::QS-RX::setCurrObj::obj_ptr}-->
+    <parameter name="obj_ptr" type="void * const"/>
+    <code>QS_CRIT_STAT
+QS_CRIT_ENTRY();
+Q_REQUIRE_INCRIT(300, obj_kind &lt; Q_DIM(QS_rxPriv_.currObj));
+
+QS_MEM_SYS();
+
+QS_rxPriv_.currObj[obj_kind] = obj_ptr;
+
+QS_MEM_APP();
+QS_CRIT_EXIT();</code>
+   </operation>
    <!--${QS::QS-RX::rxGetNfree}-->
    <operation name="rxGetNfree" type="uint16_t" visibility="0x00" properties="0x00">
     <documentation>//! @static @public @memberof QS
@@ -8838,8 +8923,8 @@ $declare1 ${QP-FuSa}
 #define QP_VERSION     733U
 #define QP_VERSION_STR &quot;7.3.3&quot;
 
-//! Encrypted  current QP release (7.3.3) and date (2024-01-31)
-#define QP_RELEASE     0x70DEE7F2U
+//! Encrypted  current QP release (7.3.3) and date (2024-03-01)
+#define QP_RELEASE     0x70C4F752U
 
 //============================================================================
 //! @cond INTERNAL
@@ -9748,24 +9833,24 @@ enum {
 
 // helper macro to trace state entry
 #define QS_STATE_ENTRY_(state_, qsId_)         \
-    QS_CRIT_ENTRY();                            \
-    QS_MEM_SYS();                               \
+    QS_CRIT_ENTRY();                           \
+    QS_MEM_SYS();                              \
     QS_BEGIN_PRE_(QS_QEP_STATE_ENTRY, (qsId_)) \
-        QS_OBJ_PRE_(me);                        \
-        QS_FUN_PRE_(state_);                    \
-    QS_END_PRE_()                               \
-    QS_MEM_APP();                               \
+        QS_OBJ_PRE_(me);                       \
+        QS_FUN_PRE_(state_);                   \
+    QS_END_PRE_()                              \
+    QS_MEM_APP();                              \
     QS_CRIT_EXIT()
 
 // helper macro to trace state exit
 #define QS_STATE_EXIT_(state_, qsId_)          \
-    QS_CRIT_ENTRY();                            \
-    QS_MEM_SYS();                               \
+    QS_CRIT_ENTRY();                           \
+    QS_MEM_SYS();                              \
     QS_BEGIN_PRE_(QS_QEP_STATE_EXIT, (qsId_))  \
-        QS_OBJ_PRE_(me);                        \
-        QS_FUN_PRE_(state_);                    \
-    QS_END_PRE_()                               \
-    QS_MEM_APP();                               \
+        QS_OBJ_PRE_(me);                       \
+        QS_FUN_PRE_(state_);                   \
+    QS_END_PRE_()                              \
+    QS_MEM_APP();                              \
     QS_CRIT_EXIT()
 
 //! @endcond
@@ -9792,7 +9877,13 @@ Q_DEFINE_THIS_MODULE(&quot;qep_msm&quot;)
 
 enum {
     // maximum depth of state nesting in a QMsm (including the top level)
-    QMSM_MAX_NEST_DEPTH_ = 6
+    QMSM_MAX_NEST_DEPTH_  = 6,
+
+    // maximum length of transition-action array
+    QMSM_MAX_TRAN_LENGTH_ = 3*QMSM_MAX_NEST_DEPTH_,
+
+    // maximum depth of entry levels in a MSM for tran. to history.
+    QMSM_MAX_ENTRY_DEPTH_ = 4
 };
 
 // top-state object for QMsm-style state machines
@@ -9802,11 +9893,6 @@ static struct QMState const l_msm_top_s = {
     Q_ACTION_CAST(0),
     Q_ACTION_CAST(0),
     Q_ACTION_CAST(0)
-};
-
-enum {
-    // maximum depth of entry levels in a MSM for tran. to history.
-    QMSM_MAX_ENTRY_DEPTH_ = 4
 };
 
 //! @endcond

@@ -27,8 +27,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-11-30
-//! @version Last updated for: @ref qpc_7_3_1
+//! @date Last updated on: 2024-02-16
+//! @version Last updated for: @ref qpc_7_3_3
 //!
 //! @file
 //! @brief QP/C port to to POSIX (multithreaded with P-threads)
@@ -48,14 +48,14 @@
 #define Q_NORETURN   _Noreturn void
 
 // QActive event queue and thread types for POSIX
-#define QACTIVE_EQUEUE_TYPE     QEQueue
-#define QACTIVE_OS_OBJ_TYPE     pthread_cond_t
-#define QACTIVE_THREAD_TYPE     bool
+#define QACTIVE_EQUEUE_TYPE  QEQueue
+#define QACTIVE_OS_OBJ_TYPE  pthread_cond_t
+#define QACTIVE_THREAD_TYPE  bool
 
 // QF critical section for POSIX, see NOTE1
 #define QF_CRIT_STAT
-#define QF_CRIT_ENTRY()         QF_enterCriticalSection_()
-#define QF_CRIT_EXIT()          QF_leaveCriticalSection_()
+#define QF_CRIT_ENTRY()      QF_enterCriticalSection_()
+#define QF_CRIT_EXIT()       QF_leaveCriticalSection_()
 
 // QF_LOG2 not defined -- use the internal LOG2() implementation
 
@@ -69,11 +69,13 @@ void QF_setTickRate(uint32_t ticksPerSec, int tickPrio);
 // clock tick callback
 void QF_onClockTick(void);
 
-// abstractions for console access...
-void QF_consoleSetup(void);
-void QF_consoleCleanup(void);
-int QF_consoleGetKey(void);
-int QF_consoleWaitForKey(void);
+#ifdef QF_CONSOLE
+    // abstractions for console access...
+    void QF_consoleSetup(void);
+    void QF_consoleCleanup(void);
+    int QF_consoleGetKey(void);
+    int QF_consoleWaitForKey(void);
+#endif
 
 // include files -------------------------------------------------------------
 #include "qequeue.h"   // POSIX port needs the native event-queue
