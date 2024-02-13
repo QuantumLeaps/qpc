@@ -54,6 +54,13 @@ project(
     LANGUAGES C ASM
 )
 
+# add support for SPY configuration if not set via CMAKE_TOOLCHAIN_FILE
+if(NOT CMAKE_C_FLAGS_SPY)
+    foreach(LANG IN ITEMS C CXX ASM)
+        set(CMAKE_${LANG}_FLAGS_SPY ${CMAKE_${LANG}_FLAGS_DEBUG})
+    endforeach()
+endif()
+
 # check target port plausibility
 if(NOT QPC_CFG_PORT)
     message(WARNING "No PORT is configured! Falling back to target system '${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}'.")
