@@ -1,6 +1,8 @@
 [submodule "3rd_party"]
 	path = 3rd_party
 	url = https://github.com/stefanschober/3rd_party.git
+	branch = cmakeSupport
 [submodule "examples"]
 	path = examples
-	url = https://github.com/stefanschober/qpc-examples
+	url = https://github.com/stefanschober/qpc-examples.git
+	branch = cmakeSupport
