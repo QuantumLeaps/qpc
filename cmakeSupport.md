@@ -67,17 +67,20 @@ To configure the integration of qpc you can provide information either with cmak
 ### `qpc_sdk_init.cmake`
 This file is situated in the root directory of qpc. It performs a pre-initialization of the qpc package and provides the function `qpc_sdk_init`. Call this function from your project's `CMakeLists.txt` file to perform the final integration of qpc into your project. To configure qpc to your projects requirements set these variables before calling `qpc_sdk_init()`
 
-* `QPC_CFG_KERNEL` - set this variable to the QPC kernel for your project. Valid values are QV, QK or QXK
-* `QPC_CFG_PORT` - set this variable to reflect the target platform of your project. Valid values are:
+* `QPC_CFG_KERNEL` - STRING: set this variable to the QPC kernel for your project. Valid values are QV, QK or QXK. Default: QV
+* `QPC_CFG_PORT` - STRING: set this variable to reflect the target platform of your project. Default: host system. Valid values are:
   + `arm-cm`, `arm-cr` - Arm CortexM or CortexR micro controllers. Tested with GNU cross compiler environments.
   + `freertos`, `esp-idf`, `emb-os`, `threadx`, `uc-os2` - real time OS
   + `msp430`, `pic32` - TI MSP430 or PIC32 micro controllers
   + `riscv`- Risc V µC
   + `qep-only`, `qube` - test environments
   + `win32`, `posix` - host environments MS Winows, Linux (Posix compatible systems)
-* `QPC-CFG-GUI` - set this boolean variable to ON/TRUE, if GUI support (win32) shall be compiled in.
-* `QPC_CFG_UNIT_TEST` - set this to ON/TRUE to support qutest, if build configuration `Spy` is active
-* `QPC_CFG_VERBOSE` - set this to enable more verbosity in message output
+* `QPC-CFG-GUI` - BOOL: set this boolean variable to ON/TRUE, if GUI support (win32) shall be compiled in. Default: OFF
+* `QPC_CFG_UNIT_TEST` - BOOL: set this to ON/TRUE to support qutest, if build configuration `Spy` is active. Default: OFF
+* `QPC_CFG_VERBOSE` - BOOL: set this to enable more verbosity in message output. Default: OFF
+* `QPC_CFG_USE_QP_CONFIG` - BOOL: set this to activate the inclusion of `qp_config.h`. Default: OFF
+* `QPC_CFG_ADDITIONAL_INCDIRS` - LIST: set this to a CMAKE list (semicolon separated entries) of additional include directories for qpc. Default: Directory
+  containing the master `CMakeLists.txt` file.
 
 ### General usage hints
 1. Set `QPC_SDK_PATH` or `QPC_FETCH_FROM_GIT` either in your `CMakeLists.txt` file or as an environment variable.
@@ -101,3 +104,32 @@ Generate and build your cmake project
   Define the build configurations for your projects in a presets definitions file.
   Refer to the [CMakePresets.json manual](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html) for further details.
   Then you generate with `cmake --preset=<preset> .` from your project directory. The build then can be started with `cmake --build --preset=<preset>`.
+
+## QPC configurations support
+Many `qpc` examples provide 3 build configurations:
+* `Debug` - build with debug support and debug symbols. Most optimizations are turned off
+* `Release` - build without debug support. Activate optimizations instead
+* `Spy` - build like `Debug`. Additionally activate support for `QSpy`.
+
+These configurations are also supported by qpc with cmake. Different possibilities exist to activate those.
+
+### Multi configuration generators
+The most easy way to make use of the different configurations is to use a multi config generator like `Ninja Multi-Config` or `MS Visual Studio`.
+Using one of such generators enables to generate the build system using `cmake` and afterwards simply selecting the desired build configuration like
+`cmake --build <Build Directory> --config=<Debug|Release|Spy>`
+
+To support this, the `cmake` variables
+* `CMAKE_C_FLAGS_<CONFIGURATION>`
+* `CMAKE_CXX_FLAGS_<CONFIGURATION>`
+* `CMAKE_ASM_FLAGS_<CONFIGURATION>`
+* `CMAKE_EXE_LINKER_FLAGS_<CONFIGURATION>`
+
+have to be set for all configurations. The desired place to hold these settings is the `toolchain` file of the compilation toolchain in use.
+If no `toolchain` file is used, the `cmake` default configuration provides settings for the `Debug` and `Release` configuration fot the host
+compiler setup. The `Spy` configuration will be added by the qpc `CMakeLists.txt` file.
+
+### Single configuration generators
+For single configuration generators like `Makefile` or `Ninja`, specific build configurations need to configured. One for each configuration.
+When generationg the build system, set the `cmake` variable `CMAKE_BUILD_TYPE` to the desired configuration (`Debug`, `Release` or `Spy`).
+
+Everything said above concerning the `CMAKE_<LANG>_FLAGS_<CONFIGURATION>` variables, also applies here.

@@ -36,8 +36,11 @@ if (NOT QPC_CFG_USE_QP_CONFIG)
         set(QPC_CFG_USE_QP_CONFIG OFF CACHE BOOL "control the QPC macro QP_CONFIG")
         message("Set QPC_CFG_USE_QP_CONFIG to ('${QPC_CFG_USE_QP_CONFIG}') since not specified")
     endif()
-else()
-    message("Set QPC_CFG_USE_QP_CONFIG to ('${QPC_CFG_USE_QP_CONFIG}') as specified")
+endif()
+
+if(NOT QPC_CFG_ADDITIONAL_INCDIRS)
+    set(QPC_CFG_ADDITIONAL_INCDIRS ${CMAKE_SOURCE_DIR})
+    message("Set QPC_CFG_ADDITIONAL_INCDIRS to ('${QPC_CFG_ADDITIONAL_INCDIRS}') since not specified")
 endif()
 
 if(NOT QPC_CFG_GUI)
@@ -70,7 +73,7 @@ project(
 # add support for SPY configuration if not set via CMAKE_TOOLCHAIN_FILE
 if(NOT CMAKE_C_FLAGS_SPY)
     foreach(LANG IN ITEMS C CXX ASM)
-        set(CMAKE_${LANG}_FLAGS_SPY ${CMAKE_${LANG}_FLAGS_DEBUG})
+        set(CMAKE_${LANG}_FLAGS_SPY "${CMAKE_${LANG}_FLAGS_DEBUG} -DQ_SPY")
     endforeach()
 endif()
 
@@ -137,7 +140,7 @@ set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
 target_include_directories(qpc PUBLIC
     src
     include
-    $<$<BOOL:${QPC_CFG_USE_QP_CONFIG}>:${CMAKE_SOURCE_DIR}>
+    ${QPC_CFG_ADDITIONAL_INCDIRS}
 )
 
 # add subdirectories with source/header files
