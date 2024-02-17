@@ -133,11 +133,14 @@ if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
 endif()
 set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
 
+# set up the include directory search path
+target_include_directories(qpc PUBLIC
+    src
+    include
+    $<$<BOOL:${QPC_CFG_USE_QP_CONFIG}>:${CMAKE_SOURCE_DIR}>
+)
+
 # add subdirectories with source/header files
-target_include_directories(qpc PUBLIC src include)
-if(QPC_CFG_USE_QP_CONFIG)
-    target_include_directories(qpc PUBLIC ${CMAKE_SOURCE_DIR})
-endif()
 add_subdirectory(src)
 add_subdirectory(ports)
 
