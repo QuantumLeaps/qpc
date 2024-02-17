@@ -15,4 +15,6 @@ else()
 endif()
 
 add_subdirectory(${PORT_DIR})
-target_include_directories(qpc PRIVATE config)
+if(QPC_CFG_USE_QP_CONFIG)
+    target_include_directories(qpc PRIVATE config)
+endif()

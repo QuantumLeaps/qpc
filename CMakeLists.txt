@@ -15,18 +15,30 @@ foreach(p in HOST RTOS BAREMETAL MISC)
 endforeach()
 
 # project configuration
-if (DEFINED ENV{QPC_CFG_KERNEL} AND (NOT QPC_CFG_KERNEL))
+if(DEFINED ENV{QPC_CFG_KERNEL} AND (NOT QPC_CFG_KERNEL))
     set(QPC_CFG_KERNEL $ENV{QPC_CFG_KERNEL})
     message("Using QPC_CFG_KERNEL from environment ('${QPC_CFG_KERNEL}')")
 elseif(NOT QPC_CFG_KERNEL)
     set(QPC_CFG_KERNEL qv)
     message("Set QPC_CFG_KERNEL to ('${QPC_CFG_KERNEL}') since not specified")
-endif ()
+endif()
 
-if (DEFINED ENV{QPC_CFG_PORT} AND (NOT QPC_CFG_PORT))
+if(DEFINED ENV{QPC_CFG_PORT} AND (NOT QPC_CFG_PORT))
     set(QPC_CFG_PORT $ENV{QPC_CFG_PORT})
     message("Using QPC_CFG_PORT from environment ('${QPC_CFG_PORT}')")
-endif ()
+endif()
+
+if (NOT QPC_CFG_USE_QP_CONFIG)
+    if(DEFINED ENV{QPC_CFG_USE_QP_CONFIG})
+        set(QPC_CFG_USE_QP_CONFIG $ENV{QPC_CFG_USE_QP_CONFIG})
+        message("Using QPC_CFG_USE_QP_CONFIG from environment ('${QPC_CFG_USE_QP_CONFIG}')")
+    else()
+        set(QPC_CFG_USE_QP_CONFIG OFF CACHE BOOL "control the QPC macro QP_CONFIG")
+        message("Set QPC_CFG_USE_QP_CONFIG to ('${QPC_CFG_USE_QP_CONFIG}') since not specified")
+    endif()
+else()
+    message("Set QPC_CFG_USE_QP_CONFIG to ('${QPC_CFG_USE_QP_CONFIG}') as specified")
+endif()
 
 if(NOT QPC_CFG_GUI)
     set(QPC_CFG_GUI OFF CACHE BOOL "enable GUI support for matching ports (e.g. win32 or posix & GTK)")
@@ -123,6 +135,9 @@ set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
 
 # add subdirectories with source/header files
 target_include_directories(qpc PUBLIC src include)
+if(QPC_CFG_USE_QP_CONFIG)
+    target_include_directories(qpc PUBLIC ${CMAKE_SOURCE_DIR})
+endif()
 add_subdirectory(src)
 add_subdirectory(ports)
 
@@ -130,6 +145,7 @@ add_subdirectory(ports)
 target_compile_definitions(qpc
     PRIVATE
         $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
+        $<$<BOOL:${QPC_CFG_USE_QP_CONFIG}>:QP_CONFIG>
         $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
         $<$<CONFIG:Spy>:Q_SPY>
         $<$<AND:$<CONFIG:Spy>,$<BOOL:${QPC_CFG_UNIT_TEST}>>:Q_UTEST>
