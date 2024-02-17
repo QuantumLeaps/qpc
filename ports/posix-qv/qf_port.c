@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-11-30
-//! @version Last updated for: @ref qpc_7_3_1
+//! @date Last updated on: 2024-02-16
+//! @version Last updated for: @ref qpc_7_3_3
 //!
 //! @file
 //! @brief QF/C port to POSIX-QV (single-threaded)
@@ -34,7 +34,7 @@
 #define QP_IMPL           // this is QP implementation
 #include "qp_port.h"      // QP port
 #include "qp_pkg.h"       // QP package-scope interface
-#include "qsafe.h"        // QP Functional Safety (FuSa) System
+#include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
 #ifdef Q_SPY              // QS software tracing enabled?
     #include "qs_port.h"  // QS port
     #include "qs_pkg.h"   // QS package-scope internal interface
@@ -49,7 +49,6 @@
 #include <string.h>       // for memcpy() and memset()
 #include <stdlib.h>
 #include <stdio.h>
-#include <termios.h>
 #include <unistd.h>
 #include <signal.h>
 
@@ -58,7 +57,6 @@ Q_DEFINE_THIS_MODULE("qf_port")
 // Local objects =============================================================
 
 static bool l_isRunning;       // flag indicating when QF is running
-static struct termios l_tsav;  // structure with saved terminal attributes
 static struct timespec l_tick; // structure for the clock tick
 static int_t l_tickPrio;       // priority of the ticker thread
 
@@ -130,12 +128,15 @@ void QF_enterCriticalSection_(void) {
 void QF_leaveCriticalSection_(void) {
     Q_ASSERT_INCRIT(200, l_critSectNest == 1); // crit.sect. must ballace!
     if ((--l_critSectNest) == 0) {
-       pthread_mutex_unlock(&l_critSectMutex_);
+        pthread_mutex_unlock(&l_critSectMutex_);
     }
 }
 
 //............................................................................
 void QF_init(void) {
+    // init the global condition variable with the default initializer
+    pthread_cond_init(&QF_condVar_, NULL);
+
     QPSet_setEmpty(&QF_readySet_);
 #ifndef Q_UNSAFE
     QPSet_update_(&QF_readySet_, &QF_readySet_dis_);
@@ -143,9 +144,6 @@ void QF_init(void) {
 
     // lock memory so we're never swapped out to disk
     //mlockall(MCL_CURRENT | MCL_FUTURE); // un-comment when supported
-
-    // init the global condition variable with the default initializer
-    pthread_cond_init(&QF_condVar_, NULL);
 
     for (uint_fast8_t tickRate = 0U;
          tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
@@ -156,7 +154,7 @@ void QF_init(void) {
     }
 
     l_tick.tv_sec = 0;
-    l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default clock tick
+    l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default rate
     l_tickPrio = sched_get_priority_min(SCHED_FIFO); // default ticker prio
 
     // install the SIGINT (Ctrl-C) signal handler
@@ -294,7 +292,13 @@ void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
     l_tickPrio = tickPrio;
 }
 
-//............................................................................
+// console access ============================================================
+#ifdef QF_CONSOLE
+
+#include <termios.h>
+
+static struct termios l_tsav;  // structure with saved terminal attributes
+
 void QF_consoleSetup(void) {
     struct termios tio;   // modified terminal attributes
 
@@ -313,7 +317,7 @@ int QF_consoleGetKey(void) {
     ioctl(0, FIONREAD, &byteswaiting);
     if (byteswaiting > 0) {
         char ch;
-        read(0, &ch, 1);
+        byteswaiting = read(0, &ch, 1);
         return (int)ch;
     }
     return 0; // no input at this time
@@ -322,6 +326,7 @@ int QF_consoleGetKey(void) {
 int QF_consoleWaitForKey(void) {
     return (int)getchar();
 }
+#endif
 
 // QActive functions =========================================================
 

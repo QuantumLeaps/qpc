@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-12-13
-//! @version Last updated for: @ref qpc_7_3_2
+//! @date Last updated on: 2024-02-16
+//! @version Last updated for: @ref qpc_7_3_3
 //!
 //! @file
 //! @brief QS/C "port" to QUTest with POSIX
@@ -32,16 +32,15 @@
 #define _POSIX_C_SOURCE 200809L
 
 #ifndef Q_SPY
-    #error "Q_SPY must be defined to compile qutest_port.c"
+    #error "Q_SPY must be defined for QUTest application"
 #endif // Q_SPY
 
-#define QP_IMPL       // this is QP implementation
-#include "qp_port.h"  // QP port
-#include "qsafe.h"    // QP Functional Safety (FuSa) System
-#include "qs_port.h"  // QS port
-#include "qs_pkg.h"   // QS package-scope interface
+#define QP_IMPL             // this is QP implementation
+#include "qp_port.h"        // QP port
+#include "qsafe.h"          // QP Functional Safety (FuSa) Subsystem
+#include "qs_port.h"        // QS port
 
-#include "safe_std.h" // portable "safe" <stdio.h>/<string.h> facilities
+#include "safe_std.h"       // portable "safe" <stdio.h>/<string.h> facilities
 #include <stdlib.h>
 #include <sys/select.h>
 #include <sys/types.h>
@@ -64,19 +63,21 @@
 
 //Q_DEFINE_THIS_MODULE("qutest_port")
 
-// local variables .........................................................
+// local variables ...........................................................
 static int l_sock = INVALID_SOCKET;
+static struct timespec const c_timeout = { 0, QS_TIMEOUT_MS*1000000L };
+
 static void sigIntHandler(int dummy); // prototype
 static void sigIntHandler(int dummy) {
     (void)dummy; // unused parameter
     QS_onCleanup();
-    //PRINTF_S("\n<TARGET> disconnecting from QSPY\n");
+    //PRINTF_S("\n%s\n","<TARGET> disconnecting from QSPY");
     exit(-1);
 }
 
 //............................................................................
 uint8_t QS_onStartup(void const *arg) {
-
+    // initialize the QS transmit and receive buffers
     static uint8_t qsBuf[QS_TX_SIZE];   // buffer for QS-TX channel
     QS_initBuf(qsBuf, sizeof(qsBuf));
 
@@ -159,7 +160,7 @@ uint8_t QS_onStartup(void const *arg) {
     if (fcntl(l_sock, F_SETFL, status | O_NONBLOCK) != 0) {
         FPRINTF_S(stderr, "<TARGET> ERROR   Failed to set non-blocking socket "
             "errno=%d\n", errno);
-        QS_EXIT();
+        QF_stop(); // <== stop and exit the application
         goto error;
     }
 
@@ -185,13 +186,12 @@ error:
 }
 //............................................................................
 void QS_onCleanup(void) {
-    static struct timespec const c_timeout = {0, 10L*QS_TIMEOUT_MS*1000000L };
     nanosleep(&c_timeout, NULL); // allow the last QS output to come out
     if (l_sock != INVALID_SOCKET) {
         close(l_sock);
         l_sock = INVALID_SOCKET;
     }
-    //PRINTF_S("<TARGET> Disconnected from QSPY\n");
+    //PRINTF_S("%s\n", "<TARGET> Disconnected from QSPY");
 }
 //............................................................................
 void QS_onReset(void) {
@@ -200,18 +200,16 @@ void QS_onReset(void) {
     exit(0);
 }
 //............................................................................
-// NOTE:
-// No critical section in QS_onFlush() to avoid nesting of critical sections
-// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
+    // NOTE:
+    // No critical section in QS_onFlush() to avoid nesting of critical sections
+    // in case QS_onFlush() is called from Q_onError().
     if (l_sock == INVALID_SOCKET) { // socket NOT initialized?
         FPRINTF_S(stderr, "<TARGET> ERROR   %s\n",
                   "invalid TCP socket");
         QF_stop(); // <== stop and exit the application
         return;
     }
-
-    static struct timespec const c_timeout = { 0, QS_TIMEOUT_MS*1000000L };
 
     uint16_t nBytes = QS_TX_CHUNK;
     uint8_t const *data;
@@ -265,8 +263,7 @@ void QS_onTestLoop() {
         if (status < 0) {
             FPRINTF_S(stderr, "<TARGET> ERROR socket select,errno=%d\n",
                 errno);
-            QS_onCleanup();
-            exit(-2);
+            QF_stop(); // <== stop and exit the application
         }
         else if ((status > 0) && FD_ISSET(l_sock, &readSet)) { // socket ready
             status = recv(l_sock,
@@ -282,7 +279,6 @@ void QS_onTestLoop() {
     }
     // set inTestLoop to true in case calls to QS_onTestLoop() nest,
     // which can happen through the calls to QS_TEST_PAUSE().
-    //
     QS_rxPriv_.inTestLoop = true;
 }
 

@@ -792,6 +792,12 @@ static inline bool QS_rxPut(uint8_t const b) {
 //! @static @public @memberof QS
 void QS_rxParse(void);
 
+//${QS::QS-RX::setCurrObj} ...................................................
+//! @static @public @memberof QS
+void QS_setCurrObj(
+    uint8_t const obj_kind,
+    void * const obj_ptr);
+
 //${QS::QS-RX::rxGetNfree} ...................................................
 //! @static @public @memberof QS
 uint16_t QS_rxGetNfree(void);

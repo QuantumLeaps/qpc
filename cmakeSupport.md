@@ -41,7 +41,7 @@ set(QPC_CFG_PORT win32)
 qpc_sdk_init()
 
 target_link_libraries(qpcApp PRIVATE qpc)
-``` 
+```
 3. configure your project with
    `cmake -B Build .`
 4. build

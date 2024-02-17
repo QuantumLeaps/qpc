@@ -22,26 +22,24 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-12-13
-//! @version Last updated for: @ref qpc_7_3_2
+//! @date Last updated on: 2024-02-16
+//! @version Last updated for: @ref qpc_7_3_3
 //!
 //! @file
 //! @brief QS/C QUTest port for Win32
 
 #ifndef Q_SPY
-    #error "Q_SPY must be defined to compile qutest_port.c"
+    #error "Q_SPY must be defined for QUTest application"
 #endif // Q_SPY
 
 #define QP_IMPL       // this is QP implementation
 #include "qp_port.h"  // QP port
 #include "qsafe.h"    // QP Functional Safety (FuSa) System
 #include "qs_port.h"  // QS port
-#include "qs_pkg.h"   // QS package-scope interface
 
 #include "safe_std.h" // portable "safe" <stdio.h>/<string.h> facilities
 #include <stdlib.h>
 #include <time.h>
-#include <conio.h>
 
 // Minimum required Windows version is Windows-XP or newer (0x0501)
 #ifdef WINVER
@@ -180,7 +178,7 @@ void QS_onCleanup(void) {
         l_sock = INVALID_SOCKET;
     }
     WSACleanup();
-    //PRINTF_S("<TARGET> Disconnected from QSPY\n");
+    //PRINTF_S("%s\n", "<TARGET> Disconnected from QSPY");
 }
 //............................................................................
 void QS_onReset(void) {
@@ -189,10 +187,10 @@ void QS_onReset(void) {
     exit(0);
 }
 //............................................................................
-// NOTE:
-// No critical section in QS_onFlush() to avoid nesting of critical sections
-// in case QS_onFlush() is called from Q_onError().
 void QS_onFlush(void) {
+    // NOTE:
+    // No critical section in QS_onFlush() to avoid nesting of critical sections
+    // in case QS_onFlush() is called from Q_onError().
     if (l_sock == INVALID_SOCKET) { // socket NOT initialized?
         FPRINTF_S(stderr, "<TARGET> ERROR   %s\n",
                   "invalid TCP socket");
@@ -233,17 +231,18 @@ void QS_onFlush(void) {
         nBytes = QS_TX_CHUNK;
     }
 }
+
 //............................................................................
 void QS_onTestLoop() {
     fd_set readSet;
     FD_ZERO(&readSet);
 
+    struct timeval timeout = {
+        (long)0, (long)(QS_TIMEOUT_MS * 1000)
+    };
+
     QS_rxPriv_.inTestLoop = true;
     while (QS_rxPriv_.inTestLoop) {
-        struct timeval timeout = {
-            (long)0, (long)(QS_TIMEOUT_MS * 1000)
-        };
-
         FD_SET(l_sock, &readSet);
 
         // selective, timed blocking on the TCP/IP socket...
@@ -255,7 +254,7 @@ void QS_onTestLoop() {
             QS_onCleanup();
             exit(-2);
         }
-        else if (FD_ISSET(l_sock, &readSet)) { // socket ready to read?
+        else if (FD_ISSET(l_sock, &readSet)) { // socket ready?
             status = recv(l_sock,
                           (char *)QS_rxPriv_.buf, (int)QS_rxPriv_.end, 0);
             if (status > 0) { // any data received?
@@ -266,24 +265,9 @@ void QS_onTestLoop() {
         }
 
         QS_onFlush();
-
-        wint_t ch = 0;
-        while (_kbhit()) { // any key pressed?
-            ch = _getwch();
-        }
-        switch (ch) {
-            case 'x':      // 'x' pressed?
-            case 'X':      // 'X' pressed?
-            case '\033': { // ESC pressed?
-                QS_onCleanup();
-                exit(1);
-                break;
-            }
-        }
     }
     // set inTestLoop to true in case calls to QS_onTestLoop() nest,
     // which can happen through the calls to QS_TEST_PAUSE().
-    //
     QS_rxPriv_.inTestLoop = true;
 }
 

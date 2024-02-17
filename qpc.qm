@@ -291,7 +291,7 @@ return me;</code>
     <code>return (me != (QEvt const *)0)
        &amp;&amp; ((me-&gt;evtTag_ &amp; 0xF0U) == QEVT_MARKER);</code>
    </operation>
-   <!--${QEP::QEvt::getPoolId_}-->
+   <!--${QEP::QEvt::getPoolNum_}-->
    <operation name="getPoolNum_" type="uint_fast8_t" visibility="0x02" properties="0x02">
     <specifiers>const</specifiers>
     <documentation>//! @private @memberof QEvt
@@ -7828,6 +7828,26 @@ while (QS_rxPriv_.head != tail) { // QS-RX buffer NOT empty?
     }
 }</code>
    </operation>
+   <!--${QS::QS-RX::setCurrObj}-->
+   <operation name="setCurrObj" type="void" visibility="0x00" properties="0x00">
+    <documentation>//! @static @public @memberof QS
+
+//! @static @public @memberof QS</documentation>
+    <!--${QS::QS-RX::setCurrObj::obj_kind}-->
+    <parameter name="obj_kind" type="uint8_t const"/>
+    <!--${QS::QS-RX::setCurrObj::obj_ptr}-->
+    <parameter name="obj_ptr" type="void * const"/>
+    <code>QS_CRIT_STAT
+QS_CRIT_ENTRY();
+Q_REQUIRE_INCRIT(300, obj_kind &lt; Q_DIM(QS_rxPriv_.currObj));
+
+QS_MEM_SYS();
+
+QS_rxPriv_.currObj[obj_kind] = obj_ptr;
+
+QS_MEM_APP();
+QS_CRIT_EXIT();</code>
+   </operation>
    <!--${QS::QS-RX::rxGetNfree}-->
    <operation name="rxGetNfree" type="uint16_t" visibility="0x00" properties="0x00">
     <documentation>//! @static @public @memberof QS
@@ -8838,8 +8858,8 @@ $declare1 ${QP-FuSa}
 #define QP_VERSION     733U
 #define QP_VERSION_STR &quot;7.3.3&quot;
 
-//! Encrypted  current QP release (7.3.3) and date (2024-01-31)
-#define QP_RELEASE     0x70DEE7F2U
+//! Encrypted  current QP release (7.3.3) and date (2024-03-01)
+#define QP_RELEASE     0x70C4F752U
 
 //============================================================================
 //! @cond INTERNAL

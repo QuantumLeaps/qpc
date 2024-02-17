@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-11-30
-//! @version Last updated for: @ref qpc_7_3_1
+//! @date Last updated on: 2024-02-16
+//! @version Last updated for: @ref qpc_7_3_3
 //!
 //! @file
 //! @brief QF/C port to POSIX (multithreaded with P-threads)
@@ -49,7 +49,6 @@
 #include <string.h>       // for memcpy() and memset()
 #include <stdlib.h>
 #include <stdio.h>
-#include <termios.h>
 #include <unistd.h>
 #include <signal.h>
 
@@ -60,7 +59,6 @@ Q_DEFINE_THIS_MODULE("qf_port")
 static pthread_mutex_t l_startupMutex = PTHREAD_MUTEX_INITIALIZER;
 
 static bool l_isRunning;       // flag indicating when QF is running
-static struct termios l_tsav;  // structure with saved terminal attributes
 static struct timespec l_tick; // structure for the clock tick
 static int_t l_tickPrio;       // priority of the ticker thread
 
@@ -210,7 +208,13 @@ void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
     l_tickPrio = tickPrio;
 }
 
-//............................................................................
+// console access ============================================================
+#ifdef QF_CONSOLE
+
+#include <termios.h>
+
+static struct termios l_tsav;  // structure with saved terminal attributes
+
 void QF_consoleSetup(void) {
     struct termios tio;   // modified terminal attributes
 
@@ -229,7 +233,7 @@ int QF_consoleGetKey(void) {
     ioctl(0, FIONREAD, &byteswaiting);
     if (byteswaiting > 0) {
         char ch;
-        read(0, &ch, 1);
+        byteswaiting = read(0, &ch, 1);
         return (int)ch;
     }
     return 0; // no input at this time
@@ -238,6 +242,7 @@ int QF_consoleGetKey(void) {
 int QF_consoleWaitForKey(void) {
     return (int)getchar();
 }
+#endif
 
 //============================================================================
 static void *thread_routine(void *arg) { // the expected POSIX signature
@@ -303,9 +308,10 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                               - QF_MAX_ACTIVE - 3U);
     pthread_attr_setschedparam(&attr, &param);
 
-    pthread_attr_setstacksize(&attr, (stkSize < PTHREAD_STACK_MIN
-                                      ? PTHREAD_STACK_MIN
-                                      : stkSize));
+    pthread_attr_setstacksize(&attr,
+        (stkSize < (int_fast16_t)PTHREAD_STACK_MIN
+        ? PTHREAD_STACK_MIN
+        : stkSize));
     pthread_t thread;
     int err = pthread_create(&thread, &attr, &thread_routine, me);
     if (err != 0) {
@@ -367,6 +373,6 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 // However, QF limits the number of priority levels to QF_MAX_ACTIVE.
 // Assuming that a QF application will be real-time, this port reserves the
 // three highest p-thread priorities for the ISR-like threads (e.g., I/O),
-// and the rest highest-priorities for the active objects.
+// and the remaining highest-priorities for the active objects.
 //
 

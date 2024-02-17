@@ -128,8 +128,8 @@ add_subdirectory(ports)
 
 # set general defines
 target_compile_definitions(qpc
-	PRIVATE
-	    $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
+    PRIVATE
+        $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
         $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
         $<$<CONFIG:Spy>:Q_SPY>
         $<$<AND:$<CONFIG:Spy>,$<BOOL:${QPC_CFG_UNIT_TEST}>>:Q_UTEST>
