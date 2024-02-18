@@ -5,7 +5,7 @@ This branch adds comprehensive cmake support to QP/C
 ## Quick Start
 
 create your project with a root `CMakeLists.txt` file, following this blueprint.
-1. copy [qpc_sdk_import.cmake](3rd_party/cmake/qpc_sdk_import.cmake) into your project. Make sure, it can be found by `cmake` as an included script
+1. copy [qpc_sdk_import.cmake](https://github.com/QuantumLeaps/3rd_party/cmake/qpc_sdk_import.cmake) into your project. Make sure, it can be found by `cmake` as an included script
 2. Setup your 1<sup>st</sup> `CMakeLists.txt`:
 ```
 # use a recent CMake version
@@ -78,9 +78,6 @@ This file is situated in the root directory of qpc. It performs a pre-initializa
 * `QPC-CFG-GUI` - BOOL: set this boolean variable to ON/TRUE, if GUI support (win32) shall be compiled in. Default: OFF
 * `QPC_CFG_UNIT_TEST` - BOOL: set this to ON/TRUE to support qutest, if build configuration `Spy` is active. Default: OFF
 * `QPC_CFG_VERBOSE` - BOOL: set this to enable more verbosity in message output. Default: OFF
-* `QPC_CFG_USE_QP_CONFIG` - BOOL: set this to activate the inclusion of `qp_config.h`. Default: OFF
-* `QPC_CFG_ADDITIONAL_INCDIRS` - LIST: set this to a CMAKE list (semicolon separated entries) of additional include directories for qpc. Default: Directory
-  containing the master `CMakeLists.txt` file.
 
 ### General usage hints
 1. Set `QPC_SDK_PATH` or `QPC_FETCH_FROM_GIT` either in your `CMakeLists.txt` file or as an environment variable.
@@ -96,7 +93,7 @@ This file is situated in the root directory of qpc. It performs a pre-initializa
 
 Generate and build your cmake project
 
-### Generation and building hints
+## Generation and building hints
 * Generate with configuration support
   The recommendation is to use a multi-configuration cmake generator like `"Ninja Multi-Config"` and set the cmake variable `CMAKE_CONFIGURATION_TYPES` to `"Debug;Release;Spy"`.
   Then you can build with `cmake --build <build directory> --config=<config>.
@@ -105,13 +102,52 @@ Generate and build your cmake project
   Refer to the [CMakePresets.json manual](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html) for further details.
   Then you generate with `cmake --preset=<preset> .` from your project directory. The build then can be started with `cmake --build --preset=<preset>`.
 
-## QPC configurations support
+### QPC configurations support
 Many `qpc` examples provide 3 build configurations:
 * `Debug` - build with debug support and debug symbols. Most optimizations are turned off
 * `Release` - build without debug support. Activate optimizations instead
 * `Spy` - build like `Debug`. Additionally activate support for `QSpy`.
 
 These configurations are also supported by qpc with cmake. Different possibilities exist to activate those.
+
+### `qp_config.h` support
+Some build configurations require the inclusion of `qp_config.h`. To achieve this, the QPC macro `QP_CONFIG` should be set, when compiling the
+`qpc` source files. The include search paths also needs to be set accordingly in order for the preprocessor to be able to find the correct include
+file.
+
+As `qp_config.h` is a project related file, which - in most cases - resides outside the `qpc` source code tree, the decision is to handle the
+above mentioned topic within the root project's `CMakeLists.txt` file instead of integrating this topic into a rather complicated configuration
+of `qpc` itself.
+
+An example can be found in the [cmake dpp example](https://github.com/QuantumLeaps/qpc-examples/tree/main/posix-win32-cmake/dpp). Have a look into
+the example's [CMakeLists.txt](https://github.com/QuantumLeaps/qpc-examples/blob/main/posix-win32-cmake/dpp/CMakeLists.txt).
+
+You will find the reference to the `qpc` library, followed by the project's specific setup for `qp_config.h` like this:
+```
+# set up qpc library
+target_link_libraries(dpp
+    PRIVATE
+        qpc
+)
+# should a 'qp_config.h' configuration file be used and is it available
+# edit the HINTS in the 'find_file()' call according to your project settings
+if(USE_QP_CONFIG)
+    find_file(QP_CONFIG qp_config.h HINTS ${CMAKE_CURRENT_SOURCE_DIR}) # try to identify 'qp_config.h'
+    if(QP_CONFIG) # found 'qp_config.h'
+        cmake_path(GET QP_CONFIG PARENT_PATH QP_CONFIG_DIR) # extract the path from the FQFN
+        target_compile_definitions(qpc # add -DQP_CONFIG to the qpc build
+            PUBLIC
+                QP_CONFIG
+        )
+        target_include_directories(qpc # add the path to 'qp_config.h' to the list of include paths for qpc
+            PUBLIC
+                ${QP_CONFIG_DIR}
+        )
+    else() # 'qp_config.h' requested but not find - try to configure and build anyways
+        message(WARNING "File 'qp_config.h' not found!")
+    endif()
+endif()
+```
 
 ### Multi configuration generators
 The most easy way to make use of the different configurations is to use a multi config generator like `Ninja Multi-Config` or `MS Visual Studio`.
