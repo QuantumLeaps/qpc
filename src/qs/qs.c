@@ -150,6 +150,7 @@ uint8_t const * QS_getBlock(uint16_t * const pNbytes) {
 //$define${QS::filters} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
 //${QS::filters::filt_} ......................................................
+//! @static @private @memberof QS
 QS_Filter QS_filt_;
 //$enddef${QS::filters} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #endif

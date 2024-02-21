@@ -104,7 +104,15 @@ void QF_poolInit(
 //${QF::QF-dyn::poolGetMaxBlockSize} .........................................
 //! @static @public @memberof QF
 uint_fast16_t QF_poolGetMaxBlockSize(void) {
-    return QF_EPOOL_EVENT_SIZE_(QF_priv_.ePool_[QF_priv_.maxPool_ - 1U]);
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    QF_MEM_SYS();
+    uint_fast16_t const max_size =
+        QF_EPOOL_EVENT_SIZE_(QF_priv_.ePool_[QF_priv_.maxPool_ - 1U]);
+    QF_MEM_APP();
+    QF_CRIT_EXIT();
+
+    return max_size;
 }
 
 //${QF::QF-dyn::getPoolMin} ..................................................

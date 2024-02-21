@@ -162,7 +162,7 @@ static inline void QF_psInit(
 
 //! @deprecated begin of a user QS record, instead use QS_BEGIN_ID()
 #define QS_BEGIN(rec_, obj_)                            \
-    if (((QS_filt_.glb[(uint_fast8_t)(rec_) >> 3U]    \
+    if (((QS_filt_.glb[(uint_fast8_t)(rec_) >> 3U]      \
           & (1U << ((uint_fast8_t)(rec_) & 7U))) != 0U) \
         && ((QS_priv_.locFilter_AP == (void *)0)        \
             || (QS_priv_.locFilter_AP == (obj_))))      \

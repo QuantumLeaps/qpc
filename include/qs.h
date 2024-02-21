@@ -255,6 +255,36 @@ enum QSpyIdGroups {
 //! @struct QSpyId
 typedef struct { uint8_t prio; } QSpyId;
 
+//${QS::types::QSObj} ........................................................
+#if (QS_OBJ_PTR_SIZE == 2U)
+typedef uint16_t QSObj;
+#endif //  (QS_OBJ_PTR_SIZE == 2U)
+
+//${QS::types::QSObj} ........................................................
+#if (QS_OBJ_PTR_SIZE == 4U)
+typedef uint32_t QSObj;
+#endif //  (QS_OBJ_PTR_SIZE == 4U)
+
+//${QS::types::QSObj} ........................................................
+#if (QS_OBJ_PTR_SIZE == 8U)
+typedef uint64_t QSObj;
+#endif //  (QS_OBJ_PTR_SIZE == 8U)
+
+//${QS::types::QSFun} ........................................................
+#if (QS_FUN_PTR_SIZE == 2U)
+typedef uint16_t QSFun;
+#endif //  (QS_FUN_PTR_SIZE == 2U)
+
+//${QS::types::QSFun} ........................................................
+#if (QS_FUN_PTR_SIZE == 4U)
+typedef uint32_t QSFun;
+#endif //  (QS_FUN_PTR_SIZE == 4U)
+
+//${QS::types::QSFun} ........................................................
+#if (QS_FUN_PTR_SIZE == 8U)
+typedef uint64_t QSFun;
+#endif //  (QS_FUN_PTR_SIZE == 8U)
+
 //${QS::types::QSpyFunPtr} ...................................................
 //! @static @private @memberof QS
 typedef void (* QSpyFunPtr )(void);
@@ -278,21 +308,6 @@ typedef uint16_t QSTimeCtr;
 #if (QS_TIME_SIZE == 4U)
 typedef uint32_t QSTimeCtr;
 #endif //  (QS_TIME_SIZE == 4U)
-
-//${QS::types::QSFun} ........................................................
-#if (QS_FUN_PTR_SIZE == 2U)
-typedef uint16_t QSFun;
-#endif //  (QS_FUN_PTR_SIZE == 2U)
-
-//${QS::types::QSFun} ........................................................
-#if (QS_FUN_PTR_SIZE == 4U)
-typedef uint32_t QSFun;
-#endif //  (QS_FUN_PTR_SIZE == 4U)
-
-//${QS::types::QSFun} ........................................................
-#if (QS_FUN_PTR_SIZE == 8U)
-typedef uint64_t QSFun;
-#endif //  (QS_FUN_PTR_SIZE == 8U)
 //$enddecl${QS::types} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //$declare${QS::filters} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
@@ -599,63 +614,33 @@ void QS_beginRec_(uint_fast8_t const rec);
 void QS_endRec_(void);
 
 void QS_u8_raw_(uint8_t const d);
-void QS_2u8_raw_(
-    uint8_t const d1,
-    uint8_t const d2);
+void QS_2u8_raw_(uint8_t const d1, uint8_t const d2);
 void QS_u16_raw_(uint16_t const d);
 void QS_u32_raw_(uint32_t const d);
 void QS_u64_raw_(uint64_t const d);
 void QS_obj_raw_(void const * const obj);
 void QS_str_raw_(char const * const str);
 
-void QS_u8_fmt_(
-    uint8_t const format,
-    uint8_t const d);
-void QS_u16_fmt_(
-    uint8_t const format,
-    uint16_t const d);
-void QS_u32_fmt_(
-    uint8_t const format,
-    uint32_t const d);
-void QS_u64_fmt_(
-    uint8_t const format,
-    uint64_t const d);
-void QS_f32_fmt_(
-    uint8_t const format,
-    float32_t const f);
-void QS_f64_fmt_(
-    uint8_t const format,
-    float64_t const d);
+void QS_u8_fmt_(uint8_t const format, uint8_t const d);
+void QS_u16_fmt_(uint8_t const format, uint16_t const d);
+void QS_u32_fmt_(uint8_t const format, uint32_t const d);
+void QS_u64_fmt_(uint8_t const format, uint64_t const d);
+void QS_f32_fmt_(uint8_t const format, float32_t const f);
+void QS_f64_fmt_(uint8_t const format, float64_t const d);
 void QS_str_fmt_(char const * const str);
-void QS_mem_fmt_(
-    uint8_t const * const blk,
-    uint8_t const size);
+void QS_mem_fmt_(uint8_t const * const blk, uint8_t const size);
 
-void QS_sig_dict_pre_(
-    QSignal const sig,
-    void const * const obj,
+void QS_sig_dict_pre_(QSignal const sig, void const * const obj,
     char const * const name);
-void QS_obj_dict_pre_(
-    void const * const obj,
+void QS_obj_dict_pre_(void const * const obj, char const * const name);
+void QS_obj_arr_dict_pre_(void const * const obj, uint_fast16_t const idx,
     char const * const name);
-void QS_obj_arr_dict_pre_(
-    void const * const obj,
-    uint_fast16_t const idx,
-    char const * const name);
-void QS_fun_dict_pre_(
-    QSpyFunPtr const fun,
-    char const * const name);
-void QS_usr_dict_pre_(
-    enum_t const rec,
-    char const * const name);
-void QS_enum_dict_pre_(
-    enum_t const value,
-    uint8_t const group,
+void QS_fun_dict_pre_(QSpyFunPtr const fun, char const * const name);
+void QS_usr_dict_pre_(enum_t const rec, char const * const name);
+void QS_enum_dict_pre_(enum_t const value, uint8_t const group,
     char const * const name);
 
-void QS_assertion_pre_(
-    char const * const module,
-    int_t const id,
+void QS_assertion_pre_(char const * const module, int_t const id,
     uint32_t const delay);
 
 void QS_target_info_pre_(uint8_t const isReset);
@@ -719,105 +704,6 @@ void QS_onFlush(void);
 //! @static @public @memberof QS
 QSTimeCtr QS_onGetTime(void);
 //$enddecl${QS::QS-TX} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-//============================================================================
-//! @cond INTERNAL
-
-typedef struct {
-    void * currObj[8];
-    uint8_t * buf;
-    QSCtr  end;
-    QSCtr volatile head;
-    QSCtr volatile tail;
-#ifdef Q_UTEST
-    bool inTestLoop;
-#endif
-} QS_RxAttr;
-
-//! @static @private @memberof QS
-extern QS_RxAttr QS_rxPriv_;
-
-//! @endcond
-//============================================================================
-
-//$declare${QS::QS-RX} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-//${QS::QS-RX::QSpyObjKind} ..................................................
-//! @static @public @memberof QS
-//! Kinds of objects used in QS-RX
-enum QS_QSpyObjKind {
-    SM_OBJ,    //!< state machine object
-    AO_OBJ,    //!< active object
-    MP_OBJ,    //!< event pool object
-    EQ_OBJ,    //!< raw queue object
-    TE_OBJ,    //!< time event object
-    AP_OBJ,    //!< generic Application-specific object
-    MAX_OBJ
-};
-
-//${QS::QS-RX::OSpyObjComb} ..................................................
-//! @static @public @memberof QS
-//! Object combinations for QS-RX
-enum QS_OSpyObjComb {
-    SM_AO_OBJ = (enum_t)MAX_OBJ //!< combination of SM and AO
-};
-
-//${QS::QS-RX::rxInitBuf} ....................................................
-//! @static @public @memberof QS
-void QS_rxInitBuf(
-    uint8_t * const sto,
-    uint16_t const stoSize);
-
-//${QS::QS-RX::rxPut} ........................................................
-//! @static @public @memberof QS
-static inline bool QS_rxPut(uint8_t const b) {
-    // NOTE: does not need critical section
-    // But requires system-level memory access (QF_MEM_SYS()).
-
-    QSCtr head = QS_rxPriv_.head + 1U;
-    if (head == QS_rxPriv_.end) {
-        head = 0U;
-    }
-    if (head != QS_rxPriv_.tail) { // buffer NOT full?
-        QS_rxPriv_.buf[QS_rxPriv_.head] = b;
-        QS_rxPriv_.head = head; // update the head to a *valid* index
-        return true;  // byte placed in the buffer
-    }
-    else {
-        return false; // byte NOT placed in the buffer
-    }
-}
-
-//${QS::QS-RX::rxParse} ......................................................
-//! @static @public @memberof QS
-void QS_rxParse(void);
-
-//${QS::QS-RX::setCurrObj} ...................................................
-//! @static @public @memberof QS
-void QS_setCurrObj(
-    uint8_t const obj_kind,
-    void * const obj_ptr);
-
-//${QS::QS-RX::rxGetNfree} ...................................................
-//! @static @public @memberof QS
-uint16_t QS_rxGetNfree(void);
-
-//${QS::QS-RX::doInput} ......................................................
-//! @static @public @memberof QS
-void QS_doInput(void);
-
-//${QS::QS-RX::onReset} ......................................................
-//! @static @public @memberof QS
-void QS_onReset(void);
-
-//${QS::QS-RX::onCommand} ....................................................
-//! @static @public @memberof QS
-void QS_onCommand(
-    uint8_t cmdId,
-    uint32_t param1,
-    uint32_t param2,
-    uint32_t param3);
-//$enddecl${QS::QS-RX} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //============================================================================
 #ifdef Q_UTEST
@@ -977,5 +863,171 @@ void QActiveDummy_fakePostLIFO_(
 #define QS_TEST_PAUSE()  ((void)0)
 
 #endif // Q_UTEST
+
+//============================================================================
+//! @cond INTERNAL
+
+typedef struct {
+    uint32_t param1;
+    uint32_t param2;
+    uint32_t param3;
+    uint8_t  idx;
+    uint8_t  cmdId;
+} CmdVar;
+
+typedef struct {
+    uint_fast8_t rate;
+} TickVar;
+
+typedef struct {
+    uint16_t offs;
+    uint8_t  size;
+    uint8_t  num;
+    uint8_t  idx;
+} PeekVar;
+
+typedef struct {
+    uint32_t data;
+    uint16_t offs;
+    uint8_t  size;
+    uint8_t  num;
+    uint8_t  idx;
+    uint8_t  fill;
+} PokeVar;
+
+typedef struct {
+    uint8_t data[16];
+    uint8_t idx;
+    int8_t  recId; // global/local
+} FltVar;
+
+typedef struct {
+    QSObj    addr;
+    uint8_t  idx;
+    uint8_t  kind; // see qs.h, enum QSpyObjKind
+    int8_t   recId;
+} ObjVar;
+
+typedef struct {
+    QEvt    *e;
+    uint8_t *p;
+    QSignal  sig;
+    uint16_t len;
+    uint8_t  prio;
+    uint8_t  idx;
+} EvtVar;
+
+typedef struct {
+    void * currObj[8];
+    uint8_t * buf;
+    QSCtr end;
+    QSCtr volatile head;
+    QSCtr volatile tail;
+    uint8_t state;
+    uint8_t esc;
+    uint8_t seq;
+    uint8_t chksum;
+#ifdef Q_UTEST
+    bool inTestLoop;
+#endif
+    union Variant {
+        CmdVar   cmd;
+        TickVar  tick;
+        PeekVar  peek;
+        PokeVar  poke;
+        FltVar   flt;
+        ObjVar   obj;
+        EvtVar   evt;
+#ifdef Q_UTEST
+        struct QS_TProbe tp;
+#endif // Q_UTEST
+    } var;
+} QS_RxAttr;
+
+//! @endcond
+
+//! @static @private @memberof QS
+extern QS_RxAttr QS_rxPriv_;
+
+//============================================================================
+
+//$declare${QS::QS-RX} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+//${QS::QS-RX::QSpyObjKind} ..................................................
+//! @static @public @memberof QS
+//! Kinds of objects used in QS-RX
+enum QS_QSpyObjKind {
+    SM_OBJ,    //!< state machine object
+    AO_OBJ,    //!< active object
+    MP_OBJ,    //!< event pool object
+    EQ_OBJ,    //!< raw queue object
+    TE_OBJ,    //!< time event object
+    AP_OBJ,    //!< generic Application-specific object
+    MAX_OBJ
+};
+
+//${QS::QS-RX::OSpyObjComb} ..................................................
+//! @static @public @memberof QS
+//! Object combinations for QS-RX
+enum QS_OSpyObjComb {
+    SM_AO_OBJ = (enum_t)MAX_OBJ //!< combination of SM and AO
+};
+
+//${QS::QS-RX::rxInitBuf} ....................................................
+//! @static @public @memberof QS
+void QS_rxInitBuf(
+    uint8_t * const sto,
+    uint16_t const stoSize);
+
+//${QS::QS-RX::rxPut} ........................................................
+//! @static @public @memberof QS
+static inline bool QS_rxPut(uint8_t const b) {
+    // NOTE: does not need critical section
+    // But requires system-level memory access (QF_MEM_SYS()).
+
+    QSCtr head = QS_rxPriv_.head + 1U;
+    if (head == QS_rxPriv_.end) {
+        head = 0U;
+    }
+    if (head != QS_rxPriv_.tail) { // buffer NOT full?
+        QS_rxPriv_.buf[QS_rxPriv_.head] = b;
+        QS_rxPriv_.head = head; // update the head to a *valid* index
+        return true;  // byte placed in the buffer
+    }
+    else {
+        return false; // byte NOT placed in the buffer
+    }
+}
+
+//${QS::QS-RX::rxParse} ......................................................
+//! @static @public @memberof QS
+void QS_rxParse(void);
+
+//${QS::QS-RX::setCurrObj} ...................................................
+//! @static @public @memberof QS
+void QS_setCurrObj(
+    uint8_t const obj_kind,
+    void * const obj_ptr);
+
+//${QS::QS-RX::rxGetNfree} ...................................................
+//! @static @public @memberof QS
+uint16_t QS_rxGetNfree(void);
+
+//${QS::QS-RX::doInput} ......................................................
+//! @static @public @memberof QS
+void QS_doInput(void);
+
+//${QS::QS-RX::onReset} ......................................................
+//! @static @public @memberof QS
+void QS_onReset(void);
+
+//${QS::QS-RX::onCommand} ....................................................
+//! @static @public @memberof QS
+void QS_onCommand(
+    uint8_t cmdId,
+    uint32_t param1,
+    uint32_t param2,
+    uint32_t param3);
+//$enddecl${QS::QS-RX} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #endif // QS_H_
