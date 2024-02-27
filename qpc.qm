@@ -4849,7 +4849,7 @@ if (ceiling &gt; QV_priv_.schedCeil) { // raising the scheduler ceiling?
 
     QV_priv_.schedCeil = ceiling;
 #ifndef Q_UNSAFE
-    QV_priv_.schedCeil_dis = (uint_fast16_t)(~ceiling);
+    QV_priv_.schedCeil_dis = (uint_fast8_t)(~ceiling);
 #endif
 }
 QF_MEM_APP();
@@ -4877,7 +4877,7 @@ if (QV_priv_.schedCeil != 0U) { // actually enabling the scheduler?
 
     QV_priv_.schedCeil = 0U;
 #ifndef Q_UNSAFE
-    QV_priv_.schedCeil_dis = (uint_fast16_t)(~0U);
+    QV_priv_.schedCeil_dis = (uint_fast8_t)(~0U);
 #endif
 }
 QF_MEM_APP();
@@ -4903,7 +4903,7 @@ QF_bzero_(&amp;QActive_registry_[0],     sizeof(QActive_registry_));
 
 #ifndef Q_UNSAFE
 QPSet_update_(&amp;QV_priv_.readySet, &amp;QV_priv_.readySet_dis);
-QV_priv_.schedCeil_dis = (uint_fast16_t)(~0U);
+QV_priv_.schedCeil_dis = (uint_fast8_t)(~0U);
 #endif
 
 for (uint_fast8_t tickRate = 0U;
@@ -5199,7 +5199,8 @@ QF_CRIT_ENTRY();
 QF_MEM_SYS();
 
 Q_REQUIRE_INCRIT(100, !QK_ISR_CONTEXT_());
-Q_REQUIRE_INCRIT(102, QK_priv_.lockCeil == ~QK_priv_.lockCeil_dis);
+Q_REQUIRE_INCRIT(102, QK_priv_.lockCeil
+    == (uint_fast8_t)(~QK_priv_.lockCeil_dis));
 
 // first store the previous lock prio
 QSchedStatus stat;
@@ -5216,7 +5217,7 @@ if (ceiling &gt; QK_priv_.lockCeil) { // raising the lock ceiling?
     // new status of the lock
     QK_priv_.lockCeil = ceiling;
 #ifndef Q_UNSAFE
-    QK_priv_.lockCeil_dis = ~ceiling;
+    QK_priv_.lockCeil_dis = (uint_fast8_t)(~ceiling);
 #endif
 }
 else {
@@ -5241,7 +5242,8 @@ if (prevCeil != 0xFFU) {
     QF_CRIT_ENTRY();
     QF_MEM_SYS();
 
-    Q_REQUIRE_INCRIT(202, QK_priv_.lockCeil == ~QK_priv_.lockCeil_dis);
+    Q_REQUIRE_INCRIT(202, QK_priv_.lockCeil
+        == (uint_fast8_t)(~QK_priv_.lockCeil_dis));
     Q_REQUIRE_INCRIT(210, (!QK_ISR_CONTEXT_())
                           &amp;&amp; (QK_priv_.lockCeil &gt; prevCeil));
 
@@ -5254,7 +5256,7 @@ if (prevCeil != 0xFFU) {
     // restore the previous lock ceiling
     QK_priv_.lockCeil = prevCeil;
 #ifndef Q_UNSAFE
-    QK_priv_.lockCeil_dis = ~prevCeil;
+    QK_priv_.lockCeil_dis = (uint_fast8_t)(~prevCeil);
 #endif
 
     // find if any AOs should be run after unlocking the scheduler
@@ -5290,26 +5292,26 @@ else {
     p = QPSet_findMax(&amp;QK_priv_.readySet);
 
     Q_ASSERT_INCRIT(412,
-        QK_priv_.actThre == ~QK_priv_.actThre_dis);
+        QK_priv_.actThre == (uint_fast8_t)(~QK_priv_.actThre_dis));
 
     // is the AO's prio. below the active preemption-threshold?
     if (p &lt;= QK_priv_.actThre) {
         p = 0U; // no activation needed
     }
     else {
-        Q_ASSERT_INCRIT(422,
-            QK_priv_.lockCeil == ~QK_priv_.lockCeil_dis);
+        Q_ASSERT_INCRIT(422, QK_priv_.lockCeil
+            == (uint_fast8_t)(~QK_priv_.lockCeil_dis));
 
         // is the AO's prio. below the lock-ceiling?
         if (p &lt;= QK_priv_.lockCeil) {
             p = 0U; // no activation needed
         }
         else {
-            Q_ASSERT_INCRIT(432,
-                QK_priv_.nextPrio == ~QK_priv_.nextPrio_dis);
+            Q_ASSERT_INCRIT(432, QK_priv_.nextPrio
+                == (uint_fast8_t)(~QK_priv_.nextPrio_dis));
             QK_priv_.nextPrio = p; // next AO to run
 #ifndef Q_UNSAFE
-            QK_priv_.nextPrio_dis = ~QK_priv_.nextPrio;
+            QK_priv_.nextPrio_dis = (uint_fast8_t)(~QK_priv_.nextPrio);
 #endif
         }
     }
@@ -5328,8 +5330,8 @@ uint_fast8_t const prio_in = QK_priv_.actPrio; // save initial prio.
 uint_fast8_t p = QK_priv_.nextPrio; // next prio to run
 
 Q_REQUIRE_INCRIT(502,
-   (prio_in == ~QK_priv_.actPrio_dis)
-   &amp;&amp; (p == ~QK_priv_.nextPrio_dis));
+   (prio_in == (uint_fast8_t)(~QK_priv_.actPrio_dis))
+   &amp;&amp; (p == (uint_fast8_t)(~QK_priv_.nextPrio_dis)));
 Q_REQUIRE_INCRIT(510, (prio_in &lt;= QF_MAX_ACTIVE)
    &amp;&amp; (0U &lt; p) &amp;&amp; (p &lt;= QF_MAX_ACTIVE));
 
@@ -5368,8 +5370,8 @@ do  {
     QK_priv_.actPrio = p;
     QK_priv_.actThre = pthre;
 #ifndef Q_UNSAFE
-    QK_priv_.actPrio_dis = ~p;
-    QK_priv_.actThre_dis = ~pthre;
+    QK_priv_.actPrio_dis = (uint_fast8_t)(~p);
+    QK_priv_.actThre_dis = (uint_fast8_t)(~pthre);
 #endif
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
@@ -5427,8 +5429,8 @@ do  {
             p = 0U; // no activation needed
         }
         else {
-            Q_ASSERT_INCRIT(542,
-                QK_priv_.lockCeil == ~QK_priv_.lockCeil_dis);
+            Q_ASSERT_INCRIT(542, QK_priv_.lockCeil
+                == (uint_fast8_t)(~QK_priv_.lockCeil_dis));
 
             // is the AO's prio. below the lock preemption-threshold?
             if (p &lt;= QK_priv_.lockCeil) {
@@ -5445,8 +5447,8 @@ do  {
 QK_priv_.actPrio = prio_in;
 QK_priv_.actThre = pthre_in;
 #ifndef Q_UNSAFE
-QK_priv_.actPrio_dis = ~QK_priv_.actPrio;
-QK_priv_.actThre_dis = ~QK_priv_.actThre;
+QK_priv_.actPrio_dis = (uint_fast8_t)(~QK_priv_.actPrio);
+QK_priv_.actThre_dis = (uint_fast8_t)(~QK_priv_.actThre);
 #endif
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
@@ -5491,10 +5493,10 @@ QK_priv_.lockCeil = (QF_MAX_ACTIVE + 1U); // scheduler locked
 
 #ifndef Q_UNSAFE
 QPSet_update_(&amp;QK_priv_.readySet, &amp;QK_priv_.readySet_dis);
-QK_priv_.actPrio_dis  = ~0U;
-QK_priv_.nextPrio_dis = ~0U;
-QK_priv_.actThre_dis  = ~0U;
-QK_priv_.lockCeil_dis = ~QK_priv_.lockCeil;
+QK_priv_.actPrio_dis  = (uint_fast8_t)(~0U);
+QK_priv_.nextPrio_dis = (uint_fast8_t)(~0U);
+QK_priv_.actThre_dis  = (uint_fast8_t)(~0U);
+QK_priv_.lockCeil_dis = (uint_fast8_t)(~QK_priv_.lockCeil);
 #endif
 
 for (uint_fast8_t tickRate = 0U;
@@ -5543,7 +5545,7 @@ QK_START(); // port-specific startup of the QK kernel
 
 QK_priv_.lockCeil = 0U; // unlock the QK scheduler
 #ifndef Q_UNSAFE
-QK_priv_.lockCeil_dis = ~0U;
+QK_priv_.lockCeil_dis = (uint_fast8_t)(~0U);
 #endif
 
 // activate AOs to process events posted so far

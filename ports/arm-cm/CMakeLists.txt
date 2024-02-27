@@ -15,8 +15,5 @@ else()
     target_include_directories(qpc PUBLIC ${KERNEL}/${_compiler_})
 endif()
 
-if(EXISTS ${KERNEL}/config)
-    target_include_directories(qpc PRIVATE ${KERNEL}/config)
-endif()
 target_sources(qpc PRIVATE ${KERNEL}/${_compiler_}/${qx_port_c})
 

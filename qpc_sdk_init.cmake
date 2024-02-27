@@ -31,7 +31,7 @@ if (NOT TARGET _qpc_sdk_pre_init_marker)
         set(QPC_SDK_PATH ${CMAKE_CURRENT_LIST_DIR})
     endif ()
 
-    get_filename_component(QPC_SDK_PATH "${QPC_SDK_PATH}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
+    file(REAL_PATH "${QPC_SDK_PATH}" QPC_SDK_PATH BASE_DIRECTORY "${CMAKE_BINARY_DIR}")
 
     set(QPC_SDK_PATH ${CMAKE_CURRENT_LIST_DIR} CACHE PATH "Path to the QP/C SDK" FORCE)
 

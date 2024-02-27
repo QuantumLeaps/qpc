@@ -1,5 +1,4 @@
 # CMake the qpc libraries for different targets
-# target may be "Windows", "Posix", "TLE984x"
 set(PORT_DIR ${PORT})
 if((PORT STREQUAL win32) OR (PORT STREQUAL posix))
     if(QPC_CFG_UNIT_TEST)

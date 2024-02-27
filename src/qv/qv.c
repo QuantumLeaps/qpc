@@ -91,7 +91,7 @@ void QV_schedDisable(uint_fast8_t const ceiling) {
 
         QV_priv_.schedCeil = ceiling;
     #ifndef Q_UNSAFE
-        QV_priv_.schedCeil_dis = (uint_fast16_t)(~ceiling);
+        QV_priv_.schedCeil_dis = (uint_fast8_t)(~ceiling);
     #endif
     }
     QF_MEM_APP();
@@ -118,7 +118,7 @@ void QV_schedEnable(void) {
 
         QV_priv_.schedCeil = 0U;
     #ifndef Q_UNSAFE
-        QV_priv_.schedCeil_dis = (uint_fast16_t)(~0U);
+        QV_priv_.schedCeil_dis = (uint_fast8_t)(~0U);
     #endif
     }
     QF_MEM_APP();
@@ -137,7 +137,7 @@ void QF_init(void) {
 
     #ifndef Q_UNSAFE
     QPSet_update_(&QV_priv_.readySet, &QV_priv_.readySet_dis);
-    QV_priv_.schedCeil_dis = (uint_fast16_t)(~0U);
+    QV_priv_.schedCeil_dis = (uint_fast8_t)(~0U);
     #endif
 
     for (uint_fast8_t tickRate = 0U;

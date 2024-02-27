@@ -132,35 +132,24 @@ add_subdirectory(src)
 add_subdirectory(ports)
 
 # set general defines
-target_compile_definitions(qpc
-    PRIVATE
-        $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
-        $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
-        $<$<CONFIG:Spy>:Q_SPY>
-        $<$<AND:$<CONFIG:Spy>,$<BOOL:${QPC_CFG_UNIT_TEST}>>:Q_UTEST>
+target_compile_definitions(qpc PRIVATE
+    $<$<BOOL:${ADD_DEBUG_CODE}>:${ADD_DEBUG_CODE}>
+    $<$<BOOL:${QPC_CFG_GUI}>:QWIN_GUI>
+    # $<$<CONFIG:Spy>:Q_SPY> # set via toolchain file
+    $<$<AND:$<CONFIG:Spy>,$<BOOL:${QPC_CFG_UNIT_TEST}>>:Q_UTEST>
 )
 
-target_compile_options(qpc
-    PRIVATE
-        $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
+target_compile_options(qpc PRIVATE
+    $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
 )
 
-target_link_options(qpc
-    PRIVATE
-        $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
+target_link_options(qpc PRIVATE
+    $<$<BOOL:${QPC_CFG_VERBOSE}>:-v>
 )
 
-target_link_libraries(qpc
-    PUBLIC
-        $<$<AND:$<CONFIG:Spy>,$<STREQUAL:win32,${PORT}>>:ws2_32>
+target_link_libraries(qpc PUBLIC
+    $<$<AND:$<CONFIG:Spy>,$<STREQUAL:win32,${PORT}>>:ws2_32>
 )
-
-# set position independent code compile/link parameters
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
-    include(CheckPIESupported)
-    check_pie_supported()
-endif()
-set_property(TARGET qpc PROPERTY POSITION_INDEPENDENT_CODE FALSE)
 
 # print configuration
 message(STATUS

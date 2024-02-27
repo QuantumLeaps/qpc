@@ -1,6 +1,4 @@
 # ./src/qf
-target_sources(
-    qpc
-    PRIVATE
-        qv.c
+target_sources(qpc PRIVATE
+    qv.c
 )
