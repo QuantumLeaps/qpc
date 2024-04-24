@@ -44,11 +44,9 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION     733U
-#define QP_VERSION_STR "7.3.3"
-
-//! Encrypted  current QP release (7.3.3) and date (2024-03-01)
-#define QP_RELEASE     0x70C4F752U
+#define QP_VERSION_STR "7.3.5-rc.1"
+#define QP_VERSION     735U
+#define QP_RELEASE     0x70A1DEF0U
 
 //============================================================================
 //! @cond INTERNAL
@@ -117,9 +115,9 @@ typedef double float64_t;
 
 //$declare${QEP} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-//${QEP::QP_versionStr[8]} ...................................................
+//${QEP::QP_versionStr[16]} ..................................................
 //! the current QP version number string in ROM, based on #QP_VERSION_STR
-extern char const QP_versionStr[8];
+extern char const QP_versionStr[16];
 
 //${QEP::QSignal} ............................................................
 #if (Q_SIGNAL_SIZE == 1U)

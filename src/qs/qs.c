@@ -919,7 +919,7 @@ void QS_target_info_pre_(uint8_t const isReset) {
     QS_U8_PRE_(QS_OBJ_PTR_SIZE | (QS_FUN_PTR_SIZE << 4U));
     QS_U8_PRE_(QS_TIME_SIZE);
 
-    // send the limits...
+    // send the bounds...
     QS_U8_PRE_(QF_MAX_ACTIVE);
     QS_U8_PRE_(QF_MAX_EPOOL | (QF_MAX_TICK_RATE << 4U));
 

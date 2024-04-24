@@ -43,10 +43,6 @@
 #ifndef QPC_H_
 #define QPC_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 //============================================================================
 #include "qp_port.h"      // QP port from the port directory
 #include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
@@ -204,9 +200,5 @@ static inline void QF_psInit(
 #endif // QP_API_VERSION < 660
 #endif // QP_API_VERSION < 691
 #endif // QP_API_VERSION < 700
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // QPC_H_

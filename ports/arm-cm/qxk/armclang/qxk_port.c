@@ -27,8 +27,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-12-04
-//! @version Last updated for: @ref qpc_7_3_1
+//! @date Last updated on: 2024-05-28
+//! @version Last updated for: @ref qpc_7_3_5
 //!
 //! @file
 //! @brief QXK/C port to ARM Cortex-M, ARM-CLANG
@@ -376,10 +376,10 @@ __asm volatile (
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#27        \n" // r1 := (1 << 27) (UNPENDSVSET bit)
     "  LDR     r2,=" STRINGIFY(SCB_ICSR) "\n" // Interrupt Control and State
-    "  STR     r1,[r2]          \n" // ICSR[27] := 1 (unpend PendSV)
+    "  STR     r1,[r2]          \n" // ICSR[27] := 1 (un-pend PendSV)
 
     // Check QXK_priv_.next, which contains the pointer to the next thread
-    // to run, which is set in QXK_ISR_EXIT(). This pointer must not be NULL.
+    // to run, which is set in QXK_ISR_EXIT(). Return if QXK_priv_.next == 0
     "  LDR     r3,=QXK_priv_    \n"
     "  LDR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" // r1 := QXK_priv_.next
     "  CMP     r0,#0            \n" // is (QXK_priv_.next == 0)?
@@ -489,7 +489,7 @@ __asm volatile (
     "  MOV     lr,r2            \n" // make sure MSP is used
 #else                               // ARMv7-M or higher
 #ifdef __ARM_FP         //--------- if VFP available...
-    "  POP     {r0,lr}          \n" // restore alighner and EXC_RETURN into lr
+    "  POP     {r0,lr}          \n" // restore aligner and EXC_RETURN into lr
     "  DSB                      \n" // ARM Erratum 838869
     "  TST     lr,#(1 << 4)     \n" // is it return to the VFP exception frame?
     "  IT      EQ               \n" // if EXC_RETURN[4] is zero...
@@ -508,19 +508,18 @@ __asm volatile (
     "  BCC     PendSV_activate  \n" // if (next->prio > actPrio) activate the next AO
 
     // otherwise no activation needed...
-    "  MOVS    r0,#0            \n"
-    "  STR     r0,[r3,#" STRINGIFY(QXK_CURR) "]\n" // QXK_priv_.curr := 0
-    "  STR     r0,[r3,#" STRINGIFY(QXK_NEXT) "]\n" // QXK_priv_.next := 0
+    "  MOVS    r2,#0            \n"
+    "  STR     r2,[r3,#" STRINGIFY(QXK_CURR) "]\n" // QXK_priv_.curr := 0
+    "  STR     r2,[r3,#" STRINGIFY(QXK_NEXT) "]\n" // QXK_priv_.next := 0
 
     "  PUSH    {r0,lr}          \n" // save the aligner + EXC_RETURN
 #if defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
-    // r0 is still 0 (parameter next) for QXK_contextSw_()
+    "  CMP     r0,#0            \n" // r0 == QXK_priv_.next->prio
+    "  BEQ     PendSV_idle      \n" // if (QXK_priv_.next->prio != 0)
+    "  MOV     r0,r12           \n" // r0 := parameter 'next' for QXK_contextSw_()
+    "PendSV_idle:               \n"
     "  LDR     r3,=QXK_contextSw_ \n"
     "  BLX     r3               \n" // call QXK_contextSw_()
-#ifdef QF_MEM_ISOLATE
-    "  LDR     r3,=QF_onMemApp  \n"
-    "  BLX     r3               \n" // call QF_onMemApp()
-#endif
 #endif // defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
     "  B       PendSV_return1   \n" // skip over saving aligner + EXC_RETURN
 
@@ -529,6 +528,10 @@ __asm volatile (
     "  PUSH    {r0,lr}          \n" // save the aligner + EXC_RETURN
 
     "PendSV_return1:            \n"
+#ifdef QF_MEM_ISOLATE
+    "  LDR     r3,=QF_onMemApp  \n"
+    "  BLX     r3               \n" // call QF_onMemApp()
+#endif
     "  LDR     r0,=QF_int_enable_ \n"
     "  BLX     r0               \n" // call QF_int_enable_()
     //>>>>>>>>>>>>>>>>>>>>>>>> CRITICAL SECTION END >>>>>>>>>>>>>>>>>>>>>>>>>
@@ -591,7 +594,7 @@ __asm volatile (
 
     "  PUSH    {r0-r2,lr}       \n" // save next, osObject, EXC_RETURN
 #if defined(Q_SPY) || defined(QF_ON_CONTEXT_SW)
-    "  MOV     r0,r12           \n" // parameter next
+    "  MOV     r0,r12           \n" // r0 := parameter 'next' for QXK_contextSw_()
     "  LDR     r3,=QXK_contextSw_ \n"
     "  BLX     r3               \n" // call QXK_contextSw_()
 #ifdef QF_MEM_ISOLATE
@@ -744,7 +747,7 @@ __asm volatile (
     "  ADD     sp,sp,#(8*4)     \n" // remove one 8-register exception frame
 
 #ifdef __ARM_FP         //--------- if VFP available...
-    "  POP     {r0,lr}          \n" // restore alighner and EXC_RETURN into lr
+    "  POP     {r0,lr}          \n" // restore aligher and EXC_RETURN into lr
     "  DSB                      \n" // ARM Erratum 838869
     "  TST     lr,#(1 << 4)     \n" // is it return to the VFP exception frame?
     "  IT      EQ               \n" // if EXC_RETURN[4] is zero...

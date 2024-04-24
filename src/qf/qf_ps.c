@@ -110,7 +110,7 @@ void QActive_publish_(
     QF_MEM_SYS();
 
     Q_REQUIRE_INCRIT(200, sig < (QSignal)QActive_maxPubSignal_);
-    Q_REQUIRE_INCRIT(202,
+    Q_INVARIANT_INCRIT(202,
         QPSet_verify_(&QActive_subscrList_[sig].set,
                       &QActive_subscrList_[sig].set_dis));
 
@@ -154,9 +154,9 @@ void QActive_publish_(
 
         QF_SCHED_STAT_
         QF_SCHED_LOCK_(p); // lock the scheduler up to AO's prio
-        uint_fast8_t limit = QF_MAX_ACTIVE + 1U;
+        uint_fast8_t lbound = QF_MAX_ACTIVE + 1U; // fixed upper loop bound
         do { // loop over all subscribers
-            --limit;
+            --lbound;
 
             // QACTIVE_POST() asserts internally if the queue overflows
             QACTIVE_POST(a, e, sender);
@@ -178,10 +178,12 @@ void QActive_publish_(
             else {
                 p = 0U; // no more subscribers
             }
-        } while ((p != 0U) && (limit > 0U));
+        } while ((p != 0U) && (lbound > 0U));
 
         QF_CRIT_ENTRY();
-        Q_ENSURE_INCRIT(290, p == 0U);
+        // NOTE: the following postcondition can only succeed when
+        // (lbound > 0), so no extra check for lbound is necessary.
+        Q_ENSURE_INCRIT(290, p == 0U); // all subscribers processed
         QF_CRIT_EXIT();
 
         QF_SCHED_UNLOCK_(); // unlock the scheduler
@@ -213,7 +215,7 @@ void QActive_subscribe(QActive const * const me,
         && (sig < QActive_maxPubSignal_)
         && (0U < p) && (p <= QF_MAX_ACTIVE)
         && (QActive_registry_[p] == me));
-    Q_REQUIRE_INCRIT(302,
+    Q_INVARIANT_INCRIT(302,
         QPSet_verify_(&QActive_subscrList_[sig].set,
                       &QActive_subscrList_[sig].set_dis));
 
@@ -252,7 +254,7 @@ void QActive_unsubscribe(QActive const * const me,
         && (sig < QActive_maxPubSignal_)
         && (0U < p) && (p <= QF_MAX_ACTIVE)
         && (QActive_registry_[p] == me));
-    Q_REQUIRE_INCRIT(402,
+    Q_INVARIANT_INCRIT(402,
         QPSet_verify_(&QActive_subscrList_[sig].set,
                       &QActive_subscrList_[sig].set_dis));
 

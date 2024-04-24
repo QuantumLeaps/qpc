@@ -77,8 +77,8 @@ void QV_schedDisable(uint_fast8_t const ceiling) {
     QF_CRIT_ENTRY();
     QF_MEM_SYS();
 
-    Q_ASSERT_INCRIT(102, QV_priv_.schedCeil
-                         == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
+    Q_INVARIANT_INCRIT(102, QV_priv_.schedCeil
+                       == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
 
     if (ceiling > QV_priv_.schedCeil) { // raising the scheduler ceiling?
 
@@ -105,8 +105,8 @@ void QV_schedEnable(void) {
     QF_CRIT_ENTRY();
     QF_MEM_SYS();
 
-    Q_ASSERT_INCRIT(202, QV_priv_.schedCeil
-                         == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
+    Q_INVARIANT_INCRIT(202, QV_priv_.schedCeil
+                       == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
 
     if (QV_priv_.schedCeil != 0U) { // actually enabling the scheduler?
 
@@ -157,7 +157,7 @@ void QF_init(void) {
 //! @static @public @memberof QF
 void QF_stop(void) {
     QF_onCleanup(); // application-specific cleanup callback
-    // nothing else to do for the cooperative QV kernel
+    // nothing else to do for the QV kernel
 }
 
 //${QV::QF-cust::run} ........................................................
@@ -189,11 +189,11 @@ int_t QF_run(void) {
     for (;;) { // QV event loop...
 
         // check internal integrity (duplicate inverse storage)
-        Q_ASSERT_INCRIT(302, QPSet_verify_(&QV_priv_.readySet,
-                                           &QV_priv_.readySet_dis));
+        Q_INVARIANT_INCRIT(302, QPSet_verify_(&QV_priv_.readySet,
+                                              &QV_priv_.readySet_dis));
         // check internal integrity (duplicate inverse storage)
-        Q_ASSERT_INCRIT(303, QV_priv_.schedCeil
-                             == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
+        Q_INVARIANT_INCRIT(303, QV_priv_.schedCeil
+                           == (uint_fast8_t)(~QV_priv_.schedCeil_dis));
 
         // find the maximum prio. AO ready to run
         uint_fast8_t const p = (QPSet_notEmpty(&QV_priv_.readySet)

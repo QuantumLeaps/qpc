@@ -36,12 +36,17 @@
 //-vf              // print names of all source files (for debugging linting)
 
 // include directories
+-i%PCLP%/lnt       // PC-Lint-Plus standard .lnt files
 -i.                // QP/C port includes (see also qk/ and qv/)
 -i%QPC%/include    // QP/C public includes
 
 // standards
 // language standard...
-au-misra4.lnt      // MISRA-C:2023 (MC4) compliance
+au-misra3.lnt      // MISRA-C:2023 (MC4) compliance
+au-misra3-amd1.lnt // MISRA-C:2023 (MC4) compliance
+au-misra3-amd2.lnt // MISRA-C:2023 (MC4) compliance
+au-misra3-amd3.lnt // MISRA-C:2023 (MC4) compliance
+au-misra3-amd4.lnt // MISRA-C:2023 (MC4) compliance
 
 // customized BARR-C:2018 style guidelines
 au-barr.lnt        // BARR-C:2018 style guidelines

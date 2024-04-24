@@ -60,11 +60,11 @@ Q_DEFINE_THIS_MODULE("qep_hsm")
 #endif
 //$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-//$define${QEP::QP_versionStr[8]} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+//$define${QEP::QP_versionStr[16]} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-//${QEP::QP_versionStr[8]} ...................................................
-char const QP_versionStr[8] = QP_VERSION_STR;
-//$enddef${QEP::QP_versionStr[8]} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//${QEP::QP_versionStr[16]} ..................................................
+char const QP_versionStr[16] = QP_VERSION_STR;
+//$enddef${QEP::QP_versionStr[16]} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //============================================================================
 //! @cond INTERNAL
@@ -188,27 +188,27 @@ void QHsm_init_(
     QF_CRIT_EXIT();
 
     // drill down into the state hierarchy with initial transitions...
-    int_fast8_t limit = QHSM_MAX_NEST_DEPTH_; // loop hard limit
     do {
         QStateHandler path[QHSM_MAX_NEST_DEPTH_]; // tran entry path array
         int_fast8_t ip = 0; // tran entry path index
 
         path[0] = me->temp.fun;
         (void)QHSM_RESERVED_EVT_(me->temp.fun, Q_EMPTY_SIG);
+        // note: ip is the fixed upper loop bound
         while ((me->temp.fun != t) && (ip < (QHSM_MAX_NEST_DEPTH_ - 1))) {
             ++ip;
             path[ip] = me->temp.fun;
             (void)QHSM_RESERVED_EVT_(me->temp.fun, Q_EMPTY_SIG);
         }
         QF_CRIT_ENTRY();
-        // The initial transition source state must be reached
-        // Too many state nesting levels or "malformed" HSM.
-        Q_ASSERT_INCRIT(220, me->temp.fun == t);
+        // too many state nesting levels or "malformed" HSM
+        Q_ENSURE_INCRIT(220, ip < QHSM_MAX_NEST_DEPTH_);
         QF_CRIT_EXIT();
 
         me->temp.fun = path[0];
 
         // retrace the entry path in reverse (desired) order...
+        // note: ip is the fixed upper loop bound
         do {
             // enter path[ip]
             if (QHSM_RESERVED_EVT_(path[ip], Q_ENTRY_SIG)
@@ -236,14 +236,9 @@ void QHsm_init_(
             QS_CRIT_EXIT();
         }
     #endif // Q_SPY
-
-        --limit;
-    } while ((r == Q_RET_TRAN) && (limit > 0));
+    } while (r == Q_RET_TRAN);
 
     QF_CRIT_ENTRY();
-    // Loop limit must not be reached.
-    // Too many state nesting levels or likely "malformed" HSM
-    Q_ENSURE_INCRIT(290, limit > 0);
 
     QS_MEM_SYS();
     QS_BEGIN_PRE_(QS_QEP_INIT_TRAN, qsId)
@@ -277,9 +272,9 @@ void QHsm_dispatch_(
     QF_CRIT_STAT
 
     QF_CRIT_ENTRY();
-    Q_REQUIRE_INCRIT(300, (s != Q_STATE_CAST(0))
+    Q_REQUIRE_INCRIT(300, QEvt_verify_(e));
+    Q_INVARIANT_INCRIT(302, (s != Q_STATE_CAST(0))
         && (me->state.uint == (uintptr_t)(~me->temp.uint)));
-    Q_REQUIRE_INCRIT(302, QEvt_verify_(e));
 
     QS_MEM_SYS();
     QS_BEGIN_PRE_(QS_QEP_DISPATCH, qsId)
@@ -295,7 +290,7 @@ void QHsm_dispatch_(
     // process the event hierarchically...
     QState r;
     me->temp.fun = s;
-    int_fast8_t limit = QHSM_MAX_NEST_DEPTH_; // loop hard limit
+    int_fast8_t ip = QHSM_MAX_NEST_DEPTH_; // fixed upper loop bound
     do {
         s = me->temp.fun;
         r = (*s)(me, e); // invoke state handler s
@@ -315,11 +310,11 @@ void QHsm_dispatch_(
             r = QHSM_RESERVED_EVT_(s, Q_EMPTY_SIG); // superstate of s
         }
 
-        --limit;
-    } while ((r == Q_RET_SUPER) && (limit > 0));
+        --ip;
+    } while ((r == Q_RET_SUPER) && (ip > 0));
 
     QF_CRIT_ENTRY();
-    Q_ASSERT_INCRIT(310, limit > 0);
+    Q_ENSURE_INCRIT(310, ip > 0);
     QF_CRIT_EXIT();
 
     if (r >= Q_RET_TRAN) { // regular tran. taken?
@@ -330,21 +325,21 @@ void QHsm_dispatch_(
         path[2] = s; // tran. source
 
         // exit current state to tran. source s...
-        limit = QHSM_MAX_NEST_DEPTH_; // loop hard limit
-        for (; (t != s) && (limit > 0); t = me->temp.fun) {
+        ip = QHSM_MAX_NEST_DEPTH_; // fixed upper loop bound
+        for (; (t != s) && (ip > 0); t = me->temp.fun) {
             // exit from t
             if (QHSM_RESERVED_EVT_(t, Q_EXIT_SIG) == Q_RET_HANDLED) {
                 QS_STATE_EXIT_(t, qsId);
                 // find superstate of t
                 (void)QHSM_RESERVED_EVT_(t, Q_EMPTY_SIG);
             }
-            --limit;
+            --ip;
         }
         QF_CRIT_ENTRY();
-        Q_ASSERT_INCRIT(320, limit > 0);
+        Q_ENSURE_INCRIT(320, ip > 0);
         QF_CRIT_EXIT();
 
-        int_fast8_t ip = QHsm_tran_(me, path, qsId); // take the tran.
+        ip = QHsm_tran_(me, path, qsId); // take the tran.
 
     #ifdef Q_SPY
         if (r == Q_RET_TRAN_HIST) {
@@ -361,6 +356,7 @@ void QHsm_dispatch_(
     #endif // Q_SPY
 
         // execute state entry actions in the desired order...
+        // note: ip is the fixed upper loop bound
         for (; ip >= 0; --ip) {
             // enter path[ip]
             if (QHSM_RESERVED_EVT_(path[ip], Q_ENTRY_SIG)
@@ -391,6 +387,7 @@ void QHsm_dispatch_(
             // find superstate
             (void)QHSM_RESERVED_EVT_(me->temp.fun, Q_EMPTY_SIG);
 
+            // note: ip is the fixed upper loop bound
             while ((me->temp.fun != t) && (ip < (QHSM_MAX_NEST_DEPTH_ - 1))) {
                 ++ip;
                 path[ip] = me->temp.fun;
@@ -398,14 +395,14 @@ void QHsm_dispatch_(
                 (void)QHSM_RESERVED_EVT_(me->temp.fun, Q_EMPTY_SIG);
             }
             QF_CRIT_ENTRY();
-            // The initial transition source state must be reached.
-            // Too many state nesting levels or "malformed" HSM.
-            Q_ASSERT_INCRIT(330, me->temp.fun == t);
+            // too many state nesting levels or "malformed" HSM
+            Q_ENSURE_INCRIT(330, ip < QHSM_MAX_NEST_DEPTH_);
             QF_CRIT_EXIT();
 
             me->temp.fun = path[0];
 
             // retrace the entry path in reverse (correct) order...
+            // note: ip is the fixed upper loop bound
             do {
                 // enter path[ip]
                 if (QHSM_RESERVED_EVT_(path[ip], Q_ENTRY_SIG)
@@ -481,17 +478,17 @@ bool QHsm_isIn_(
 {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_REQUIRE_INCRIT(602, me->state.uint
-                      == (uintptr_t)(~me->temp.uint));
+    Q_INVARIANT_INCRIT(602, me->state.uint
+                       == (uintptr_t)(~me->temp.uint));
     QF_CRIT_EXIT();
 
     bool inState = false; // assume that this HSM is not in 'state'
 
     // scan the state hierarchy bottom-up
     QStateHandler s = me->state.fun;
-    int_fast8_t limit = QHSM_MAX_NEST_DEPTH_ + 1; // loop hard limit
+    int_fast8_t lbound = QHSM_MAX_NEST_DEPTH_ + 1; // fixed upper loop bound
     QState r = Q_RET_SUPER;
-    for (; (r != Q_RET_IGNORED) && (limit > 0); --limit) {
+    for (; (r != Q_RET_IGNORED) && (lbound > 0); --lbound) {
         if (s == state) { // do the states match?
             inState = true;  // 'true' means that match found
             break; // break out of the for-loop
@@ -503,7 +500,7 @@ bool QHsm_isIn_(
     }
 
     QF_CRIT_ENTRY();
-    Q_ENSURE_INCRIT(690, limit > 0);
+    Q_ENSURE_INCRIT(690, lbound > 0);
     QF_CRIT_EXIT();
 
     #ifndef Q_UNSAFE
@@ -524,6 +521,7 @@ QStateHandler QHsm_childState(QHsm * const me,
     // establish stable state configuration
     me->super.temp.fun = child;
     QState r;
+    int_fast8_t lbound = QHSM_MAX_NEST_DEPTH_; // fixed upper loop bound
     do {
         // is this the parent of the current child?
         if (me->super.temp.fun == parent) {
@@ -534,7 +532,9 @@ QStateHandler QHsm_childState(QHsm * const me,
             child = me->super.temp.fun;
             r = QHSM_RESERVED_EVT_(me->super.temp.fun, Q_EMPTY_SIG);
         }
-    } while (r != Q_RET_IGNORED); // the top state not reached
+        --lbound;
+    } while ((r != Q_RET_IGNORED)  // the top state not reached
+             && (lbound > 0));
 
     #ifndef Q_UNSAFE
     me->super.temp.uint = ~me->super.state.uint;
@@ -542,10 +542,12 @@ QStateHandler QHsm_childState(QHsm * const me,
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_ASSERT_INCRIT(890, isFound);
+    // NOTE: the following postcondition can only succeed when
+    // (lbound > 0), so no extra check is necessary.
+    Q_ENSURE_INCRIT(890, isFound);
     QF_CRIT_EXIT();
 
-    return child; // return the child
+    return child;
 }
 
 //${QEP::QHsm::tran_} ........................................................
@@ -611,6 +613,7 @@ int_fast8_t QHsm_tran_(
                     t = me->temp.fun; // save source->super
 
                     // find target->super->super...
+                    // note: ip is the fixed upper loop bound
                     QState r = QHSM_RESERVED_EVT_(path[1], Q_EMPTY_SIG);
                     while ((r == Q_RET_SUPER)
                            && (ip < (QHSM_MAX_NEST_DEPTH_ - 1)))
@@ -627,9 +630,10 @@ int_fast8_t QHsm_tran_(
                         }
                     }
                     QF_CRIT_ENTRY();
-                    // Tran. source must be found within the nesting depth
-                    // Too many state nesting levels or "malformed" HSM.
-                    Q_ASSERT_INCRIT(510, r != Q_RET_SUPER);
+                    // NOTE: The following postcondition succeeds only when
+                    // ip < QHSM_MAX_NEST_DEPTH, so no additional check is necessary
+                    // too many state nesting levels or "malformed" HSM.
+                    Q_ENSURE_INCRIT(510, r != Q_RET_SUPER);
                     QF_CRIT_EXIT();
 
                     // the LCA not found yet?
@@ -645,6 +649,7 @@ int_fast8_t QHsm_tran_(
                         //                  == target->super->super...
                         iq = ip;
                         r = Q_RET_IGNORED; // indicate that the LCA NOT found
+                        // note: iq is the fixed upper loop bound
                         do {
                             if (t == path[iq]) { // is this the LCA?
                                 r = Q_RET_HANDLED; // indicate the LCA found
@@ -661,7 +666,7 @@ int_fast8_t QHsm_tran_(
                             // (g) check each source->super->...
                             // for each target->super...
                             r = Q_RET_IGNORED; // keep looping
-                            int_fast8_t limit = QHSM_MAX_NEST_DEPTH_;
+                            int_fast8_t lbound = QHSM_MAX_NEST_DEPTH_;
                             do {
                                 // exit from t
                                 if (QHSM_RESERVED_EVT_(t, Q_EXIT_SIG)
@@ -685,10 +690,10 @@ int_fast8_t QHsm_tran_(
                                     }
                                 } while (iq >= 0);
 
-                                --limit;
-                            } while ((r != Q_RET_HANDLED) && (limit > 0));
+                                --lbound;
+                            } while ((r != Q_RET_HANDLED) && (lbound > 0));
                             QF_CRIT_ENTRY();
-                            Q_ASSERT_INCRIT(530, limit > 0);
+                            Q_ENSURE_INCRIT(530, lbound > 0);
                             QF_CRIT_EXIT();
                         }
                     }

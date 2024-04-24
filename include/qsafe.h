@@ -150,6 +150,9 @@ extern "C" {
 //${QP-FuSa::Q_INVARIANT} ....................................................
 #define Q_INVARIANT(expr_) Q_ASSERT(expr_)
 
+//${QP-FuSa::Q_INVARIANT_INCRIT} .............................................
+#define Q_INVARIANT_INCRIT(id_, expr_) Q_ASSERT_INCRIT((id_), (expr_))
+
 //${QP-FuSa::Q_ASSERT_STATIC} ................................................
 #define Q_ASSERT_STATIC(expr_) extern char Q_static_assert_[(expr_) ? 1 : -1]
 

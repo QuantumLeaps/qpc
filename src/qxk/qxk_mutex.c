@@ -163,7 +163,7 @@ bool QXMutex_lock(QXMutex * const me,
     // is the mutex locked by this thread already (nested locking)?
     else if (me->ao.osObject == &curr->super) {
 
-        // the nesting level beyond the arbitrary but high limit
+        // the nesting level beyond the arbitrary but high bound
         // most likely means cyclic or recursive locking of a mutex.
         Q_ASSERT_INCRIT(220, me->ao.eQueue.nFree < 0xFFU);
 
@@ -309,7 +309,7 @@ bool QXMutex_tryLock(QXMutex * const me) {
     }
     // is the mutex locked by this thread already (nested locking)?
     else if (me->ao.osObject == curr) {
-        // the nesting level must not exceed the specified limit
+        // the nesting level must not exceed the specified bound
         Q_ASSERT_INCRIT(320, me->ao.eQueue.nFree < 0xFFU);
 
         ++me->ao.eQueue.nFree; // lock one more level

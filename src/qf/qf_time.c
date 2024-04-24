@@ -316,8 +316,8 @@ void QTimeEvt_tick_(
     QS_END_PRE_()
 
     // scan the linked-list of time events at this rate...
-    uint_fast8_t limit = 2U*QF_MAX_ACTIVE; // loop hard limit
-    for (; limit > 0U; --limit) {
+    uint_fast8_t lbound = 2U*QF_MAX_ACTIVE; // fixed upper loop bound
+    for (; lbound > 0U; --lbound) {
         QTimeEvt *e = prev->next; // advance down the time evt. list
 
         if (e == (QTimeEvt *)0) { // end of the list?
@@ -337,7 +337,7 @@ void QTimeEvt_tick_(
         }
 
         // the time event 'e' must be valid
-        Q_ASSERT_INCRIT(112, QEvt_verify_(Q_EVT_CAST(QEvt)));
+        Q_INVARIANT_INCRIT(112, QEvt_verify_(Q_EVT_CAST(QEvt)));
 
         if (e->ctr == 0U) { // time event scheduled for removal?
             prev->next = e->next;
@@ -424,7 +424,7 @@ void QTimeEvt_tick_(
         QF_MEM_SYS();
     }
 
-    Q_ENSURE_INCRIT(190, limit > 0U);
+    Q_ENSURE_INCRIT(190, lbound > 0U);
     QF_MEM_APP();
     QF_CRIT_EXIT();
 }

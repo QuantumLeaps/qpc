@@ -166,8 +166,8 @@ QActive * QXK_current(void) {
 //${QXK::QXK-base::sched_} ...................................................
 //! @static @private @memberof QXK
 uint_fast8_t QXK_sched_(void) {
-    Q_REQUIRE_INCRIT(402, QPSet_verify_(&QXK_priv_.readySet,
-                                        &QXK_priv_.readySet_dis));
+    Q_INVARIANT_INCRIT(402, QPSet_verify_(&QXK_priv_.readySet,
+                                          &QXK_priv_.readySet_dis));
 
     QActive const * const curr = QXK_priv_.curr;
     uint_fast8_t p;
@@ -242,6 +242,7 @@ void QXK_activate_(void) {
     do  {
         QXK_priv_.actPrio = p; // next active prio
 
+        QF_MEM_APP();
         QF_INT_ENABLE(); // unconditionally enable interrupts
 
         QEvt const * const e = QActive_get_(next);
@@ -257,8 +258,8 @@ void QXK_activate_(void) {
         QF_MEM_SYS();
 
         // check internal integrity (duplicate inverse storage)
-        Q_ASSERT_INCRIT(502, QPSet_verify_(&QXK_priv_.readySet,
-                                            &QXK_priv_.readySet_dis));
+        Q_INVARIANT_INCRIT(502, QPSet_verify_(&QXK_priv_.readySet,
+                                              &QXK_priv_.readySet_dis));
 
         if (next->eQueue.frontEvt == (QEvt *)0) { // empty queue?
             QPSet_remove(&QXK_priv_.readySet, p);
