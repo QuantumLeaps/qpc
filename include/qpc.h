@@ -62,7 +62,12 @@
 //============================================================================
 // QP API compatibility layer...
 
-#if (QP_API_VERSION < 730)
+#if (QP_API_VERSION < 740)
+
+#ifdef QEVT_DYN_CTOR
+//! @deprecated #QEVT_DYN_CTOR, please use #QEVT_PAR_INIT
+#define QEVT_PAR_INIT
+#endif
 
 //! @deprecated plain 'char' is no longer forbidden in MISRA-C:2023
 typedef char char_t;

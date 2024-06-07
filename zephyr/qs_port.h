@@ -1,5 +1,10 @@
 //============================================================================
 // QP/C Real-Time Embedded Framework (RTEF)
+//
+//                   Q u a n t u m  L e a P s
+//                   ------------------------
+//                   Modern Embedded Software
+//
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
@@ -22,17 +27,14 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-16
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2024-06-06
+//! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
 //! @brief QS/C port to a 32-bit CPU and a generic C99 compiler.
 
 #ifndef QS_PORT_H_
 #define QS_PORT_H_
-
-// QS time-stamp size in bytes
-#define QS_TIME_SIZE     4U
 
 // object pointer size in bytes
 #define QS_OBJ_PTR_SIZE  4U
@@ -45,12 +47,11 @@
 // case the separate definitions of the macros QF_CRIT_STAT, QF_CRIT_ENTRY(),
 // and QF_CRIT_EXIT() are needed. In this port QS is configured to be used
 // with the other QP component, by simply including "qp_port.h"
-//*before* "qs.h".
+// *before* "qs.h".
 #ifndef QP_PORT_H_
-#include "qp_port.h" // use QS with QF
+#include "qp_port.h" // use QS with QP
 #endif
 
 #include "qs.h"      // QS platform-independent public interface
 
 #endif // QS_PORT_H_
-

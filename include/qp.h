@@ -44,9 +44,9 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR "7.3.5-rc.1"
-#define QP_VERSION     735U
-#define QP_RELEASE     0x70A1DEF0U
+#define QP_VERSION_STR "7.4.0-rc.1"
+#define QP_VERSION     740U
+#define QP_RELEASE     0x7092C3BBU
 
 //============================================================================
 //! @cond INTERNAL
@@ -162,14 +162,19 @@ extern QEvt const QEvt_reserved_[4];
 // public:
 
 //! @public @memberof QEvt
-static inline QEvt * QEvt_ctor(QEvt * const me,
+static inline void QEvt_ctor(QEvt * const me,
     enum_t const sig)
 {
-    if (sig != QEVT_DYNAMIC) {
-        me->sig     = (QSignal)sig;
-        me->refCtr_ = 0U;
-        me->evtTag_ = QEVT_MARKER;
-    }
+    me->sig     = (QSignal)sig;
+    me->refCtr_ = 0U;
+    me->evtTag_ = QEVT_MARKER;
+}
+
+//! @public @memberof QEvt
+static inline QEvt * QEvt_init(QEvt * const me,
+    uint8_t dummy)
+{
+    (void)dummy;
     return me;
 }
 
@@ -1155,31 +1160,31 @@ void QF_gcFromISR(QEvt const * const e);
 #define Q_PRIO(prio_, pthre_) ((QPrioSpec)((prio_) | ((pthre_) << 8U)))
 
 //${QF-macros::Q_NEW} ........................................................
-#ifndef QEVT_DYN_CTOR
+#ifndef QEVT_PAR_INIT
 #define Q_NEW(evtT_, sig_) ((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
                            QF_NO_MARGIN, (enum_t)(sig_)))
-#endif // ndef QEVT_DYN_CTOR
+#endif // ndef QEVT_PAR_INIT
 
 //${QF-macros::Q_NEW} ........................................................
-#ifdef QEVT_DYN_CTOR
+#ifdef QEVT_PAR_INIT
 #define Q_NEW(evtT_, sig_, ...) \
-    (evtT_##_ctor((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
+    (evtT_##_init((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
                   QF_NO_MARGIN, (sig_)), __VA_ARGS__))
-#endif // def QEVT_DYN_CTOR
+#endif // def QEVT_PAR_INIT
 
 //${QF-macros::Q_NEW_X} ......................................................
-#ifndef QEVT_DYN_CTOR
+#ifndef QEVT_PAR_INIT
 #define Q_NEW_X(evtT_, margin_, sig_) \
     ((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
                       (margin_), (enum_t)(sig_)))
-#endif // ndef QEVT_DYN_CTOR
+#endif // ndef QEVT_PAR_INIT
 
 //${QF-macros::Q_NEW_X} ......................................................
-#ifdef QEVT_DYN_CTOR
+#ifdef QEVT_PAR_INIT
 #define Q_NEW_X(evtT_, margin_, sig_, ...) \
-    (evtT_##_ctor((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
+    (evtT_##_init((evtT_ *)QF_newX_((uint_fast16_t)sizeof(evtT_), \
                   (margin_), (sig_)), __VA_ARGS__))
-#endif // def QEVT_DYN_CTOR
+#endif // def QEVT_PAR_INIT
 
 //${QF-macros::Q_NEW_REF} ....................................................
 #define Q_NEW_REF(evtRef_, evtT_) \

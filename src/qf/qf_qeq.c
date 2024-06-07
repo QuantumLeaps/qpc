@@ -71,6 +71,14 @@ void QEQueue_init(QEQueue * const me,
     struct QEvt const ** const qSto,
     uint_fast16_t const qLen)
 {
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    QF_MEM_SYS();
+
+    #if (QF_EQUEUE_CTR_SIZE == 1U)
+    Q_REQUIRE_INCRIT(100, qLen < 0xFFU);
+    #endif
+
     me->frontEvt = (QEvt *)0; // no events in the queue
     me->ring     = qSto;      // the beginning of the ring buffer
     me->end      = (QEQueueCtr)qLen;
@@ -80,6 +88,9 @@ void QEQueue_init(QEQueue * const me,
     }
     me->nFree    = (QEQueueCtr)(qLen + 1U); // +1 for frontEvt
     me->nMin     = me->nFree;
+
+    QF_MEM_APP();
+    QF_CRIT_EXIT();
 }
 
 //${QF::QEQueue::post} .......................................................

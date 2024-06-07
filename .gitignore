@@ -37,6 +37,7 @@
 version-*
 JLink*.*
 
+cert/
 html/
 latex/
 doxygen/gen/
