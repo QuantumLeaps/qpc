@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-02-16
-//! @version Last updated for: @ref qpc_7_3_3
+//! @date Last updated on: 2024-06-11
+//! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
 //! @brief QF/C port to POSIX-QV (single-threaded)

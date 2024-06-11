@@ -538,6 +538,8 @@ QStateHandler QHsm_childState(QHsm * const me,
 
     #ifndef Q_UNSAFE
     me->super.temp.uint = ~me->super.state.uint;
+    #else
+    Q_UNUSED_PAR(isFound);
     #endif
 
     QF_CRIT_STAT

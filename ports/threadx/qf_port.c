@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-08-22
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2024-06-11
+//! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
 //! @brief QF/C, port to ThreadX

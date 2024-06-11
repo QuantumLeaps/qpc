@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-02-16
-//! @version Last updated for: @ref qpc_7_3_3
+//! @date Last updated on: 2024-06-11
+//! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
 //! @brief QS/C QUTest port for Win32
@@ -54,12 +54,12 @@
 
 #include <ws2tcpip.h>
 
-//Q_DEFINE_THIS_MODULE("qutest_port")
-
 #define QS_TX_SIZE     (8*1024)
 #define QS_RX_SIZE     (2*1024)
 #define QS_TX_CHUNK    QS_TX_SIZE
 #define QS_TIMEOUT_MS  10U
+
+Q_DEFINE_THIS_MODULE("qutest_port")
 
 // local variables .........................................................
 static SOCKET l_sock = INVALID_SOCKET;
@@ -110,6 +110,8 @@ uint8_t QS_onStartup(void const *arg) {
     if (*src == ':') {
         serviceName = src + 1;
     }
+    //printf("<TARGET> Connecting to QSPY on Host=%s:%s...\n",
+    //       hostName, serviceName);
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
@@ -151,6 +153,7 @@ uint8_t QS_onStartup(void const *arg) {
     if (ioctlsocket(l_sock, FIONBIO, &ioctl_opt) != NO_ERROR) {
         FPRINTF_S(stderr, "<TARGET> ERROR   %s WASErr=%d\n,",
             "Failed to set non-blocking socket", WSAGetLastError());
+        QF_stop(); // <== stop and exit the application
         goto error;
     }
 
@@ -237,13 +240,13 @@ void QS_onTestLoop() {
     fd_set readSet;
     FD_ZERO(&readSet);
 
-    struct timeval timeout = {
-        (long)0, (long)(QS_TIMEOUT_MS * 1000)
-    };
-
     QS_rxPriv_.inTestLoop = true;
     while (QS_rxPriv_.inTestLoop) {
         FD_SET(l_sock, &readSet);
+
+        struct timeval timeout = {
+            (long)0, (long)(QS_TIMEOUT_MS * 1000)
+        };
 
         // selective, timed blocking on the TCP/IP socket...
         int status = select(0, &readSet, (fd_set *)0, (fd_set *)0, &timeout);
@@ -251,15 +254,14 @@ void QS_onTestLoop() {
             FPRINTF_S(stderr,
                 "<TARGET> ERROR socket select,WSAErr=%d",
                 WSAGetLastError());
-            QS_onCleanup();
-            exit(-2);
+            QF_stop(); // <== stop and exit the application
         }
         else if (FD_ISSET(l_sock, &readSet)) { // socket ready?
             status = recv(l_sock,
                           (char *)QS_rxPriv_.buf, (int)QS_rxPriv_.end, 0);
             if (status > 0) { // any data received?
                 QS_rxPriv_.tail = 0U;
-                QS_rxPriv_.head = status; // # bytes received
+                QS_rxPriv_.head = (QSCtr)status; // # bytes received
                 QS_rxParse(); // parse all received bytes
             }
         }
@@ -271,3 +273,17 @@ void QS_onTestLoop() {
     QS_rxPriv_.inTestLoop = true;
 }
 
+//............................................................................
+void QS_onIntDisable(void) {
+    if (QS_tstPriv_.intLock != 0U) {
+         Q_onError(&Q_this_module_[0], 998);
+    }
+    ++QS_tstPriv_.intLock;
+}
+//............................................................................
+void QS_onIntEnable(void) {
+    --QS_tstPriv_.intLock;
+    if (QS_tstPriv_.intLock != 0U) {
+        Q_onError(&Q_this_module_[0], 999);
+    }
+}

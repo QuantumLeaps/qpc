@@ -27,8 +27,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-07
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2024-06-10
+//! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
 //! @brief QP/C "port" for QUTEST unit test harness, generic C11 compiler
@@ -52,13 +52,13 @@
 // QACTIVE_THREAD_TYPE not used in this port
 
 // QF interrupt disable/enable
-#define QF_INT_DISABLE()     (++QS_tstPriv_.intLock)
-#define QF_INT_ENABLE()      (--QS_tstPriv_.intLock)
+#define QF_INT_DISABLE()     (QS_onIntDisable())
+#define QF_INT_ENABLE()      (QS_onIntEnable())
 
 // QF critical section
 #define QF_CRIT_STAT
-#define QF_CRIT_ENTRY()         QF_INT_DISABLE()
-#define QF_CRIT_EXIT()          QF_INT_ENABLE()
+#define QF_CRIT_ENTRY()      QF_INT_DISABLE()
+#define QF_CRIT_EXIT()       QF_INT_ENABLE()
 
 // QF_LOG2 not defined -- use the internal LOG2() implementation
 
@@ -66,6 +66,9 @@
 #include "qequeue.h"   // QUTest port uses QEQueue event-queue
 #include "qmpool.h"    // QUTest port uses QMPool memory-pool
 #include "qp.h"        // QP platform-independent public interface
+
+void QS_onIntDisable(void);
+void QS_onIntEnable(void);
 
 //============================================================================
 // interface used only inside QF implementation, but not in applications
@@ -90,7 +93,7 @@
 #endif
 
     // native QF event pool operations
-    #define QF_EPOOL_TYPE_            QMPool
+    #define QF_EPOOL_TYPE_  QMPool
     #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
     #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)

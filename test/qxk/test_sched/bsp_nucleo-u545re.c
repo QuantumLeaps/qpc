@@ -1,5 +1,5 @@
 //============================================================================
-// Product: BSP for system-testing of QXK kernel, NUCLEO-C031C6 board
+// Product: BSP for system-testing of QXK kernel, NUCLEO-U545RE-Q board
 // Last updated for version 7.4.0
 // Last updated on  2024-06-24
 //
@@ -32,27 +32,37 @@
 #include "qpc.h"
 #include "bsp.h"
 
-#include "stm32c0xx.h"  // CMSIS-compliant header file for the MCU used
+#include "stm32u545xx.h"  // CMSIS-compliant header file for the MCU used
 // add other drivers if necessary...
 
-Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE  // define the name of this file for assertions
 
-// Local-scope objects -----------------------------------------------------
-// LED pins available on the board (just one user LED LD4--Green on PA.5)
-#define LD4_PIN  5U
+// Local-scope defines -----------------------------------------------------
+// LED pins available on the board (just one user LED LD2--Green on PA.5)
+#define LD2_PIN  5U
 
 // Button pins available on the board (just one user Button B1 on PC.13)
 #define B1_PIN   13U
 
-#ifdef Q_SPY
-    // QSpy source IDs
-    static QSpyId const l_SysTick_Handler = { 100U };
-    static QSpyId const l_test_ISR = { 101U };
+// macros from STM32Cube LL:
+#define SET_BIT(REG, BIT)     ((REG) |= (BIT))
+#define CLEAR_BIT(REG, BIT)   ((REG) &= ~(BIT))
+#define READ_BIT(REG, BIT)    ((REG) & (BIT))
+#define CLEAR_REG(REG)        ((REG) = (0x0))
+#define WRITE_REG(REG, VAL)   ((REG) = (VAL))
+#define READ_REG(REG)         ((REG))
+#define MODIFY_REG(REG, CLEARMASK, SETMASK) \
+    WRITE_REG((REG), ((READ_REG(REG) & (~(CLEARMASK))) | (SETMASK)))
 
-    enum AppRecords { // application-specific trace records
-        CONTEXT_SW = QS_USER1,
-        TRACE_MSG
-    };
+#ifdef Q_SPY
+// QSpy source IDs
+static QSpyId const l_SysTick_Handler = { 100U };
+static QSpyId const l_test_ISR = { 101U };
+
+enum AppRecords { // application-specific trace records
+    CONTEXT_SW = QS_USER1,
+    TRACE_MSG
+};
 
 #endif
 
@@ -67,8 +77,8 @@ void SysTick_Handler(void) {
     QXK_ISR_EXIT();  // inform QXK kernel about exiting an ISR
 }
 //..........................................................................
-void EXTI0_1_IRQHandler(void); // prototype
-void EXTI0_1_IRQHandler(void) { // for testing, NOTE03
+void EXTI0_IRQHandler(void); // prototype
+void EXTI0_IRQHandler(void) { // for testing, NOTE03
     QXK_ISR_ENTRY(); // inform QXK kernel about entering an ISR
 
     // for testing...
@@ -79,128 +89,84 @@ void EXTI0_1_IRQHandler(void) { // for testing, NOTE03
 }
 
 // BSP functions ===========================================================
+static void STM32U545RE_MPU_setup(void) {
+    MPU->CTRL = 0U;  // disable the MPU
 
-static void STM32C031C6_MPU_setup(void) {
-    // The following MPU configuration contains the general STM32 memory model
-    // as described in the ST AppNote AN4838 "Managing memory protection unit
-    // in STM32 MCUs", Figure 2. Cortex-M0+/M3/M4/M7 processor memory map.
-    //
-    // Please note that the actual STM32 MCUs provide much less Flash and SRAM
-    // than the maximums configured here. This means that actual MCUs have
-    // unmapped memory regions (e.g., beyond the actual SRAM). Attempts to
-    // access these regions causes the HardFault exception, which is the
-    // desired behavior.
-    //
-    static struct {
-        uint32_t rbar;
-        uint32_t rasr;
-    } const mpu_setup[] = {
+    MPU->RNR = 0U; // region 0 (for ROM: read-only, can-execute)
+    MPU->RBAR = (0x08000000U & MPU_RBAR_BASE_Msk)  | (0x3U << MPU_RBAR_AP_Pos);
+    MPU->RLAR = (0x08080000U & MPU_RLAR_LIMIT_Msk) | MPU_RLAR_EN_Msk;
 
-        { // region #0: Flash: base=0x0000'0000, size=512M=2^(28+1)
-          0x00000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 0U), // region #0
-          (28U << MPU_RASR_SIZE_Pos)        // 2^(18+1) region
-              | (0x6U << MPU_RASR_AP_Pos)   // PA:ro/UA:ro
-              | (1U << MPU_RASR_C_Pos)      // C=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
+    MPU->RNR = 1U; // region 1 (for RAM1: read-write, execute-never)
+    MPU->RBAR = (0x20000000U & MPU_RBAR_BASE_Msk)  | (0x1U << MPU_RBAR_AP_Pos)
+                | MPU_RBAR_XN_Msk;
+    MPU->RLAR = (0x20040000U & MPU_RLAR_LIMIT_Msk) | MPU_RLAR_EN_Msk;
 
-        { // region #1: SRAM: base=0x2000'0000, size=512M=2^(28+1)
-          0x20000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 1U), // region #1
-          (28U << MPU_RASR_SIZE_Pos)        // 2^(28+1) region
-              | (0x3U << MPU_RASR_AP_Pos)   // PA:rw/UA:rw
-              | (1U << MPU_RASR_XN_Pos)     // XN=1
-              | (1U << MPU_RASR_S_Pos)      // S=1
-              | (1U << MPU_RASR_C_Pos)      // C=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
+    MPU->RNR = 2U; // region 2 (for RAM2: read-write, execute-never)
+    MPU->RBAR = (0x28000000U & MPU_RBAR_BASE_Msk)  | (0x1U << MPU_RBAR_AP_Pos)
+                | MPU_RBAR_XN_Msk;
+    MPU->RLAR = (0x28004000U & MPU_RLAR_LIMIT_Msk) | MPU_RLAR_EN_Msk;
 
-        // region #3: (not configured)
-        { MPU_RBAR_VALID_Msk | (MPU_RBAR_REGION_Msk & 2U), 0U },
+    MPU->RNR  = 7U; // region 7 (no access: for NULL pointer protection)
+    MPU->RBAR = (0x00000000U & MPU_RBAR_BASE_Msk)  | MPU_RBAR_XN_Msk;
+    MPU->RLAR = (0x00080000U & MPU_RLAR_LIMIT_Msk) | MPU_RLAR_EN_Msk;
+    __DMB();
 
-        { // region #3: Peripherals: base=0x4000'0000, size=512M=2^(28+1)
-          0x40000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 3U), // region #3
-          (28U << MPU_RASR_SIZE_Pos)        // 2^(28+1) region
-              | (0x3U << MPU_RASR_AP_Pos)   // PA:rw/UA:rw
-              | (1U << MPU_RASR_XN_Pos)     // XN=1
-              | (1U << MPU_RASR_S_Pos)      // S=1
-              | (1U << MPU_RASR_B_Pos)      // B=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
+    MPU->CTRL = MPU_CTRL_ENABLE_Msk | MPU_CTRL_PRIVDEFENA_Msk;
 
-        { // region #4: Priv. Periph: base=0xE000'0000, size=512M=2^(28+1)
-          0xE0000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 4U), // region #4
-          (28U << MPU_RASR_SIZE_Pos)        // 2^(28+1) region
-              | (0x3U << MPU_RASR_AP_Pos)   // PA:rw/UA:rw
-              | (1U << MPU_RASR_XN_Pos)     // XN=1
-              | (1U << MPU_RASR_S_Pos)      // S=1
-              | (1U << MPU_RASR_B_Pos)      // B=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
-
-        { // region #5: Ext RAM: base=0x6000'0000, size=1G=2^(29+1)
-          0x60000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 5U), // region #5
-          (29U << MPU_RASR_SIZE_Pos)        // 2^(28+1) region
-              | (0x3U << MPU_RASR_AP_Pos)   // PA:rw/UA:rw
-              | (1U << MPU_RASR_XN_Pos)     // XN=1
-              | (1U << MPU_RASR_S_Pos)      // S=1
-              | (1U << MPU_RASR_B_Pos)      // B=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
-
-        { // region #6: Ext Dev: base=0xA000'0000, size=1G=2^(29+1)
-          0xA0000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 6U), // region #6
-          (29U << MPU_RASR_SIZE_Pos)        // 2^(28+1) region
-              | (0x3U << MPU_RASR_AP_Pos)   // PA:rw/UA:rw
-              | (1U << MPU_RASR_XN_Pos)     // XN=1
-              | (1U << MPU_RASR_S_Pos)      // S=1
-              | (1U << MPU_RASR_B_Pos)      // B=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
-
-        { // region #7: NULL-pointer: base=0x000'0000, size=128M=2^(26+1)
-          // NOTE: this region extends to  0x080'0000, which is where
-          // the ROM is re-mapped by STM32
-          0x00000000U                       // base address
-              | MPU_RBAR_VALID_Msk          // valid region
-              | (MPU_RBAR_REGION_Msk & 7U), // region #7
-          (26U << MPU_RASR_SIZE_Pos)        // 2^(26+1)=128M region
-              | (0x0U << MPU_RASR_AP_Pos)   // PA:na/UA:na
-              | (1U << MPU_RASR_XN_Pos)     // XN=1
-              | MPU_RASR_ENABLE_Msk         // region enable
-        },
-
-    };
+    SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
 
     __DSB();
-    MPU->CTRL = 0U; // disable the MPU
-    for (uint_fast8_t n = 0U; n < Q_DIM(mpu_setup); ++n) {
-        MPU->RBAR = mpu_setup[n].rbar;
-        MPU->RASR = mpu_setup[n].rasr;
-    }
-    MPU->CTRL = MPU_CTRL_PRIVDEFENA_Msk     // enable background region
-                | MPU_CTRL_ENABLE_Msk;      // enable the MPU
     __ISB();
-    __DSB();
 }
 //..........................................................................
 void BSP_init(void) {
     // setup the MPU...
-    STM32C031C6_MPU_setup();
+    STM32U545RE_MPU_setup();
+
+    // initialize I-CACHE
+    MODIFY_REG(ICACHE->CR, ICACHE_CR_WAYSEL, 0U); // 1-way
+    SET_BIT(ICACHE->CR, ICACHE_CR_EN); // enable
+
+    // flash prefetch buffer enable
+    SET_BIT(FLASH->ACR, FLASH_ACR_PRFTEN);
+
+    // enable PWR clock interface
+    SET_BIT(RCC->AHB3ENR, RCC_AHB3ENR_PWREN);
+
+    // NOTE: SystemInit() has been already called from the startup code
+    // but SystemCoreClock needs to be updated
+    SystemCoreClockUpdate();
+
+    // enable GPIOA clock port for the LED LD4
+    RCC->AHB2ENR1 |= RCC_AHB2ENR1_GPIOAEN;
+
+    // set all used GPIOA pins as push-pull output, no pull-up, pull-down
+    MODIFY_REG(GPIOA->OSPEEDR,
+               GPIO_OSPEEDR_OSPEED0 << (LD2_PIN * GPIO_OSPEEDR_OSPEED1_Pos),
+               1U << (LD2_PIN * GPIO_OSPEEDR_OSPEED1_Pos)); // speed==1
+    MODIFY_REG(GPIOA->OTYPER,
+               1U << LD2_PIN,
+               0U << LD2_PIN); // output
+    MODIFY_REG(GPIOA->PUPDR,
+               GPIO_PUPDR_PUPD0 << (LD2_PIN * GPIO_PUPDR_PUPD1_Pos),
+               0U << (LD2_PIN * GPIO_PUPDR_PUPD1_Pos)); // PUSHPULL
+     MODIFY_REG(GPIOA->MODER,
+               GPIO_MODER_MODE0 << (LD2_PIN * GPIO_MODER_MODE1_Pos),
+               1U << (LD2_PIN * GPIO_MODER_MODE1_Pos)); // MODE_1
+
+    // enable GPIOC clock port for the Button B1
+    RCC->AHB2ENR1 |=  RCC_AHB2ENR1_GPIOCEN;
+
+    // configure Button B1 pin on GPIOC as input, no pull-up, pull-down
+    MODIFY_REG(GPIOC->PUPDR,
+               GPIO_PUPDR_PUPD0 << (B1_PIN * GPIO_PUPDR_PUPD1_Pos),
+               0U << (B1_PIN * GPIO_PUPDR_PUPD1_Pos)); // NO PULL
+    MODIFY_REG(GPIOC->MODER,
+               GPIO_MODER_MODE0 << (B1_PIN * GPIO_MODER_MODE1_Pos),
+               0U << (B1_PIN * GPIO_MODER_MODE1_Pos)); // MODE_0
 
     // initialize the QS software tracing...
-    if (QS_INIT((void *)0) == 0U) {
+    if (!QS_INIT((void *)0)) {
         Q_ERROR();
     }
 
@@ -215,17 +181,17 @@ void BSP_init(void) {
 void BSP_terminate(int16_t result) {
     Q_UNUSED_PAR(result);
 }
-//..........................................................................
+//............................................................................
 void BSP_ledOn(void) {
-    GPIOA->BSRR = (1U << LD4_PIN); // turn LD4 on
+    GPIOA->BSRR = (1U << LD2_PIN);  // turn LED on
 }
-//..........................................................................
+//............................................................................
 void BSP_ledOff(void) {
-    GPIOA->BSRR = (1U << (LD4_PIN + 16U)); // turn LD4 off
+    GPIOA->BRR = (1U << LD2_PIN);  // turn LED off
 }
 //..........................................................................
 void BSP_trigISR(void) {
-    NVIC_SetPendingIRQ(EXTI0_1_IRQn);
+    NVIC_SetPendingIRQ(EXTI0_IRQn);
 }
 //..........................................................................
 void BSP_trace(QActive const *thr, char const *msg) {
@@ -238,14 +204,14 @@ void BSP_trace(QActive const *thr, char const *msg) {
 uint32_t BSP_romRead(int32_t offset, uint32_t fromEnd) {
     int32_t const rom_base = (fromEnd == 0U)
                              ? 0x08000000
-                             : 0x08008000 - 4;
+                             : 0x08080000 - 4;
     return *(uint32_t volatile *)(rom_base + offset);
 }
 //..........................................................................
 void BSP_romWrite(int32_t offset, uint32_t fromEnd, uint32_t value) {
     int32_t const rom_base = (fromEnd == 0U)
                              ? 0x08000000
-                             : 0x08008000 - 4;
+                             : 0x08080000 - 4;
     *(uint32_t volatile *)(rom_base + offset) = value;
 }
 
@@ -253,14 +219,14 @@ void BSP_romWrite(int32_t offset, uint32_t fromEnd, uint32_t value) {
 uint32_t BSP_ramRead(int32_t offset, uint32_t fromEnd) {
     int32_t const ram_base = (fromEnd == 0U)
                              ? 0x20000000
-                             : 0x20003000 - 4;
+                             : 0x20040000 - 4;
     return *(uint32_t volatile *)(ram_base + offset);
 }
 //..........................................................................
 void BSP_ramWrite(int32_t offset, uint32_t fromEnd, uint32_t value) {
     int32_t const ram_base = (fromEnd == 0U)
                              ? 0x20000000
-                             : 0x20003000 - 4;
+                             : 0x20040000 - 4;
     *(uint32_t volatile *)(ram_base + offset) = value;
 }
 
@@ -280,14 +246,14 @@ void QF_onStartup(void) {
 
     // set priorities of ALL ISRs used in the system
     NVIC_SetPriority(SysTick_IRQn, QF_AWARE_ISR_CMSIS_PRI + 0U);
-    NVIC_SetPriority(EXTI0_1_IRQn, QF_AWARE_ISR_CMSIS_PRI + 1U);
+    NVIC_SetPriority(EXTI0_IRQn,   QF_AWARE_ISR_CMSIS_PRI + 1U);
     // NOTE: priority of UART IRQ used for QS-RX is set in qutest_port.c
     // ...
 
     // enable IRQs...
-    NVIC_EnableIRQ(EXTI0_1_IRQn);
+    NVIC_EnableIRQ(EXTI0_IRQn);
 }
-//..........................................................................
+//............................................................................
 void QF_onCleanup(void) {
 }
 //..........................................................................
@@ -301,7 +267,7 @@ void QF_onContextSw(QActive *prev, QActive *next) {
 }
 #endif // QF_ON_CONTEXT_SW
 
-//..........................................................................
+//............................................................................
 void QXK_onIdle(void) {
 #ifdef Q_SPY
     QS_rxParse();  // parse all the received bytes
@@ -319,7 +285,7 @@ void QXK_onIdle(void) {
 // QS callbacks...
 #ifdef Q_SPY
 
-//..........................................................................
+//............................................................................
 void QTimeEvt_tick1_(
     uint_fast8_t const tickRate,
     void const * const sender)

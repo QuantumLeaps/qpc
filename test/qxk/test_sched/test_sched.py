@@ -2,7 +2,7 @@
 # see https://www.state-machine.com/qtools/qutest.html/qutest.html
 
 note('''
-This test group verifies the preemption scenarios
+This test group verifies the preemption tests
 in the QXK preemptive kernel
 ''')
 
@@ -13,7 +13,7 @@ def on_reset():
     # this will be done by the individual tests
     # after they poke the priorities of threads
 
-scenario("extened->basic")
+test("extened->basic")
 # given...
 current_obj(OBJ_AP, "pspecB")
 poke(0, 2, pack("<HHH", 4, 0, 0))
@@ -50,7 +50,7 @@ expect("@timestamp CONTEXT_SW thrX[0] NULL")
 expect("@timestamp Trg-Done QS_RX_EVENT")
 
 
-scenario("extended->extened->basic")
+test("extended->extened->basic")
 # given...
 current_obj(OBJ_AP, "pspecB")
 poke(0, 2, pack("<HHH", 1, 2, 3))
@@ -107,7 +107,7 @@ expect("@timestamp CONTEXT_SW aoB[0] NULL")
 expect("@timestamp Trg-Done QS_RX_EVENT")
 
 
-scenario("extened->basic->extended")
+test("extened->basic->extended")
 # given...
 current_obj(OBJ_AP, "pspecB")
 poke(0, 2, pack("<HHH", 4, 0, 0))

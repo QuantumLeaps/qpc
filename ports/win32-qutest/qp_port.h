@@ -27,11 +27,11 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-07
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2024-06-10
+//! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
-//! @brief QP/C port to Win32-QUtest with GNU or Visual Studio C/C++
+//! @brief QP/C port to Win32-QUTest with GNU or Visual Studio C/C++
 
 #ifndef QP_PORT_H_
 #define QP_PORT_H_
@@ -80,8 +80,8 @@
 // QACTIVE_THREAD_TYPE not used in this port
 
 // QF interrupt disable/enable
-#define QF_INT_DISABLE()     (++QS_tstPriv_.intLock)
-#define QF_INT_ENABLE()      (--QS_tstPriv_.intLock)
+#define QF_INT_DISABLE()     (QS_onIntDisable())
+#define QF_INT_ENABLE()      (QS_onIntEnable())
 
 // QF critical section
 #define QF_CRIT_STAT
@@ -94,6 +94,9 @@
 #include "qequeue.h"   // QUTest port uses QEQueue event-queue
 #include "qmpool.h"    // QUTest port uses QMPool memory-pool
 #include "qp.h"        // QP platform-independent public interface
+
+void QS_onIntDisable(void);
+void QS_onIntEnable(void);
 
 #ifdef _MSC_VER
     #pragma warning (default: 4510 4512 4610)

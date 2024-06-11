@@ -40,7 +40,7 @@
 #include "em_usart.h"   // USART (SiLabs)
 // add other drivers if necessary...
 
-Q_DEFINE_THIS_FILE
+Q_DEFINE_THIS_FILE;
 
 // ISRs defined in this BSP ------------------------------------------------
 void SysTick_Handler(void);

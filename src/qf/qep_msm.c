@@ -409,6 +409,7 @@ bool QMsm_isIn_(
 }
 
 //${QEP::QMsm::isInState} ....................................................
+//! @private @memberof QMsm
 bool QMsm_isInState(QMsm const * const me,
     QMState const * const stateObj)
 {

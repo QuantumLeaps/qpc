@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-12-13
-//! @version Last updated for: @ref qpc_7_3_2
+//! @date Last updated on: 2024-06-11
+//! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
 //! @brief Qube command-line QP execution environment

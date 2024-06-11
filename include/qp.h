@@ -417,6 +417,7 @@ bool QMsm_isIn_(
     QAsm * const me,
     QStateHandler const state);
 
+//! @private @memberof QMsm
 //! @deprecated instead use: QASM_IS_IN()
 bool QMsm_isInState(QMsm const * const me,
     QMState const * const stateObj);

@@ -189,14 +189,14 @@ void QF_stop(void) {
 
 //${QS::QUTest-stub::QF::run} ................................................
 int_t QF_run(void) {
-    QS_CRIT_STAT
-    QS_CRIT_ENTRY();
-    QS_MEM_SYS();
-
     // function dictionaries for the standard API
     QS_FUN_DICTIONARY(&QActive_post_);
     QS_FUN_DICTIONARY(&QActive_postLIFO_);
     QS_FUN_DICTIONARY(&QS_processTestEvts_);
+
+    QS_CRIT_STAT
+    QS_CRIT_ENTRY();
+    QS_MEM_SYS();
 
     // produce the QS_QF_RUN trace record
     QS_BEGIN_PRE_(QS_QF_RUN, 0U)
@@ -500,14 +500,15 @@ bool QActiveDummy_fakePost_(
         QS_EQC_PRE_(margin); // margin requested
     QS_END_PRE_()
 
+    QF_MEM_APP();
+    QF_CRIT_EXIT();
+
     // callback to examine the posted event under the same conditions
     // as producing the #QS_QF_ACTIVE_POST trace record, which are:
     // the local filter for this AO ('me->prio') is set
     if (QS_LOC_CHECK_(me->prio)) {
         QS_onTestPost(sender, me, e, status);
     }
-    QF_MEM_APP();
-    QF_CRIT_EXIT();
 
     // recycle the event immediately, because it was not really posted
     #if (QF_MAX_EPOOL > 0U)
@@ -549,15 +550,15 @@ void QActiveDummy_fakePostLIFO_(
         QS_EQC_PRE_(0U);     // min # free entries
     QS_END_PRE_()
 
+    QF_MEM_APP();
+    QF_CRIT_EXIT();
+
     // callback to examine the posted event under the same conditions
     // as producing the #QS_QF_ACTIVE_POST trace record, which are:
     // the local filter for this AO ('me->prio') is set
     if (QS_LOC_CHECK_(me->prio)) {
         QS_onTestPost((QActive *)0, me, e, true);
     }
-    QF_MEM_APP();
-    QF_CRIT_EXIT();
-
     // recycle the event immediately, because it was not really posted
     #if (QF_MAX_EPOOL > 0U)
     QF_gc(e);

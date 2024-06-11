@@ -61,6 +61,7 @@
 //$endskip${QP_VERSION} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //$define${QF::QActive::registry_[QF_MAX_ACTIVE + 1U]} vvvvvvvvvvvvvvvvvvvvvvv
+//! @static @private @memberof QActive
 QActive * QActive_registry_[QF_MAX_ACTIVE + 1U];
 //$enddef${QF::QActive::registry_[QF_MAX_ACTIVE + 1U]} ^^^^^^^^^^^^^^^^^^^^^^^
 

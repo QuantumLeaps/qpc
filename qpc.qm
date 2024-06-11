@@ -115,7 +115,7 @@ Contact information:
    </operation>
   </package>
   <!--${QP-FuSa::Q_DEFINE_THIS_FILE}-->
-  <attribute name="Q_DEFINE_THIS_FILE" type="void" visibility="0x03" properties="0x00">
+  <attribute name="Q_DEFINE_THIS_FILE" type="" visibility="0x03" properties="0x00">
    <code>Q_DEFINE_THIS_MODULE(__FILE__)</code>
   </attribute>
   <!--${QP-FuSa::Q_ASSERT}-->
@@ -893,6 +893,8 @@ do {
 
 #ifndef Q_UNSAFE
 me-&gt;super.temp.uint = ~me-&gt;super.state.uint;
+#else
+Q_UNUSED_PAR(isFound);
 #endif
 
 QF_CRIT_STAT
@@ -1424,7 +1426,10 @@ return inState;</code>
    <!--${QEP::QMsm::isInState}-->
    <operation name="isInState" type="bool" visibility="0x00" properties="0x00">
     <specifiers>const</specifiers>
-    <documentation>//! @deprecated instead use: QASM_IS_IN()</documentation>
+    <documentation>//! @private @memberof QMsm
+//! @deprecated instead use: QASM_IS_IN()
+
+//! @private @memberof QMsm</documentation>
     <!--${QEP::QMsm::isInState::stateObj}-->
     <parameter name="stateObj" type="QMState const * const"/>
     <code>bool inState = false; // assume that this SM is not in 'state'
@@ -2233,7 +2238,9 @@ return (me-&gt;bits[0] == (QPSetBits)(~dis-&gt;bits[0]))
    </attribute>
    <!--${QF::QActive::registry_[QF_MAX_ACTIVE + 1U]}-->
    <attribute name="registry_[QF_MAX_ACTIVE + 1U]" type="QActive *" visibility="0x02" properties="0x01">
-    <documentation>//! @static @private @memberof QActive</documentation>
+    <documentation>//! @static @private @memberof QActive
+
+//! @static @private @memberof QActive</documentation>
    </attribute>
    <!--${QF::QActive::subscrList_}-->
    <attribute name="subscrList_" type="QSubscrList *" visibility="0x02" properties="0x01">
@@ -2404,8 +2411,10 @@ QF_CRIT_ENTRY();
 QF_MEM_SYS();
 
 #ifndef Q_UNSAFE
+Q_REQUIRE_INCRIT(100, QEvt_verify_(e));
+
 uint8_t const pcopy = (uint8_t)(~me-&gt;prio_dis);
-Q_INVARIANT_INCRIT(102, (QEvt_verify_(e)) &amp;&amp; (me-&gt;prio == pcopy));
+Q_INVARIANT_INCRIT(102, me-&gt;prio == pcopy);
 #endif
 
 QEQueueCtr nFree = me-&gt;eQueue.nFree; // get volatile into temporary
@@ -2461,7 +2470,13 @@ if (status) { // can post the event?
     // as producing the #QS_QF_ACTIVE_POST trace record, which are:
     // the local filter for this AO ('me-&gt;prio') is set
     if (QS_LOC_CHECK_(me-&gt;prio)) {
+        QF_MEM_APP();
+        QF_CRIT_EXIT();
+
         QS_onTestPost(sender, me, e, status);
+
+        QF_CRIT_ENTRY();
+        QF_MEM_SYS();
     }
 #endif
 
@@ -2510,7 +2525,13 @@ else { // cannot post the event
     // as producing the #QS_QF_ACTIVE_POST trace record, which are:
     // the local filter for this AO ('me-&gt;prio') is set
     if (QS_LOC_CHECK_(me-&gt;prio)) {
+        QF_MEM_APP();
+        QF_CRIT_EXIT();
+
         QS_onTestPost(sender, me, e, status);
+
+        QF_CRIT_ENTRY();
+        QF_MEM_SYS();
     }
 #endif
 
@@ -2545,8 +2566,10 @@ QF_CRIT_ENTRY();
 QF_MEM_SYS();
 
 #ifndef Q_UNSAFE
+Q_REQUIRE_INCRIT(200, QEvt_verify_(e));
+
 uint8_t const pcopy = (uint8_t)(~me-&gt;prio_dis);
-Q_INVARIANT_INCRIT(202, (QEvt_verify_(e)) &amp;&amp; (me-&gt;prio == pcopy));
+Q_INVARIANT_INCRIT(202, me-&gt;prio == pcopy);
 #endif
 
 #ifdef QXK_H_
@@ -2587,7 +2610,13 @@ QS_END_PRE_()
 // as producing the #QS_QF_ACTIVE_POST trace record, which are:
 // the local filter for this AO ('me-&gt;prio') is set
 if (QS_LOC_CHECK_(me-&gt;prio)) {
+    QF_MEM_APP();
+    QF_CRIT_EXIT();
+
     QS_onTestPost((QActive *)0, me, e, true);
+
+    QF_CRIT_ENTRY();
+    QF_MEM_SYS();
 }
 #endif
 
@@ -2622,6 +2651,8 @@ QACTIVE_EQUEUE_WAIT_(me); // wait for event to arrive directly
 
 // always remove event from the front
 QEvt const * const e = me-&gt;eQueue.frontEvt;
+Q_INVARIANT_INCRIT(312, QEvt_verify_(e));
+
 QEQueueCtr const nFree = me-&gt;eQueue.nFree + 1U; // get volatile into tmp
 me-&gt;eQueue.nFree = nFree; // update the # free
 
@@ -3701,7 +3732,7 @@ QF_CRIT_STAT
 QF_CRIT_ENTRY();
 QF_MEM_SYS();
 
-Q_REQUIRE_INCRIT(200, e != (QEvt *)0);
+Q_REQUIRE_INCRIT(200, QEvt_verify_(e));
 
 QEQueueCtr nFree = me-&gt;nFree; // get volatile into temporary
 
@@ -3782,9 +3813,10 @@ QF_CRIT_STAT
 QF_CRIT_ENTRY();
 QF_MEM_SYS();
 
-QEQueueCtr nFree = me-&gt;nFree; // get volatile into temporary
+Q_REQUIRE_INCRIT(300, QEvt_verify_(e));
 
-Q_REQUIRE_INCRIT(300, nFree != 0U);
+QEQueueCtr nFree = me-&gt;nFree; // get volatile into temporary
+Q_REQUIRE_INCRIT(301, nFree != 0U);
 
 if (QEvt_getPoolNum_(e) != 0U) { // is it a mutable event?
     QEvt_refCtr_inc_(e); // increment the reference counter
@@ -3837,6 +3869,8 @@ QF_MEM_SYS();
 QEvt const * const e = me-&gt;frontEvt; // always remove evt from the front
 
 if (e != (QEvt *)0) { // was the queue not empty?
+    Q_INVARIANT_INCRIT(412, QEvt_verify_(e));
+
     // use a temporary variable to increment me-&gt;nFree
     QEQueueCtr const nFree = me-&gt;nFree + 1U;
     me-&gt;nFree = nFree; // update the # free
@@ -3861,7 +3895,7 @@ if (e != (QEvt *)0) { // was the queue not empty?
         me-&gt;frontEvt = (QEvt *)0; // queue becomes empty
 
         // all entries in the queue must be free (+1 for fronEvt)
-        Q_ASSERT_INCRIT(410, nFree == (me-&gt;end + 1U));
+        Q_INVARIANT_INCRIT(420, nFree == (me-&gt;end + 1U));
 
         QS_BEGIN_PRE_(QS_QF_EQUEUE_GET_LAST, qsId)
             QS_TIME_PRE_();      // timestamp
@@ -4405,7 +4439,7 @@ return e;</code>
     <parameter name="e" type="QEvt const * const"/>
     <code>QF_CRIT_STAT
 QF_CRIT_ENTRY();
-Q_INVARIANT_INCRIT(402, QEvt_verify_(e));
+Q_REQUIRE_INCRIT(400, QEvt_verify_(e));
 
 uint_fast8_t const poolNum = QEvt_getPoolNum_(e);
 
@@ -4472,11 +4506,12 @@ Q_UNUSED_PAR(evtRef);
 QF_CRIT_STAT
 QF_CRIT_ENTRY();
 
-Q_INVARIANT_INCRIT(502, QEvt_verify_(e));
+Q_REQUIRE_INCRIT(500, QEvt_verify_(e));
 
 uint_fast8_t const poolNum = QEvt_getPoolNum_(e);
+Q_UNUSED_PAR(poolNum); // might be unused
 
-Q_REQUIRE_INCRIT(500, (poolNum != 0U)
+Q_REQUIRE_INCRIT(501, (poolNum != 0U)
     &amp;&amp; (evtRef == (void *)0));
 
 QEvt_refCtr_inc_(e); // increments the ref counter
@@ -4501,11 +4536,11 @@ return e;</code>
 //! @static @private @memberof QF</documentation>
     <!--${QF::QF-dyn::deleteRef_::evtRef}-->
     <parameter name="evtRef" type="void const * const"/>
-    <code>QEvt const * const e = (QEvt const *)evtRef;
-
-QF_CRIT_STAT
+    <code>QF_CRIT_STAT
 QF_CRIT_ENTRY();
-Q_INVARIANT_INCRIT(602, QEvt_verify_(e));
+
+QEvt const * const e = (QEvt const *)evtRef;
+Q_REQUIRE_INCRIT(600, QEvt_verify_(e));
 
 #ifdef Q_SPY
 uint_fast8_t const poolNum = QEvt_getPoolNum_(e);
@@ -8102,14 +8137,14 @@ QPSet_update_(&amp;QS_tstPriv_.readySet, &amp;QS_tstPriv_.readySet_dis);
     <!--${QS::QUTest-stub::QF::run}-->
     <operation name="run" type="int_t" visibility="0x00" properties="0x01">
      <documentation>//! QF_run() stub for QUTest</documentation>
-     <code>QS_CRIT_STAT
-QS_CRIT_ENTRY();
-QS_MEM_SYS();
-
-// function dictionaries for the standard API
+     <code>// function dictionaries for the standard API
 QS_FUN_DICTIONARY(&amp;QActive_post_);
 QS_FUN_DICTIONARY(&amp;QActive_postLIFO_);
 QS_FUN_DICTIONARY(&amp;QS_processTestEvts_);
+
+QS_CRIT_STAT
+QS_CRIT_ENTRY();
+QS_MEM_SYS();
 
 // produce the QS_QF_RUN trace record
 QS_BEGIN_PRE_(QS_QF_RUN, 0U)
@@ -8448,14 +8483,15 @@ QS_BEGIN_PRE_(rec, me-&gt;prio)
     QS_EQC_PRE_(margin); // margin requested
 QS_END_PRE_()
 
+QF_MEM_APP();
+QF_CRIT_EXIT();
+
 // callback to examine the posted event under the same conditions
 // as producing the #QS_QF_ACTIVE_POST trace record, which are:
 // the local filter for this AO ('me-&gt;prio') is set
 if (QS_LOC_CHECK_(me-&gt;prio)) {
     QS_onTestPost(sender, me, e, status);
 }
-QF_MEM_APP();
-QF_CRIT_EXIT();
 
 // recycle the event immediately, because it was not really posted
 #if (QF_MAX_EPOOL &gt; 0U)
@@ -8499,15 +8535,15 @@ QS_BEGIN_PRE_(QS_QF_ACTIVE_POST_LIFO, me-&gt;prio)
     QS_EQC_PRE_(0U);     // min # free entries
 QS_END_PRE_()
 
+QF_MEM_APP();
+QF_CRIT_EXIT();
+
 // callback to examine the posted event under the same conditions
 // as producing the #QS_QF_ACTIVE_POST trace record, which are:
 // the local filter for this AO ('me-&gt;prio') is set
 if (QS_LOC_CHECK_(me-&gt;prio)) {
     QS_onTestPost((QActive *)0, me, e, true);
 }
-QF_MEM_APP();
-QF_CRIT_EXIT();
-
 // recycle the event immediately, because it was not really posted
 #if (QF_MAX_EPOOL &gt; 0U)
 QF_gc(e);

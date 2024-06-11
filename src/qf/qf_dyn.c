@@ -218,7 +218,7 @@ QEvt * QF_newX_(
 void QF_gc(QEvt const * const e) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_INVARIANT_INCRIT(402, QEvt_verify_(e));
+    Q_REQUIRE_INCRIT(400, QEvt_verify_(e));
 
     uint_fast8_t const poolNum = QEvt_getPoolNum_(e);
 
@@ -283,11 +283,12 @@ QEvt const * QF_newRef_(
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    Q_INVARIANT_INCRIT(502, QEvt_verify_(e));
+    Q_REQUIRE_INCRIT(500, QEvt_verify_(e));
 
     uint_fast8_t const poolNum = QEvt_getPoolNum_(e);
+    Q_UNUSED_PAR(poolNum); // might be unused
 
-    Q_REQUIRE_INCRIT(500, (poolNum != 0U)
+    Q_REQUIRE_INCRIT(501, (poolNum != 0U)
         && (evtRef == (void *)0));
 
     QEvt_refCtr_inc_(e); // increments the ref counter
@@ -309,11 +310,11 @@ QEvt const * QF_newRef_(
 //${QF::QF-dyn::deleteRef_} ..................................................
 //! @static @private @memberof QF
 void QF_deleteRef_(void const * const evtRef) {
-    QEvt const * const e = (QEvt const *)evtRef;
-
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_INVARIANT_INCRIT(602, QEvt_verify_(e));
+
+    QEvt const * const e = (QEvt const *)evtRef;
+    Q_REQUIRE_INCRIT(600, QEvt_verify_(e));
 
     #ifdef Q_SPY
     uint_fast8_t const poolNum = QEvt_getPoolNum_(e);

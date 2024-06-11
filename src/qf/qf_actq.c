@@ -87,8 +87,10 @@ bool QActive_post_(QActive * const me,
     QF_MEM_SYS();
 
     #ifndef Q_UNSAFE
+    Q_REQUIRE_INCRIT(100, QEvt_verify_(e));
+
     uint8_t const pcopy = (uint8_t)(~me->prio_dis);
-    Q_INVARIANT_INCRIT(102, (QEvt_verify_(e)) && (me->prio == pcopy));
+    Q_INVARIANT_INCRIT(102, me->prio == pcopy);
     #endif
 
     QEQueueCtr nFree = me->eQueue.nFree; // get volatile into temporary
@@ -144,7 +146,13 @@ bool QActive_post_(QActive * const me,
         // as producing the #QS_QF_ACTIVE_POST trace record, which are:
         // the local filter for this AO ('me->prio') is set
         if (QS_LOC_CHECK_(me->prio)) {
+            QF_MEM_APP();
+            QF_CRIT_EXIT();
+
             QS_onTestPost(sender, me, e, status);
+
+            QF_CRIT_ENTRY();
+            QF_MEM_SYS();
         }
     #endif
 
@@ -193,7 +201,13 @@ bool QActive_post_(QActive * const me,
         // as producing the #QS_QF_ACTIVE_POST trace record, which are:
         // the local filter for this AO ('me->prio') is set
         if (QS_LOC_CHECK_(me->prio)) {
+            QF_MEM_APP();
+            QF_CRIT_EXIT();
+
             QS_onTestPost(sender, me, e, status);
+
+            QF_CRIT_ENTRY();
+            QF_MEM_SYS();
         }
     #endif
 
@@ -229,8 +243,10 @@ void QActive_postLIFO_(QActive * const me,
     QF_MEM_SYS();
 
     #ifndef Q_UNSAFE
+    Q_REQUIRE_INCRIT(200, QEvt_verify_(e));
+
     uint8_t const pcopy = (uint8_t)(~me->prio_dis);
-    Q_INVARIANT_INCRIT(202, (QEvt_verify_(e)) && (me->prio == pcopy));
+    Q_INVARIANT_INCRIT(202, me->prio == pcopy);
     #endif
 
     #ifdef QXK_H_
@@ -271,7 +287,13 @@ void QActive_postLIFO_(QActive * const me,
     // as producing the #QS_QF_ACTIVE_POST trace record, which are:
     // the local filter for this AO ('me->prio') is set
     if (QS_LOC_CHECK_(me->prio)) {
+        QF_MEM_APP();
+        QF_CRIT_EXIT();
+
         QS_onTestPost((QActive *)0, me, e, true);
+
+        QF_CRIT_ENTRY();
+        QF_MEM_SYS();
     }
     #endif
 
@@ -307,6 +329,8 @@ QEvt const * QActive_get_(QActive * const me) {
 
     // always remove event from the front
     QEvt const * const e = me->eQueue.frontEvt;
+    Q_INVARIANT_INCRIT(312, QEvt_verify_(e));
+
     QEQueueCtr const nFree = me->eQueue.nFree + 1U; // get volatile into tmp
     me->eQueue.nFree = nFree; // update the # free
 

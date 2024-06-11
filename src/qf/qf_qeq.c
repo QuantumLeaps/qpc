@@ -108,7 +108,7 @@ bool QEQueue_post(QEQueue * const me,
     QF_CRIT_ENTRY();
     QF_MEM_SYS();
 
-    Q_REQUIRE_INCRIT(200, e != (QEvt *)0);
+    Q_REQUIRE_INCRIT(200, QEvt_verify_(e));
 
     QEQueueCtr nFree = me->nFree; // get volatile into temporary
 
@@ -187,9 +187,10 @@ void QEQueue_postLIFO(QEQueue * const me,
     QF_CRIT_ENTRY();
     QF_MEM_SYS();
 
-    QEQueueCtr nFree = me->nFree; // get volatile into temporary
+    Q_REQUIRE_INCRIT(300, QEvt_verify_(e));
 
-    Q_REQUIRE_INCRIT(300, nFree != 0U);
+    QEQueueCtr nFree = me->nFree; // get volatile into temporary
+    Q_REQUIRE_INCRIT(301, nFree != 0U);
 
     if (QEvt_getPoolNum_(e) != 0U) { // is it a mutable event?
         QEvt_refCtr_inc_(e); // increment the reference counter
@@ -241,6 +242,8 @@ struct QEvt const * QEQueue_get(QEQueue * const me,
     QEvt const * const e = me->frontEvt; // always remove evt from the front
 
     if (e != (QEvt *)0) { // was the queue not empty?
+        Q_INVARIANT_INCRIT(412, QEvt_verify_(e));
+
         // use a temporary variable to increment me->nFree
         QEQueueCtr const nFree = me->nFree + 1U;
         me->nFree = nFree; // update the # free
@@ -265,7 +268,7 @@ struct QEvt const * QEQueue_get(QEQueue * const me,
             me->frontEvt = (QEvt *)0; // queue becomes empty
 
             // all entries in the queue must be free (+1 for fronEvt)
-            Q_ASSERT_INCRIT(410, nFree == (me->end + 1U));
+            Q_INVARIANT_INCRIT(420, nFree == (me->end + 1U));
 
             QS_BEGIN_PRE_(QS_QF_EQUEUE_GET_LAST, qsId)
                 QS_TIME_PRE_();      // timestamp

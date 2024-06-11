@@ -1,7 +1,7 @@
 ##############################################################################
-# Product: Makefile for SYSTEM-Level tests of QP/C on NUCLEO-C031c6, GNU-ARM
-# Last Updated for Version: 7.2.2
-# Date of the Last Update:  2023-02-02
+# Product: Makefile for SYSTEM-Level tests of QP/C on NUCLEO-U545RE-Q, GNU-ARM
+# Last Updated for Version: 7.4.0
+# Date of the Last Update:  2024-06-23
 #
 #                    Q u a n t u m  L e a P s
 #                    ------------------------
@@ -33,12 +33,12 @@
 ##############################################################################
 #
 # examples of invoking this Makefile:
-# make -f nucleo-c031c6.mak USB=g: # make, upload to USB drive, run the tests
-# make -f nucleo-c031c6.mak USB=g: TESTS=philo*.py  # make and run the selected tests
-# make -f nucleo-c031c6.mak HOST=localhost:7705 # connect to host:port
-# make -f nucleo-c031c6.mak norun   # only make but not run the tests
-# make -f nucleo-c031c6.mak clean   # cleanup the build
-# make -f nucleo-c031c6.mak debug   # only run tests in DEBUG mode
+# make -f nucleo-u545re.mak USB=g: # make, upload to USB drive, run the tests
+# make -f nucleo-u545re.mak USB=g: TESTS=philo*.py  # make and run the selected tests
+# make -f nucleo-u545re.mak HOST=localhost:7705 # connect to host:port
+# make -f nucleo-u545re.mak norun   # only make but not run the tests
+# make -f nucleo-u545re.mak clean   # cleanup the build
+# make -f nucleo-u545re.mak debug   # only run tests in DEBUG mode
 #
 # NOTE:
 # To use this Makefile on Windows, you will need the GNU make utility, which
@@ -55,11 +55,11 @@ endif
 # project name, target name, target directory:
 #
 PROJECT := test_sched
-TARGET  := nucleo-c031c6
-TARGET_DIR := $(QPC)/3rd_party/nucleo-c031c6/qutest
+TARGET  := nucleo-u545re
+TARGET_DIR := $(QPC)/3rd_party/nucleo-u545re/qutest
 
 #-----------------------------------------------------------------------------
-# project directories:
+# project directories
 #
 
 # QP port used in this project
@@ -78,8 +78,8 @@ VPATH := . \
 	$(QPC)/src/qs \
 	$(QP_PORT_DIR) \
 	$(TARGET_DIR) \
-	$(QPC)/3rd_party/nucleo-c031c6 \
-	$(QPC)/3rd_party/nucleo-c031c6/gnu
+	$(QPC)/3rd_party/nucleo-u545re \
+	$(QPC)/3rd_party/nucleo-u545re/gnu
 
 # list of all include directories needed by this project
 INCLUDES  = -I. \
@@ -87,10 +87,10 @@ INCLUDES  = -I. \
 	-I$(QP_PORT_DIR) \
 	-I$(TARGET_DIR) \
 	-I$(QPC)/3rd_party/CMSIS/Include \
-	-I$(QPC)/3rd_party/nucleo-c031c6
+	-I$(QPC)/3rd_party/nucleo-u545re
 
 #-----------------------------------------------------------------------------
-# project files:
+# project files
 #
 
 # assembler source files
@@ -99,9 +99,9 @@ ASM_SRCS :=
 # C source files
 C_SRCS := \
 	test_sched.c \
-	bsp_nucleo-c031c6.c \
-	system_stm32c0xx.c \
-	startup_stm32c031xx.c
+	bsp_nucleo-u545re.c \
+	system_stm32u5xx.c \
+	startup_stm32u545retxq.c
 
 # C++ source files
 CPP_SRCS :=
@@ -140,10 +140,8 @@ LIB_DIRS  :=
 LIBS      :=
 
 # defines
-DEFINES   := -DSTM32C031xx \
+DEFINES   := -DSTM32U545xx \
 	-DQP_API_VERSION=9999 \
-	-DQXK_USE_IRQ_HANDLER=Reserved1_IRQHandler \
-	-DQXK_USE_IRQ_NUM=1 \
 	-DQF_ON_CONTEXT_SW
 
 # ARM CPU, ARCH, FPU, and Float-ABI types...
@@ -151,9 +149,9 @@ DEFINES   := -DSTM32C031xx \
 # ARM_FPU:   [ | vfp]
 # FLOAT_ABI: [ | soft | softfp | hard]
 #
-ARM_CPU   := -mcpu=cortex-m0plus
-ARM_FPU   :=
-FLOAT_ABI :=
+ARM_CPU   := -mcpu=cortex-m33
+ARM_FPU   := -mfpu=fpv5-sp-d16
+FLOAT_ABI := -mfloat-abi=hard -mthumb
 
 #-----------------------------------------------------------------------------
 # GNU-ARM toolset (NOTE: You need to adjust to your machine)
