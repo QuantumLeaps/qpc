@@ -1,3 +1,4 @@
+*.qms
 *.obj
 *.o
 *.d
@@ -33,7 +34,6 @@
 *.Debug
 *.Release
 *.bak
-.qpc
 version-*
 JLink*.*
 
