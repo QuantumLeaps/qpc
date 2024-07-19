@@ -22,7 +22,7 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-06-11
+//! @date Last updated on: 2024-07-19
 //! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
@@ -61,9 +61,47 @@ static struct timespec l_tick; // structure for the clock tick
 static int_t l_tickPrio;       // priority of the ticker thread
 
 #define NSEC_PER_SEC           1000000000L
-#define DEFAULT_TICKS_PER_SEC  100
+#define DEFAULT_TICKS_PER_SEC  100L
 
-//============================================================================
+//----------------------------------------------------------------------------
+#ifdef __APPLE__
+
+#define TIMER_ABSTIME 0
+
+// emulate clock_nanosleep() for CLOCK_MONOTONIC and TIMER_ABSTIME
+static inline int clock_nanosleep(clockid_t clockid, int flags,
+    const struct timespec* t,
+    struct timespec* remain)
+{
+    Q_UNUSED_PAR(clockid);
+    Q_UNUSED_PAR(flags);
+    Q_UNUSED_PAR(remain);
+
+    struct timespec ts_delta;
+    clock_gettime(CLOCK_MONOTONIC, &ts_delta);
+
+    ts_delta.tv_sec  = t->tv_sec  - ts_delta.tv_sec;
+    ts_delta.tv_nsec = t->tv_nsec - ts_delta.tv_nsec;
+    if (ts_delta.tv_sec < 0) {
+        ts_delta.tv_sec = 0;
+        ts_delta.tv_nsec = 0;
+    }
+    else if (ts_delta.tv_nsec < 0) {
+        if (ts_delta.tv_sec == 0) {
+            ts_delta.tv_sec = 0;
+            ts_delta.tv_nsec = 0;
+        }
+        else {
+            ts_delta.tv_sec = ts_delta.tv_sec - 1;
+            ts_delta.tv_nsec = ts_delta.tv_nsec + NSEC_PER_SEC;
+        }
+    }
+
+    return nanosleep(&ts_delta, NULL);
+}
+#endif
+
+//----------------------------------------------------------------------------
 static void *ticker_thread(void *arg); // prototype
 static void *ticker_thread(void *arg) { // for pthread_create()
     Q_UNUSED_PAR(arg);
@@ -91,7 +129,8 @@ static void *ticker_thread(void *arg) { // for pthread_create()
         if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
                             &next_tick, NULL) == 0) // success?
         {
-            QF_onClockTick(); // must call QTIMEEVT_TICK_X()
+            // clock tick callback (must call QTIMEEVT_TICK_X())
+            QF_onClockTick();
         }
     }
     return (void *)0; // return success
@@ -121,12 +160,12 @@ static int_t l_critSectNest;   // critical section nesting up-down counter
 //............................................................................
 void QF_enterCriticalSection_(void) {
     pthread_mutex_lock(&l_critSectMutex_);
-    Q_ASSERT_INCRIT(100, l_critSectNest == 0); // NO nesting of crit.sect!
+    Q_ASSERT_INCRIT(101, l_critSectNest == 0); // NO nesting of crit.sect!
     ++l_critSectNest;
 }
 //............................................................................
 void QF_leaveCriticalSection_(void) {
-    Q_ASSERT_INCRIT(200, l_critSectNest == 1); // crit.sect. must ballace!
+    Q_ASSERT_INCRIT(102, l_critSectNest == 1); // crit.sect. must balance!
     if ((--l_critSectNest) == 0) {
         pthread_mutex_unlock(&l_critSectMutex_);
     }
@@ -166,6 +205,7 @@ void QF_init(void) {
 
 //............................................................................
 int QF_run(void) {
+    l_isRunning = true; // QF is running
 
     QF_onStartup(); // application-specific startup callback
 
@@ -218,7 +258,6 @@ int QF_run(void) {
     QS_BEGIN_PRE_(QS_QF_RUN, 0U)
     QS_END_PRE_()
 
-    l_isRunning = true; // QF is running
     while (l_isRunning) {
         Q_ASSERT_INCRIT(300, QPSet_verify_(&QF_readySet_, &QF_readySet_dis_));
 
@@ -233,8 +272,7 @@ int QF_run(void) {
             QF_CRIT_EXIT();
 
             QEvt const *e = QActive_get_(a);
-            // dispatch event (virtual call)
-            (*a->super.vptr->dispatch)(&a->super, e, a->prio);
+            QASM_DISPATCH(&a->super, e, a->prio); // dispatch to the HSM
             QF_gc(e);
 
             QF_CRIT_ENTRY();
@@ -329,7 +367,6 @@ int QF_consoleWaitForKey(void) {
 #endif
 
 // QActive functions =========================================================
-
 void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
                     QEvt const * * const qSto, uint_fast16_t const qLen,
                     void * const stkSto, uint_fast16_t const stkSize,
@@ -354,7 +391,6 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
     (*me->super.vptr->init)(&me->super, par, me->prio);
     QS_FLUSH(); // flush the QS trace buffer to the host
 }
-
 //............................................................................
 #ifdef QACTIVE_CAN_STOP
 void QActive_stop(QActive * const me) {

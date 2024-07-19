@@ -155,8 +155,7 @@ int QF_run(void) {
             QF_CRIT_EXIT();
 
             QEvt const *e = QActive_get_(a);
-            // dispatch event (virtual call)
-            (*a->super.vptr->dispatch)(&a->super, e, a->prio);
+            QASM_DISPATCH(&a->super, e, a->prio); // dispatch to the HSM
             QF_gc(e);
 
             QF_CRIT_ENTRY();

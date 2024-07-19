@@ -13,10 +13,10 @@ License, version 3 ("GPLv3"). It applies to the QP/C++ and QP-nano
 source code (the "QP Frameworks") that is distributed as part of the
 QP-Arduino Support Package.
 
-When you use QP Frameworks inside your program, the QP Frameworks' code
-is combined with your code of the program. The purpose of this Exception
-is to allow non-GPL (including proprietary) programs to use, in this way,
-the QP Frameworks' code covered by this Exception.
+When you use QP/C++ or QP-nano Frameworks inside your program, the frameworks'
+code is combined with your code of the program. The purpose of this Exception
+is to allow non-GPL (including proprietary) programs to use, in this way, the
+QP Frameworks' code covered by this Exception.
 
 0. Definitions.
 "QP Frameworks" are lightweight real-time embedded frameworks (RTEFs)

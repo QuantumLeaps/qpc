@@ -22,7 +22,7 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-06-11
+//! @date Last updated on: 2024-07-18
 //! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
@@ -151,7 +151,7 @@ uint8_t QS_onStartup(void const *arg) {
     if (fcntl(l_sock, F_SETFL, status | O_NONBLOCK) != 0) {
         FPRINTF_S(stderr, "<TARGET> ERROR   Failed to set non-blocking socket "
             "errno=%d\n", errno);
-        QS_EXIT();
+        QF_stop(); // <== stop and exit the application
         goto error;
     }
 
@@ -232,7 +232,7 @@ void QS_onFlush(void) {
 //............................................................................
 QSTimeCtr QS_onGetTime(void) {
     struct timespec tspec;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &tspec);
+    clock_gettime(CLOCK_MONOTONIC, &tspec);
 
     // convert to units of 0.1 microsecond
     QSTimeCtr time = (QSTimeCtr)(tspec.tv_sec * 10000000 + tspec.tv_nsec / 100);

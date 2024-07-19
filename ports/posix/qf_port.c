@@ -22,7 +22,7 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-06-11
+//! @date Last updated on: 2024-07-18
 //! @version Last updated for: @ref qpc_7_4_0
 //!
 //! @file
@@ -72,7 +72,46 @@ static void sigIntHandler(int dummy) {
     exit(-1);
 }
 
+//----------------------------------------------------------------------------
+#ifdef __APPLE__
+
+#define TIMER_ABSTIME 0
+
+// emulate clock_nanosleep() for CLOCK_MONOTONIC and TIMER_ABSTIME
+static inline int clock_nanosleep(clockid_t clockid, int flags,
+    const struct timespec* t,
+    struct timespec* remain)
+{
+    Q_UNUSED_PAR(clockid);
+    Q_UNUSED_PAR(flags);
+    Q_UNUSED_PAR(remain);
+
+    struct timespec ts_delta;
+    clock_gettime(CLOCK_MONOTONIC, &ts_delta);
+
+    ts_delta.tv_sec  = t->tv_sec  - ts_delta.tv_sec;
+    ts_delta.tv_nsec = t->tv_nsec - ts_delta.tv_nsec;
+    if (ts_delta.tv_sec < 0) {
+        ts_delta.tv_sec = 0;
+        ts_delta.tv_nsec = 0;
+    }
+    else if (ts_delta.tv_nsec < 0) {
+        if (ts_delta.tv_sec == 0) {
+            ts_delta.tv_sec = 0;
+            ts_delta.tv_nsec = 0;
+        }
+        else {
+            ts_delta.tv_sec = ts_delta.tv_sec - 1;
+            ts_delta.tv_nsec = ts_delta.tv_nsec + NSEC_PER_SEC;
+        }
+    }
+
+    return nanosleep(&ts_delta, NULL);
+}
+#endif
+
 //============================================================================
+// QF functions
 
 // NOTE: initialize the critical section mutex as non-recursive,
 // but check that nesting of critical sections never occurs
@@ -83,12 +122,12 @@ int_t QF_critSectNest_;
 //............................................................................
 void QF_enterCriticalSection_(void) {
     pthread_mutex_lock(&QF_critSectMutex_);
-    Q_ASSERT_INCRIT(100, QF_critSectNest_ == 0); // NO nesting of crit.sect!
+    Q_ASSERT_INCRIT(101, QF_critSectNest_ == 0); // NO nesting of crit.sect!
     ++QF_critSectNest_;
 }
 //............................................................................
 void QF_leaveCriticalSection_(void) {
-    Q_ASSERT_INCRIT(200, QF_critSectNest_ == 1); // crit.sect. must ballace!
+    Q_ASSERT_INCRIT(102, QF_critSectNest_ == 1); // crit.sect. must balance!
     if ((--QF_critSectNest_) == 0) {
         pthread_mutex_unlock(&QF_critSectMutex_);
     }
@@ -112,7 +151,7 @@ void QF_init(void) {
     }
 
     l_tick.tv_sec = 0;
-    l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default tick
+    l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default rate
     l_tickPrio = sched_get_priority_min(SCHED_FIFO); // default ticker prio
 
     // install the SIGINT (Ctrl-C) signal handler
@@ -167,10 +206,12 @@ int QF_run(void) {
             }
 
             // sleep without drifting till next_time (absolute), see NOTE03
-            (void)clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
-                                  &next_tick, NULL);
-            // clock tick callback (must call QTIMEEVT_TICK_X() once)
-            QF_onClockTick();
+            if (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
+                                &next_tick, NULL) == 0) // success?
+            {
+                // clock tick callback (must call QTIMEEVT_TICK_X() once)
+                QF_onClockTick();
+            }
         }
     }
     else { // The provided system clock tick NOT configured
