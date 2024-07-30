@@ -472,6 +472,13 @@ void QS_endRec_(void) {
     if (QS_priv_.used > end) {
         QS_priv_.used = end;   // the whole buffer is used
         QS_priv_.tail = head;  // shift the tail to the old data
+        // Skip ahead to next intact message at the tail.
+        for (;;) {
+            uint16_t discarded_b = QS_getByte();
+            if (discarded_b == QS_EOD || discarded_b == QS_FRAME) {
+                break;
+            }
+        }
     }
 }
 
