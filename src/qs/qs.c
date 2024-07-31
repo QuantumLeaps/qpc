@@ -471,14 +471,18 @@ void QS_endRec_(void) {
     // overrun over the old data?
     if (QS_priv_.used > end) {
         QS_priv_.used = end;   // the whole buffer is used
-        QS_priv_.tail = head;  // shift the tail to the old data
-        // Skip ahead to next intact message at the tail.
         for (;;) {
-            uint16_t discarded_b = QS_getByte();
-            if (discarded_b == QS_EOD || discarded_b == QS_FRAME) {
+            uint8_t discarded_b = buf[head];
+            ++head;
+            if (head == end) {
+                head = 0U;
+            }
+            --QS_priv_.used;
+            if (discarded_b == QS_FRAME) {
                 break;
             }
         }
+        QS_priv_.tail = head;  // shift the tail to start of oldest record
     }
 }
 
