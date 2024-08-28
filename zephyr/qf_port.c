@@ -100,11 +100,11 @@ static void thread_entry(void *p1, void *p2, void *p3) {
 //
 // In the Zephyr port the generic function QActive_setAttr() is used to
 // set the options for the Zephyr thread (attr1) and thread name (attr2).
-// QActive_setAttr() needs to be called *before* QACTIVE_START() for the
+// QActive_setAttr() needs to be called *before* QActive_start() for the
 // given active object.
 //
 // In this Zephyr port the attributes will be used as follows
-// (see also QActive_start_()):
+// (see also QActive_start()):
 // - attr1 - will be used for thread options in k_thread_create()
 // - attr2 - will be used for thread name in k_thread_name_set()
 //
@@ -113,10 +113,11 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     me->thread.init_data = (void *)attr2; // will be used for thread name
 }
 //............................................................................
-void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
-                    QEvt const * * const qSto, uint_fast16_t const qLen,
-                    void * const stkSto, uint_fast16_t const stkSize,
-                    void const * const par)
+void QActive_start(QActive * const me,
+    QPrioSpec const prioSpec,
+    QEvt const * * const qSto, uint_fast16_t const qLen,
+    void * const stkSto, uint_fast16_t const stkSize,
+    void const * const par)
 {
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
     me->pthre = 0U;   // preemption-threshold (not used for AO registration)

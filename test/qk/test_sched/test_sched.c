@@ -144,7 +144,7 @@ int main() {
     for (uint8_t n = 0U; n < NUM_B; ++n) {
         if (pspecB[n] != 0U) {
             ObjB_ctor(&aoB[n]);          // instantiate the AO
-            QACTIVE_START(&aoB[n].super, // AO to start
+            QActive_start(&aoB[n].super, // AO to start
                 pspecB[n],               // QF-prio/p-thre.
                 aoB_queueSto[n],         // event queue storage
                 Q_DIM(aoB_queueSto[n]),  // event length [events]

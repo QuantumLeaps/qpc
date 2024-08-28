@@ -73,10 +73,11 @@ static void thread_function(ULONG thread_input) { // ThreadX signature
     }
 }
 //............................................................................
-void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
-                    QEvt const * * const qSto, uint_fast16_t const qLen,
-                    void * const stkSto, uint_fast16_t const stkSize,
-                    void const * const par)
+void QActive_start(QActive * const me,
+    QPrioSpec const prioSpec,
+    QEvt const * * const qSto, uint_fast16_t const qLen,
+    void * const stkSto, uint_fast16_t const stkSize,
+    void const * const par)
 {
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority
     me->pthre = (uint8_t)(prioSpec >> 8U); // QF preemption-threshold
@@ -116,7 +117,7 @@ void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
 }
 //............................................................................
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
-    // this function must be called before QACTIVE_START(),
+    // this function must be called before QActive_start(),
     // which implies that me->thread.tx_thread_name must not be used yet;
     //
     QF_CRIT_STAT

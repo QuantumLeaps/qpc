@@ -188,7 +188,7 @@ int main() {
     for (n = 0U; n < NUM_B; ++n) {
         if (pspecB[n] != 0U) {
             ObjB_ctor(&aoB[n]);          // instantiate the AO
-            QACTIVE_START(&aoB[n].super, // AO to start
+            QActive_start(&aoB[n].super, // AO to start
                 pspecB[n],               // QF-prio/p-thre.
                 aoB_queueSto[n],         // event queue storage
                 Q_DIM(aoB_queueSto[n]),  // event length [events]
@@ -203,7 +203,7 @@ int main() {
     for (n = 0U; n < NUM_X; ++n) {
     QXThread_ctor(&thrX[n], &ThrX_run, 0U); // instantiate the thread
         if (pspecX[n] != 0U) {
-            QXTHREAD_START(&thrX[n],     // thread to start
+            QXThread_start(&thrX[n],     // thread to start
                 pspecX[n],               // QF-prio/p-thre.
                 thrX_queueSto[n],        // event queue storage
                 Q_DIM(thrX_queueSto[n]), // event length [events]

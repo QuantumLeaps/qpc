@@ -83,10 +83,11 @@ static void task_function(void *pdata) { // uC-OS2 task signature
 }
 
 //............................................................................
-void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
-                    QEvt const * * const qSto, uint_fast16_t const qLen,
-                    void * const stkSto, uint_fast16_t const stkSize,
-                    void const * const par)
+void QActive_start(QActive * const me,
+    QPrioSpec const prioSpec,
+    QEvt const * * const qSto, uint_fast16_t const qLen,
+    void * const stkSto, uint_fast16_t const stkSize,
+    void const * const par)
 {
     // task name to be passed to OSTaskCreateExt()
     void * const task_name = (void *)me->eQueue;
@@ -168,7 +169,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     QF_CRIT_ENTRY();
     switch (attr1) {
         case TASK_NAME_ATTR:
-           // this function must be called before QACTIVE_START(),
+           // this function must be called before QActive_start(),
            // which implies that me->eQueue must not be used yet;
            Q_ASSERT_INCRIT(300, me->eQueue == (OS_EVENT *)0);
            // temporarily store the name, cast 'const' away
@@ -311,7 +312,7 @@ QEvt const *QActive_get_(QActive * const me) {
 // NOTE1:
 // The member QActive.thread is set to the uC-OS2 task options in the
 // function QF_setUCosTaskAttr(), which must be called **before**
-// QACTIVE_START().
+// QActive_start().
 //
 // NOTE3:
 // The event posting to uC-OS2 message queue occurs OUTSIDE critical section,

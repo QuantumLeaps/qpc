@@ -122,7 +122,7 @@ static void task_function(void *pvParameters) { // FreeRTOS task signature
 }
 
 //............................................................................
-void QActive_start_(QActive * const me,
+void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
@@ -214,7 +214,7 @@ void QActive_stop(QActive * const me) {
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    // this function must be called before QACTIVE_START(),
+    // this function must be called before QActive_start(),
     // which implies that me->thread.pxDummy1 must not be used yet;
     Q_REQUIRE_INCRIT(300, me->thread.pxDummy1 == (void *)0);
     switch (attr1) {

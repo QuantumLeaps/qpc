@@ -164,6 +164,18 @@ void QXThread_ctor(QXThread * const me,
     uint_fast8_t const tickRate);
 
 //! @public @memberof QXThread
+static inline void QXThread_start(QXThread * const me,
+    QPrioSpec const prioSpec,
+    QEvt const * * const qSto,
+    uint_fast16_t const qLen,
+    void * const stkSto,
+    uint_fast16_t const stkSize,
+    void const * const par)
+{
+    QActive_start(&me->super, prioSpec, qSto, qLen, stkSto, stkSize, par);
+}
+
+//! @public @memberof QXThread
 bool QXThread_delay(QTimeEvtCtr const nTicks);
 
 //! @public @memberof QXThread
@@ -268,10 +280,6 @@ void QXMutex_unlock(QXMutex * const me);
 //$enddecl${QXK::QXMutex} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 //$declare${QXK-macros} vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-
-//${QXK-macros::QXTHREAD_START} ..............................................
-#define QXTHREAD_START(me_, prioSpec_, qSto_, qLen_, stkSto_, stkSize_, par_) QACTIVE_START((me_), (prioSpec_), (qSto_), (qLen_), \
-    (stkSto_), (stkSize_), (par_))
 
 //${QXK-macros::QXTHREAD_POST_X} .............................................
 #define QXTHREAD_POST_X(me_, e_, margin_, sender_) \

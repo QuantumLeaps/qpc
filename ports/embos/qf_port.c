@@ -101,10 +101,11 @@ void QF_stop(void) {
 }
 
 //............................................................................
-void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
-                    QEvt const * * const qSto, uint_fast16_t const qLen,
-                    void * const stkSto, uint_fast16_t const stkSize,
-                    void const * const par)
+void QActive_start(QActive * const me,
+    QPrioSpec const prioSpec,
+    QEvt const * * const qSto, uint_fast16_t const qLen,
+    void * const stkSto, uint_fast16_t const stkSize,
+    void const * const par)
 {
     // create the embOS message box for the AO
     OS_MAILBOX_Create(&me->eQueue,
@@ -297,7 +298,7 @@ QEvt const *QActive_get_(QActive * const me) {
 // FPU. In this QP-embOS port, an active object task that uses the FPU is
 // designated by the QF_TASK_USES_FPU attribute, which can be set with the
 // QF_setEmbOsTaskAttr() function. The task attributes must be set *before*
-// calling QACTIVE_START(). The task attributes are saved in QActive.osObject
+// calling QActive_start(). The task attributes are saved in QActive.osObject
 // member.
 //
 // NOTE3:

@@ -212,9 +212,9 @@ int_t QF_run(void) {
 
 //${QS::QUTest-stub::QActive} ................................................
 
-//${QS::QUTest-stub::QActive::start_} ........................................
+//${QS::QUTest-stub::QActive::start} .........................................
 //! @private @memberof QActive
-void QActive_start_(QActive * const me,
+void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,

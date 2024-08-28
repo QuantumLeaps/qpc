@@ -311,10 +311,11 @@ static void *thread_routine(void *arg) { // the expected POSIX signature
 }
 
 // QActive functions =======================================================
-void QActive_start_(QActive * const me, QPrioSpec const prioSpec,
-                    QEvt const * * const qSto, uint_fast16_t const qLen,
-                    void * const stkSto, uint_fast16_t const stkSize,
-                    void const * const par)
+void QActive_start(QActive * const me,
+    QPrioSpec const prioSpec,
+    QEvt const * * const qSto, uint_fast16_t const qLen,
+    void * const stkSto, uint_fast16_t const stkSize,
+    void const * const par)
 {
     Q_UNUSED_PAR(stkSto);
     Q_UNUSED_PAR(stkSize);

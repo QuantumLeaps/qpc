@@ -199,7 +199,7 @@ enum QStateRet {
     // unhandled and need to "bubble up"
     Q_RET_SUPER,     //!< event passed to superstate to handle
     Q_RET_SUPER_SUB, //!< event passed to submachine superstate
-    Q_RET_UNHANDLED, //!< event unhandled due to a guard
+    Q_RET_UNHANDLED, //!< event unhandled due to guard
 
     // handled and do not need to "bubble up"
     Q_RET_HANDLED,   //!< event handled (internal transition)
@@ -417,13 +417,8 @@ bool QMsm_isIn_(
     QAsm * const me,
     QStateHandler const state);
 
-//! @private @memberof QMsm
-//! @deprecated instead use: QASM_IS_IN()
-bool QMsm_isInState(QMsm const * const me,
-    QMState const * const stateObj);
-
 //! @public @memberof QMsm
-static inline QMState const * QMsm_stateObj(QMsm * const me) {
+static inline QMState const * QMsm_stateObj(QMsm const * const me) {
     return me->super.state.obj;
 }
 
@@ -861,10 +856,8 @@ void QActive_setAttr(QActive * const me,
     uint32_t attr1,
     void const * attr2);
 
-// private:
-
-//! @private @memberof QActive
-void QActive_start_(QActive * const me,
+//! @public @memberof QActive
+void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
     QEvt const * * const qSto,
     uint_fast16_t const qLen,
@@ -1196,11 +1189,6 @@ void QF_gcFromISR(QEvt const * const e);
     QF_deleteRef_((evtRef_)); \
     (evtRef_) = (void *)0; \
 } while (false)
-
-//${QF-macros::QACTIVE_START} ................................................
-#define QACTIVE_START(me_, prioSpec_, qSto_, qLen_, stkSto_, stkSize_, par_) \
-    (QActive_start_((QActive *)(me_), (prioSpec_), \
-        (qSto_), (qLen_), (stkSto_), (stkSize_), (par_)))
 
 //${QF-macros::QACTIVE_POST} .................................................
 #ifdef Q_SPY

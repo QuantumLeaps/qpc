@@ -72,7 +72,19 @@
 //! @deprecated plain 'char' is no longer forbidden in MISRA-C:2023
 typedef char char_t;
 
-//! @deprecated assertion failure handler
+//! @deprecated Macro for starting an Active Object.
+//! Use QActive::QActive_start() instead.
+#define QACTIVE_START(me_, prioSpec_, qSto_, qLen_, stkSto_, stkSize_, par_) \
+    (QActive_start((QActive *)(me_), (prioSpec_), \
+        (qSto_), (qLen_), (stkSto_), (stkSize_), (par_)))
+
+//! @deprecated Macro for starting an eXtended Thread.
+//! Use QXThread::QXThread_start() instead.
+#define QXTHREAD_START(me_, prioSpec_, qSto_, qLen_, stkSto_, stkSize_, par_) \
+    (QXThread_start((QXThread *)(me_), (prioSpec_), \
+        (qSto_), (qLen_), (stkSto_), (stkSize_), (par_)))
+
+//! @deprecated Assertion failure handler.
 //! Use Q_onError() instead.
 #define Q_onAssert(module_, id_) Q_onError(module_, id_)
 
@@ -130,7 +142,7 @@ static inline void QF_psInit(
 #define QHSM_DISPATCH(me_, e_, qsId_) QASM_DISPATCH((me_), (e_), (qsId_))
 
 //! @deprecated instead use: QASM_IS_IN()
-#define QHsm_isIn(me_, state_)         QHsm_isIn_((QAsm *)(me_), (state_))
+#define QHsm_isIn(me_, state_)        QASM_IS_IN((QAsm *)(me_), (state_))
 
 //============================================================================
 #if (QP_API_VERSION < 691)
