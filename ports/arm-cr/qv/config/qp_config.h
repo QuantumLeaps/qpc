@@ -1,32 +1,30 @@
 //============================================================================
 // QP configuration file (QV on ARM Cortex-R)
-// Last updated for version: 7.4.0
-// Last updated on: 2024-06-06
+//
+// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
 //                   Modern Embedded Software
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-//
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// This software is dual-licensed under the terms of the open source GNU
-// General Public License version 3 (or any later version), or alternatively,
-// under the terms of one of the closed source Quantum Leaps commercial
-// licenses.
-//
-// The terms of the open source GNU General Public License version 3
-// can be found at: <www.gnu.org/licenses/gpl-3.0>
-//
-// The terms of the closed source Quantum Leaps commercial licenses
-// can be found at: <www.state-machine.com/licensing>
+// The QP/C software is dual-licensed under the terms of the open-source GNU
+// General Public License (GPL) or under the terms of one of the closed-
+// source Quantum Leaps commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
 // Plagiarizing this software to sidestep the license obligations is illegal.
 //
-// Contact information:
-// <www.state-machine.com>
+// NOTE:
+// The GPL (see <www.gnu.org/licenses/gpl-3.0>) does NOT permit the
+// incorporation of the QP/C software into proprietary programs. Please
+// contact Quantum Leaps for commercial licensing options, which expressly
+// supersede the GPL and are designed explicitly for licensees interested
+// in using QP/C in closed-source proprietary applications.
+//
+// Quantum Leaps contact information:
+// <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
 #ifndef QP_CONFIG_H_
@@ -34,17 +32,10 @@
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> -----------------
 
-// <n>NOTE: Requires command-line macro: QP_CONFIG
-// <i>This qp_config.h header file is activated only when the macro
-// <i>QP_CONFIG is defined on the command-line to the compiler
-// <n>-------------------------------------------
-
 // <o>QP API compatibility version (QP_API_VERSION)
 //   <0=>  0   (Maximum compatibility)
-//   <580=>580 (QP 5.8.0 or newer)
-//   <660=>660 (QP 6.6.0 or newer)
 //   <691=>691 (QP 6.9.1 or newer)
-//   <700=>700 (QP 7.0.0 or newer)
+//   <734=>7.3.4 (QP 7.3.4 or newer)
 //   <9999=>9999 (Latest only)
 // <i>QP API backwards compatibility with the QP/C API version.
 // <i>Lower QP_API_VERSION values enable backwards compatibility
@@ -158,7 +149,6 @@
 // <o>Event queue counter size (QF_EQUEUE_CTR_SIZE)
 //   <1U=>1 (default)
 //   <2U=>2
-//   <4U=>4
 // <i>Size of event queue counter [bytes]
 // <i>Default: 1 (255 events maximum in a queue)
 #define QF_EQUEUE_CTR_SIZE  1U
@@ -232,6 +222,7 @@
 // </c>
 
 // </h>
+
 
 //------------- <<< end of configuration section >>> -----------------------
 

@@ -23,7 +23,7 @@
 // <info@state-machine.com>
 //============================================================================
 //! @date Last updated on: 2024-06-11
-//! @version Last updated for: @ref qpc_7_4_0
+//! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
 //! @brief QS/C "port" to QUTest with POSIX
@@ -251,8 +251,8 @@ void QS_onTestLoop() {
     fd_set readSet;
     FD_ZERO(&readSet);
 
-    QS_rxPriv_.inTestLoop = true;
-    while (QS_rxPriv_.inTestLoop) {
+    QS_rxPriv_->inTestLoop = true;
+    while (QS_rxPriv_->inTestLoop) {
         FD_SET(l_sock, &readSet);
 
         struct timeval timeout = {
@@ -270,10 +270,10 @@ void QS_onTestLoop() {
         }
         else if ((status > 0) && FD_ISSET(l_sock, &readSet)) { // socket ready
             status = recv(l_sock,
-                          (char *)QS_rxPriv_.buf, (int)QS_rxPriv_.end, 0);
+                          (char *)QS_rxPriv_->buf, (int)QS_rxPriv_->end, 0);
             if (status > 0) { // any data received?
-                QS_rxPriv_.tail = 0U;
-                QS_rxPriv_.head = (QSCtr)status; // # bytes received
+                QS_rxPriv_->tail = 0U;
+                QS_rxPriv_->head = (QSCtr)status; // # bytes received
                 QS_rxParse(); // parse all received bytes
             }
         }
@@ -282,7 +282,7 @@ void QS_onTestLoop() {
     }
     // set inTestLoop to true in case calls to QS_onTestLoop() nest,
     // which can happen through the calls to QS_TEST_PAUSE().
-    QS_rxPriv_.inTestLoop = true;
+    QS_rxPriv_->inTestLoop = true;
 }
 
 //............................................................................

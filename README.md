@@ -34,15 +34,15 @@ provides instructions on how to download, install, and get started with QP.
 - [AppNote: "Getting Started with QP Real-Time Embedded Frameworks"][AN]
 contains also a tutorial, in which you build a simple "Blinky" application.
 
-## Licensing
-The QP frameworks (QP/C and QP/C++) are licensed under the
+# Licensing
+The QP/C real-time embedded framework is licensed under the
 [dual licensing model](https://www.state-machine.com/licensing), with
 the following licensing options:
 
 1. [Open-source licensing](https://www.state-machine.com/licensing#Open) under the
 [GNU General Public License (GPLv3)](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-> NOTE: GPL requires that all modifications to the original code
+> NOTE: The GPL requires that all modifications to the original code
 as well as your application code (Derivative Works as defined in the
 Copyright Law) must also be released under the terms of the GPL
 open source license.
@@ -55,6 +55,13 @@ proprietary status of their code.
 > NOTE: If your company has a policy forbidding open source in your product,
 all QP frameworks can be licensed commercially, in which case you don't use
 any open source license and you do not violate your policy.
+
+## Licensing the QS/C Software Tracing Component
+The target-resident [QS/C software trading component][QS/C] is provided only
+under one of the [closed-source commerial QP licenses][Lic] and therefore is
+[NOT provided](src/qs) in the open-source GPL distribution. Please
+[contact Quantum Leaps](#how-to-get-help) to request **evaluation** of
+the QS software tracing.
 
 
 # About QP/C
@@ -138,12 +145,15 @@ in your web browser.
 # How to Help this Project?
 If you like this project, please give it a star (in the upper-right corner of your browser window):
 
-![GitHub star](https://www.state-machine.com/img/github-star.jpg)
+<p align="center">
+<img src="https://www.state-machine.com/img/github-star.jpg"/><br>
+</p>
 
    [RTEF]:   <https://www.state-machine.com/rtef>
    [QP]:     <https://www.state-machine.com/products/qp>
    [QP/C]:   <https://github.com/QuantumLeaps/qpc>
    [QP/C++]: <https://github.com/QuantumLeaps/qpcpp>
+   [QS/C]:   <https://www.state-machine.com/qpc/srs-qp_qs.html>
    [QM]:     <https://github.com/QuantumLeaps/qm>
    [QTools]: <https://github.com/QuantumLeaps/qtools>
    [QP-Rel]: <https://github.com/QuantumLeaps/qpc/releases>

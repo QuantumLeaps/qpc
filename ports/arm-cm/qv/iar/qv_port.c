@@ -1,34 +1,33 @@
 //============================================================================
 // QP/C Real-Time Embedded Framework (RTEF)
+// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
 //                   Modern Embedded Software
 //
-// Copyright (C) 2005 Quantum Leaps, LLC <state-machine.com>.
-//
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// This software is dual-licensed under the terms of the open source GNU
-// General Public License version 3 (or any later version), or alternatively,
-// under the terms of one of the closed source Quantum Leaps commercial
-// licenses.
-//
-// The terms of the open source GNU General Public License version 3
-// can be found at: <www.gnu.org/licenses/gpl-3.0>
-//
-// The terms of the closed source Quantum Leaps commercial licenses
-// can be found at: <www.state-machine.com/licensing>
+// The QP/C software is dual-licensed under the terms of the open-source GNU
+// General Public License (GPL) or under the terms of one of the closed-
+// source Quantum Leaps commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
 // Plagiarizing this software to sidestep the license obligations is illegal.
 //
-// Contact information:
-// <www.state-machine.com>
+// NOTE:
+// The GPL (see <www.gnu.org/licenses/gpl-3.0>) does NOT permit the
+// incorporation of the QP/C software into proprietary programs. Please
+// contact Quantum Leaps for commercial licensing options, which expressly
+// supersede the GPL and are designed explicitly for licensees interested
+// in using QP/C in closed-source proprietary applications.
+//
+// Quantum Leaps contact information:
+// <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-12-03
-//! @version Last updated for: @ref qpc_7_3_1
+//! @date Last updated on: 2024-09-30
+//! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
 //! @brief QV/C port to ARM Cortex-M, IAR-ARM
@@ -69,13 +68,16 @@ char const QF_port_module_[] = "qv_port";
 
 //............................................................................
 // Unconditionally disable interrupts.
+// NOTE: this function must NOT use the stack.
 //
 // description:
 // On ARMv6-M, interrupts are disabled with the PRIMASK register.
 // On ARMv7-M and higher, interrupts are disabled *selectively* with the
 // BASEPRI register.
 // Additionally, the function also asserts that the interrupts are
-// NOT disabled upon the entry to the function.
+// NOT disabled upon the entry to the function, which means that
+// this interrupt management policy CANNOT nest.
+__stackless
 void QF_int_disable_(void) {
 __asm volatile (
 #if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
@@ -98,12 +100,15 @@ __asm volatile (
 }
 //............................................................................
 // Unconditionally enable interrupts.
+// NOTE: this function must NOT use the stack.
 //
 // description:
 // On ARMv6-M, interrupts are enabled with the PRIMASK register.
 // On ARMv7-M and higher, interrupts are enabled with the BASEPRI register.
 // Additionally, the function also asserts that the interrupts ARE
-// disabled upon the entry to the function.
+// disabled upon the entry to the function, which means that
+// this interrupt management policy CANNOT nest.
+__stackless
 void QF_int_enable_(void) {
 __asm volatile (
 #if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
@@ -129,6 +134,7 @@ __asm volatile (
 }
 //............................................................................
 // Enter QF critical section.
+// NOTE: this function must NOT use the stack.
 //
 // description:
 // On ARMv6-M, critical section is entered by disabling interrupts
@@ -136,10 +142,9 @@ __asm volatile (
 // On ARMv7-M and higher, critical section is entered by disabling
 // interrupts *selectively* with the BASEPRI register.
 // Additionally, the function also asserts that the interrupts are
-// NOT disabled upon the entry to the function.
-//
-// NOTE:
-// The assertion means that this critical section CANNOT nest.
+// NOT disabled upon the entry to the function, which means that
+// this critical section CANNOT nest.
+__stackless
 void QF_crit_entry_(void) {
 __asm volatile (
 #if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
@@ -162,6 +167,7 @@ __asm volatile (
 }
 //............................................................................
 // Exit QF critical section.
+// NOTE: this function must NOT use the stack.
 //
 // description:
 // On ARMv6-M, critical section is exited by enabling interrupts
@@ -169,10 +175,9 @@ __asm volatile (
 // On ARMv7-M and higher, critical section is exited by enabling
 // interrupts with the BASEPRI register.
 // Additionally, the function also asserts that the interrupts ARE
-// disabled upon the entry to the function.
-//
-// NOTE:
-// The assertion means that this critical section CANNOT nest.
+// disabled upon the entry to the function, which means that
+// this critical section CANNOT nest.
+__stackless
 void QF_crit_exit_(void) {
 __asm volatile (
 #if (__ARM_ARCH == 6)   //--------- ARMv6-M architecture?
@@ -210,8 +215,8 @@ __asm volatile (
 // application programmer forgets to explicitly set priorities of all
 // "kernel aware" interrupts.
 //
-// The interrupt priorities established in QV_init() can be later
-// changed by the application-level code.
+// NOTE: The IRQ priorities established in QV_init() can be later changed
+// by the application-level code.
 void QV_init(void) {
 
 #if (__ARM_ARCH != 6)   //--------- if ARMv7-M and higher...
@@ -240,6 +245,7 @@ void QV_init(void) {
 #if (__ARM_ARCH == 6) // if ARMv6-M...
 
 // hand-optimized quick LOG2 in assembly (no CLZ instruction in ARMv6-M)
+__stackless
 uint_fast8_t QF_qlog2(uint32_t x) {
     static uint8_t const log2LUT[16] = {
         0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
@@ -248,7 +254,7 @@ uint_fast8_t QF_qlog2(uint32_t x) {
     uint_fast8_t n;
 
 __asm volatile (
-   "  MOVS    %[n],#0           \n"
+    "  MOVS    %[n],#0           \n"
 #if (QF_MAX_ACTIVE > 16U)
     "  LSRS    r2,r0,#16        \n"
     "  BEQ     QF_qlog2_1       \n"
@@ -268,7 +274,7 @@ __asm volatile (
     "  ADDS    %[n],%[n],#4     \n"
     "  MOVS    r0,r2            \n"
     "QF_qlog2_3:" : [n]"=r"(n)
-);
+    );
     return n + log2LUT[x];
 }
 

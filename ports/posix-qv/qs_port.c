@@ -23,7 +23,7 @@
 // <info@state-machine.com>
 //============================================================================
 //! @date Last updated on: 2024-07-18
-//! @version Last updated for: @ref qpc_7_4_0
+//! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
 //! @brief QS/C port to POSIX
@@ -285,10 +285,10 @@ void QS_output(void) {
 //............................................................................
 void QS_rx_input(void) {
     int status = recv(l_sock,
-                      (char *)QS_rxPriv_.buf, (int)QS_rxPriv_.end, 0);
+                      (char *)QS_rxPriv_->buf, (int)QS_rxPriv_->end, 0);
     if (status > 0) { // any data received?
-        QS_rxPriv_.tail = 0U;
-        QS_rxPriv_.head = status; // # bytes received
+        QS_rxPriv_->tail = 0U;
+        QS_rxPriv_->head = status; // # bytes received
         QS_rxParse(); // parse all received bytes
     }
 }
