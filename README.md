@@ -34,15 +34,15 @@ provides instructions on how to download, install, and get started with QP.
 - [AppNote: "Getting Started with QP Real-Time Embedded Frameworks"][AN]
 contains also a tutorial, in which you build a simple "Blinky" application.
 
-## Licensing
-The QP frameworks (QP/C and QP/C++) are licensed under the
+# Licensing
+The QP/C real-time embedded framework is licensed under the
 [dual licensing model](https://www.state-machine.com/licensing), with
 the following licensing options:
 
 1. [Open-source licensing](https://www.state-machine.com/licensing#Open) under the
 [GNU General Public License (GPLv3)](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-> NOTE: GPL requires that all modifications to the original code
+> NOTE: The GPL requires that all modifications to the original code
 as well as your application code (Derivative Works as defined in the
 Copyright Law) must also be released under the terms of the GPL
 open source license.
@@ -56,6 +56,19 @@ proprietary status of their code.
 all QP frameworks can be licensed commercially, in which case you don't use
 any open source license and you do not violate your policy.
 
+## Files Removed from the QP/C Open Source GPL Distribution
+Due to the widespread non-compliance with the GPL, as well as infringement on the
+[dual-licensing model of QP frameworks][Lic], the following QP/C components
+have been **removed from the open-source GPL distribution**:
+- QS target-resident software tracing component
+- QXK dual-mode kernel
+
+> NOTE: These components are available to the [commercial licensees][Cust] with
+the active Support Term. Please contact [Quantum Leaps technical support][Sup]
+to get the complete QP/C framework distribution.
+
+> NOTE: To request **evaluation** of the complete QP/C framework, please contact
+Quantum Leaps at: https://www.state-machine.com/contact
 
 # About QP/C
 QP/C (Quantum Platform in C) is a lightweight, open source
@@ -103,7 +116,7 @@ without any traditional RTOS. The framework contains a selection of
 the [preemptive non-blocking QK kernel][QK], and the preemptive,
 [dual-mode QXK kernel][QXK] that provides all the features you might expect
 from a traditional RTOS. Native QP ports and ready-to-use examples are provided
-for major CPUs, such as ARM Cortex-M (M0/M0+/M3/M4/M7/M23/M33/M85).
+for major CPUs, such as ARM Cortex-M (M0/M0+/M3/M4/M7/M23/M33/...).
 
 ## Traditional RTOS/OS
 QP/C can also work with a traditional RTOS, such as ThreadX, embOS, FreeRTOS,
@@ -138,12 +151,18 @@ in your web browser.
 # How to Help this Project?
 If you like this project, please give it a star (in the upper-right corner of your browser window):
 
-![GitHub star](https://www.state-machine.com/img/github-star.jpg)
+<p align="center">
+<img src="https://www.state-machine.com/img/github-star.jpg"/><br>
+</p>
 
    [RTEF]:   <https://www.state-machine.com/rtef>
    [QP]:     <https://www.state-machine.com/products/qp>
    [QP/C]:   <https://github.com/QuantumLeaps/qpc>
    [QP/C++]: <https://github.com/QuantumLeaps/qpcpp>
+   [QS/C]:   <https://www.state-machine.com/qpc/srs-qp_qs.html>
+   [QV]:     <https://www.state-machine.com/qpc/srs-qp_qv.html>
+   [QK]:     <https://www.state-machine.com/qpc/srs-qp_qk.html>
+   [QXK]:    <https://www.state-machine.com/qpc/srs-qp_qxk.html>
    [QM]:     <https://github.com/QuantumLeaps/qm>
    [QTools]: <https://github.com/QuantumLeaps/qtools>
    [QP-Rel]: <https://github.com/QuantumLeaps/qpc/releases>
@@ -153,6 +172,7 @@ If you like this project, please give it a star (in the upper-right corner of yo
    [HSM]:    <https://www.state-machine.com/qpc/srs-qp_sm.html>
    [Lic]:    <https://www.state-machine.com/licensing>
    [Cust]:   <https://www.state-machine.com/customers>
+   [Sup]:    <mailto:support@state-machine.com>
    [AN]:     <https://www.state-machine.com/doc/AN_Getting_Started_with_QP.pdf>
    [Tutorial]: <https://www.state-machine.com/qpc/gs_tut.html>
    [Video]:  <https://youtu.be/O7ER6_VqIH0>

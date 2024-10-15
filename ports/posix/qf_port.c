@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-07-18
-//! @version Last updated for: @ref qpc_7_4_0
+//! @date Last updated on: 2024-09-18
+//! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
 //! @brief QF/C port to POSIX (multithreaded with P-threads)
@@ -142,13 +142,7 @@ void QF_init(void) {
     // calling QF_run()
     pthread_mutex_lock(&l_startupMutex);
 
-    for (uint_fast8_t tickRate = 0U;
-         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
-         ++tickRate)
-    {
-        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
-                       (QActive *)0, Q_USER_SIG, tickRate);
-    }
+    QTimeEvt_init(); // initialize QTimeEvts
 
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default rate
@@ -167,8 +161,8 @@ int QF_run(void) {
     QF_onStartup(); // application-specific startup callback
 
     // produce the QS_QF_RUN trace record
-    QS_BEGIN_PRE_(QS_QF_RUN, 0U)
-    QS_END_PRE_()
+    QS_BEGIN_PRE(QS_QF_RUN, 0U)
+    QS_END_PRE()
 
     // try to set the priority of the ticker thread, see NOTE01
     struct sched_param sparam;
@@ -313,7 +307,7 @@ static void *thread_routine(void *arg) { // the expected POSIX signature
 // QActive functions =======================================================
 void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
-    QEvt const * * const qSto, uint_fast16_t const qLen,
+    QEvtPtr * const qSto, uint_fast16_t const qLen,
     void * const stkSto, uint_fast16_t const stkSize,
     void const * const par)
 {

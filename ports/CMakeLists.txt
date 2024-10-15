@@ -14,3 +14,7 @@ else()
 endif()
 
 add_subdirectory(${PORT_DIR})
+if(NOT QPC_CFG_QPCONFIG_H_INCLUDE_PATH)
+    set(QPC_CFG_QPCONFIG_H_INCLUDE_PATH config)
+endif()
+target_include_directories(qpc PUBLIC ${QPC_CFG_QPCONFIG_H_INCLUDE_PATH})

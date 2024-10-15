@@ -1,34 +1,34 @@
 //============================================================================
 // QP/C Real-Time Embedded Framework (RTEF)
 //
+// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+//
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
 //                   Modern Embedded Software
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
-//
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// This software is dual-licensed under the terms of the open source GNU
-// General Public License version 3 (or any later version), or alternatively,
-// under the terms of one of the closed source Quantum Leaps commercial
-// licenses.
-//
-// The terms of the open source GNU General Public License version 3
-// can be found at: <www.gnu.org/licenses/gpl-3.0>
-//
-// The terms of the closed source Quantum Leaps commercial licenses
-// can be found at: <www.state-machine.com/licensing>
+// The QP/C software is dual-licensed under the terms of the open-source GNU
+// General Public License (GPL) or under the terms of one of the closed-
+// source Quantum Leaps commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
 // Plagiarizing this software to sidestep the license obligations is illegal.
 //
-// Contact information:
-// <www.state-machine.com>
+// NOTE:
+// The GPL (see <www.gnu.org/licenses/gpl-3.0>) does NOT permit the
+// incorporation of the QP/C software into proprietary programs. Please
+// contact Quantum Leaps for commercial licensing options, which expressly
+// supersede the GPL and are designed explicitly for licensees interested
+// in using QP/C in closed-source proprietary applications.
+//
+// Quantum Leaps contact information:
+// <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-07
-//! @version Last updated for: @ref qpc_7_3_0
+//! @date Last updated on: 2023-09-30
+//! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
 //! @brief QP/C, port to ThreadX, generic C11 compiler
@@ -36,12 +36,9 @@
 #ifndef QP_PORT_H_
 #define QP_PORT_H_
 
-#include <stdint.h>  // Exact-width types. WG14/N843 C99 Standard
-#include <stdbool.h> // Boolean type.      WG14/N843 C99 Standard
-
-#ifdef QP_CONFIG
-#include "qp_config.h" // external QP configuration
-#endif
+#include <stdint.h>     // Exact-width types. WG14/N843 C99 Standard
+#include <stdbool.h>    // Boolean type.      WG14/N843 C99 Standard
+#include "qp_config.h"  // QP configuration from the application
 
 // no-return function specifier (C11 Standard)
 #define Q_NORETURN   _Noreturn void
@@ -51,35 +48,42 @@
 #define QACTIVE_THREAD_TYPE     TX_THREAD
 #define QACTIVE_OS_OBJ_TYPE     uint8_t
 
-// QF priority offset within ThreadX priority numbering scheme, see NOTE1
-#define QF_TX_PRIO_OFFSET       8U
+// QF priority offset within ThreadX priority numbering scheme
+#define QF_TX_PRIO_OFFSET       2U
+
+#ifndef QF_MAX_ACTIVE
+#define QF_MAX_ACTIVE    (TX_MAX_PRIORITIES - QF_TX_PRIO_OFFSET)
+#else
+#error "QF_MAX_ACTIVE shouild not be externally defined in QP-ThreadX port"
+#endif
+
+// mapping between QF-priority and TX-priority, see NOTE1
+#define QF_TO_TX_PRIO_MAP(qp_prio_) \
+    (TX_MAX_PRIORITIES - QF_TX_PRIO_OFFSET - (qp_prio_))
+
+// mapping between TX-priority and QF-priority, see NOTE1
+#define TX_TO_QF_PRIO_MAP(tx_prio_) \
+    (TX_MAX_PRIORITIES - QF_TX_PRIO_OFFSET - (tx_prio_))
 
 // QF critical section for ThreadX, see NOTE3
 #define QF_CRIT_STAT     UINT int_ctrl_;
 #define QF_CRIT_ENTRY()  (int_ctrl_ = tx_interrupt_control(TX_INT_DISABLE))
 #define QF_CRIT_EXIT()   ((void)tx_interrupt_control(int_ctrl_))
 
+// include files -------------------------------------------------------------
+#include "tx_api.h"    // ThreadX API
+
+#include "qequeue.h"   // QP event queue (for deferring events)
+#include "qmpool.h"    // QP memory pool (for event pools)
+#include "qp.h"        // QP platform-independent public interface
+
 enum ThreadX_ThreadAttrs {
     THREAD_NAME_ATTR
 };
 
-// include files -------------------------------------------------------------
-#include "tx_api.h"    // ThreadX API
-
-#include "qequeue.h"   // QP native QF event queue for deferring events
-#include "qmpool.h"    // QP native QF event pool
-#include "qp.h"        // QP platform-independent public interface
-
 //============================================================================
 // interface used only inside QF implementation, but not in applications
 #ifdef QP_IMPL
-
-    //! ThreadX-specific scheduler locking (implemented in qf_port.c)
-    typedef struct {
-        uint_fast8_t lockPrio;   //!< lock prio [QF numbering scheme]
-        UINT prevThre;           //!< previoius preemption threshold
-        TX_THREAD *lockHolder;   //!< the thread holding the lock
-    } QFSchedLock;
 
     // ThreadX-specific scheduler locking (implemented in qf_port.cpp)
     #define QF_SCHED_STAT_ QFSchedLock lockStat_;
@@ -97,6 +101,12 @@ enum ThreadX_ThreadAttrs {
         }                               \
     } while (false)
 
+    typedef struct {
+        uint_fast8_t lockPrio;   // lock prio [QF numbering scheme]
+        UINT prevThre;           // previoius preemption threshold
+        TX_THREAD *lockHolder;   // the thread holding the lock
+    } QFSchedLock;
+
     // internal implementation of scheduler locking/unlocking
     void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio);
     void QFSchedUnlock_(QFSchedLock const * const lockStat);
@@ -113,19 +123,17 @@ enum ThreadX_ThreadAttrs {
     #define QF_EPOOL_PUT_(p_, e_, qsId_) \
         (QMPool_put(&(p_), (e_), (qsId_)))
 
-#endif // QP_IMPL
+#endif // ifdef QP_IMPL
 
 //============================================================================
 // NOTE1:
-// QF_TX_PRIO_OFFSET specifies the number of highest-urgency ThreadX
-// priorities not available to QP active objects. These highest-urgency
-// priorities might be used by ThreadX threads that run "above" QP active
-// objects.
-//
 // Because the ThreadX priority numbering is "upside down" compared
 // to the QP priority numbering, the ThreadX priority for an active object
-// thread is calculated as follows:
-//     tx_prio = QF_TX_PRIO_OFFSET + QF_MAX_ACTIVE - qp_prio
+// thread is calculated as specified in the macro QF_TO_TX_PRIO_MAP(prio_).
+// This mapping leaves the QF_TX_PRIO_OFFSET number of lowest-priority
+// ThreadX threads NOT available as threads for QP Active Objects. The use
+// of such lowest-priority ThredX threads is, for example, to emulate idle
+// thread, etc.
 //
 // NOTE3:
 // The ThreadX critical section must be able to nest, which is the case with

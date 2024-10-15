@@ -22,8 +22,8 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-06-11
-//! @version Last updated for: @ref qpc_7_4_0
+//! @date Last updated on: 2024-09-18
+//! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
 //! @brief Qube command-line QP execution environment
@@ -304,8 +304,8 @@ int_t QF_run(void) {
     QS_OBJ_DICTIONARY(&Qube);
 
     // produce the QS_QF_RUN trace record
-    QS_BEGIN_PRE_(QS_QF_RUN, 0U)
-    QS_END_PRE_()
+    QS_BEGIN_PRE(QS_QF_RUN, 0U)
+    QS_END_PRE()
 
     QS_MEM_APP();
     QS_CRIT_EXIT();
@@ -359,7 +359,7 @@ int_t QF_run(void) {
 //--------------------------------------------------------------------------
 void QActive_start(QActive* const me,
     QPrioSpec const prioSpec,
-    QEvt const** const qSto,
+    QEvtPtr * const qSto,
     uint_fast16_t const qLen,
     void* const stkSto,
     uint_fast16_t const stkSize,

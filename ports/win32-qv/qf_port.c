@@ -22,8 +22,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-06-11
-//! @version Last updated for: @ref qpc_7_4_0
+//! @date Last updated on: 2024-09-19
+//! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
 //! @brief QF/C port to Win32-QV (single-threaded)
@@ -108,13 +108,7 @@ void QF_init(void) {
     QPSet_update_(&QF_readySet_, &QF_readySet_dis_);
 #endif
 
-    for (uint_fast8_t tickRate = 0U;
-         tickRate < Q_DIM(QTimeEvt_timeEvtHead_);
-         ++tickRate)
-    {
-        QTimeEvt_ctorX(&QTimeEvt_timeEvtHead_[tickRate],
-                       (QActive *)0, Q_USER_SIG, tickRate);
-    }
+    QTimeEvt_init(); // initialize QTimeEvts
 }
 
 //............................................................................
@@ -129,17 +123,21 @@ int QF_run(void) {
         // create the ticker thread...
         HANDLE ticker = CreateThread(NULL, 1024, &ticker_thread,
                                     (void *)0, 0U, NULL);
+#ifndef Q_UNSAFE
         QF_CRIT_ENTRY();
         Q_ASSERT_INCRIT(310, ticker != 0); // thread must be created
         QF_CRIT_EXIT();
+#else
+        Q_UNUSED_PAR(ticker);
+#endif
     }
 
     // the combined event-loop and background-loop of the QV kernel
     QF_CRIT_ENTRY();
 
     // produce the QS_QF_RUN trace record
-    QS_BEGIN_PRE_(QS_QF_RUN, 0U)
-    QS_END_PRE_()
+    QS_BEGIN_PRE(QS_QF_RUN, 0U)
+    QS_END_PRE()
 
     while (l_isRunning) {
         Q_ASSERT_INCRIT(300, QPSet_verify_(&QF_readySet_, &QF_readySet_dis_));
@@ -237,7 +235,7 @@ int QF_consoleWaitForKey(void) {
 
 void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
-    QEvt const * * const qSto, uint_fast16_t const qLen,
+    QEvtPtr * const qSto, uint_fast16_t const qLen,
     void * const stkSto, uint_fast16_t const stkSize,
     void const * const par)
 {

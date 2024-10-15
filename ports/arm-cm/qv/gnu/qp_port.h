@@ -1,34 +1,33 @@
 //============================================================================
 // QP/C Real-Time Embedded Framework (RTEF)
+// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
 //                   Q u a n t u m  L e a P s
 //                   ------------------------
 //                   Modern Embedded Software
 //
-// Copyright (C) 2005 Quantum Leaps, LLC <state-machine.com>.
-//
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// This software is dual-licensed under the terms of the open source GNU
-// General Public License version 3 (or any later version), or alternatively,
-// under the terms of one of the closed source Quantum Leaps commercial
-// licenses.
-//
-// The terms of the open source GNU General Public License version 3
-// can be found at: <www.gnu.org/licenses/gpl-3.0>
-//
-// The terms of the closed source Quantum Leaps commercial licenses
-// can be found at: <www.state-machine.com/licensing>
+// The QP/C software is dual-licensed under the terms of the open-source GNU
+// General Public License (GPL) or under the terms of one of the closed-
+// source Quantum Leaps commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
 // Plagiarizing this software to sidestep the license obligations is illegal.
 //
-// Contact information:
-// <www.state-machine.com>
+// NOTE:
+// The GPL (see <www.gnu.org/licenses/gpl-3.0>) does NOT permit the
+// incorporation of the QP/C software into proprietary programs. Please
+// contact Quantum Leaps for commercial licensing options, which expressly
+// supersede the GPL and are designed explicitly for licensees interested
+// in using QP/C in closed-source proprietary applications.
+//
+// Quantum Leaps contact information:
+// <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-12-02
-//! @version Last updated for: @ref qpc_7_3_1
+//! @date Last updated on: 2024-09-30
+//! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
 //! @brief QP/C port to ARM Cortex-M, cooperative QV kernel, GNU-ARM
@@ -36,12 +35,9 @@
 #ifndef QP_PORT_H_
 #define QP_PORT_H_
 
-#include <stdint.h>  // Exact-width types. WG14/N843 C99 Standard
-#include <stdbool.h> // Boolean type.      WG14/N843 C99 Standard
-
-#ifdef QP_CONFIG
-#include "qp_config.h" // external QP configuration
-#endif
+#include <stdint.h>     // Exact-width types. WG14/N843 C99 Standard
+#include <stdbool.h>    // Boolean type.      WG14/N843 C99 Standard
+#include "qp_config.h"  // QP configuration from the application
 
 // no-return function specifier (C11 Standard)
 #define Q_NORETURN   _Noreturn void
@@ -114,10 +110,9 @@
 #if (__ARM_ARCH == 6) // ARMv6-M?
 
     // macro to put the CPU to sleep inside QV_onIdle()
-    #define QV_CPU_SLEEP() do { \
+    #define QV_CPU_SLEEP() do {             \
         __asm volatile ("wfi"::: "memory"); \
-        QF_MEM_APP();    \
-        QF_INT_ENABLE(); \
+        QF_INT_ENABLE();                    \
     } while (false)
 
     #define QV_ARM_ERRATUM_838869() ((void)0)
@@ -125,11 +120,10 @@
 #else // ARMv7-M or higher
 
     // macro to put the CPU to sleep inside QV_onIdle()
-    #define QV_CPU_SLEEP() do { \
+    #define QV_CPU_SLEEP() do {                  \
         __asm volatile ("cpsid i" ::: "memory"); \
-        QF_MEM_APP();    \
-        QF_INT_ENABLE(); \
-        __asm volatile ("wfi" ::: "memory"); \
+        QF_INT_ENABLE();                         \
+        __asm volatile ("wfi" ::: "memory");     \
         __asm volatile ("cpsie i" ::: "memory"); \
     } while (false)
 
@@ -206,8 +200,6 @@ extern int32_t volatile QF_int_lock_nest_;
 // is intended only for applications and is not used inside the QF port, which
 // remains generic and not dependent on the number of implemented priority bits
 // implemented in the NVIC.
-//
-//
 
 #endif // QP_PORT_H_
 

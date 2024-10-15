@@ -28,7 +28,7 @@
 // <info@state-machine.com>
 //============================================================================
 //! @date Last updated on: 2024-06-06
-//! @version Last updated for: @ref qpc_7_4_0
+//! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
 //! @brief QS/C port for the "Qube" execution harness (Windows, Linux, macOS)
