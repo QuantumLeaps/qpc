@@ -50,6 +50,8 @@ src/qxk/qxk_mutex.c
 src/qxk/qxk_sema.c
 src/qxk/qxk_xthr.c
 
+ports/arm-cm/qxk/
+ports/arm-cm/qutest/
 ports/posix-qutest/
 ports/win32-qutest/
 
