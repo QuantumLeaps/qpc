@@ -27,8 +27,8 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-30
-//! @version Last updated for: @ref qpc_8_0_0
+//! @date Last updated on: 2024-12-12
+//! @version Last updated for: @ref qpc_8_0_1
 //!
 //! @file
 //! @brief QP/C port to to POSIX (multithreaded with P-threads)
@@ -38,6 +38,7 @@
 
 #include <stdint.h>     // Exact-width types. WG14/N843 C99 Standard
 #include <stdbool.h>    // Boolean type.      WG14/N843 C99 Standard
+#include <pthread.h>    // POSIX-thread API
 #include "qp_config.h"  // QP configuration from the application
 
 // no-return function specifier (C11 Standard)

@@ -1677,10 +1677,8 @@ return r;</code>
    <parameter name="par_" type="void *"/>
    <!--${QEP-macros::QASM_INIT::qsId_}-->
    <parameter name="qsId_" type="uint8_t"/>
-   <code>do { \
-    Q_ASSERT(((QAsm *)(me_))-&gt;vptr); \
-    (*((QAsm *)(me_))-&gt;vptr-&gt;init)((QAsm *)(me_), (par_), (qsId_)); \
-} while (false)</code>
+   <code>\
+    (*((QAsm *)(me_))-&gt;vptr-&gt;init)((QAsm *)(me_), (par_), (qsId_))</code>
   </operation>
   <!--${QEP-macros::QASM_INIT}-->
   <operation name="QASM_INIT?ndef Q_SPY" type="void" visibility="0x03" properties="0x00">
@@ -1690,10 +1688,8 @@ return r;</code>
    <parameter name="par_" type="void *"/>
    <!--${QEP-macros::QASM_INIT::dummy}-->
    <parameter name="dummy" type=""/>
-   <code>do { \
-    Q_ASSERT(((QAsm *)(me_))-&gt;vptr); \
-    (*((QAsm *)(me_))-&gt;vptr-&gt;init)((QAsm *)(me_), (par_), 0); \
-} while (false)</code>
+   <code>\
+    (*((QAsm *)(me_))-&gt;vptr-&gt;init)((QAsm *)(me_), (par_), 0U)</code>
   </operation>
   <!--${QEP-macros::QASM_DISPATCH}-->
   <operation name="QASM_DISPATCH?def Q_SPY" type="void" visibility="0x03" properties="0x00">
@@ -3654,12 +3650,12 @@ QF_CRIT_EXIT();</code>
 //! @static @public @memberof QTimeEvt</documentation>
     <!--${QF::QTimeEvt::noActive::tickRate}-->
     <parameter name="tickRate" type="uint_fast8_t const"/>
-    <code>QF_CRIT_STAT
-QF_CRIT_ENTRY();
+    <code>// NOTE: this function must be called *inside* critical section
 Q_REQUIRE_INCRIT(900, tickRate &lt; QF_MAX_TICK_RATE);
-QF_CRIT_EXIT();
 
 bool inactive;
+
+QF_MEM_SYS();
 if (QTimeEvt_timeEvtHead_[tickRate].next != (QTimeEvt *)0) {
     inactive = false;
 }
@@ -3669,6 +3665,8 @@ else if ((QTimeEvt_timeEvtHead_[tickRate].act != (void *)0)) {
 else {
     inactive = true;
 }
+QF_MEM_APP();
+
 return inactive;</code>
    </operation>
   </class>
@@ -6172,9 +6170,9 @@ $declare1 ${QP-FuSa}
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR &quot;8.0.0&quot;
-#define QP_VERSION     800U
-#define QP_RELEASE     0x7055936FU
+#define QP_VERSION_STR &quot;8.0.1&quot;
+#define QP_VERSION     801U
+#define QP_RELEASE     0x703931CEU
 
 //============================================================================
 //! @cond INTERNAL
@@ -6527,7 +6525,6 @@ static inline void QF_psInit(
    <file name="qep_hsm.c">
     <text>#define QP_IMPL           // this is QP implementation
 #include &quot;qp_port.h&quot;      // QP port
-#include &quot;qp_pkg.h&quot;       // QP package-scope interface
 #include &quot;qsafe.h&quot;        // QP Functional Safety (FuSa) Subsystem
 #ifdef Q_SPY              // QS software tracing enabled?
     #include &quot;qs_port.h&quot;  // QS port
@@ -6585,7 +6582,6 @@ $define ${QEP::QHsm}</text>
    <file name="qep_msm.c">
     <text>#define QP_IMPL           // this is QP implementation
 #include &quot;qp_port.h&quot;      // QP port
-#include &quot;qp_pkg.h&quot;       // QP package-scope interface
 #include &quot;qsafe.h&quot;        // QP Functional Safety (FuSa) Subsystem
 #ifdef Q_SPY              // QS software tracing enabled?
     #include &quot;qs_port.h&quot;  // QS port

@@ -26,12 +26,6 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-09-30
-//! @version Last updated for: @ref qpc_8_0_0
-//!
-//! @file
-//! @brief QP/C port to ARM Cortex-M, preemptive QK kernel, GNU-ARM
-
 #ifndef QP_PORT_H_
 #define QP_PORT_H_
 
@@ -47,30 +41,8 @@
 // QK event-queue used for AOs
 #define QACTIVE_EQUEUE_TYPE     QEQueue
 
-// QF "thread" type used to store the MPU settings in the AO
+// QActive "thread" type used to store the MPU settings in the AO
 #define QACTIVE_THREAD_TYPE     void const *
-
-// QF interrupt disable/enable and log2()...
-#if (__ARM_ARCH == 6) // ARMv6-M?
-
-    // CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE4
-    #define QF_AWARE_ISR_CMSIS_PRI 0
-
-    // hand-optimized LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M)
-    #define QF_LOG2(n_) QF_qlog2((uint32_t)(n_))
-
-#else // ARMv7-M or higher
-
-    // BASEPRI threshold for "QF-aware" interrupts, see NOTE3
-    #define QF_BASEPRI          0x3F
-
-    // CMSIS threshold for "QF-aware" interrupts, see NOTE4
-    #define QF_AWARE_ISR_CMSIS_PRI (QF_BASEPRI >> (8 - __NVIC_PRIO_BITS))
-
-    // ARMv7-M or higher provide the CLZ instruction for fast LOG2
-    #define QF_LOG2(n_) ((uint_fast8_t)(32 - __builtin_clz((unsigned)(n_))))
-
-#endif
 
 // interrupt disabling policy, see NOTE2 and NOTE3
 #define QF_INT_DISABLE()        (QF_int_disable_())
@@ -83,10 +55,26 @@
 
 #define QF_CRIT_EXIT_NOP()      __asm volatile ("isb" ::: "memory")
 
+// Efficient log2() ----------------------------------------------------------
 #if (__ARM_ARCH == 6) // ARMv6-M?
+    // hand-optimized LOG2 in assembly for Cortex-M0/M0+/M1(v6-M, v6S-M)
+    #define QF_LOG2(n_) QF_qlog2((uint32_t)(n_))
+
     // hand-optimized quick LOG2 in assembly
     uint_fast8_t QF_qlog2(uint32_t x);
+#else // ARMv7-M or higher
+    // ARMv7-M or higher provide the CLZ instruction for fast LOG2
+    #define QF_LOG2(n_) ((uint_fast8_t)(32 - __builtin_clz((unsigned)(n_))))
 #endif // ARMv7-M or higher
+
+// Critical section policy ---------------------------------------------------
+#ifdef QF_USE_BASEPRI
+    // CMSIS threshold for "QF-aware" interrupts, see NOTE4
+    #define QF_AWARE_ISR_CMSIS_PRI (QF_USE_BASEPRI >> (8 - __NVIC_PRIO_BITS))
+#else
+    // CMSIS threshold for "QF-aware" interrupts, see NOTE2 and NOTE4
+    #define QF_AWARE_ISR_CMSIS_PRI 0
+#endif // QF_USE_BASEPRI
 
 // Memory isolation ----------------------------------------------------------
 #ifdef QF_MEM_ISOLATE
@@ -104,7 +92,7 @@
     void QF_onMemSys(void);
     void QF_onMemApp(void);
 
-#endif // def QF_MEM_ISOLATE
+#endif // QF_MEM_ISOLATE
 
 // determination if the code executes in the ISR context
 #define QK_ISR_CONTEXT_()     (QK_get_IPSR() != 0U)
@@ -186,7 +174,7 @@ extern int32_t volatile QF_int_lock_nest_;
 // functions. They are defined as "weak" in the qv_port.c module,
 // so the application can provide a different implementation.
 // Please see the definitions of the interrupt and critical-section
-// funcctions in the qv_port.c module for details.
+// functions in the qv_port.c module for details.
 //
 // NOTE2:
 // On Cortex-M0/M0+/M1 (architecture ARMv6-M, ARMv6S-M), the interrupt
@@ -195,15 +183,15 @@ extern int32_t volatile QF_int_lock_nest_;
 // are "kernel-aware".
 //
 // NOTE3:
-// On ARMv7-M or higher, the interrupt disable/enable policy uses the BASEPRI
-// register (which is not implemented in ARMv6-M) to disable interrupts only
-// with priority lower than the threshold specified by the QF_BASEPRI macro.
-// The interrupts with priorities above QF_BASEPRI (i.e., with numerical
-// priority values lower than QF_BASEPRI) are NOT disabled in this method.
+// If macro QF_USE_BASEPRI is defined, the interrupt disable/enable policy
+// uses BASEPRI register to disable interrupts only with priority lower than
+// the threshold specified by the QF_USE_BASEPRI macro. The interrupts with
+// priorities above QF_USE_BASEPRI (i.e., with numerical priority values
+// lower than QF_USE_BASEPRI) are NOT disabled in this method.
 // These free-running interrupts have very low ("zero") latency, but they
 // are NOT allowed to call any QF services, because QF is unaware of them
 // ("kernel-unaware" interrupts). Consequently, only interrupts with
-// numerical values of priorities equal to or higher than QF_BASEPRI
+// numerical values of priorities equal to or higher than QF_USE_BASEPRI
 // ("kernel-aware" interrupts ), can call QF services.
 //
 // NOTE4:

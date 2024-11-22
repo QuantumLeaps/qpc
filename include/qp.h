@@ -36,9 +36,9 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR "8.0.0"
-#define QP_VERSION     800U
-#define QP_RELEASE     0x7055936FU
+#define QP_VERSION_STR "8.0.1"
+#define QP_VERSION     801U
+#define QP_RELEASE     0x703931CEU
 
 //============================================================================
 //! @cond INTERNAL
@@ -434,18 +434,14 @@ QState QMsm_enterHistory_(
 
 //${QEP-macros::QASM_INIT} ...................................................
 #ifdef Q_SPY
-#define QASM_INIT(me_, par_, qsId_) do { \
-    Q_ASSERT(((QAsm *)(me_))->vptr); \
-    (*((QAsm *)(me_))->vptr->init)((QAsm *)(me_), (par_), (qsId_)); \
-} while (false)
+#define QASM_INIT(me_, par_, qsId_) \
+    (*((QAsm *)(me_))->vptr->init)((QAsm *)(me_), (par_), (qsId_))
 #endif // def Q_SPY
 
 //${QEP-macros::QASM_INIT} ...................................................
 #ifndef Q_SPY
-#define QASM_INIT(me_, par_, dummy) do { \
-    Q_ASSERT(((QAsm *)(me_))->vptr); \
-    (*((QAsm *)(me_))->vptr->init)((QAsm *)(me_), (par_), 0); \
-} while (false)
+#define QASM_INIT(me_, par_, dummy) \
+    (*((QAsm *)(me_))->vptr->init)((QAsm *)(me_), (par_), 0U)
 #endif // ndef Q_SPY
 
 //${QEP-macros::QASM_DISPATCH} ...............................................

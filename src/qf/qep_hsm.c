@@ -34,7 +34,6 @@
 //$endhead${src::qf::qep_hsm.c} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #define QP_IMPL           // this is QP implementation
 #include "qp_port.h"      // QP port
-#include "qp_pkg.h"       // QP package-scope interface
 #include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
 #ifdef Q_SPY              // QS software tracing enabled?
     #include "qs_port.h"  // QS port

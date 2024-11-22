@@ -27,7 +27,7 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-30
+//! @date Last updated on: 2024-11-22
 //! @version Last updated for: @ref qpc_8_0_0
 //!
 //! @file
@@ -62,7 +62,7 @@
     #define QF_INT_ENABLE() \
         __asm volatile ("MSR cpsr_c,#(0x1F)" ::: "cc")
     #define QF_INT_ENABLE_ALL() \
-        __asm volatile ("MSR cpsr_c,#(0x1F | 0x80 | 0x40)" ::: "cc")
+        __asm volatile ("MSR cpsr_c,#(0x1F)" ::: "cc")
 #else
     #error Incorrect CPU mode. Must be either __arm__ or __thumb__.
 #endif

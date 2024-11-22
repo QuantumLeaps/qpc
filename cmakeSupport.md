@@ -76,7 +76,7 @@ This file is situated in the root directory of qpc. It performs a pre-initializa
   + `arm-cm`, `arm-cr` - Arm CortexM or CortexR micro controllers. Tested with GNU cross compiler environments.
   + `freertos`, `esp-idf`, `emb-os`, `threadx`, `uc-os2` - real time OS
   + `msp430`, `pic32` - TI MSP430 or PIC32 micro controllers
-  + `riscv`- Risc V µC
+  + `riscv`- Risc V micro controllers
   + `qep-only`, `qube` - test environments
   + `win32`, `posix` - host environments MS Winows, Linux (Posix compatible systems)
 * `QPC-CFG-GUI` - BOOL: set this boolean variable to ON/TRUE, if GUI support (win32) shall be compiled in. Default: OFF

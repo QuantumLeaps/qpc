@@ -546,12 +546,12 @@ void QTimeEvt_tick_(
 //${QF::QTimeEvt::noActive} ..................................................
 //! @static @public @memberof QTimeEvt
 bool QTimeEvt_noActive(uint_fast8_t const tickRate) {
-    QF_CRIT_STAT
-    QF_CRIT_ENTRY();
+    // NOTE: this function must be called *inside* critical section
     Q_REQUIRE_INCRIT(900, tickRate < QF_MAX_TICK_RATE);
-    QF_CRIT_EXIT();
 
     bool inactive;
+
+    QF_MEM_SYS();
     if (QTimeEvt_timeEvtHead_[tickRate].next != (QTimeEvt *)0) {
         inactive = false;
     }
@@ -561,6 +561,8 @@ bool QTimeEvt_noActive(uint_fast8_t const tickRate) {
     else {
         inactive = true;
     }
+    QF_MEM_APP();
+
     return inactive;
 }
 //$enddef${QF::QTimeEvt} ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
