@@ -1,15 +1,16 @@
 //============================================================================
-// QP configuration file (QV/QK/QXK on ARM Cortex-R)
+// QP/C configuration file (QV/QK/QXK on ARM Cortex-R)
+// Version 8.0.2
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
-//                   Q u a n t u m  L e a P s
-//                   ------------------------
-//                   Modern Embedded Software
+//                    Q u a n t u m  L e a P s
+//                    ------------------------
+//                    Modern Embedded Software
 //
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// The QP/C software is dual-licensed under the terms of the open-source GNU
+// This software is dual-licensed under the terms of the open-source GNU
 // General Public License (GPL) or under the terms of one of the closed-
 // source Quantum Leaps commercial licenses.
 //
@@ -17,11 +18,10 @@
 // Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL (see <www.gnu.org/licenses/gpl-3.0>) does NOT permit the
-// incorporation of the QP/C software into proprietary programs. Please
-// contact Quantum Leaps for commercial licensing options, which expressly
-// supersede the GPL and are designed explicitly for licensees interested
-// in using QP/C in closed-source proprietary applications.
+// The GPL does NOT permit the incorporation of this code into proprietary
+// programs. Please contact Quantum Leaps for commercial licensing options,
+// which expressly supersede the GPL and are designed explicitly for
+// closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -37,7 +37,7 @@
 //   <691=>691 (QP 6.9.1 or newer)
 //   <734=>7.3.4 (QP 7.3.4 or newer)
 //   <9999=>9999 (Latest only)
-// <i>QP API backwards compatibility with the QP/C API version.
+// <i>QP API backwards compatibility with the QP API version.
 // <i>Lower QP_API_VERSION values enable backwards compatibility
 // <i>with lower (older) QP API versions.
 // <i>For example, QP_API_VERSION==691 will enable the compatibility
@@ -185,7 +185,7 @@
 // </c>
 
 // <c2>Enable memory isolation (QF_MEM_ISOLATE)
-// <i>Memory isolation (requires MPU)
+// <i>Memory isolation (supported in SafeQP only, requires MPU)
 // <i>NOTE: implies QF_ON_CONTEXT_SW.
 //#define QF_MEM_ISOLATE
 // </c>

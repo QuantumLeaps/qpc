@@ -1,15 +1,16 @@
 //============================================================================
 // QP/C Real-Time Embedded Framework (RTEF)
+// Version 8.0.2
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
-//                   Q u a n t u m  L e a P s
-//                   ------------------------
-//                   Modern Embedded Software
+//                    Q u a n t u m  L e a P s
+//                    ------------------------
+//                    Modern Embedded Software
 //
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// The QP/C software is dual-licensed under the terms of the open-source GNU
+// This software is dual-licensed under the terms of the open-source GNU
 // General Public License (GPL) or under the terms of one of the closed-
 // source Quantum Leaps commercial licenses.
 //
@@ -17,22 +18,15 @@
 // Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL (see <www.gnu.org/licenses/gpl-3.0>) does NOT permit the
-// incorporation of the QP/C software into proprietary programs. Please
-// contact Quantum Leaps for commercial licensing options, which expressly
-// supersede the GPL and are designed explicitly for licensees interested
-// in using QP/C in closed-source proprietary applications.
+// The GPL does NOT permit the incorporation of this code into proprietary
+// programs. Please contact Quantum Leaps for commercial licensing options,
+// which expressly supersede the GPL and are designed explicitly for
+// closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2023-09-30
-//! @version Last updated for: @ref qpc_8_0_0
-//!
-//! @file
-//! @brief QP/C port to Win32 (multithreaded) with GNU or Visual C/C++
-
 #ifndef QP_PORT_H_
 #define QP_PORT_H_
 
@@ -54,7 +48,7 @@
         #define Q_NORETURN   _Noreturn void
     #endif
 
-    // This is the case where QP/C is compiled by the Microsoft Visual C++
+    // This is the case where QP is compiled by the Microsoft Visual C++
     // compiler in the C++ mode, which can happen when qep_port.h is included
     // in a C++ module, or the compilation is forced to C++ by the option /TP.
     //
@@ -62,7 +56,7 @@
     // and C4610, which warn that default constructors and assignment operators
     // could not be generated for structures QMState and QMTranActTable.
     //
-    // The QP/C source code cannot be changed to avoid these C++ warnings
+    // The QP source code cannot be changed to avoid these C++ warnings
     // because the structures QMState and QMTranActTable must remain PODs
     // (Plain Old Datatypes) to be initializable statically with constant
     // initializers.

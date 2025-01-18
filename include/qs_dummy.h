@@ -1,5 +1,6 @@
 //============================================================================
-// QP/C-Spy software tracing target-resident component
+// QP/C Real-Time Embedded Framework (RTEF)
+// Version 8.0.2
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -7,10 +8,9 @@
 //                    ------------------------
 //                    Modern Embedded Software
 //
-//
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// The QP/C software is dual-licensed under the terms of the open-source GNU
+// This software is dual-licensed under the terms of the open-source GNU
 // General Public License (GPL) or under the terms of one of the closed-
 // source Quantum Leaps commercial licenses.
 //
@@ -31,11 +31,11 @@
 #define QS_DUMMY_H_
 
 #ifdef Q_SPY
-    #error "Q_SPY must NOT be defined to include qs_dummy.h"
+    #error Q_SPY must NOT be defined to include qs_dummy.h
 #endif
 
 #ifdef Q_UTEST
-    #error "Q_UTEST must NOT be defined to include qs_dummy.h"
+    #error Q_UTEST must NOT be defined to include qs_dummy.h
 #endif
 
 #define QS_INIT(arg_)                   ((uint8_t)1U)
@@ -157,9 +157,6 @@ void QS_onTestLoop(void);
     #define QS_CRIT_STAT
     #define QS_CRIT_ENTRY()              ((void)0)
     #define QS_CRIT_EXIT()               ((void)0)
-
-    #define QS_MEM_SYS()                 ((void)0)
-    #define QS_MEM_APP()                 ((void)0)
 
     #define QS_TR_CRIT_ENTRY()           ((void)0)
     #define QS_TR_CRIT_EXIT()            ((void)0)

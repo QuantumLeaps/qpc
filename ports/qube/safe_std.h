@@ -22,11 +22,6 @@
 // <www.state-machine.com>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2022-07-30
-//! @version Last updated for: @ref qpc_7_1_3
-//!
-//! @file
-//! @brief "safe" <stdio.h> and <string.h> facilities
 #ifndef SAFE_STD_H
 #define SAFE_STD_H
 

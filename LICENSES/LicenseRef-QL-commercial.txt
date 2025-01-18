@@ -7,7 +7,7 @@ licenses designed for licensees interested in retaining the proprietary
 status of their code.
 
 The Quantum Leaps commercial licenses expressly supersede the GPL open source
-license. This means that when you license the QP/C or QP/C++  Real-Time
+license. This means that when you license the QP/C or QP/C++ Real-Time
 Embedded Frameworks under a Quantum Leaps commercial license, you specifically
 do not use the software under the open source license and therefore you are
 not subject to any of its terms.
@@ -15,8 +15,8 @@ not subject to any of its terms.
 Quantum Leaps commercial licensing options are described below:
 
 
-Single Product License
-----------------------
+SPDX-License-Identifier: LicenseRef-QL-Single-Product
+-----------------------------------------------------
 Single Product License allows a given company ("Licensee") to embed the
 specified type(s) of the QP Real-Time Embedded Framework(s) into one end-
 product of the Licensee (Single Product). Licensee can distribute/sell an
@@ -33,8 +33,8 @@ Volume discounts are offered if several Single Products are licensed at once
 with one license agreement.
 
 
-Product Line License
---------------------
+SPDX-License-Identifier: LicenseRef-QL-Product-Line
+---------------------------------------------------
 Product Line License allows a given company ("Licensee") to embed the
 specified type(s) of the QP Real-Time Embedded Framework(s) into any number
 of end-products within a family of related products (Product Line). Licensee
@@ -44,8 +44,8 @@ Product Line. Product Line License applies to all end-products that do
 similar functions within the same Product Line.
 
 
-Any-Product License
--------------------
+SPDX-License-Identifier: LicenseRef-QL-Any-Product
+--------------------------------------------------
 Any-Product License allows a given company ("Licensee") to embed the
 specified type(s) of the QP Real-Time Embedded Framework(s) into any end-
 product of that company. The Licensee can distribute/sell an unlimited number
@@ -53,8 +53,8 @@ of the products containing the licensed QP framework type(s) (royalty-free
 licensing).
 
 
-Site License
-------------
+SPDX-License-Identifier: LicenseRef-QL-Site
+-------------------------------------------
 Site-License allows a given company ("Licensee") to embed the specified
 type(s) of the QP Real-Time Embedded Framework(s) into any end-customer
 product, as long as the products are designed at a given physical location
@@ -64,8 +64,8 @@ designed for development contractors and consultants, who develop embedded
 software for other companies.
 
 
-OEM License
------------
+SPDX-License-Identifier: LicenseRef-QL-OEM
+------------------------------------------
 OEM License allows a given company ("Licensee") to embed the specified
 type(s) of the QP Real-Time Embedded Framework(s) in any product of that
 company (Original Equipment Manufacturer) and gives limited sublicensing
@@ -74,14 +74,12 @@ affiliates. OEM licenses are customizable to match exactly the specific
 licensing needs of a given Licensee.
 
 
-Education License
------------------
-Education License allows a given accredited educational institution
-("Licensee") to use and embed the specified type(s) of the QP Real-Time
-Embedded Framework(s) in any project completed at that educational
-institution. To be eligible for this license, the institution must be
-focused mainly on teaching students. The Education Licenses are free
-and will be granted liberally upon request.
+SPDX-License-Identifier: LicenseRef-QL-Eval
+-------------------------------------------
+Evaluation License allows a specific company ("Licensee") to temporarily
+use the specified type(s) of the QP Real-Time Embedded Framework(s) for
+in-house evaluation. This license expressly prohibits any distribution
+of the licensed QP software.
 
 
 ****

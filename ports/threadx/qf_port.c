@@ -1,4 +1,7 @@
 //============================================================================
+// QP/C Real-Time Embedded Framework (RTEF)
+// Version 8.0.2
+//
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
@@ -7,7 +10,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// The QP/C software is dual-licensed under the terms of the open-source GNU
+// This software is dual-licensed under the terms of the open-source GNU
 // General Public License (GPL) or under the terms of one of the closed-
 // source Quantum Leaps commercial licenses.
 //
@@ -15,22 +18,15 @@
 // Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL (see <www.gnu.org/licenses/gpl-3.0>) does NOT permit the
-// incorporation of the QP/C software into proprietary programs. Please
-// contact Quantum Leaps for commercial licensing options, which expressly
-// supersede the GPL and are designed explicitly for licensees interested
-// in using QP/C in closed-source proprietary applications.
+// The GPL does NOT permit the incorporation of this code into proprietary
+// programs. Please contact Quantum Leaps for commercial licensing options,
+// which expressly supersede the GPL and are designed explicitly for
+// closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-//! @date Last updated on: 2024-09-26
-//! @version Last updated for: @ref qpc_8_0_0
-//!
-//! @file
-//! @brief QF/C, port to ThreadX
-
 #define QP_IMPL           // this is QP implementation
 #include "qp_port.h"      // QP port
 #include "qp_pkg.h"       // QP package-scope interface
@@ -154,9 +150,6 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
     QF_CRIT_ENTRY();
 
     Q_REQUIRE_INCRIT(200, e != (QEvt *)0);
-#ifndef Q_UNSAFE
-    Q_INVARIANT_INCRIT(201, QEvt_verify_(e));
-#endif // ndef Q_UNSAFE
 
     uint_fast16_t nFree = (uint_fast16_t)me->eQueue.tx_queue_available_storage;
 
@@ -184,12 +177,13 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_OBJ_PRE(sender);  // the sender object
             QS_SIG_PRE(e->sig);  // the signal of the event
             QS_OBJ_PRE(me);      // this active object (recipient)
-            QS_2U8_PRE(QEvt_getPoolNum_(e), e->refCtr_);
+            QS_2U8_PRE(e->poolNum_, e->refCtr_);
             QS_EQC_PRE(nFree);   // # free entries available
             QS_EQC_PRE(0U);      // min # free entries (unknown)
         QS_END_PRE()
 
-        if (QEvt_getPoolNum_(e) != 0U) { // is it a pool event?
+        if (e->poolNum_ != 0U) { // is it a pool event?
+            Q_ASSERT_INCRIT(205, e->refCtr_ < (2U * QF_MAX_ACTIVE));
             QEvt_refCtr_inc_(e); // increment the reference counter
         }
         QF_CRIT_EXIT();
@@ -208,7 +202,7 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
             QS_OBJ_PRE(sender);  // the sender object
             QS_SIG_PRE(e->sig);  // the signal of the event
             QS_OBJ_PRE(me);      // this active object (recipient)
-            QS_2U8_PRE(QEvt_getPoolNum_(e), e->refCtr_);
+            QS_2U8_PRE(e->poolNum_, e->refCtr_);
             QS_EQC_PRE(nFree);   // # free entries available
             QS_EQC_PRE(0U);      // min # free entries (unknown)
         QS_END_PRE()
@@ -224,20 +218,18 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_ENTRY();
 
     Q_REQUIRE_INCRIT(300, e != (QEvt *)0);
-#ifndef Q_UNSAFE
-    Q_INVARIANT_INCRIT(301, QEvt_verify_(e));
-#endif // ndef Q_UNSAFE
 
     QS_BEGIN_PRE(QS_QF_ACTIVE_POST_LIFO, me->prio)
         QS_TIME_PRE();       // timestamp
         QS_SIG_PRE(e->sig);  // the signal of this event
         QS_OBJ_PRE(me);      // this active object
-        QS_2U8_PRE(QEvt_getPoolNum_(e), e->refCtr_);
+        QS_2U8_PRE(e->poolNum_, e->refCtr_);
         QS_EQC_PRE(me->eQueue.tx_queue_available_storage); // # free
         QS_EQC_PRE(0U);      // min # free entries (unknown)
     QS_END_PRE()
 
-    if (QEvt_getPoolNum_(e) != 0U) { // is it a pool event?
+    if (e->poolNum_ != 0U) { // is it a pool event?
+        Q_ASSERT_INCRIT(305, e->refCtr_ < (2U * QF_MAX_ACTIVE));
         QEvt_refCtr_inc_(e); // increment the reference counter
     }
     QF_CRIT_EXIT();
@@ -262,7 +254,7 @@ QEvt const *QActive_get_(QActive * const me) {
         QS_TIME_PRE();          // timestamp
         QS_SIG_PRE(e->sig);     // the signal of this event
         QS_OBJ_PRE(me);         // this active object
-        QS_2U8_PRE(QEvt_getPoolNum_(e), e->refCtr_);
+        QS_2U8_PRE(e->poolNum_, e->refCtr_);
         QS_EQC_PRE(me->eQueue.tx_queue_available_storage);// # free
     QS_END_PRE()
     QF_CRIT_EXIT();
