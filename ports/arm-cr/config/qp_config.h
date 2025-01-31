@@ -1,6 +1,5 @@
 //============================================================================
 // QP/C configuration file (QV/QK/QXK on ARM Cortex-R)
-// Version 8.0.2
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //

@@ -1,6 +1,5 @@
 //============================================================================
 // QP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -332,9 +331,9 @@ static void QActive_postFIFO_(QActive * const me,
     }
 }
 
-//============================================================================
-//! @static @public @memberof QF
-uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
+//............................................................................
+//! @static @public @memberof QActive
+uint_fast16_t QActive_getQueueMin(uint_fast8_t const prio) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
     Q_REQUIRE_INCRIT(600, (prio <= QF_MAX_ACTIVE)

@@ -1,6 +1,5 @@
 //============================================================================
 // SafeQP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //

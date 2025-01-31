@@ -1,6 +1,5 @@
 //============================================================================
 // QP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -86,7 +85,7 @@ bool QEQueue_post(QEQueue * const me,
 
     // can the queue accept the event?
     bool const status = ((margin == QF_NO_MARGIN) && (tmp > 0U))
-                        || (tmp > (QEQueueCtr)margin);
+        || (tmp > (QEQueueCtr)margin);
     if (status) {
         // is it a mutable event?
         if (e->poolNum_ != 0U) {

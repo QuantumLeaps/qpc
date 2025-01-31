@@ -1,6 +1,5 @@
 //============================================================================
 // QWIN GUI facilities for building realistic embedded front panels
-// Version 8.0.2
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
