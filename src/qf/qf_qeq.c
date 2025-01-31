@@ -1,6 +1,5 @@
 //============================================================================
-// QP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
+// QP/C Real-Time Event Framework (RTEF)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -86,7 +85,7 @@ bool QEQueue_post(QEQueue * const me,
 
     // can the queue accept the event?
     bool const status = ((margin == QF_NO_MARGIN) && (tmp > 0U))
-                        || (tmp > (QEQueueCtr)margin);
+        || (tmp > (QEQueueCtr)margin);
     if (status) {
         // is it a mutable event?
         if (e->poolNum_ != 0U) {
@@ -193,7 +192,7 @@ void QEQueue_postLIFO(QEQueue * const me,
     me->frontEvt = e; // deliver the event directly to the front
 
     if (frontEvt != (QEvt *)0) { // was the queue NOT empty?
-        tmp = me->tail; // get volatile into temporary;
+        tmp = me->tail; // get volatile into temporary
         ++tmp;
         if (tmp == me->end) { // need to wrap the tail?
             tmp = 0U; // wrap around

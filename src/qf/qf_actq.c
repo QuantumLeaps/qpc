@@ -1,6 +1,5 @@
 //============================================================================
-// QP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
+// QP/C Real-Time Event Framework (RTEF)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -190,7 +189,7 @@ void QActive_postLIFO_(QActive * const me,
     me->eQueue.frontEvt = e; // deliver the event directly to the front
 
     if (frontEvt != (QEvt *)0) { // was the queue NOT empty?
-        tmp = me->eQueue.tail; // get volatile into temporary;
+        tmp = me->eQueue.tail; // get volatile into temporary
         ++tmp;
         if (tmp == me->eQueue.end) { // need to wrap the tail?
             tmp = 0U; // wrap around
@@ -332,9 +331,9 @@ static void QActive_postFIFO_(QActive * const me,
     }
 }
 
-//============================================================================
-//! @static @public @memberof QF
-uint_fast16_t QF_getQueueMin(uint_fast8_t const prio) {
+//............................................................................
+//! @static @public @memberof QActive
+uint_fast16_t QActive_getQueueMin(uint_fast8_t const prio) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
     Q_REQUIRE_INCRIT(600, (prio <= QF_MAX_ACTIVE)

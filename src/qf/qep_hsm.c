@@ -1,6 +1,5 @@
 //============================================================================
-// QP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
+// QP/C Real-Time Event Framework (RTEF)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -333,7 +332,7 @@ void QHsm_dispatch_(
 //! @private @memberof QHsm
 bool QHsm_isIn_(
     QAsm * const me,
-    QStateHandler const state)
+    QStateHandler const stateHndl)
 {
     bool inState = false; // assume that this HSM is not in 'state'
 
@@ -341,7 +340,7 @@ bool QHsm_isIn_(
     QStateHandler s = me->state.fun;
     QState r = Q_RET_SUPER;
     while (r != Q_RET_IGNORED) {
-        if (s == state) { // do the states match?
+        if (s == stateHndl) { // do the states match?
             inState = true;  // 'true' means that match found
             break; // break out of the for-loop
         }
@@ -372,7 +371,7 @@ QState QHsm_top(QHsm const * const me,
 //............................................................................
 //! @public @memberof QHsm
 QStateHandler QHsm_childState(QHsm * const me,
-    QStateHandler const parent)
+    QStateHandler const parentHndl)
 {
 #ifndef Q_UNSAFE
     bool isFound = false; // assume the child state NOT found
@@ -383,7 +382,7 @@ QStateHandler QHsm_childState(QHsm * const me,
     QState r = Q_RET_SUPER;
     while (r != Q_RET_IGNORED) {
         // have the parent of the current child?
-        if (me->super.temp.fun == parent) {
+        if (me->super.temp.fun == parentHndl) {
 #ifndef Q_UNSAFE
             isFound = true; // indicate that child state was found
 #endif
@@ -589,13 +588,12 @@ static void QHsm_enter_target_(
 
         QS_TRAN_SEG_(QS_QEP_STATE_INIT, t, me->temp.fun);
 
-        ip = 0;
         path[0] = me->temp.fun;
 
         // find superstate
         (void)QHSM_RESERVED_EVT_(me->temp.fun, Q_EMPTY_SIG);
 
-        // note: ip is the fixed upper loop bound
+        ip = 0; // note: ip is the fixed upper loop bound
         while ((me->temp.fun != t) && (ip < (QHSM_MAX_NEST_DEPTH_ - 1))) {
             ++ip;
             path[ip] = me->temp.fun;

@@ -1,6 +1,5 @@
 //============================================================================
-// QP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
+// QP/C Real-Time Event Framework (RTEF)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -111,17 +110,12 @@ void QF_stop(void) {
 //............................................................................
 //! @static @public @memberof QF
 int_t QF_run(void) {
+    QF_INT_DISABLE();
 #ifdef Q_SPY
     // produce the QS_QF_RUN trace record
-    QF_INT_DISABLE();
     QS_beginRec_((uint_fast8_t)QS_QF_RUN);
     QS_endRec_();
-    QF_INT_ENABLE();
 #endif // Q_SPY
-
-    QF_onStartup(); // application-specific startup callback
-
-    QF_INT_DISABLE();
 
 #ifdef QV_START
     QV_START(); // port-specific startup of the QV kernel
@@ -137,6 +131,11 @@ int_t QF_run(void) {
 
 #endif // (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
 
+    QF_INT_ENABLE();
+
+    QF_onStartup(); // app. callback: configure and enable interrupts
+
+    QF_INT_DISABLE();
     for (;;) { // QV event loop...
         // find the maximum prio. AO ready to run
         uint_fast8_t const p = (QPSet_notEmpty(&QV_priv_.readySet)

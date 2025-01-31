@@ -1,6 +1,6 @@
 @setlocal
 
-set VERSION=8.0.2
+set VERSION=8.0.3
 
 :: usage
 @echo Usage: qpc_sha1 [gen]

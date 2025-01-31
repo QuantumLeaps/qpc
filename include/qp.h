@@ -1,6 +1,5 @@
 //============================================================================
-// QP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
+// QP/C Real-Time Event Framework (RTEF)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -31,10 +30,10 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR "8.0.2"
-#define QP_VERSION     802U
-// <VER>=802 <DATE>=250120
-#define QP_RELEASE     0x6AEAB45DU
+#define QP_VERSION_STR "8.0.3"
+#define QP_VERSION     803U
+// <VER>=803 <DATE>=250331
+#define QP_RELEASE     0x6ACA822CU
 
 //============================================================================
 // default configuration settings
@@ -226,7 +225,7 @@ struct QAsmVtable {
                  uint_fast8_t const qsId);
     void (*dispatch)(QAsm * const me, QEvt const * const e,
                      uint_fast8_t const qsId);
-    bool (*isIn)(QAsm * const me, QStateHandler const s);
+    bool (*isIn)(QAsm * const me, QStateHandler const stateHndl);
 #ifdef Q_SPY
     QStateHandler (*getStateHandler)(QAsm * const me);
 #endif // Q_SPY
@@ -237,8 +236,8 @@ struct QAsmVtable {
         (*((QAsm *)(me_))->vptr->init)((QAsm *)(me_), (par_), (qsId_))
     #define QASM_DISPATCH(me_, e_, qsId_) \
         (*((QAsm *)(me_))->vptr->dispatch)((QAsm *)(me_), (e_), (qsId_))
-    #define QASM_IS_IN(me_, state_) \
-        (*((QAsm *)(me_))->vptr->isIn)((QAsm *)(me_), (state_))
+    #define QASM_IS_IN(me_, stateHndl_) \
+        (*((QAsm *)(me_))->vptr->isIn)((QAsm *)(me_), (stateHndl_))
 #else
     #define QASM_INIT(me_, par_, dummy) \
         (*((QAsm *)(me_))->vptr->init)((QAsm *)(me_), (par_), 0U)
@@ -274,7 +273,7 @@ void QHsm_dispatch_(
 //! @private @memberof QHsm
 bool QHsm_isIn_(
     QAsm * const me,
-    QStateHandler const state);
+    QStateHandler const stateHndl);
 
 #ifdef Q_SPY
 //! @private @memberof QHsm
@@ -292,7 +291,7 @@ static inline QStateHandler QHsm_state(QHsm const * const me) {
 
 //! @public @memberof QHsm
 QStateHandler QHsm_childState(QHsm * const me,
-    QStateHandler const parent);
+    QStateHandler const parentHndl);
 
 #define Q_HSM_UPCAST(ptr_) ((QHsm *)(ptr_))
 
@@ -334,7 +333,7 @@ void QMsm_dispatch_(
 //! @private @memberof QMsm
 bool QMsm_isIn_(
     QAsm * const me,
-    QStateHandler const state);
+    QStateHandler const stateHndl);
 
 #ifdef Q_SPY
 //! @public @memberof QMsm
@@ -584,6 +583,9 @@ void QActive_publish_(
     void const * const sender,
     uint_fast8_t const qsId);
 
+//! @static @public @memberof QActive
+uint_fast16_t QActive_getQueueMin(uint_fast8_t const prio);
+
 //! @protected @memberof QActive
 void QActive_subscribe(QActive const * const me,
     enum_t const sig);
@@ -727,9 +729,6 @@ void QF_stop(void);
 
 //! @static @public @memberof QF
 int_t QF_run(void);
-
-//! @static @public @memberof QF
-uint_fast16_t QF_getQueueMin(uint_fast8_t const prio);
 
 //! @static @public @memberof QF
 void QF_onStartup(void);

@@ -16,10 +16,10 @@ git clone https://github.com/QuantumLeaps/qpc --recurse-submodules --depth 1
 Alternatively, you can also download one of the stable
 [QP/C Releases][QP-Rel].
 
-# About QP/C Real-Time Embedded Framework
-QP/C real-time embedded framework (RTEF) is a lightweight implementation of
-the [Active Object (a.k.a. Actor) model of computation][AOmod] specifically
-tailored for deeply embedded real-time systems, such as microcontrollers (MCUs).
+# About QP/C Real-Time Event Framework
+QP/C real-time event framework (RTEF) is a lightweight implementation of
+the asynchronous, event-driven [Active Object (a.k.a. Actor) model of computation][AOmod]
+specifically designed for real-time embedded systems, such as microcontrollers (MCUs).
 QP/C is both a software infrastructure for building applications consisting
 of Active Objects (Actors) and a runtime environment for executing the Active
 Objects in a deterministic, real-time fashion. Additionally, QP/C Framework
@@ -35,19 +35,27 @@ QP editions:
 |QP Edition |  Language   |      API         | Safety Functions   |Certification Artifacts| Licensing
 |:----------|:-----------:|:-----------------|:-------------------|:----------------|:---------
 | QP/C      | C (C11)     |same as SafeQP/C  |Selected Assertions |Req/Arch/Design  | [dual][Lic]
-| SafeQP/C  | C (C11)     |same as QP/C      |All Safety Functions|Certification Kit| [commercial][Com]
 | QP/C++    | C++ (C++17) |same as SafeQP/C++|Selected Assertions |Req/Arch/Design  | [dual][Lic]
-| SafeQP/C++| C++ (C++17) |same as QP/C++    |All Safety Functions|Certification Kit| [commercial][Com]
+| SafeQP/C  | C (C11)     |same as QP/C      |All Safety Functions|Extensive<br>Certification Kit| [commercial][Com]
+| SafeQP/C++| C++ (C++17) |same as QP/C++    |All Safety Functions|Extensive<br>Certification Kit| [commercial][Com]
 
-[The documentation](#documentation) of all QP editions includes the
-[Requirements][SRS], [Architecture][SAS], and [Design Specifications][SDS],
-which are the best source of information about the underlying concepts,
-functionality, architecture, and design of the QP Frameworks and the QP
-Applications based on the frameworks.
+The **SafeQP/C** and **SafeQP/C++** frameworks were originally derived from QP/C and QP/C++,
+respectively, but were extensively reengineered for the safety market using compliant
+Software Safety Lifecycle (SSL). In this process, the QP framework functional model has been
+subjected to a full Hazard and Risk Analysis, which identified all areas of weakness within
+the functional model and API. These findings led to creation of Safety Requirements and risk
+mitigation by Safety Functions, which were subsequently implemented, verified, and validated.
+The SafeQP frameworks are accompanied by the "SafeQP Certification Kits", which provide
+developers with ready-to-use artifacts, enabling them to save time, mitigate risk, and reduce
+costs during application certification for safety-critical devices in the industrial, medical,
+aerospace, and automotive industries. Please [contact Quantum Leaps](#contact-information)
+for more information about the SafeQP frameworks and the "Certification Kits".
 
-> **NOTE:** The **SafeQP** frameworks additionally contain **Safety Functions**
-required to achieve the higher safety integrity levels and come with much more
-extensive [Certification Kits][Cert].
+> **NOTE:** The SafeQP/C edition remain fully API- and functionally compatible with the
+corresponding standard QP/C framework. This ensures existing QP/C Applications can transition
+seamlessly to SafeQP/C without requiring any modifications. SafeQP/C edition retain QP/C
+Frameworks' hallmark features, including a small memory footprint, excellent efficiency,
+and hard real-time functionality.
 
 
 # Getting Started with QP/C
@@ -61,14 +69,14 @@ that you get all components, tools and examples ready to go.
 - ["QP/C Tutorial"][Tut]
 describes a series of progressively advanced QP/C example applications.
 
-- [Video: "Getting Started with QP Real-Time Embedded Frameworks"][Video]
+- [Video: "Getting Started with QP Real-Time Event Frameworks"][Video]
 provides instructions on how to download, install, and get started with QP.
 
-- [AppNote: "Getting Started with QP Real-Time Embedded Frameworks"][AN]
+- [AppNote: "Getting Started with QP Real-Time Event Frameworks"][AN]
 contains also a tutorial, in which you build a simple "Blinky" application.
 
 # Licensing
-The QP/C real-time embedded framework is licensed under the
+The QP/C real-time event framework is licensed under the
 [dual licensing model](https://www.state-machine.com/licensing), with
 the following licensing options:
 
@@ -88,6 +96,10 @@ proprietary status of their code.
 > NOTE: If your company has a policy forbidding open source in your product,
 all QP frameworks can be licensed commercially, in which case you don't use
 any open source license and you do not violate your policy.
+
+> NOTE: The **SafeQP** frameworks and the accompanying "Certification Kits"
+are licensed commercially only.
+
 
 ## Files Removed from the QP/C Open Source GPL Distribution
 Due to the widespread non-compliance with the GPL, as well as infringement on the
@@ -114,7 +126,7 @@ To view the offline documentation, open the file [html/index.html](html/index.ht
 in your web browser.
 
 
-# How to Get Help?
+# Contact Information
 - [Free Support Forum](https://sourceforge.net/p/qpc/discussion/668726)
 - [Bug Reports](https://sourceforge.net/p/qpc/bugs/)
 - [Feature Requests](https://sourceforge.net/p/qpc/feature-requests/)

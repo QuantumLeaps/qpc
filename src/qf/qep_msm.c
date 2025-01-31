@@ -1,6 +1,5 @@
 //============================================================================
-// QP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
+// QP/C Real-Time Event Framework (RTEF)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -42,9 +41,9 @@ enum {
     QMSM_MAX_ENTRY_DEPTH_ = 4
 };
 
-//! @cond INTERNAL
-
 Q_DEFINE_THIS_MODULE("qep_msm")
+
+//! @cond INTERNAL
 
 // top-state object for QMsm-style state machines
 static struct QMState const l_msm_top_s = {
@@ -303,13 +302,13 @@ void QMsm_dispatch_(
 //! @private @memberof QMsm
 bool QMsm_isIn_(
     QAsm * const me,
-    QStateHandler const state)
+    QStateHandler const stateHndl)
 {
     bool inState = false; // assume that this SM is not in 'state'
 
     QMState const *s = me->state.obj;
     while (s != (QMState *)0) {
-        if (s->stateHandler == state) { // match found?
+        if (s->stateHandler == stateHndl) { // match found?
             inState = true;
             break;
         }

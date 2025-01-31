@@ -19,7 +19,7 @@ is to allow non-GPL (including proprietary) programs to use, in this way, the
 QP Frameworks' code covered by this Exception.
 
 0. Definitions.
-"QP Frameworks" are lightweight real-time embedded frameworks (RTEFs)
+"QP Frameworks" are lightweight real-time event frameworks (RTEFs)
 as well as all supporting ports and examples, as distributed from:
 <https://www.state-machine.com> and
 <https://github.com/QuantumLeaps>

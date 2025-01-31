@@ -1,6 +1,5 @@
 //============================================================================
-// QP/C Real-Time Embedded Framework (RTEF)
-// Version 8.0.2
+// QP/C Real-Time Event Framework (RTEF)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -139,6 +138,9 @@ static inline void QF_psInit(
 #define QF_PUBLISH(e_, sender_)       QACTIVE_PUBLISH((e_), (sender_))
 #define QF_TICK_X(tickRate_, sender_) QTIMEEVT_TICK_X((tickRate_), (sender_))
 #define QF_TICK(sender_)              QTIMEEVT_TICK(sender_)
+
+//! @deprecated instead use: QActvie_getQueueMin()
+#define QF_getQueueMin(prio_)   (QActive_getQueueMin((prio_)))
 
 #endif // QP_API_VERSION < 800
 
