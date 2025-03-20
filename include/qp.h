@@ -90,8 +90,6 @@
 
 typedef int    int_t;
 typedef int    enum_t;
-typedef float  float32_t;
-typedef double float64_t;
 
 #define Q_UNUSED_PAR(par_)  ((void)(par_))
 #define Q_DIM(array_)       (sizeof(array_) / sizeof((array_)[0U]))
