@@ -40,7 +40,6 @@
 Q_DEFINE_THIS_MODULE("qf_actq")
 
 //............................................................................
-//! @private @memberof QActive
 static void QActive_postFIFO_(QActive * const me,
     QEvt const * const e,
     void const * const sender);

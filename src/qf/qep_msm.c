@@ -36,12 +36,9 @@
     #include "qs_dummy.h" // disable the QS software tracing
 #endif // Q_SPY
 
-enum {
-    // maximum depth of entry levels in a MSM for tran. to history
-    QMSM_MAX_ENTRY_DEPTH_ = 4
-};
-
 Q_DEFINE_THIS_MODULE("qep_msm")
+
+#define QMSM_MAX_ENTRY_DEPTH_ ((int_fast8_t)4)
 
 //! @cond INTERNAL
 
