@@ -90,8 +90,6 @@
 
 typedef int    int_t;
 typedef int    enum_t;
-typedef float  float32_t;
-typedef double float64_t;
 
 #define Q_UNUSED_PAR(par_)  ((void)(par_))
 #define Q_DIM(array_)       (sizeof(array_) / sizeof((array_)[0U]))
@@ -147,7 +145,7 @@ typedef uint_fast8_t QState;
 typedef QState (*QStateHandler)(void * const me, QEvt const * const e);
 typedef QState (*QActionHandler)(void * const me);
 
-struct QXThread; // forward declarsation
+struct QXThread; // forward declaration
 typedef void (* QXThreadHandler )(struct QXThread * const me);
 
 typedef struct QMState {
