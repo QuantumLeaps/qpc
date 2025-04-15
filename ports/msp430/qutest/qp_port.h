@@ -42,18 +42,15 @@
 // QF configuration for QK -- data members of the QActive class...
 
 // QActive event queue type
-#define QACTIVE_EQUEUE_TYPE  QEQueue
-// QACTIVE_OS_OBJ_TYPE  not used in this port
-// QACTIVE_THREAD_TYPE  not used in this port
-
-// QF interrupt disable/enable
-#define QF_INT_DISABLE()     (++QS_tstPriv_.intLock)
-#define QF_INT_ENABLE()      (--QS_tstPriv_.intLock)
+#define QACTIVE_EQUEUE_TYPE     QEQueue
+// QACTIVE_OS_OBJ_TYPE not used in this port
+// QACTIVE_THREAD_TYPE not used in this port
 
 // QF critical section
-#define QF_CRIT_STAT
-#define QF_CRIT_ENTRY()      QF_INT_DISABLE()
-#define QF_CRIT_EXIT()       QF_INT_ENABLE()
+#define QF_CRIT_STAT         QCritStatus critStat_;
+#define QF_CRIT_ENTRY()      (critStat_ = QF_critEntry())
+#define QF_CRIT_EXIT()       (QF_critExit(critStat_))
+#define QF_CRIT_EST()        ((void)QF_critEntry())
 
 // QF_LOG2 not defined -- use the internal LOG2() implementation
 
@@ -74,10 +71,10 @@
 
 #ifdef QP_IMPL
 
-    // QUTest scheduler locking (not used)
-    #define QF_SCHED_STAT_
-    #define QF_SCHED_LOCK_(dummy) ((void)0)
-    #define QF_SCHED_UNLOCK_()    ((void)0)
+    // QUTest scheduler locking
+    #define QF_SCHED_STAT_ QSchedStatus lockStat_;
+    #define QF_SCHED_LOCK_(ceil_) (lockStat_ = QF_schedLock((ceil_)))
+    #define QF_SCHED_UNLOCK_()    (QF_schedUnlock(lockStat_))
 
     // native QEQueue operations
     #define QACTIVE_EQUEUE_WAIT_(me_) ((void)0)

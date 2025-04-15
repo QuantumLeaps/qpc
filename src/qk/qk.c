@@ -207,8 +207,8 @@ void QK_activate_(void) {
 
             QS_BEGIN_PRE(QS_SCHED_NEXT, p)
                 QS_TIME_PRE();     // timestamp
-                QS_2U8_PRE(p,      // prio. of the scheduled AO
-                            pprev); // previous prio.
+                QS_2U8_PRE((uint8_t)p,
+                           (uint8_t)pprev);
             QS_END_PRE()
 
 #ifdef QF_ON_CONTEXT_SW

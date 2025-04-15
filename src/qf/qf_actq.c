@@ -94,6 +94,13 @@ bool QActive_post_(QActive * const me,
 
     if (status) { // can post the event?
         QActive_postFIFO_(me, e, sender);
+#ifdef Q_UTEST
+        if (QS_LOC_CHECK_(me->prio)) {
+            QF_CRIT_EXIT();
+            QS_onTestPost(sender, me, e, true); // QUTEst callback
+            QF_CRIT_ENTRY();
+        }
+#endif // def Q_UTEST
         QF_CRIT_EXIT();
     }
     else { // event cannot be posted
@@ -177,9 +184,7 @@ void QActive_postLIFO_(QActive * const me,
     // the local filter for this AO ('me->prio') is set
     if (QS_LOC_CHECK_(me->prio)) {
         QF_CRIT_EXIT();
-
         QS_onTestPost((QActive *)0, me, e, true);
-
         QF_CRIT_ENTRY();
     }
 #endif // def Q_UTEST
@@ -294,14 +299,6 @@ static void QActive_postFIFO_(QActive * const me,
         QS_EQC_PRE(tmp);      // # free entries
         QS_EQC_PRE(me->eQueue.nMin); // min # free entries
     QS_END_PRE()
-
-#ifdef Q_UTEST
-    if (QS_LOC_CHECK_(me->prio)) {
-        QF_CRIT_EXIT();
-        QS_onTestPost(sender, me, e, true); // QUTEst callback
-        QF_CRIT_ENTRY();
-    }
-#endif // def Q_UTEST
 
     if (me->eQueue.frontEvt == (QEvt *)0) { // is the queue empty?
         me->eQueue.frontEvt = e; // deliver event directly

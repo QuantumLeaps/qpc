@@ -122,7 +122,7 @@ int_t QF_run(void) {
 #endif
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
-    uint_fast8_t pprev = 0U; // previously used prio.
+    uint_fast8_t pprev = 0U; // previous prio.
 
 #ifdef QF_ON_CONTEXT_SW
     // officially switch to the idle cotext
@@ -146,19 +146,22 @@ int_t QF_run(void) {
             QActive * const a = QActive_registry_[p];
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
-            QS_BEGIN_PRE(QS_SCHED_NEXT, p)
-                QS_TIME_PRE();     // timestamp
-                QS_2U8_PRE((uint8_t)p,
-                            (uint8_t)pprev);
-            QS_END_PRE()
+            if (p != pprev) { // changing threads?
+
+                QS_BEGIN_PRE(QS_SCHED_NEXT, p)
+                    QS_TIME_PRE(); // timestamp
+                    QS_2U8_PRE((uint8_t)p,
+                               (uint8_t)pprev);
+                QS_END_PRE()
 
 #ifdef QF_ON_CONTEXT_SW
-            QF_onContextSw(((pprev != 0U)
-                            ? QActive_registry_[pprev]
-                            : (QActive *)0), a);
+                QF_onContextSw(((pprev != 0U)
+                               ? QActive_registry_[pprev]
+                               : (QActive *)0), a);
 #endif // QF_ON_CONTEXT_SW
 
-            pprev = p; // update previous prio.
+                pprev = p; // update previous prio.
+            }
 #endif // (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
 
             QF_INT_ENABLE();

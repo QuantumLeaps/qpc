@@ -30,10 +30,10 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR "8.0.3"
-#define QP_VERSION     803U
-// <VER>=803 <DATE>=250407
-#define QP_RELEASE     0x6ABEE96CU
+#define QP_VERSION_STR "8.0.4"
+#define QP_VERSION     804U
+// <VER>=804 <DATE>=250531
+#define QP_RELEASE     0x6AABFDABU
 
 //============================================================================
 // default configuration settings
@@ -167,6 +167,7 @@ union QAsmAttr {
     QXThreadHandler thr;          //!< @private @memberof QAsmAttr
     QMTranActTable  const *tatbl; //!< @private @memberof QAsmAttr
     struct QMState  const *obj;   //!< @private @memberof QAsmAttr
+    uintptr_t       uint;         //!< @private @memberof QAsmAttr
 };
 
 #define Q_STATE_CAST(handler_) ((QStateHandler)(handler_))

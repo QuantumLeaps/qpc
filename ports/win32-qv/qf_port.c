@@ -172,7 +172,6 @@ int QF_run(void) {
 
     //CloseHandle(win32Event_);
     //DeleteCriticalSection(&l_win32CritSect);
-
     return 0; // return success
 }
 //............................................................................
