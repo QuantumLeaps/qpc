@@ -50,7 +50,6 @@ void QF_poolInit(
 {
     uint_fast8_t const poolNum = QF_priv_.maxPool_;
 
-    // see precondition{qf_dyn,200} and precondition{qf_dyn,201}
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 

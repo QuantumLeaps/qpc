@@ -124,7 +124,6 @@ __asm volatile (
 #else                   //--------- use PRIMASK for enabling interrupts
     "  CPSIE   i                \n" // clear PRIMASK
 #endif                  //--------- use PRIMASK for enabling interrupts
-
     "  BX      lr               \n"
     "QF_int_enable_error:       \n"
     "  LDR     r0,=QF_port_module_ \n"

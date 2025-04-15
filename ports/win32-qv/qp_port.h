@@ -151,7 +151,6 @@ void QF_onClockTick(void);
     #include <windows.h> // Win32 API
 
     extern QPSet QF_readySet_;
-    extern QPSet QF_readySet_dis_;
     extern HANDLE QF_win32Event_; // Win32 event to signal events
 
 #endif // QP_IMPL

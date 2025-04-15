@@ -144,7 +144,6 @@ static void sigIntHandler(int dummy) {
 
 // Global objects ============================================================
 QPSet QF_readySet_;
-QPSet QF_readySet_dis_;
 pthread_cond_t QF_condVar_; // Cond.var. to signal events
 
 //============================================================================
@@ -346,9 +345,11 @@ int QF_consoleGetKey(void) {
 int QF_consoleWaitForKey(void) {
     return (int)getchar();
 }
-#endif
+
+#endif // #ifdef QF_CONSOLE
 
 // QActive functions =========================================================
+
 void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
     QEvtPtr * const qSto, uint_fast16_t const qLen,
@@ -374,6 +375,7 @@ void QActive_start(QActive * const me,
     (*me->super.vptr->init)(&me->super, par, me->prio);
     QS_FLUSH(); // flush the QS trace buffer to the host
 }
+
 //............................................................................
 #ifdef QACTIVE_CAN_STOP
 void QActive_stop(QActive * const me) {

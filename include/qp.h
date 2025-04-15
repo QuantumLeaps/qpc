@@ -30,10 +30,10 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR "8.0.3"
-#define QP_VERSION     803U
-// <VER>=803 <DATE>=250407
-#define QP_RELEASE     0x6ABEE96CU
+#define QP_VERSION_STR "8.0.4"
+#define QP_VERSION     804U
+// <VER>=804 <DATE>=250531
+#define QP_RELEASE     0x6AABFDABU
 
 //============================================================================
 // default configuration settings
