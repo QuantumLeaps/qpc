@@ -44,7 +44,7 @@ d61816392ee35c2e340c3850f63636bcf503deff *src/qxk/qxk_xthr.c
 0cbe167d92da096fc5814f8ab382727c60399c8f *ports/arm-cm/qk/armclang/qk_port.c
 a686e8b36e859f6c3e66d1ce578ded57dd600e60 *ports/arm-cm/qk/armclang/qp_port.h
 4efebcfb83036649c8e7c6feb5a98cda01877ae9 *ports/arm-cm/qk/armclang/qs_port.h
-e214ae61fb4cf003657235f9daf33430633636d4 *ports/arm-cm/qk/gnu/qk_port.c
+19daddb467c826bc25ea2034d4eda3dd90f6de2c *ports/arm-cm/qk/gnu/qk_port.c
 a686e8b36e859f6c3e66d1ce578ded57dd600e60 *ports/arm-cm/qk/gnu/qp_port.h
 4efebcfb83036649c8e7c6feb5a98cda01877ae9 *ports/arm-cm/qk/gnu/qs_port.h
 5ea2547597773d0fdf9a07dc93a28dad9ef894ef *ports/arm-cm/qk/iar/qk_port.c
@@ -55,7 +55,7 @@ f225be45726e9175eaa7f7a007fb8573ad7f4f5a *ports/arm-cm/qk/iar/qp_port.h
 2be508340218e6c668d352dee1e70db9255e33ab *ports/arm-cm/qv/armclang/qv_port.c
 336f2cff9a11dbc5dfe778e8ef765812c45fb3fe *ports/arm-cm/qv/gnu/qp_port.h
 4efebcfb83036649c8e7c6feb5a98cda01877ae9 *ports/arm-cm/qv/gnu/qs_port.h
-6038d5440d65a2e79edb05ae02575c333afc1151 *ports/arm-cm/qv/gnu/qv_port.c
+d1e4c4d7f0040c11243c4f5398c462f852006f4d *ports/arm-cm/qv/gnu/qv_port.c
 6921a2f659e00077a15f9bf5e2665ce5124578b4 *ports/arm-cm/qv/iar/qp_port.h
 4efebcfb83036649c8e7c6feb5a98cda01877ae9 *ports/arm-cm/qv/iar/qs_port.h
 dd68f6df27ef9395b5193ec26de62ea00550b24d *ports/arm-cm/qv/iar/qv_port.c
@@ -64,7 +64,7 @@ dd68f6df27ef9395b5193ec26de62ea00550b24d *ports/arm-cm/qv/iar/qv_port.c
 529aeb1bea4639f7cdb38b048a91fe4f844e36d8 *ports/arm-cm/qxk/armclang/qxk_port.c
 39e35136770ba8d6aca4a62b8505ff96badcfbd4 *ports/arm-cm/qxk/gnu/qp_port.h
 4efebcfb83036649c8e7c6feb5a98cda01877ae9 *ports/arm-cm/qxk/gnu/qs_port.h
-b21dd9b87df912a87e7100af76b6fd5ece4f4f07 *ports/arm-cm/qxk/gnu/qxk_port.c
+7a92a2037338978d478fdbb174c6a798359b286f *ports/arm-cm/qxk/gnu/qxk_port.c
 0a01f05b0519f04023bdb95e5bfd77bfcef769b4 *ports/arm-cm/qxk/iar/qp_port.h
 4efebcfb83036649c8e7c6feb5a98cda01877ae9 *ports/arm-cm/qxk/iar/qs_port.h
 134a5cf989811cb1f5f29bfac3012f13571b31ba *ports/arm-cm/qxk/iar/qxk_port.c
