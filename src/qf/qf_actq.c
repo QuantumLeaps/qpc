@@ -332,10 +332,12 @@ static void QActive_postFIFO_(QActive * const me,
 uint_fast16_t QActive_getQueueMin(uint_fast8_t const prio) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_REQUIRE_INCRIT(600, (prio <= QF_MAX_ACTIVE)
-                      && (QActive_registry_[prio] != (QActive *)0));
-    uint_fast16_t const min =
-         (uint_fast16_t)QActive_registry_[prio]->eQueue.nMin;
+    Q_REQUIRE_INCRIT(600, prio <= QF_MAX_ACTIVE);
+
+    QActive const * const a = QActive_registry_[prio];
+    Q_REQUIRE_INCRIT(610, a != (QActive *)0);
+
+    uint_fast16_t const min = (uint_fast16_t)(a->eQueue.nMin);
     QF_CRIT_EXIT();
 
     return min;

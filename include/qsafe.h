@@ -70,7 +70,7 @@
 } while (false)
 
 #define Q_ASSERT_LOCAL(id_, expr_) do { \
-    if (expr_) {} else { \
+    if (!(expr_)) { \
         QF_CRIT_EST(); \
         Q_onError(&Q_this_module_[0], (id_)); \
     } \

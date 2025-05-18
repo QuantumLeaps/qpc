@@ -390,7 +390,7 @@ static QState QMsm_enterHistory_(
     QMState const *s = hist;
     int_fast8_t i = -1; // entry path index (one below [0])
     int_fast8_t lbound = QMSM_MAX_NEST_DEPTH_;
-    do {
+    while (s != me->state.obj) {
         if (s->entryAction != Q_ACTION_CAST(0)) {
             ++i;
             Q_INVARIANT_LOCAL(610, i < QMSM_MAX_NEST_DEPTH_);
@@ -400,7 +400,7 @@ static QState QMsm_enterHistory_(
 
         --lbound; // fixed loop bound
         Q_INVARIANT_LOCAL(620, lbound >= 0);
-    } while (s != me->state.obj);
+    }
 
     QS_CRIT_STAT
     // retrace the entry path in reverse (desired) order...
@@ -431,7 +431,7 @@ bool QMsm_isIn_(
     bool inState = false; // assume that this SM is not in 'state'
     QMState const *s = me->state.obj;
     int_fast8_t lbound = QMSM_MAX_NEST_DEPTH_;
-    do {
+    while (s != (QMState *)0) {
         if (s->stateHandler == stateHndl) { // match found?
             inState = true;
             break;
@@ -440,7 +440,7 @@ bool QMsm_isIn_(
 
          --lbound; // fixed loop bound
          Q_INVARIANT_LOCAL(740, lbound >= 0);
-    } while (s != (QMState *)0);
+    }
 
     return inState;
 }
@@ -462,7 +462,7 @@ QMState const * QMsm_childStateObj(QMsm const * const me,
     QMState const *child = s;
     bool isFound = false; // assume the child NOT found
     int_fast8_t lbound = QMSM_MAX_NEST_DEPTH_;
-    do {
+    while (s != (QMState *)0) {
         if (s == parent) {
             isFound = true; // child is found
             break;
@@ -472,7 +472,7 @@ QMState const * QMsm_childStateObj(QMsm const * const me,
 
          --lbound; // fixed loop bound
          Q_INVARIANT_LOCAL(840, lbound >= 0);
-    } while (s != (QMState *)0);
+    }
     Q_ENSURE_LOCAL(890, isFound);
 
 #ifdef Q_UNSAFE
