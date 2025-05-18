@@ -369,7 +369,9 @@ void QActive_start(QActive* const me,
 //............................................................................
 #ifdef QACTIVE_CAN_STOP
 void QActive_stop(QActive* const me) {
-    QActive_unsubscribeAll(me); // unsubscribe from all events
+    if (QActive_subscrList_ != (QSubscrList *)0) {
+        QActive_unsubscribeAll(me); // unsubscribe from all events
+    }
     QActive_unregister_(me); // un-register this active object
 }
 #endif // def QACTIVE_CAN_STOP

@@ -170,6 +170,7 @@ void QMsm_init_(
 
     // the top-most initial tran. must be taken
     Q_ASSERT_LOCAL(240, r == Q_RET_TRAN_INIT);
+    Q_ASSERT_LOCAL(250, me->temp.tatbl != (struct QMTranActTable *)0);
 
     QS_CRIT_STAT
     QS_TRAN_SEG_(QS_QEP_STATE_INIT,
@@ -189,7 +190,8 @@ void QMsm_init_(
     QS_TOP_INIT_(QS_QEP_INIT_TRAN, me->state.obj->stateHandler);
 
 #ifndef Q_UNSAFE
-    me->temp.uint = ~me->state.uint;
+    // establish stable state configuration
+    me->temp.uint = (uintptr_t)~me->state.uint;
 #endif
 }
 
@@ -204,11 +206,12 @@ void QMsm_dispatch_(
     Q_UNUSED_PAR(qsId);
 #endif
 
-    Q_REQUIRE_LOCAL(300, e != (QEvt *)0);
-    Q_INVARIANT_LOCAL(320, me->state.uint == (uintptr_t)(~me->temp.uint));
+    Q_INVARIANT_LOCAL(300, me->state.uint == (uintptr_t)(~me->temp.uint));
+
+    Q_REQUIRE_LOCAL(310, e != (QEvt *)0);
 
     QMState const *s = me->state.obj; // the current state
-    QMState const *t = s; // store the current state for later
+    QMState const * const t = s; // store the current state for later
     QS_CRIT_STAT
     QS_TRAN0_(QS_QEP_DISPATCH, s->stateHandler);
 
@@ -247,7 +250,15 @@ void QMsm_dispatch_(
         QMState const * const ts = s; // tran. source for QS tracing
 #endif // Q_SPY
 
-        if (r == Q_RET_TRAN_HIST) { // was it tran. to history?
+        if (r == Q_RET_TRAN) {
+            struct QMTranActTable const * const tatbl = me->temp.tatbl;
+            QMsm_exitToTranSource_(me, t, s, qsId);
+            r = QMsm_execTatbl_(me, tatbl, qsId);
+#ifdef Q_SPY
+            s = me->state.obj;
+#endif // Q_SPY
+        }
+        else if (r == Q_RET_TRAN_HIST) { // was it tran. to history?
             QMState const * const hist = me->state.obj; // save history
             me->state.obj = t; // restore the original state
 
@@ -256,32 +267,30 @@ void QMsm_dispatch_(
 
             // save the tran-action table before it gets clobbered
             struct QMTranActTable const * const tatbl = me->temp.tatbl;
-            if (t != s) { // current state different from tran. source?
-                QMsm_exitToTranSource_(me, t, s, qsId);
-            }
+            QMsm_exitToTranSource_(me, t, s, qsId);
             (void)QMsm_execTatbl_(me, tatbl, qsId);
             r = QMsm_enterHistory_(me, hist, qsId);
-            t = me->state.obj;
-            s = t; // set target to the current state
+#ifdef Q_SPY
+            s = me->state.obj;
+#endif // Q_SPY
+        }
+        else {
+            // empty
         }
 
         lbound = QMSM_MAX_NEST_DEPTH_;
-        while (r >= Q_RET_TRAN) { // initial tran. in the target?
-            // save the tran-action table before it gets clobbered
-            struct QMTranActTable const * const tatbl = me->temp.tatbl;
-            me->temp.obj = (QMState *)0; // clear
-            if (t != s) { // current state different from tran. source?
-                QMsm_exitToTranSource_(me, t, s, qsId);
-            }
-            r = QMsm_execTatbl_(me, tatbl, qsId);
-            t = me->state.obj;
-            s = t; // set target to the current state
+        while (r == Q_RET_TRAN_INIT) { // initial tran. in the target?
+
+            r = QMsm_execTatbl_(me, me->temp.tatbl, qsId);
+#ifdef Q_SPY
+            s = me->state.obj;
+#endif // Q_SPY
 
              --lbound; // fixed loop bound
             Q_INVARIANT_LOCAL(360, lbound >= 0);
         }
 
-        QS_TRAN_END_(QS_QEP_TRAN, ts->stateHandler, t->stateHandler);
+        QS_TRAN_END_(QS_QEP_TRAN, ts->stateHandler, s->stateHandler);
     }
 #ifdef Q_SPY
     else if (r == Q_RET_HANDLED) { // was the event handled?
@@ -293,7 +302,8 @@ void QMsm_dispatch_(
     }
 
 #ifndef Q_UNSAFE
-    me->temp.uint = ~me->state.uint; // mark stable state configuration
+    // establish stable state configuration
+    me->temp.uint = (uintptr_t)~me->state.uint;
 #endif
 }
 
@@ -362,8 +372,7 @@ static void QMsm_exitToTranSource_(
     QMState const *s = curr_state;
     int_fast8_t lbound = QMSM_MAX_NEST_DEPTH_;
     while (s != tran_source) {
-        // exit action provided in state 's'?
-        if (s->exitAction != Q_ACTION_CAST(0)) {
+        if (s->exitAction != Q_ACTION_CAST(0)) { // exit action provided?
             (void)(*s->exitAction)(me); // execute the exit action
             QS_STATE_ACT_(QS_QEP_STATE_EXIT, me->temp.obj->stateHandler);
         }
@@ -390,7 +399,7 @@ static QState QMsm_enterHistory_(
     QMState const *s = hist;
     int_fast8_t i = -1; // entry path index (one below [0])
     int_fast8_t lbound = QMSM_MAX_NEST_DEPTH_;
-    do {
+    while (s != me->state.obj) {
         if (s->entryAction != Q_ACTION_CAST(0)) {
             ++i;
             Q_INVARIANT_LOCAL(610, i < QMSM_MAX_NEST_DEPTH_);
@@ -400,7 +409,7 @@ static QState QMsm_enterHistory_(
 
         --lbound; // fixed loop bound
         Q_INVARIANT_LOCAL(620, lbound >= 0);
-    } while (s != me->state.obj);
+    }
 
     QS_CRIT_STAT
     // retrace the entry path in reverse (desired) order...
@@ -431,7 +440,7 @@ bool QMsm_isIn_(
     bool inState = false; // assume that this SM is not in 'state'
     QMState const *s = me->state.obj;
     int_fast8_t lbound = QMSM_MAX_NEST_DEPTH_;
-    do {
+    while (s != (QMState *)0) {
         if (s->stateHandler == stateHndl) { // match found?
             inState = true;
             break;
@@ -440,7 +449,7 @@ bool QMsm_isIn_(
 
          --lbound; // fixed loop bound
          Q_INVARIANT_LOCAL(740, lbound >= 0);
-    } while (s != (QMState *)0);
+    }
 
     return inState;
 }
@@ -462,7 +471,7 @@ QMState const * QMsm_childStateObj(QMsm const * const me,
     QMState const *child = s;
     bool isFound = false; // assume the child NOT found
     int_fast8_t lbound = QMSM_MAX_NEST_DEPTH_;
-    do {
+    while (s != (QMState *)0) {
         if (s == parent) {
             isFound = true; // child is found
             break;
@@ -472,7 +481,7 @@ QMState const * QMsm_childStateObj(QMsm const * const me,
 
          --lbound; // fixed loop bound
          Q_INVARIANT_LOCAL(840, lbound >= 0);
-    } while (s != (QMState *)0);
+    }
     Q_ENSURE_LOCAL(890, isFound);
 
 #ifdef Q_UNSAFE

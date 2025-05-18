@@ -58,11 +58,11 @@ void QV_schedDisable(uint_fast8_t const ceiling) {
         QS_BEGIN_PRE(QS_SCHED_LOCK, 0U)
             QS_TIME_PRE();   // timestamp
             // the previous sched ceiling & new sched ceiling
-            QS_2U8_PRE((uint8_t)QV_priv_.schedCeil,
-                        (uint8_t)ceiling);
+            QS_2U8_PRE(QV_priv_.schedCeil,
+                       (uint8_t)ceiling);
         QS_END_PRE()
 
-        QV_priv_.schedCeil = ceiling;
+        QV_priv_.schedCeil = (uint8_t)ceiling;
     }
     QF_CRIT_EXIT();
 }
@@ -78,7 +78,7 @@ void QV_schedEnable(void) {
         QS_BEGIN_PRE(QS_SCHED_UNLOCK, 0U)
             QS_TIME_PRE(); // timestamp
             // current sched ceiling (old), previous sched ceiling (new)
-            QS_2U8_PRE((uint8_t)QV_priv_.schedCeil, 0U);
+            QS_2U8_PRE(QV_priv_.schedCeil, 0U);
         QS_END_PRE()
 
         QV_priv_.schedCeil = 0U;
@@ -184,7 +184,7 @@ int_t QF_run(void) {
             if (pprev != 0U) {
                 QS_BEGIN_PRE(QS_SCHED_IDLE, pprev)
                     QS_TIME_PRE();    // timestamp
-                    QS_U8_PRE((uint8_t)pprev); // previous prio
+                    QS_U8_PRE((uint8_t)pprev);
                 QS_END_PRE()
 
 #ifdef QF_ON_CONTEXT_SW
@@ -226,15 +226,15 @@ void QActive_start(QActive * const me,
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_REQUIRE_INCRIT(300, (me->super.vptr != (struct QAsmVtable *)0)
-        && (stkSto == (void *)0));
+    Q_REQUIRE_INCRIT(300, me->super.vptr != (struct QAsmVtable *)0);
+    Q_REQUIRE_INCRIT(310, stkSto == (void *)0);
     QF_CRIT_EXIT();
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-prio. of the AO
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-prio.
     me->pthre = 0U; // not used
-    QActive_register_(me); // make QF aware of this active object
+    QActive_register_(me); // make QF aware of this AO
 
-    QEQueue_init(&me->eQueue, qSto, qLen); // init the built-in queue
+    QEQueue_init(&me->eQueue, qSto, qLen);
 
     // top-most initial tran. (virtual call)
     (*me->super.vptr->init)(&me->super, par, me->prio);

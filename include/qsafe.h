@@ -60,7 +60,7 @@
 #define Q_ASSERT_ID(id_, expr_) do { \
     QF_CRIT_STAT \
     QF_CRIT_ENTRY(); \
-    (expr_) ? ((void)0) : Q_onError(&Q_this_module_[0], (id_)); \
+    if (!(expr_)) Q_onError(&Q_this_module_[0], (id_)); \
     QF_CRIT_EXIT(); \
 } while (false)
 
@@ -70,7 +70,7 @@
 } while (false)
 
 #define Q_ASSERT_LOCAL(id_, expr_) do { \
-    if (expr_) {} else { \
+    if (!(expr_)) { \
         QF_CRIT_EST(); \
         Q_onError(&Q_this_module_[0], (id_)); \
     } \

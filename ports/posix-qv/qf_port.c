@@ -158,12 +158,12 @@ static int_t l_critSectNest;   // critical section nesting up-down counter
 //............................................................................
 void QF_enterCriticalSection_(void) {
     pthread_mutex_lock(&l_critSectMutex_);
-    Q_ASSERT_INCRIT(101, l_critSectNest == 0); // NO nesting of crit.sect!
+    Q_ASSERT_INCRIT(100, l_critSectNest == 0); // NO nesting of crit.sect!
     ++l_critSectNest;
 }
 //............................................................................
 void QF_leaveCriticalSection_(void) {
-    Q_ASSERT_INCRIT(102, l_critSectNest == 1); // crit.sect. must balance!
+    Q_ASSERT_INCRIT(200, l_critSectNest == 1); // crit.sect. must balance!
     if ((--l_critSectNest) == 0) {
         pthread_mutex_unlock(&l_critSectMutex_);
     }
@@ -362,7 +362,7 @@ void QActive_start(QActive * const me,
     // no per-AO stack needed for this port
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_REQUIRE_INCRIT(600, stkSto == (void *)0);
+    Q_REQUIRE_INCRIT(800, stkSto == (void *)0);
     QF_CRIT_EXIT();
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
@@ -379,7 +379,9 @@ void QActive_start(QActive * const me,
 //............................................................................
 #ifdef QACTIVE_CAN_STOP
 void QActive_stop(QActive * const me) {
-    QActive_unsubscribeAll(me);
+    if (QActive_subscrList_ != (QSubscrList *)0) {
+        QActive_unsubscribeAll(me); // unsubscribe from all events
+    }
 
     // make sure the AO is no longer in "ready set"
     QF_CRIT_STAT
