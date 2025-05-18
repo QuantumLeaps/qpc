@@ -203,15 +203,16 @@ void QHsm_init_(
     Q_UNUSED_PAR(qsId);
 #endif // def Q_SPY
 
-    QStateHandler s = me->state.fun; // current state
-    Q_REQUIRE_LOCAL(200, me->temp.fun != Q_STATE_CAST(0));
-    Q_REQUIRE_LOCAL(210, s == Q_STATE_CAST(&QHsm_top));
+    QStateHandler const s = me->state.fun; // current state
+    Q_REQUIRE_LOCAL(200, s == Q_STATE_CAST(&QHsm_top));
+    Q_REQUIRE_LOCAL(210, me->temp.fun != Q_STATE_CAST(0));
 
     // execute the top-most initial tran.
     QState const r = (*me->temp.fun)(me, Q_EVT_CAST(QEvt));
 
     // the top-most initial tran. must be taken
     Q_ASSERT_LOCAL(240, r == Q_RET_TRAN);
+    Q_ASSERT_LOCAL(250, me->temp.fun != Q_STATE_CAST(0));
 
     QS_TRAN_SEG_(QS_QEP_STATE_INIT, s, me->temp.fun);
 
@@ -222,16 +223,16 @@ void QHsm_init_(
         ++ip; // fixed loop bound
         Q_INVARIANT_LOCAL(260, ip < QHSM_MAX_NEST_DEPTH_);
 
+        Q_ASSERT_LOCAL(270, me->temp.fun != Q_STATE_CAST(0));
         path[ip] = me->temp.fun; // store the entry path
         (void)QHSM_RESERVED_EVT_(me->temp.fun, Q_EMPTY_SIG);
     } while (me->temp.fun != s);
 
     QHsm_enter_target_(me, &path[0], ip, qsId);
-    s = path[0];
 
-    QS_TOP_INIT_(QS_QEP_INIT_TRAN, s);
+    QS_TOP_INIT_(QS_QEP_INIT_TRAN, path[0]);
 
-    me->state.fun = s; // change the current active state
+    me->state.fun = path[0]; // change the current active state
 #ifndef Q_UNSAFE
     me->temp.uint = ~me->state.uint; // mark stable state configuration
 #else
@@ -250,8 +251,9 @@ void QHsm_dispatch_(
     Q_UNUSED_PAR(qsId);
 #endif
 
-    Q_REQUIRE_LOCAL(300, e != (QEvt *)0);
-    Q_INVARIANT_LOCAL(320, me->state.uint == (uintptr_t)(~me->temp.uint));
+    Q_INVARIANT_LOCAL(300, me->state.uint == (uintptr_t)(~me->temp.uint));
+
+    Q_REQUIRE_LOCAL(310, e != (QEvt *)0);
 
     QStateHandler s = me->state.fun; // current state
     QS_CRIT_STAT
@@ -279,6 +281,8 @@ void QHsm_dispatch_(
     } while (r == Q_RET_SUPER);
 
     if (r >= Q_RET_TRAN) { // tran. (regular or history) taken?
+        Q_ASSERT_LOCAL(350, me->temp.fun != Q_STATE_CAST(0));
+
 #ifdef Q_SPY
         if (r == Q_RET_TRAN_HIST) { // tran. to history?
             QS_TRAN_SEG_(QS_QEP_TRAN_HIST, s, me->temp.fun);
@@ -347,6 +351,7 @@ static int_fast8_t QHsm_tran_simple_(
         // find superstate of target
         QState const r = QHSM_RESERVED_EVT_(t, Q_EMPTY_SIG);
         Q_ASSERT_LOCAL(440, r == Q_RET_SUPER);
+        Q_ASSERT_LOCAL(450, me->temp.fun != Q_STATE_CAST(0));
 #ifdef Q_UNSAFE
         Q_UNUSED_PAR(r);
 #endif
@@ -497,6 +502,7 @@ static void QHsm_enter_target_(
         --lbound; // fixed loop bound
         Q_INVARIANT_LOCAL(640, lbound >= 0);
 
+        Q_ASSERT_LOCAL(650, me->temp.fun != Q_STATE_CAST(0));
         QS_TRAN_SEG_(QS_QEP_STATE_INIT, t, me->temp.fun);
 
         // find superstate of initial tran. target...

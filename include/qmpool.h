@@ -89,4 +89,4 @@ void QMPool_put(QMPool * const me,
     void * const block,
     uint_fast8_t const qsId);
 
-#endif  // QMPOOL_H_
+#endif // QMPOOL_H_

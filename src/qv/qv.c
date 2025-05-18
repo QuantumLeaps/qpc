@@ -226,8 +226,8 @@ void QActive_start(QActive * const me,
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    Q_REQUIRE_INCRIT(300, (me->super.vptr != (struct QAsmVtable *)0)
-        && (stkSto == (void *)0));
+    Q_REQUIRE_INCRIT(300, me->super.vptr != (struct QAsmVtable *)0);
+    Q_REQUIRE_INCRIT(310, stkSto == (void *)0);
     QF_CRIT_EXIT();
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-prio. of the AO

@@ -195,7 +195,7 @@ void QK_activate_(void) {
     // loop until no more ready-to-run AOs of higher pthre than the initial
     do  {
         QActive * const a = QActive_registry_[p];
-        Q_ASSERT_INCRIT(520, a != (QActive *)0); // the AO must be registered
+        Q_ASSERT_INCRIT(540, a != (QActive *)0); // the AO must be registered
         uint_fast8_t const pthre = (uint_fast8_t)a->pthre;
 
         // set new active prio. and preemption-threshold
@@ -222,6 +222,7 @@ void QK_activate_(void) {
         QF_INT_ENABLE(); // unconditionally enable interrupts
 
         QEvt const * const e = QActive_get_(a);
+        // NOTE QActive_get_() performs QF_MEM_APP() before return
 
         // dispatch event (virtual call)
         (*a->super.vptr->dispatch)(&a->super, e, p);
@@ -262,6 +263,7 @@ void QK_activate_(void) {
         QF_onContextSw(QActive_registry_[pprev], (QActive *)0);
 #endif // QF_ON_CONTEXT_SW
     }
+
 #endif // QF_ON_CONTEXT_SW || Q_SPY
 }
 
@@ -344,8 +346,8 @@ void QActive_start(QActive * const me,
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    Q_REQUIRE_INCRIT(300, (me->super.vptr != (struct QAsmVtable *)0)
-        && (stkSto == (void *)0));
+    Q_REQUIRE_INCRIT(300, me->super.vptr != (struct QAsmVtable *)0);
+    Q_REQUIRE_INCRIT(310, stkSto == (void *)0);
     QF_CRIT_EXIT();
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-prio. of the AO

@@ -74,16 +74,16 @@ void QMPool_init(QMPool * const me,
          size -= (uint_fast32_t)me->blockSize)
     {
         pfb[0] = &pfb[inext]; // set the next link to next free block
-        pfb = pfb[0]; // advance to the next block
+        pfb = (void * *)pfb[0]; // advance to the next block
         ++nTot;       // one more free block in the pool
     }
     pfb[0] = (void * *)0; // the last link points to NULL
 
     // dynamic range check
 #if (QF_MPOOL_CTR_SIZE == 1U)
-    Q_ASSERT_INCRIT(190, nTot < 0xFFU);
+    Q_ASSERT_INCRIT(160, nTot < 0xFFU);
 #elif (QF_MPOOL_CTR_SIZE == 2U)
-    Q_ASSERT_INCRIT(190, nTot < 0xFFFFU);
+    Q_ASSERT_INCRIT(160, nTot < 0xFFFFU);
 #endif
 
     me->nTot  = (QMPoolCtr)nTot;
@@ -114,14 +114,15 @@ void * QMPool_get(QMPool * const me,
 
     // have more free blocks than the requested margin?
     if (nFree > (QMPoolCtr)margin) {
-        Q_ASSERT_INCRIT(310, pfb != (void * *)0);
+        Q_ASSERT_INCRIT(330, pfb != (void * *)0);
 
-        void * * const pfb_next = pfb[0]; // fast temporary
+        // fast temporary
+        void * * const pfb_next = (void * *)pfb[0];
 
         --nFree; // one less free block
         if (nFree == 0U) { // is the pool becoming empty?
             // pool is becoming empty, so the next free block must be NULL
-            Q_ASSERT_INCRIT(320, pfb_next == (void * *)0);
+            Q_ASSERT_INCRIT(350, pfb_next == (void * *)0);
 
             me->nFree = 0U; // no more free blocks
             me->nMin = 0U;  // remember that the pool got empty
@@ -129,7 +130,7 @@ void * QMPool_get(QMPool * const me,
         else { // the pool is NOT empty
 
             // the next free-block pointer must be in range
-            Q_ASSERT_INCRIT(330,
+            Q_ASSERT_INCRIT(360,
                 (me->start <= pfb_next) && (pfb_next <= me->end));
 
             me->nFree = nFree; // update the original
@@ -192,8 +193,8 @@ void QMPool_put(QMPool * const me,
     ++nFree; // one more free block in this pool
 
     me->freeHead = pfb; // set as new head of the free list
-    me->nFree     = nFree;
-    pfb[0]        = freeHead; // link into the list
+    me->nFree    = nFree;
+    pfb[0]       = freeHead; // link into the list
 
     QS_BEGIN_PRE(QS_QF_MPOOL_PUT, qsId)
         QS_TIME_PRE();         // timestamp
@@ -210,7 +211,5 @@ void QMPool_put(QMPool * const me,
 // (see void * data type). These pointers are used to form a linked-list
 // of free blocks in the pool. The first location pfb[0] is the actual link.
 // The second location pfb[1] is used in SafeQP as the redundant "duplicate
-// storage" for the link at pfb[0]. Even though the "duplicate storage" is NOT
-// used in this QP edition, the minimum number of number of void* pointers
-// (void * data type) inside a memory block is still kept at 2 to maintain
-// the same policy for sizing the memory blocks.
+// storage" for the link at pfb[0]. Therefore, the minimum number of void*
+// pointers (void * data type) inside a memory block is 2.

@@ -80,11 +80,14 @@ void QF_poolInit(
 uint_fast16_t QF_poolGetMaxBlockSize(void) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
-    uint_fast16_t const max_size =
-        QF_EPOOL_EVENT_SIZE_(QF_priv_.ePool_[QF_priv_.maxPool_ - 1U]);
+    uint_fast8_t const maxPool = QF_priv_.maxPool_;
+    Q_REQUIRE_INCRIT(200, (0U < maxPool) && (maxPool <= QF_MAX_EPOOL));
+
+    uint_fast16_t const maxSize =
+        QF_EPOOL_EVENT_SIZE_(QF_priv_.ePool_[maxPool - 1U]);
     QF_CRIT_EXIT();
 
-    return max_size;
+    return maxSize;
 }
 
 //............................................................................
@@ -93,9 +96,11 @@ uint_fast16_t QF_getPoolMin(uint_fast8_t const poolNum) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    Q_REQUIRE_INCRIT(300, (poolNum <= QF_MAX_EPOOL)
-                      && (0U < poolNum) && (poolNum <= QF_priv_.maxPool_));
-
+#ifndef Q_UNSAFE
+    uint_fast8_t const maxPool = QF_priv_.maxPool_;
+    Q_REQUIRE_INCRIT(300, maxPool <= QF_MAX_EPOOL);
+    Q_REQUIRE_INCRIT(310, (0U < poolNum) && (poolNum <= maxPool));
+#endif
     uint_fast16_t const min = (uint_fast16_t)QF_priv_.ePool_[poolNum - 1U].nMin;
 
     QF_CRIT_EXIT();
@@ -185,7 +190,6 @@ void QF_gc(QEvt const * const e) {
     Q_REQUIRE_INCRIT(500, e != (QEvt *)0);
 
     uint8_t const poolNum = e->poolNum_;
-
     if (poolNum != 0U) { // is it a pool event (mutable)?
 
         if (e->refCtr_ > 1U) { // isn't this the last reference?
@@ -197,7 +201,7 @@ void QF_gc(QEvt const * const e) {
                 QS_2U8_PRE(poolNum, e->refCtr_);
             QS_END_PRE()
 
-            Q_ASSERT_INCRIT(505, e->refCtr_ > 0U);
+            Q_ASSERT_INCRIT(520, e->refCtr_ > 0U);
             QEvt_refCtr_dec_(e); // decrement the ref counter
 
             QF_CRIT_EXIT();
@@ -211,9 +215,12 @@ void QF_gc(QEvt const * const e) {
                 QS_2U8_PRE(poolNum, e->refCtr_);
             QS_END_PRE()
 
-            // pool number must be in range
-            Q_ASSERT_INCRIT(510, (poolNum <= QF_priv_.maxPool_)
-                                  && (poolNum <= QF_MAX_EPOOL));
+#ifndef Q_UNSAFE
+            uint_fast8_t const maxPool = QF_priv_.maxPool_;
+            Q_ASSERT_INCRIT(530, maxPool <= QF_MAX_EPOOL);
+            Q_ASSERT_INCRIT(540, (0U < poolNum) && (poolNum <= maxPool));
+#endif
+
             QF_CRIT_EXIT();
 
             // NOTE: casting 'const' away is legit because 'e' is a pool event
@@ -249,10 +256,10 @@ QEvt const * QF_newRef_(
     uint_fast8_t const poolNum = e->poolNum_;
     Q_UNUSED_PAR(poolNum); // might be unused
 
-    Q_REQUIRE_INCRIT(610, (poolNum != 0U)
+    Q_REQUIRE_INCRIT(620, (poolNum != 0U)
         && (evtRef == (void *)0));
 
-    Q_ASSERT_INCRIT(605, e->refCtr_ < (2U * QF_MAX_ACTIVE));
+    Q_ASSERT_INCRIT(630, e->refCtr_ < (2U * QF_MAX_ACTIVE));
     QEvt_refCtr_inc_(e); // increments the ref counter
 
     QS_BEGIN_PRE(QS_QF_NEW_REF,
