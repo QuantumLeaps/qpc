@@ -51,11 +51,12 @@ void QMPool_init(QMPool * const me,
 
     Q_REQUIRE_INCRIT(100, poolSto != (void *)0);
 
-    me->freeHead = (void * *)poolSto;
+    me->start    = (void * *)poolSto;
+    me->freeHead = me->start;
 
     // find # free links in a memory block, see NOTE1
     me->blockSize = (QMPoolSize)(2U * sizeof(void *));
-    uint_fast16_t inext = 2U; // # index of the next block
+    uint_fast16_t inext = 2U; // index of the next block
     while (me->blockSize < (QMPoolSize)blockSize) {
         me->blockSize += (QMPoolSize)sizeof(void *);
         ++inext;
@@ -74,10 +75,13 @@ void QMPool_init(QMPool * const me,
          size -= (uint_fast32_t)me->blockSize)
     {
         pfb[0] = &pfb[inext]; // set the next link to next free block
+#ifndef Q_UNSAFE
+        pfb[1] = QP_DIS_UPDATE_(void*, (uintptr_t)pfb[0]);
+#endif
         pfb = (void * *)pfb[0]; // advance to the next block
-        ++nTot;       // one more free block in the pool
+        ++nTot; // one more free block in the pool
     }
-    pfb[0] = (void * *)0; // the last link points to NULL
+    pfb[0] = (void *)0; // the last link points to NULL
 
     // dynamic range check
 #if (QF_MPOOL_CTR_SIZE == 1U)
@@ -88,9 +92,12 @@ void QMPool_init(QMPool * const me,
 
     me->nTot  = (QMPoolCtr)nTot;
     me->nFree = me->nTot; // all blocks are free
-    me->start = (void * *)poolSto; // the original start this pool buffer
     me->end   = pfb;      // the last block in this pool
     me->nMin  = me->nTot; // the minimum # free blocks
+
+#ifndef Q_UNSAFE
+    pfb[1] = QP_DIS_UPDATE_(void*, (uintptr_t)pfb[0]);
+#endif
 
     QF_CRIT_EXIT();
 }
@@ -109,8 +116,8 @@ void * QMPool_get(QMPool * const me,
     QF_CRIT_ENTRY();
 
     // get volatile into temporaries
-    void * *pfb = me->freeHead; // pointer to free block
-    QMPoolCtr nFree = me->nFree;
+    void * *pfb     = me->freeHead; // pointer to free block
+    QMPoolCtr nFree = me->nFree;    // volatile into temporary
 
     // have more free blocks than the requested margin?
     if (nFree > (QMPoolCtr)margin) {
@@ -118,6 +125,9 @@ void * QMPool_get(QMPool * const me,
 
         // fast temporary
         void * * const pfb_next = (void * *)pfb[0];
+        // the free block must have integrity (duplicate inverted storage)
+        Q_INVARIANT_INCRIT(342, QP_DIS_VERIFY_(uintptr_t,
+            pfb_next, (uintptr_t)pfb[1]));
 
         --nFree; // one less free block
         if (nFree == 0U) { // is the pool becoming empty?
@@ -125,7 +135,7 @@ void * QMPool_get(QMPool * const me,
             Q_ASSERT_INCRIT(350, pfb_next == (void * *)0);
 
             me->nFree = 0U; // no more free blocks
-            me->nMin = 0U;  // remember that the pool got empty
+            me->nMin  = 0U; // remember that the pool got empty
         }
         else { // the pool is NOT empty
 
@@ -144,6 +154,9 @@ void * QMPool_get(QMPool * const me,
         // change the allocated block contents so that it is different
         // than a free block inside the pool.
         pfb[0] = &me->end[1]; // invalid location beyond the end
+#ifndef Q_UNSAFE
+        pfb[1] = (void *)0; // invalidate the duplicate storage
+#endif
 
         QS_BEGIN_PRE(QS_QF_MPOOL_GET, qsId)
             QS_TIME_PRE();         // timestamp
@@ -165,7 +178,7 @@ void * QMPool_get(QMPool * const me,
 
     QF_CRIT_EXIT();
 
-    return (void *)pfb; // return the block or NULL pointer to the caller
+    return (void *)pfb; // return the block or NULL
 }
 
 //............................................................................
@@ -183,18 +196,28 @@ void QMPool_put(QMPool * const me,
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
+    Q_REQUIRE_INCRIT(400, pfb != (void * *)0);
+
+    // the block must be in range of this pool (block from a different pool?)
+    Q_REQUIRE_INCRIT(410, (me->start <= pfb) && (pfb <= me->end));
+    // the block must NOT be in the pool already (double free)
+    Q_INVARIANT_INCRIT(422, !QP_DIS_VERIFY_(uintptr_t,
+        pfb[0], (uintptr_t)pfb[1]));
+
     // get volatile into temporaries
     void * * const freeHead = me->freeHead;
     QMPoolCtr nFree = me->nFree;
 
-    Q_REQUIRE_INCRIT(400, nFree < me->nTot);
-    Q_REQUIRE_INCRIT(410, (me->start <= pfb) && (pfb <= me->end));
+    Q_REQUIRE_INCRIT(450, nFree < me->nTot);
 
     ++nFree; // one more free block in this pool
 
     me->freeHead = pfb; // set as new head of the free list
     me->nFree    = nFree;
     pfb[0]       = freeHead; // link into the list
+#ifndef Q_UNSAFE
+    pfb[1] = QP_DIS_UPDATE_(void*, (uintptr_t)freeHead);
+#endif
 
     QS_BEGIN_PRE(QS_QF_MPOOL_PUT, qsId)
         QS_TIME_PRE();         // timestamp

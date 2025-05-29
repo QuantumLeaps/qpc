@@ -218,6 +218,12 @@ QEvt const * QActive_get_(QActive * const me) {
 
     if (nFree <= me->eQueue.end) { // any events in the ring buffer?
 
+        // remove event from the tail
+        QEQueueCtr tail = me->eQueue.tail; // get volatile into temporary
+
+        QEvt const * const frontEvt = me->eQueue.ring[tail];
+        Q_ASSERT_INCRIT(450, frontEvt != (QEvt *)0);
+
         QS_BEGIN_PRE(QS_QF_ACTIVE_GET, me->prio)
             QS_TIME_PRE();       // timestamp
             QS_SIG_PRE(e->sig);  // the signal of this event
@@ -226,13 +232,7 @@ QEvt const * QActive_get_(QActive * const me) {
             QS_EQC_PRE(nFree);   // # free entries
         QS_END_PRE()
 
-        // remove event from the tail
-        QEQueueCtr tail = me->eQueue.tail; // get volatile into temporary
-        QEvt const * const frontEvt = me->eQueue.ring[tail];
-
-        Q_ASSERT_INCRIT(450, frontEvt != (QEvt *)0);
         me->eQueue.frontEvt = frontEvt; // update the original
-
         if (tail == 0U) { // need to wrap the tail?
             tail = me->eQueue.end;
         }
@@ -291,7 +291,7 @@ static void QActive_postFIFO_(QActive * const me,
         me->eQueue.frontEvt = e; // deliver event directly
 
 #ifdef QXK_H_
-        if (me->super.state.act == Q_ACTION_CAST(0)) { // eXtended?
+        if (me->super.state.act == Q_ACTION_CAST(0)) { // eXtended thread?
             QXTHREAD_EQUEUE_SIGNAL_(me); // signal eXtended Thread
         }
         else {
@@ -401,7 +401,7 @@ void QTicker_dispatch_(
 //............................................................................
 //! @private @memberof QTicker
 void QTicker_trig_(
-    QActive * const me,
+    QTicker * const me,
     void const * const sender)
 {
 #ifndef Q_SPY
@@ -413,27 +413,25 @@ void QTicker_trig_(
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    QEQueueCtr nTicks = me->eQueue.tail; // get volatile into temporary
+    QEQueueCtr nTicks = me->super.eQueue.tail; // get volatile into temporary
 
-    if (me->eQueue.frontEvt == (QEvt *)0) { // no tick events?
-        Q_REQUIRE_INCRIT(900, me->eQueue.nFree == 1U);
-        Q_REQUIRE_INCRIT(910, nTicks == 0U);
+    if (me->super.eQueue.frontEvt == (QEvt *)0) { // no tick events?
+        Q_REQUIRE_INCRIT(930, me->super.eQueue.nFree == 1U);
+        Q_REQUIRE_INCRIT(940, nTicks == 0U);
 
-        me->eQueue.frontEvt = &tickEvt; // deliver event directly
-        me->eQueue.nFree = 0U;
+        me->super.eQueue.frontEvt = &tickEvt; // deliver event directly
+        me->super.eQueue.nFree = 0U;
 
-        QACTIVE_EQUEUE_SIGNAL_(me); // signal the event queue
+        QACTIVE_EQUEUE_SIGNAL_(&me->super); // signal the event queue
     }
     else {
         Q_REQUIRE_INCRIT(950, (0U < nTicks) && (nTicks < 0xFFU));
-        Q_REQUIRE_INCRIT(960, me->eQueue.nFree == 0U);
-
     }
 
     ++nTicks; // account for one more tick event
-    me->eQueue.tail = nTicks; // update the original
+    me->super.eQueue.tail = nTicks; // update the original
 
-    QS_BEGIN_PRE(QS_QF_ACTIVE_POST, me->prio)
+    QS_BEGIN_PRE(QS_QF_ACTIVE_POST, me->super.prio)
         QS_TIME_PRE();      // timestamp
         QS_OBJ_PRE(sender); // the sender object
         QS_SIG_PRE(0U);     // the signal of the event

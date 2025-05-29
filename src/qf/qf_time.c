@@ -64,7 +64,7 @@ void QTimeEvt_ctorX(QTimeEvt * const me,
     me->tickRate = (uint8_t)tickRate;
     me->flags    = 0U;
 
-    me->super.refCtr_ = 0U; // adjust from the QEvt_ctor((sig) ctor
+    me->super.refCtr_ = 0U; // adjust from QEvt_ctor(sig)
 }
 
 //............................................................................
@@ -300,7 +300,7 @@ void QTimeEvt_tick_(
         QS_TEC_PRE(prev->ctr);   // tick ctr
         QS_U8_PRE(tickRate);     // tick rate
     QS_END_PRE()
-#endif // def Q_SPY
+#endif
 
     // scan the linked-list of time events at this rate...
     uint_fast8_t lbound = (2U * QF_MAX_ACTIVE); // fixed loop bound

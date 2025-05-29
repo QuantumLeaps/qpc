@@ -234,7 +234,8 @@ void QHsm_init_(
 
     me->state.fun = path[0]; // change the current active state
 #ifndef Q_UNSAFE
-    me->temp.uint = ~me->state.uint; // mark stable state configuration
+    // establish stable state configuration
+    me->temp.uint = (uintptr_t)~me->state.uint;
 #else
     Q_UNUSED_PAR(r);
 #endif
@@ -320,7 +321,8 @@ void QHsm_dispatch_(
 
     me->state.fun = path[0]; // change the current active state
 #ifndef Q_UNSAFE
-    me->temp.uint = ~me->state.uint; // mark stable state configuration
+    // establish stable state configuration
+    me->temp.uint = (uintptr_t)~me->state.uint;
 #endif
 }
 
@@ -556,7 +558,8 @@ bool QHsm_isIn_(
         Q_INVARIANT_LOCAL(740, lbound >= 0);
     } while (r == Q_RET_SUPER);
 
-    me->temp.uint = ~me->state.uint; // restore the invariant
+    // restore the invariant (stable state configuration)
+    me->temp.uint = (uintptr_t)~me->state.uint;
 
     return inState; // return the status
 }
@@ -598,7 +601,8 @@ QStateHandler QHsm_childState(QHsm * const me,
     } while (r == Q_RET_SUPER);
     Q_ENSURE_LOCAL(890, isFound);
 
-    me->super.temp.uint = ~me->super.state.uint; // restore the invariant
+    // restore the invariant (stable state configuration)
+    me->super.temp.uint = (uintptr_t)~me->super.state.uint;
 
     return child;
 }

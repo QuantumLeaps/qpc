@@ -190,7 +190,8 @@ void QMsm_init_(
     QS_TOP_INIT_(QS_QEP_INIT_TRAN, me->state.obj->stateHandler);
 
 #ifndef Q_UNSAFE
-    me->temp.uint = ~me->state.uint;
+    // establish stable state configuration
+    me->temp.uint = (uintptr_t)~me->state.uint;
 #endif
 }
 
@@ -301,7 +302,8 @@ void QMsm_dispatch_(
     }
 
 #ifndef Q_UNSAFE
-    me->temp.uint = ~me->state.uint; // mark stable state configuration
+    // establish stable state configuration
+    me->temp.uint = (uintptr_t)~me->state.uint;
 #endif
 }
 

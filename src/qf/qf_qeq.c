@@ -193,6 +193,7 @@ void QEQueue_postLIFO(QEQueue * const me,
 
     if (frontEvt != (QEvt *)0) { // was the queue NOT empty?
         QEQueueCtr tail = me->tail; // get volatile into temporary
+
         ++tail;
         if (tail == me->end) { // need to wrap the tail?
             tail = 0U; // wrap around
@@ -226,6 +227,11 @@ struct QEvt const * QEQueue_get(QEQueue * const me,
 
         // any events in the ring buffer?
         if (nFree <= me->end) {
+            // remove event from the tail
+            QEQueueCtr tail = me->tail; // get volatile into temporary
+
+            QEvt const * const frontEvt = me->ring[tail];
+            Q_ASSERT_INCRIT(450, frontEvt != (QEvt *)0);
 
             QS_BEGIN_PRE(QS_QF_EQUEUE_GET, qsId)
                 QS_TIME_PRE();      // timestamp
@@ -234,11 +240,6 @@ struct QEvt const * QEQueue_get(QEQueue * const me,
                 QS_2U8_PRE(e->poolNum_, e->refCtr_);
                 QS_EQC_PRE(nFree);  // # free entries
             QS_END_PRE()
-
-            QEQueueCtr tail = me->tail; // get volatile into temporary
-            QEvt const * const frontEvt = me->ring[tail];
-
-            Q_ASSERT_INCRIT(420, frontEvt != (QEvt *)0);
 
             me->frontEvt = frontEvt; // update the original
 
