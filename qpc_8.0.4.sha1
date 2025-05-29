@@ -1,7 +1,7 @@
 8cc1cf50aef9624decf8cd1545e9734b5c1d8191 *include/qequeue.h
 a806546e5528d517bcf8872bbfc949aebbf7da72 *include/qk.h
 86c7421784ddc37554d2e04ee245ae80f348ac66 *include/qmpool.h
-6844cc2e4a072ceed90c9d0f6d9b889a90af7937 *include/qp.h
+d77204af765692260ca7b94d236774757470f623 *include/qp.h
 8fd8abb45673a7731349bef4126ffc380fa357be *include/qp_pkg.h
 5e8038024653d7355b6e6c01bde8f156ef675faf *include/qpc.h
 e4d193050954ce8f0116f2a21b91068160edfbbf *include/qs.h
@@ -16,7 +16,7 @@ c8442376dd70f1b3eff18eca46a5d3bc7d0f56a9 *include/qxk.h
 6bf2a26afef47be93989b546660e1001bdc0f064 *src/qf/qep_hsm.c
 dd8671d679eb995fbaeeaa302b42d3ed83967254 *src/qf/qep_msm.c
 2616fcd5f5abe8bc94ca3ec397d34c72de5fa4e9 *src/qf/qf_act.c
-2b47bd16bcc681e64e155096973c6011ba0c7e67 *src/qf/qf_actq.c
+ebf51ad648576fb1774da53e9aa072569dcac4fc *src/qf/qf_actq.c
 cf040d2d1effdaa63f7209306669f55f3a2c81d6 *src/qf/qf_defer.c
 5c1f629a882a68b37c9f6f6395306f8ba2cc145e *src/qf/qf_dyn.c
 d18521092cce764a6792184b55e7ebdeb9cd4883 *src/qf/qf_mem.c

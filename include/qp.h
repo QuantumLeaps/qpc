@@ -714,7 +714,7 @@ void QTicker_dispatch_(
 
 //! @private @memberof QTicker
 void QTicker_trig_(
-    QActive * const me,
+    QTicker * const me,
     void const * const sender);
 
 //============================================================================
