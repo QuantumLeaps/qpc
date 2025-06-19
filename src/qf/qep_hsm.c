@@ -42,12 +42,17 @@ Q_DEFINE_THIS_MODULE("qep_hsm")
 // must be >= 3
 #define QHSM_MAX_NEST_DEPTH_  6
 
+//! @cond INTERNAL
+
+// immutable events corresponding to the reserved signals.
 static QEvt const l_reservedEvt_[4] = {
     QEVT_INITIALIZER(Q_EMPTY_SIG),
     QEVT_INITIALIZER(Q_ENTRY_SIG),
     QEVT_INITIALIZER(Q_EXIT_SIG),
     QEVT_INITIALIZER(Q_INIT_SIG)
 };
+
+//! @endcond
 
 //============================================================================
 //! @cond INTERNAL
@@ -310,14 +315,15 @@ void QHsm_dispatch_(
         QHsm_enter_target_(me, &path[0], ip, qsId);
         QS_TRAN_END_(QS_QEP_TRAN, s, path[0]);
     }
-#ifdef Q_SPY
     else if (r == Q_RET_HANDLED) {
         QS_TRAN0_(QS_QEP_INTERN_TRAN, s);
     }
-    else {
+    else if (r == Q_RET_IGNORED) {
         QS_TRAN0_(QS_QEP_IGNORED, me->state.fun);
     }
-#endif // Q_SPY
+    else {
+        Q_ERROR_LOCAL(360);
+    }
 
     me->state.fun = path[0]; // change the current active state
 #ifndef Q_UNSAFE

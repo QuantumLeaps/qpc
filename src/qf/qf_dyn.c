@@ -48,7 +48,7 @@ void QF_poolInit(
     uint_fast32_t const poolSize,
     uint_fast16_t const evtSize)
 {
-    uint_fast8_t const poolNum = QF_priv_.maxPool_;
+    uint8_t const poolNum = QF_priv_.maxPool_;
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
@@ -81,8 +81,8 @@ uint_fast16_t QF_poolGetMaxBlockSize(void) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    uint_fast8_t const maxPool = QF_priv_.maxPool_;
-    Q_REQUIRE_INCRIT(200, (0U < maxPool) && (maxPool <= QF_MAX_EPOOL));
+    uint8_t const maxPool = QF_priv_.maxPool_;
+    Q_REQUIRE_INCRIT(210, (0U < maxPool) && (maxPool <= QF_MAX_EPOOL));
 
     uint_fast16_t const maxSize =
         QF_EPOOL_EVENT_SIZE_(QF_priv_.ePool_[maxPool - 1U]);
@@ -98,9 +98,9 @@ uint_fast16_t QF_getPoolMin(uint_fast8_t const poolNum) {
     QF_CRIT_ENTRY();
 
 #ifndef Q_UNSAFE
-    uint_fast8_t const maxPool = QF_priv_.maxPool_;
-    Q_REQUIRE_INCRIT(300, maxPool <= QF_MAX_EPOOL);
-    Q_REQUIRE_INCRIT(310, (0U < poolNum) && (poolNum <= maxPool));
+    uint8_t const maxPool = QF_priv_.maxPool_;
+    Q_REQUIRE_INCRIT(310, maxPool <= QF_MAX_EPOOL);
+    Q_REQUIRE_INCRIT(320, (0U < poolNum) && (poolNum <= maxPool));
 #endif
     uint_fast16_t const min = (uint_fast16_t)QF_priv_.ePool_[poolNum - 1U].nMin;
 
@@ -119,8 +119,8 @@ QEvt * QF_newX_(
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    uint_fast8_t const maxPool = QF_priv_.maxPool_;
-    Q_REQUIRE_INCRIT(400, maxPool <= QF_MAX_EPOOL);
+    uint8_t const maxPool = QF_priv_.maxPool_;
+    Q_REQUIRE_INCRIT(410, maxPool <= QF_MAX_EPOOL);
 
     // find the pool id that fits the requested event size...
     uint8_t poolNum = 0U; // zero-based poolNum initially
@@ -131,7 +131,7 @@ QEvt * QF_newX_(
     }
 
     // - cannot run out of registered pools
-    Q_ASSERT_INCRIT(410, poolNum < maxPool);
+    Q_ASSERT_INCRIT(420, poolNum < maxPool);
 
     ++poolNum; // convert to 1-based poolNum
 
@@ -167,7 +167,7 @@ QEvt * QF_newX_(
         // This assertion means that the event allocation failed,
         // and this failure cannot be tolerated. The most frequent
         // reason is an event leak in the application.
-        Q_ASSERT_INCRIT(420, margin != QF_NO_MARGIN);
+        Q_ASSERT_INCRIT(430, margin != QF_NO_MARGIN);
 
         QS_BEGIN_PRE(QS_QF_NEW_ATTEMPT,
                 (uint_fast8_t)QS_EP_ID + poolNum)
@@ -210,9 +210,9 @@ void QF_gc(QEvt const * const e) {
         }
         else { // this is the last reference to this event, recycle it
 #ifndef Q_UNSAFE
-            uint_fast8_t const maxPool = QF_priv_.maxPool_;
-            Q_ASSERT_INCRIT(530, maxPool <= QF_MAX_EPOOL);
-            Q_ASSERT_INCRIT(540, poolNum <= maxPool);
+            uint8_t const maxPool = QF_priv_.maxPool_;
+            Q_ASSERT_INCRIT(540, maxPool <= QF_MAX_EPOOL);
+            Q_ASSERT_INCRIT(550, poolNum <= maxPool);
 #endif
             QS_BEGIN_PRE(QS_QF_GC,
                     (uint_fast8_t)QS_EP_ID + poolNum)

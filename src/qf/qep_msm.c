@@ -185,7 +185,7 @@ void QMsm_init_(
         --lbound; // fixed loop bound
         Q_INVARIANT_LOCAL(280, lbound >= 0);
         r = QMsm_execTatbl_(me, me->temp.tatbl, qsId);
-    } while (r >= Q_RET_TRAN_INIT);
+    } while (r == Q_RET_TRAN_INIT);
 
     QS_TOP_INIT_(QS_QEP_INIT_TRAN, me->state.obj->stateHandler);
 
@@ -287,18 +287,16 @@ void QMsm_dispatch_(
 #endif // Q_SPY
 
              --lbound; // fixed loop bound
-            Q_INVARIANT_LOCAL(360, lbound >= 0);
+            Q_INVARIANT_LOCAL(350, lbound >= 0);
         }
 
         QS_TRAN_END_(QS_QEP_TRAN, ts->stateHandler, s->stateHandler);
     }
-#ifdef Q_SPY
     else if (r == Q_RET_HANDLED) { // was the event handled?
         QS_TRAN0_(QS_QEP_INTERN_TRAN, s->stateHandler);
     }
-#endif // Q_SPY
     else {
-        // empty
+        Q_ERROR_LOCAL(360);
     }
 
 #ifndef Q_UNSAFE
@@ -321,7 +319,7 @@ static QState QMsm_execTatbl_(
     Q_REQUIRE_LOCAL(400, tatbl != (struct QMTranActTable *)0);
 
     QS_CRIT_STAT
-    QState r = Q_RET_NULL;
+    QState r = Q_RET_SUPER;
     QActionHandler const *a = &tatbl->act[0];
     int_fast8_t lbound = QMSM_MAX_TRAN_LENGTH_;
     while (*a != Q_ACTION_CAST(0)) {
@@ -422,7 +420,7 @@ static QState QMsm_enterHistory_(
     me->state.obj = hist; // set current state to the tran. target
 
     // initial tran. present?
-    QState r = Q_RET_NULL;
+    QState r = Q_RET_SUPER;
     if (hist->initAction != Q_ACTION_CAST(0)) {
         r = (*hist->initAction)(me); // execute the tran. action
         QS_TRAN_SEG_(QS_QEP_STATE_INIT,

@@ -39,7 +39,7 @@
 typedef struct {
 #if (QF_MAX_EPOOL > 0U)
     QF_EPOOL_TYPE_ ePool_[QF_MAX_EPOOL]; //!< @private @memberof QF_Attr
-    uint_fast8_t maxPool_;               //!< @private @memberof QF_Attr
+    uint8_t maxPool_;                    //!< @private @memberof QF_Attr
 #else
     uint8_t dummy;                       //!< @private @memberof QF_Attr
 #endif //  (QF_MAX_EPOOL == 0U)

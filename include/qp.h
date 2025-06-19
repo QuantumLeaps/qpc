@@ -30,10 +30,10 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR "8.0.4"
-#define QP_VERSION     804U
-// <VER>=804 <DATE>=250611
-#define QP_RELEASE     0x6A9FC8ABU
+#define QP_VERSION_STR "8.0.5"
+#define QP_VERSION     805U
+// <VER>=805 <DATE>=250811
+#define QP_RELEASE     0x6A81442A
 
 //============================================================================
 // default configuration settings
@@ -182,28 +182,25 @@ typedef struct {
     union QAsmAttr temp;            //!< @protected @memberof QAsm
 } QAsm;
 
-// All possible values returned from state/action handlers
+// All possible values returned from state/action handlers...
 // NOTE: The ordering is important for algorithmic correctness.
+
+// unhandled and needs to "bubble up"
 #define Q_RET_SUPER     ((QState)0U)
 #define Q_RET_UNHANDLED ((QState)1U)
 
-// handled and do not need to "bubble up"
+// handled and does not need to "bubble up"
 #define Q_RET_HANDLED   ((QState)2U)
 #define Q_RET_IGNORED   ((QState)3U)
 
-// entry/exit
+// entry/exit/initial
 #define Q_RET_ENTRY     ((QState)4U)
 #define Q_RET_EXIT      ((QState)5U)
+#define Q_RET_TRAN_INIT ((QState)6U)
 
-// no side effects
-#define Q_RET_NULL      ((QState)6U)
-
-// transitions need to execute transition-action table in ::QMsm
+// regular tran./tran.-to-history
 #define Q_RET_TRAN      ((QState)7U)
-#define Q_RET_TRAN_INIT ((QState)8U)
-
-// transitions that additionally clobber me->state
-#define Q_RET_TRAN_HIST ((QState)9U)
+#define Q_RET_TRAN_HIST ((QState)8U)
 
 // Reserved signals by the QP-framework.
 #define Q_EMPTY_SIG     ((QSignal)0U)

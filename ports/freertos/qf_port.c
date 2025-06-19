@@ -69,7 +69,7 @@ static void task_function(void *pvParameters); // FreeRTOS task signature
 // xQUEUE.uxLength          == StaticQueue_t.uxDummy4[1];
 //
 #define FREERTOS_QUEUE_GET_FREE(me_) \
-    ((me_)->osObject.uxDummy4[1] - (me_)->osObject.uxDummy4[0])
+    ((me_)->osObject.queue.uxDummy4[1] - (me_)->osObject.queue.uxDummy4[0])
 
 //============================================================================
 void QF_init(void) {
@@ -150,7 +150,7 @@ void QActive_start(QActive * const me,
         (UBaseType_t)qLen,     // length of the queue
         (UBaseType_t)sizeof(QEvtPtr), // item size
         (uint8_t *)qSto,       // storage buffer
-        &me->osObject);        // static queue buffer
+        &me->osObject.queue);  // static queue buffer
     QF_CRIT_ENTRY();
     Q_ASSERT_INCRIT(110, me->eQueue != (QueueHandle_t)0);
     QF_CRIT_EXIT();
@@ -164,8 +164,8 @@ void QActive_start(QActive * const me,
     QS_FLUSH(); // flush the trace buffer to the host
 
     // task name provided by the user in QActive_setAttr() or default name
-    char const *taskName = (me->thread.pxDummy1 != (void *)0)
-                             ? (char const *)me->thread.pxDummy1
+    char const *taskName = (me->osObject.task.pxDummy1 != (void *)0)
+                             ? (char const *)me->osObject.task.pxDummy1
                              : (char const *)"AO";
 
     // The FreeRTOS priority of the AO thread can be specified in two ways:
@@ -193,17 +193,17 @@ void QActive_start(QActive * const me,
     }
 
     // statically create the FreeRTOS task for the AO
-    TaskHandle_t task = xTaskCreateStatic(
+    me->thread = xTaskCreateStatic(
         &task_function, // the task function
         taskName ,      // the name of the task
         stkSize/sizeof(portSTACK_TYPE), // stack length
         (void *)me,     // the 'pvParameters' parameter
         freertos_prio,  // FreeRTOS priority
-        (StackType_t *)stkSto,        // stack storage
-        &me->thread);   // task buffer
+        (StackType_t *)stkSto, // stack storage
+        &me->osObject.task);   // task buffer
 
     QF_CRIT_ENTRY();
-    Q_ASSERT_INCRIT(120, task != (TaskHandle_t)0);
+    Q_ASSERT_INCRIT(120, me->thread != (TaskHandle_t)0);
     QF_CRIT_EXIT();
 
 #ifdef Q_UNSAFE
@@ -223,11 +223,11 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     QF_CRIT_ENTRY();
     // this function must be called before QActive_start(),
     // which implies that me->thread.pxDummy1 must not be used yet;
-    Q_REQUIRE_INCRIT(150, me->thread.pxDummy1 == (void *)0);
+    Q_REQUIRE_INCRIT(150, me->osObject.task.pxDummy1 == (void *)0);
     switch (attr1) {
         case TASK_NAME_ATTR:
             // temporarily store the name, cast 'const' away
-            me->thread.pxDummy1 = (void *)attr2;
+            me->osObject.task.pxDummy1 = (void *)attr2;
             break;
         // ...
         default:

@@ -38,8 +38,8 @@
 
 // QActive event queue and thread types for FreeRTOS
 #define QACTIVE_EQUEUE_TYPE     QueueHandle_t
-#define QACTIVE_OS_OBJ_TYPE     StaticQueue_t
-#define QACTIVE_THREAD_TYPE     StaticTask_t
+#define QACTIVE_OS_OBJ_TYPE     OsObject
+#define QACTIVE_THREAD_TYPE     TaskHandle_t
 
 // FreeRTOS requires the "FromISR" API in QP/C
 #define QF_ISR_API              1
@@ -58,6 +58,11 @@
 #include "FreeRTOS.h"  // FreeRTOS master include file, see NOTE3
 #include "task.h"      // FreeRTOS task management
 #include "queue.h"     // FreeRTOS queue management
+
+typedef struct {
+    StaticQueue_t queue;
+    StaticTask_t  task;
+} OsObject;
 
 #include "qequeue.h"   // QP event queue (for deferring events)
 #include "qmpool.h"    // QP memory pool (for event pools)
