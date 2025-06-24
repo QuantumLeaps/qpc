@@ -76,7 +76,7 @@ void QMPool_init(QMPool * const me,
     {
         pfb[0] = &pfb[inext]; // set the next link to next free block
 #ifndef Q_UNSAFE
-        pfb[1] = QP_DIS_UPDATE_(void*, (uintptr_t)pfb[0]);
+        pfb[1] = pfb[0]; // update duplicate storage
 #endif
         pfb = (void * *)pfb[0]; // advance to the next block
         ++nTot; // one more free block in the pool
@@ -96,7 +96,7 @@ void QMPool_init(QMPool * const me,
     me->nMin  = me->nTot; // the minimum # free blocks
 
 #ifndef Q_UNSAFE
-    pfb[1] = QP_DIS_UPDATE_(void*, (uintptr_t)pfb[0]);
+    pfb[1] = pfb[0]; // update duplicate storage
 #endif
 
     QF_CRIT_EXIT();
@@ -125,9 +125,8 @@ void * QMPool_get(QMPool * const me,
 
         // fast temporary
         void * * const pfb_next = (void * *)pfb[0];
-        // the free block must have integrity (duplicate inverted storage)
-        Q_INVARIANT_INCRIT(342, QP_DIS_VERIFY_(uintptr_t,
-            pfb_next, (uintptr_t)pfb[1]));
+        // the free block must have integrity (duplicate storage)
+        Q_INVARIANT_INCRIT(342, pfb_next == pfb[1]);
 
         --nFree; // one less free block
         if (nFree == 0U) { // is the pool becoming empty?
@@ -201,8 +200,7 @@ void QMPool_put(QMPool * const me,
     // the block must be in range of this pool (block from a different pool?)
     Q_REQUIRE_INCRIT(410, (me->start <= pfb) && (pfb <= me->end));
     // the block must NOT be in the pool already (double free)
-    Q_INVARIANT_INCRIT(422, !QP_DIS_VERIFY_(uintptr_t,
-        pfb[0], (uintptr_t)pfb[1]));
+    Q_INVARIANT_INCRIT(422, pfb[0] != pfb[1]);
 
     // get volatile into temporaries
     void * * const freeHead = me->freeHead;
@@ -216,7 +214,7 @@ void QMPool_put(QMPool * const me,
     me->nFree    = nFree;
     pfb[0]       = freeHead; // link into the list
 #ifndef Q_UNSAFE
-    pfb[1] = QP_DIS_UPDATE_(void*, (uintptr_t)freeHead);
+    pfb[1] = freeHead;  // update duplicate storage
 #endif
 
     QS_BEGIN_PRE(QS_QF_MPOOL_PUT, qsId)
