@@ -19,7 +19,7 @@ c8442376dd70f1b3eff18eca46a5d3bc7d0f56a9 *include/qxk.h
 92b829f22c7bda19f98ba7c7fbaf6a1431e5e8ce *src/qf/qf_actq.c
 1fa8ef33b4645f58d146c714389f60177b1d83bf *src/qf/qf_defer.c
 14a0ec10ec03d1188ff167aa07de7b7cd30f7582 *src/qf/qf_dyn.c
-e7f8b6282917decf07b96f0b6e41133c75aab8ae *src/qf/qf_mem.c
+c70f2ef1c892f3fb2e9a6781a98cdf0c7e96e989 *src/qf/qf_mem.c
 16616f6f8e3ad03333ae37b8614eeb96274dd116 *src/qf/qf_ps.c
 16cf334c566b1653135ef881ec3a2817ef36560b *src/qf/qf_qact.c
 6fa6a664678d7bdf0f8d3df6184d79537e209177 *src/qf/qf_qeq.c
@@ -36,7 +36,7 @@ f3e44eaa2c9c6f61410123b97950035907f80524 *src/qs/qs_rx.c
 9f1b983e0b8802390cec04f02b06e01a92ca05d2 *src/qs/qutest.c
 b1d2def9b8f6cde464170af7682ab0f01f4f40f6 *src/qv/CMakeLists.txt
 8f2c260f9844d7462b64d8a2d271ff050b27c6fa *src/qv/qv.c
-e7d916f568277368855ee62e09781be0e0c2fbd1 *src/qxk/qxk.c
+df2ddd5f32b8d108b650dda6adb200c8dd38535d *src/qxk/qxk.c
 e4a82244233a24905c292c1a4760498dfa09f3ba *src/qxk/qxk_mutex.c
 e0c7eb35f685f1d456b570218580784d18722af6 *src/qxk/qxk_sema.c
 321fce23618670efcc8426d3a2ba0061c7c74f4e *src/qxk/qxk_xthr.c
