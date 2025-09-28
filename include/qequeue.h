@@ -46,13 +46,13 @@ struct QEvt; // forward declaration
 //============================================================================
 //! @class QEQueue
 typedef struct QEQueue {
-    struct QEvt const * volatile frontEvt; //!< @private @memberof QEQueue
-    struct QEvt const * * ring;            //!< @private @memberof QEQueue
-    QEQueueCtr end;                        //!< @private @memberof QEQueue
-    QEQueueCtr volatile head;              //!< @private @memberof QEQueue
-    QEQueueCtr volatile tail;              //!< @private @memberof QEQueue
-    QEQueueCtr volatile nFree;             //!< @private @memberof QEQueue
-    QEQueueCtr nMin;                       //!< @private @memberof QEQueue
+    struct QEvt const *frontEvt;   //!< @private @memberof QEQueue
+    struct QEvt const * *ring;     //!< @private @memberof QEQueue
+    QEQueueCtr end;                //!< @private @memberof QEQueue
+    QEQueueCtr head;               //!< @private @memberof QEQueue
+    QEQueueCtr tail;               //!< @private @memberof QEQueue
+    QEQueueCtr nFree;              //!< @private @memberof QEQueue
+    QEQueueCtr nMin;               //!< @private @memberof QEQueue
 } QEQueue;
 
 //! @public @memberof QEQueue
@@ -76,18 +76,15 @@ struct QEvt const * QEQueue_get(QEQueue * const me,
     uint_fast8_t const qsId);
 
 //! @public @memberof QEQueue
-static inline QEQueueCtr QEQueue_getNFree(QEQueue const * const me) {
-    return me->nFree;
-}
+uint16_t QEQueue_getFree(QEQueue const * const me);
 
 //! @public @memberof QEQueue
-static inline QEQueueCtr QEQueue_getNMin(QEQueue const * const me) {
-    return me->nMin;
-}
+uint16_t QEQueue_getUse(QEQueue const * const me);
 
 //! @public @memberof QEQueue
-static inline bool QEQueue_isEmpty(QEQueue const * const me) {
-    return me->frontEvt == (struct QEvt *)0;
-}
+uint16_t QEQueue_getMin(QEQueue const * const me);
+
+//! @public @memberof QEQueue
+bool QEQueue_isEmpty(QEQueue const * const me);
 
 #endif // QEQUEUE_H_

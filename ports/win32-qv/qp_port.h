@@ -64,6 +64,9 @@
 
 #endif
 
+// static assertion (C11 Standard)
+#define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+
 // QF event queue and thread types for Win32-QV
 #define QACTIVE_EQUEUE_TYPE  QEQueue
 //QACTIVE_OS_OBJ_TYPE  not used in this port
@@ -115,44 +118,46 @@ void QF_onClockTick(void);
 
 #ifdef QP_IMPL
 
-    // QF scheduler locking for Win32-QV (not needed in single-thread port)
-    #define QF_SCHED_STAT_
-    #define QF_SCHED_LOCK_(dummy) ((void)0)
-    #define QF_SCHED_UNLOCK_()    ((void)0)
+// QF scheduler locking for Win32-QV (not needed in single-thread port)
+#define QF_SCHED_STAT_
+#define QF_SCHED_LOCK_(dummy) ((void)0)
+#define QF_SCHED_UNLOCK_()    ((void)0)
 
-    // QF event queue customization for Win32-QV...
-    #define QACTIVE_EQUEUE_WAIT_(me_) ((void)0)
+// QF event queue customization for Win32-QV...
+#define QACTIVE_EQUEUE_WAIT_(me_) ((void)0)
 
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet_insert(&QF_readySet_, (me_)->prio); \
-        (void)SetEvent(QF_win32Event_)
+#define QACTIVE_EQUEUE_SIGNAL_(me_) \
+    QPSet_insert(&QF_readySet_, (me_)->prio); \
+    (void)SetEvent(QF_win32Event_)
 
-    // native QF event pool operations
-    #define QF_EPOOL_TYPE_  QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
-    #define QF_EPOOL_PUT_(p_, e_, qsId_) \
-        (QMPool_put(&(p_), (e_), (qsId_)))
+// QMPool operations
+#define QF_EPOOL_TYPE_  QMPool
+#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+            (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
+#define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+            ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+#define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
-    // Minimum required Windows version is Windows-XP or newer (0x0501)
-    #ifdef WINVER
-    #undef WINVER
-    #endif
-    #ifdef _WIN32_WINNT
-    #undef _WIN32_WINNT
-    #endif
+// Minimum required Windows version is Windows-XP or newer (0x0501)
+#ifdef WINVER
+#undef WINVER
+#endif
+#ifdef _WIN32_WINNT
+#undef _WIN32_WINNT
+#endif
 
-    #define WINVER _WIN32_WINNT_WINXP
-    #define _WIN32_WINNT _WIN32_WINNT_WINXP
+#define WINVER _WIN32_WINNT_WINXP
+#define _WIN32_WINNT _WIN32_WINNT_WINXP
 
-    #define WIN32_LEAN_AND_MEAN
-    #include <windows.h> // Win32 API
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h> // Win32 API
 
-    extern QPSet QF_readySet_;
-    extern HANDLE QF_win32Event_; // Win32 event to signal events
+extern QPSet QF_readySet_;
+extern HANDLE QF_win32Event_; // Win32 event to signal events
 
 #endif // QP_IMPL
 

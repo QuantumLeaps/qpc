@@ -37,6 +37,9 @@
 // no-return function specifier (C11 Standard)
 #define Q_NORETURN   _Noreturn void
 
+// static assertion (C11 Standard)
+#define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+
 // event queue and thread types
 #define QACTIVE_EQUEUE_TYPE  struct k_msgq
 #define QACTIVE_THREAD_TYPE  struct k_thread
@@ -56,9 +59,9 @@
 #endif
 
 // include files -------------------------------------------------------------
-#include "qequeue.h"     // used for event deferral
-#include "qmpool.h"      // this QP port uses the native QF memory pool
-#include "qp.h"          // QP platform-independent public interface
+#include "qequeue.h"       // used for event deferral
+#include "qmpool.h"        // this QP port uses the native QF memory pool
+#include "qp.h"            // QP platform-independent public interface
 
 // Zephyr spinlock for QF critical section
 extern struct k_spinlock QF_spinlock;
@@ -67,29 +70,31 @@ extern struct k_spinlock QF_spinlock;
 // interface used only inside QF implementation, but not in applications
 #ifdef QP_IMPL
 
-    // scheduler locking, see NOTE2
-    #define QF_SCHED_STAT_
-    #define QF_SCHED_LOCK_(dummy) do { \
-        if (!k_is_in_isr()) {       \
-            k_sched_lock();         \
-        }                           \
-    } while (false)
+// scheduler locking, see NOTE2
+#define QF_SCHED_STAT_
+#define QF_SCHED_LOCK_(dummy) do { \
+    if (!k_is_in_isr()) {       \
+        k_sched_lock();         \
+    }                           \
+} while (false)
 
-    #define QF_SCHED_UNLOCK_() do { \
-        if (!k_is_in_isr()) {       \
-            k_sched_unlock();       \
-        } \
-    } while (false)
+#define QF_SCHED_UNLOCK_() do { \
+    if (!k_is_in_isr()) {       \
+        k_sched_unlock();       \
+    } \
+} while (false)
 
-    // native QF event pool customization
-    #define QF_EPOOL_TYPE_  QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
-    #define QF_EPOOL_PUT_(p_, e_, qsId_) \
-        (QMPool_put(&(p_), (e_), (qsId_)))
+// QMPool operations
+#define QF_EPOOL_TYPE_  QMPool
+#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+            (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
+#define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+            ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+#define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
 #endif // QP_IMPL
 

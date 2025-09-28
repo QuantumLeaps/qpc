@@ -1,4 +1,7 @@
 *.qms
+*.cov
+*.gcov
+*.log
 *.obj
 *.o
 *.d
@@ -29,6 +32,7 @@
 *.chw
 *.sfr
 *.ewt
+*.csv
 *.user
 *.avrsuo
 *.Debug
@@ -36,10 +40,29 @@
 *.bak
 version-*
 JLink*.*
+*.host
+*.trg
+
+dbg/
+rel/
+spy/
+build*/
+settings/
+.settings/
+targetConfigs/
+Debug/
+Release/
+Spy/
+QSpy/
+
+lib/
+obj/
+output/
 
 include/qs.h
 include/qs_pkg.h
 include/qxk.h
+
 src/qs/qs.c
 src/qs/qs_64bit.c
 src/qs/qs_fp.c
@@ -49,29 +72,14 @@ src/qxk/qxk.c
 src/qxk/qxk_mutex.c
 src/qxk/qxk_sema.c
 src/qxk/qxk_xthr.c
-zephyr/qutest_port.c
 
 ports/arm-cm/qxk/
 ports/arm-cm/qutest/
 ports/posix-qutest/
 ports/win32-qutest/
+zephyr/qutest_port.c
 
-priv/
-html/
-latex/
-dbg/
-rel/
-spy/
-build*/
-settings/
-.settings/
-targetConfigs/
+static-analysis/pclp/
 
-Debug/
-Release/
-Spy/
-QSpy/
-
-lib/
-obj/
-output/
+tests/TIN*/
+tests/TUN*/

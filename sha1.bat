@@ -1,20 +1,20 @@
 @setlocal
 
-set VERSION=8.0.5
+set FNAME=qpc_8.1.0.sha1
 
 :: usage
-@echo Usage: qpc_sha1 [gen]
+@echo Usage: sha1 [gen]
 @echo examples of use:
-@echo qpc_sha1     : check the sha1 sums in the file qpc_%VERSION%.sha1
-@echo qpc_sha1 gen : generate the sha1 file qpc_%VERSION%.sha1
+@echo sha1     : check the sha1 sums in the file %FNAME%
+@echo sha1 gen : generate the sha1 file %FNAME%
 @echo.
 
 @if NOT "%1"=="gen" (
-sha1sum --check --warn qpc_%VERSION%.sha1
+sha1sum --check --warn %FNAME%
 goto end
 )
 
-@echo generating qpc_%VERSION%.sha1...
+@echo generating %FNAME%...
 @sha1sum ^
     include/* ^
     src/qf/* src/qk/* src/qs/* src/qv/* src/qxk/* ^
@@ -36,7 +36,7 @@ goto end
     ports/posix/* ports/posix-qv/* ports/posix-qutest/* ^
     ports/win32/* ports/win32-qv/* ports/win32-qutest/* ^
     zephyr/* ^
-    > qpc_%VERSION%.sha1
+    > %FNAME%
 qclean
 @echo done
 

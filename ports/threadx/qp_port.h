@@ -79,43 +79,45 @@ enum ThreadX_ThreadAttrs {
 // interface used only inside QF implementation, but not in applications
 #ifdef QP_IMPL
 
-    // ThreadX-specific scheduler locking (implemented in qf_port.cpp)
-    #define QF_SCHED_STAT_ QFSchedLock lockStat_;
-    #define QF_SCHED_LOCK_(prio_) do {            \
-        if (TX_THREAD_GET_SYSTEM_STATE() != 0U) { \
-            lockStat_.lockPrio = 0U;              \
-        } else {                                  \
-            QFSchedLock_(&lockStat_, (prio_));    \
-        }                                         \
-    } while (false)
+// ThreadX-specific scheduler locking (implemented in qf_port.cpp)
+#define QF_SCHED_STAT_ QFSchedLock lockStat_;
+#define QF_SCHED_LOCK_(prio_) do {            \
+    if (TX_THREAD_GET_SYSTEM_STATE() != 0U) { \
+        lockStat_.lockPrio = 0U;              \
+    } else {                                  \
+        QFSchedLock_(&lockStat_, (prio_));    \
+    }                                         \
+} while (false)
 
-    #define QF_SCHED_UNLOCK_() do {     \
-        if (lockStat_.lockPrio != 0U) { \
-            QFSchedUnlock_(&lockStat_); \
-        }                               \
-    } while (false)
+#define QF_SCHED_UNLOCK_() do {     \
+    if (lockStat_.lockPrio != 0U) { \
+        QFSchedUnlock_(&lockStat_); \
+    }                               \
+} while (false)
 
-    typedef struct {
-        uint_fast8_t lockPrio;   // lock prio [QF numbering scheme]
-        UINT prevThre;           // previoius preemption threshold
-        TX_THREAD *lockHolder;   // the thread holding the lock
-    } QFSchedLock;
+typedef struct {
+    uint_fast8_t lockPrio;   // lock prio [QF numbering scheme]
+    UINT prevThre;           // previoius preemption threshold
+    TX_THREAD *lockHolder;   // the thread holding the lock
+} QFSchedLock;
 
-    // internal implementation of scheduler locking/unlocking
-    void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio);
-    void QFSchedUnlock_(QFSchedLock const * const lockStat);
-    // internal TX interrupt counter for TX_THREAD_GET_SYSTEM_STATE()
-    extern ULONG volatile _tx_thread_system_state;
+// internal implementation of scheduler locking/unlocking
+void QFSchedLock_(QFSchedLock * const lockStat, uint_fast8_t prio);
+void QFSchedUnlock_(QFSchedLock const * const lockStat);
+// internal TX interrupt counter for TX_THREAD_GET_SYSTEM_STATE()
+extern ULONG _tx_thread_system_state;
 
-    // native QF event pool customization
-    #define QF_EPOOL_TYPE_        QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
-    #define QF_EPOOL_PUT_(p_, e_, qsId_) \
-        (QMPool_put(&(p_), (e_), (qsId_)))
+// QMPool operations
+#define QF_EPOOL_TYPE_  QMPool
+#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+            (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
+#define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+            ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+#define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
 #endif // ifdef QP_IMPL
 
