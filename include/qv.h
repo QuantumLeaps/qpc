@@ -48,7 +48,7 @@ typedef struct {
 extern QV_Attr QV_priv_;
 
 //! @static @public @memberof QV
-void QV_schedDisable(uint_fast8_t const ceiling);
+void QV_schedDisable(uint8_t const ceiling);
 
 //! @static @public @memberof QV
 void QV_schedEnable(void);
@@ -70,14 +70,17 @@ void QV_onIdle(void);
 #define QACTIVE_EQUEUE_SIGNAL_(me_) \
     QPSet_insert(&QV_priv_.readySet, (uint_fast8_t)(me_)->prio)
 
-// QF event pool customization for QV...
-#define QF_EPOOL_TYPE_ QMPool
+// QMPool operations
+#define QF_EPOOL_TYPE_  QMPool
 #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
     (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-#define QF_EPOOL_EVENT_SIZE_(p_) ((uint_fast16_t)(p_).blockSize)
+#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
 #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
     ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
 #define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
 #endif // QP_IMPL
 

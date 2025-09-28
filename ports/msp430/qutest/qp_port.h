@@ -42,7 +42,7 @@
 // QF configuration for QK -- data members of the QActive class...
 
 // QActive event queue type
-#define QACTIVE_EQUEUE_TYPE     QEQueue
+#define QACTIVE_EQUEUE_TYPE  QEQueue
 // QACTIVE_OS_OBJ_TYPE not used in this port
 // QACTIVE_THREAD_TYPE not used in this port
 
@@ -71,25 +71,27 @@
 
 #ifdef QP_IMPL
 
-    // QUTest scheduler locking
-    #define QF_SCHED_STAT_ QSchedStatus lockStat_;
-    #define QF_SCHED_LOCK_(ceil_) (lockStat_ = QF_schedLock((ceil_)))
-    #define QF_SCHED_UNLOCK_()    (QF_schedUnlock(lockStat_))
+// QUTest scheduler locking
+#define QF_SCHED_STAT_ QSchedStatus lockStat_;
+#define QF_SCHED_LOCK_(ceil_) (lockStat_ = QF_schedLock((ceil_)))
+#define QF_SCHED_UNLOCK_()    (QF_schedUnlock(lockStat_))
 
-    // native QEQueue operations
-    #define QACTIVE_EQUEUE_WAIT_(me_) ((void)0)
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet_insert(&QS_tstPriv_.readySet, (uint_fast8_t)(me_)->prio)
+// native QEQueue operations
+#define QACTIVE_EQUEUE_WAIT_(me_) ((void)0)
+#define QACTIVE_EQUEUE_SIGNAL_(me_) \
+    QPSet_insert(&QS_tstPriv_.readySet, (uint_fast8_t)(me_)->prio)
 
-    // native QMPool operations
-    #define QF_EPOOL_TYPE_  QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+// QMPool operations
+#define QF_EPOOL_TYPE_  QMPool
+#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
         (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
+#define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
         ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
-    #define QF_EPOOL_PUT_(p_, e_, qsId_) \
-        (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
 #endif // QP_IMPL
 

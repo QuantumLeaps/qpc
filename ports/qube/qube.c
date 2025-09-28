@@ -1,5 +1,5 @@
 //============================================================================
-// SafeQP/C Real-Time Event Framework (RTEF)
+// QP/C Real-Time Event Framework (RTEF)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -7,19 +7,20 @@
 //                    ------------------------
 //                    Modern Embedded Software
 //
-// SPDX-License-Identifier: LicenseRef-QL-commercial
+// SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// This software is licensed under the terms of the Quantum Leaps commercial
-// licenses. Please contact Quantum Leaps for more information about the
-// available licensing options.
+// This software is dual-licensed under the terms of the open-source GNU
+// General Public License (GPL) or under the terms of one of the closed-
+// source Quantum Leaps commercial licenses.
 //
-// RESTRICTIONS
-// You may NOT :
-// (a) redistribute, encumber, sell, rent, lease, sublicense, or otherwise
-//     transfer rights in this software,
-// (b) remove or alter any trademark, logo, copyright or other proprietary
-//     notices, legends, symbols or labels present in this software,
-// (c) plagiarize this software to sidestep the licensing obligations.
+// Redistributions in source code must retain this top-level comment block.
+// Plagiarizing this software to sidestep the license obligations is illegal.
+//
+// NOTE:
+// The GPL does NOT permit the incorporation of this code into proprietary
+// programs. Please contact Quantum Leaps for commercial licensing options,
+// which expressly supersede the GPL and are designed explicitly for
+// closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -45,7 +46,7 @@ Q_DEFINE_THIS_MODULE("qube")
 
 // Global objects ==========================================================
 QPSet QF_readySet_;
-QPSet QF_readySet_dis_;
+QPSet QF_readySet_dis;
 uint_fast8_t QF_intLock_;
 
 //............................................................................
@@ -256,15 +257,6 @@ void QF_init(void) {
     PRINTF_S("Qube %s (c) state-machine.com\n\n%s\n\n",
              QP_VERSION_STR, HELP_STR);
 
-    // Clear the internal QF variables, so that the framework can start
-    // correctly even if the startup code fails to clear the uninitialized
-    // data (as is required by the C Standard).
-    //
-    QF_bzero_(&QF_priv_,             sizeof(QF_priv_));
-    QF_bzero_(&QF_readySet_,         sizeof(QF_readySet_));
-    QF_bzero_(&QF_intLock_,          sizeof(QF_intLock_));
-    QF_bzero_(&QActive_registry_[0], sizeof(QActive_registry_));
-
     QTimeEvt_init(); // initialize QTimeEvts
 
     l_currAO_name[0] = '\0';
@@ -393,7 +385,7 @@ uint8_t QS_onStartup(void const *arg) {
         .objPtrSize   = QS_OBJ_PTR_SIZE,
         .funPtrSize   = QS_FUN_PTR_SIZE,
         .tstampSize   = QS_TIME_SIZE,
-        .sigSize      = Q_SIGNAL_SIZE,
+        .sigSize      = 2U,
         .evtSize      = QF_EVENT_SIZ_SIZE,
         .queueCtrSize = QF_EQUEUE_CTR_SIZE,
         .poolCtrSize  = QF_MPOOL_CTR_SIZE,
