@@ -45,11 +45,12 @@ bool QActive_defer(QActive const * const me,
     struct QEQueue * const eq,
     QEvt const * const e)
 {
+    // post with margin==0U to use all available entries in the queue
     bool const status = QEQueue_post(eq, e, 0U, me->prio);
 
     QS_CRIT_STAT
     QS_CRIT_ENTRY();
-    if (status) {
+    if (status) { // deferring successful?
         QS_BEGIN_PRE(QS_QF_ACTIVE_DEFER, me->prio)
             QS_TIME_PRE();      // time stamp
             QS_OBJ_PRE(me);     // this active object
@@ -58,7 +59,7 @@ bool QActive_defer(QActive const * const me,
             QS_2U8_PRE(e->poolNum_, e->refCtr_);
         QS_END_PRE()
     }
-    else {
+    else { // deferring failed
         QS_BEGIN_PRE(QS_QF_ACTIVE_DEFER_ATTEMPT, me->prio)
             QS_TIME_PRE();      // time stamp
             QS_OBJ_PRE(me);     // this active object
@@ -77,18 +78,21 @@ bool QActive_defer(QActive const * const me,
 bool QActive_recall(QActive * const me,
     struct QEQueue * const eq)
 {
+    bool recalled = false; // assume failure
+
     QEvt const * const e = QEQueue_get(eq, me->prio);
-    bool recalled = false;
     if (e != (QEvt *)0) { // event available?
 
-        QACTIVE_POST_LIFO(me, e); // post it to the front of the AO's queue
+        // post it to the front of the AO's queue.
+        // NOTE: asserts internally if the posting fails.
+        QACTIVE_POST_LIFO(me, e);
 
         QF_CRIT_STAT
         QF_CRIT_ENTRY();
 
         if (e->poolNum_ != 0U) { // mutable event?
 
-            // after posting to the AO's queue the event must be referenced
+            // after posting to the AO's queue, the event must be referenced
             // at least twice: once in the deferred event queue (eq->get()
             // did NOT decrement the reference counter) and once in the
             // AO's event queue.
@@ -109,7 +113,7 @@ bool QActive_recall(QActive * const me,
 
         QF_CRIT_EXIT();
 
-        recalled = true;
+        recalled = true; // success
     }
     else {
         QS_CRIT_STAT
@@ -128,21 +132,21 @@ bool QActive_recall(QActive * const me,
 
 //............................................................................
 //! @protected @memberof QActive
-uint_fast16_t QActive_flushDeferred(QActive const * const me,
+uint16_t QActive_flushDeferred(QActive const * const me,
     struct QEQueue * const eq,
     uint_fast16_t const num)
 {
-    uint_fast16_t n = 0U;
-    while (n < num) {
+    uint16_t n = 0U; // the flushed event counter
+    while (n < num) { // below the requested number?
         QEvt const * const e = QEQueue_get(eq, me->prio);
-        if (e != (QEvt *)0) {
+        if (e != (QEvt *)0) { // event obtained from the queue?
             ++n; // count one more flushed event
 #if (QF_MAX_EPOOL > 0U)
             QF_gc(e); // garbage collect
 #endif
         }
-        else {
-            break;
+        else { // queue ran out of events
+            break; // done flushing
         }
     }
 

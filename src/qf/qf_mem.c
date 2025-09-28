@@ -49,6 +49,7 @@ void QMPool_init(QMPool * const me,
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
+    // the pool storage must be provided
     Q_REQUIRE_INCRIT(100, poolSto != (void *)0);
 
     me->start    = (void * *)poolSto;
@@ -56,10 +57,10 @@ void QMPool_init(QMPool * const me,
 
     // find # free links in a memory block, see NOTE1
     me->blockSize = (QMPoolSize)(2U * sizeof(void *));
-    uint_fast16_t inext = 2U; // index of the next block
+    uint_fast16_t index = 2U; // index of the next block
     while (me->blockSize < (QMPoolSize)blockSize) {
         me->blockSize += (QMPoolSize)sizeof(void *);
-        ++inext;
+        ++index;
     }
 
     // the pool buffer must fit at least one rounded-up block
@@ -74,16 +75,16 @@ void QMPool_init(QMPool * const me,
          size >= (uint_fast32_t)me->blockSize;
          size -= (uint_fast32_t)me->blockSize)
     {
-        pfb[0] = &pfb[inext]; // set the next link to next free block
+        pfb[0] = &pfb[index]; // set the next link to next free block
 #ifndef Q_UNSAFE
-        pfb[1] = pfb[0]; // update duplicate storage
+        pfb[1] = pfb[0]; // update Duplicate Storage (NOT inverted)
 #endif
         pfb = (void * *)pfb[0]; // advance to the next block
         ++nTot; // one more free block in the pool
     }
     pfb[0] = (void *)0; // the last link points to NULL
 
-    // dynamic range check
+    // the total number of blocks must fit in the configured dynamic range
 #if (QF_MPOOL_CTR_SIZE == 1U)
     Q_ASSERT_INCRIT(160, nTot < 0xFFU);
 #elif (QF_MPOOL_CTR_SIZE == 2U)
@@ -96,7 +97,7 @@ void QMPool_init(QMPool * const me,
     me->nMin  = me->nTot; // the minimum # free blocks
 
 #ifndef Q_UNSAFE
-    pfb[1] = pfb[0]; // update duplicate storage
+    pfb[1] = pfb[0]; // update Duplicate Storage (NOT inverted)
 #endif
 
     QF_CRIT_EXIT();
@@ -115,17 +116,19 @@ void * QMPool_get(QMPool * const me,
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    // get volatile into temporaries
+    // get members into temporaries
     void * *pfb     = me->freeHead; // pointer to free block
-    QMPoolCtr nFree = me->nFree;    // volatile into temporary
+    QMPoolCtr nFree = me->nFree;    // get member into temporary
 
     // have more free blocks than the requested margin?
     if (nFree > (QMPoolCtr)margin) {
+        // the free block pointer must be valid
         Q_ASSERT_INCRIT(330, pfb != (void * *)0);
 
         // fast temporary
         void * * const pfb_next = (void * *)pfb[0];
-        // the free block must have integrity (duplicate storage)
+
+        // the free block must have integrity (Duplicate Storage, NOT inverted)
         Q_INVARIANT_INCRIT(342, pfb_next == pfb[1]);
 
         --nFree; // one less free block
@@ -154,7 +157,7 @@ void * QMPool_get(QMPool * const me,
         // than a free block inside the pool.
         pfb[0] = &me->end[1]; // invalid location beyond the end
 #ifndef Q_UNSAFE
-        pfb[1] = (void *)0; // invalidate the duplicate storage
+        pfb[1] = (void *)0; // invalidate the Duplicate Storage
 #endif
 
         QS_BEGIN_PRE(QS_QF_MPOOL_GET, qsId)
@@ -190,22 +193,28 @@ void QMPool_put(QMPool * const me,
     Q_UNUSED_PAR(qsId);
 #endif
 
-    void * * const pfb = (void * *)block; // pointer to free block
+    void * * const pfb = (void * *)block; // ptr to free block
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
+    // the block returned to the pool must be valid
     Q_REQUIRE_INCRIT(400, pfb != (void * *)0);
 
     // the block must be in range of this pool (block from a different pool?)
     Q_REQUIRE_INCRIT(410, (me->start <= pfb) && (pfb <= me->end));
-    // the block must NOT be in the pool already (double free)
+
+    // the block must NOT be in the pool already (double free?)
+    // NOTE: a block in the pool already matches the duplicate storage,
+    // so the block not in the pool must NOT match the Duplicate Storage
     Q_INVARIANT_INCRIT(422, pfb[0] != pfb[1]);
 
-    // get volatile into temporaries
+    // get members into temporaries
     void * * const freeHead = me->freeHead;
     QMPoolCtr nFree = me->nFree;
 
+    // the number of free blocks must be below the total because
+    // one more block is just being returned to the pool
     Q_REQUIRE_INCRIT(450, nFree < me->nTot);
 
     ++nFree; // one more free block in this pool
@@ -214,7 +223,7 @@ void QMPool_put(QMPool * const me,
     me->nFree    = nFree;
     pfb[0]       = freeHead; // link into the list
 #ifndef Q_UNSAFE
-    pfb[1] = freeHead;  // update duplicate storage
+    pfb[1] = freeHead;  // update Duplicate Storage (NOT inverted)
 #endif
 
     QS_BEGIN_PRE(QS_QF_MPOOL_PUT, qsId)
@@ -226,11 +235,33 @@ void QMPool_put(QMPool * const me,
     QF_CRIT_EXIT();
 }
 
+//............................................................................
+//! @public @memberof QMPool
+uint16_t QMPool_getUse(QMPool const * const me) {
+    // NOTE: this function does NOT apply critical section, so it can
+    // be safely called from an already established critical section.
+    return (uint16_t)(me->nTot - me->nFree );
+}
+//............................................................................
+//! @public @memberof QMPool
+uint16_t QMPool_getFree(QMPool const * const me) {
+    // NOTE: this function does NOT apply critical section, so it can
+    // be safely called from an already established critical section.
+    return (uint16_t)me->nFree;
+}
+//............................................................................
+//! @public @memberof QMPool
+uint16_t QMPool_getMin(QMPool const * const me) {
+    // NOTE: this function does NOT apply critical section, so it can
+    // be safely called from an already established critical section.
+    return (uint16_t)me->nMin;
+}
+
 //============================================================================
 // NOTE1:
 // The memory buffer for the pool is organized as an array of void* pointers
 // (see void * data type). These pointers are used to form a linked-list
 // of free blocks in the pool. The first location pfb[0] is the actual link.
-// The second location pfb[1] is used in SafeQP as the redundant "duplicate
-// storage" for the link at pfb[0]. Therefore, the minimum number of void*
-// pointers (void * data type) inside a memory block is 2.
+// The second location pfb[1] is used in SafeQP as the redundant Duplicate
+// Storage (NOT inverted) for the link at pfb[0]. Therefore, the minimum
+// number of void* pointers (void * data type) inside a memory block is 2.

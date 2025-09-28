@@ -73,8 +73,6 @@ static void task_function(void *pvParameters); // FreeRTOS task signature
 
 //============================================================================
 void QF_init(void) {
-    QF_bzero_(&QF_priv_,             sizeof(QF_priv_));
-    QF_bzero_(&QActive_registry_[0], sizeof(QActive_registry_));
     QTimeEvt_init(); // initialize QTimeEvts
 }
 //............................................................................
@@ -205,10 +203,6 @@ void QActive_start(QActive * const me,
     QF_CRIT_ENTRY();
     Q_ASSERT_INCRIT(120, me->thread != (TaskHandle_t)0);
     QF_CRIT_EXIT();
-
-#ifdef Q_UNSAFE
-    Q_UNUSED_PAR(task);
-#endif
 }
 //............................................................................
 #ifdef QACTIVE_CAN_STOP
@@ -275,7 +269,6 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
 
 #if (QF_MAX_EPOOL > 0U)
     if (e->poolNum_ != 0U) { // is it a mutable event?
-        Q_ASSERT_INCRIT(205, e->refCtr_ < (2U * QF_MAX_ACTIVE));
         QEvt_refCtr_inc_(e); // increment the reference counter
     }
 #endif // (QF_MAX_EPOOL > 0U)
@@ -336,7 +329,6 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 
 #if (QF_MAX_EPOOL > 0U)
     if (e->poolNum_ != 0U) { // is it a mutable event?
-        Q_ASSERT_INCRIT(305, e->refCtr_ < (2U * QF_MAX_ACTIVE));
         QEvt_refCtr_inc_(e); // increment the reference counter
     }
 #endif // (QF_MAX_EPOOL > 0U)
@@ -419,7 +411,6 @@ bool QActive_postFromISR_(QActive * const me, QEvt const * const e,
 
 #if (QF_MAX_EPOOL > 0U)
     if (e->poolNum_ != 0U) { // is it a mutable event?
-        Q_ASSERT_INCRIT(405, e->refCtr_ < (2U * QF_MAX_ACTIVE));
         QEvt_refCtr_inc_(e); // increment the reference counter
     }
 #endif // (QF_MAX_EPOOL > 0U)
@@ -493,13 +484,6 @@ void QActive_publishFromISR_(QEvt const * const e,
 
     // is it a mutable event?
     if (e->poolNum_ != 0U) {
-        // NOTE: The reference counter of a mutable event is incremented to
-        // prevent premature recycling of the event while the multicasting
-        // is still in progress. At the end of the function, the garbage
-        // collector step (QF_gc()) decrements the reference counter and
-        // recycles the event if the counter drops to zero. This covers the
-        // case when the event was published without any subscribers.
-        Q_ASSERT_INCRIT(515, e->refCtr_ < (2U * QF_MAX_ACTIVE));
         QEvt_refCtr_inc_(e);
     }
 
@@ -555,6 +539,24 @@ void QActive_publishFromISR_(QEvt const * const e,
     // cases when the event was published with or without any subscribers.
     QF_gcFromISR(e);
 #endif // (QF_MAX_EPOOL > 0U)
+}
+//............................................................................
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueUse(uint_fast8_t const prio) {
+    Q_UNUSED_PAR(prio);
+    return 0U; // current use level in a queue not supported in this RTOS
+}
+//............................................................................
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueFree(uint_fast8_t const prio) {
+    Q_UNUSED_PAR(prio);
+    return 0U; // current use level in a queue not supported in this RTOS
+}
+//............................................................................
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueMin(uint_fast8_t const prio) {
+    Q_UNUSED_PAR(prio);
+    return 0U; // minimum free entries in a queue not supported in this RTOS
 }
 
 //............................................................................
@@ -666,7 +668,7 @@ QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
 #ifdef Q_SPY
     e = QMPool_getFromISR(&QF_priv_.ePool_[poolNum - 1U],
                   ((margin != QF_NO_MARGIN) ? margin : 0U),
-                  (uint_fast8_t)QS_EP_ID + poolNum);
+                  (uint_fast8_t)QS_ID_EP + poolNum);
 #else
     e = QMPool_getFromISR(&QF_priv_.ePool_[poolNum - 1U],
                       ((margin != QF_NO_MARGIN) ? margin : 0U), 0U);
@@ -679,7 +681,7 @@ QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
 
 #ifdef Q_SPY
         uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
-        QS_BEGIN_PRE(QS_QF_NEW, (uint_fast8_t)QS_EP_ID + poolNum)
+        QS_BEGIN_PRE(QS_QF_NEW, (uint_fast8_t)QS_ID_EP + poolNum)
             QS_TIME_PRE();        // timestamp
             QS_EVS_PRE(evtSize);  // the size of the event
             QS_SIG_PRE(sig);      // the signal of the event
@@ -696,7 +698,7 @@ QEvt *QF_newXFromISR_(uint_fast16_t const evtSize,
         Q_ASSERT_INCRIT(720, margin != QF_NO_MARGIN);
 
         QS_BEGIN_PRE(QS_QF_NEW_ATTEMPT,
-                (uint_fast8_t)QS_EP_ID + poolNum)
+                (uint_fast8_t)QS_ID_EP + poolNum)
             QS_TIME_PRE();        // timestamp
             QS_EVS_PRE(evtSize);  // the size of the event
             QS_SIG_PRE(sig);      // the signal of the event
@@ -722,7 +724,7 @@ void QF_gcFromISR(QEvt const * const e) {
         if (e->refCtr_ > 1U) { // isn't this the last reference?
 
             QS_BEGIN_PRE(QS_QF_GC_ATTEMPT,
-                    (uint_fast8_t)QS_EP_ID + poolNum)
+                    (uint_fast8_t)QS_ID_EP + poolNum)
                 QS_TIME_PRE();       // timestamp
                 QS_SIG_PRE(e->sig);  // the signal of the event
                 QS_2U8_PRE(poolNum, e->refCtr_);
@@ -736,7 +738,7 @@ void QF_gcFromISR(QEvt const * const e) {
         else { // this is the last reference to this event, recycle it
 
             QS_BEGIN_PRE(QS_QF_GC,
-                    (uint_fast8_t)QS_EP_ID + poolNum)
+                    (uint_fast8_t)QS_ID_EP + poolNum)
                 QS_TIME_PRE();       // timestamp
                 QS_SIG_PRE(e->sig);  // the signal of the event
                 QS_2U8_PRE(poolNum, e->refCtr_);
@@ -751,7 +753,7 @@ void QF_gcFromISR(QEvt const * const e) {
 #ifdef Q_SPY
             // cast 'const' away in (QEvt *)e is OK because it's a pool event
             QMPool_putFromISR(&QF_priv_.ePool_[poolNum - 1U], (QEvt *)e,
-                              (uint_fast8_t)QS_EP_ID + e->poolNum_);
+                              (uint_fast8_t)QS_ID_EP + e->poolNum_);
 #else
             QMPool_putFromISR(&QF_priv_.ePool_[poolNum - 1U], (QEvt *)e, 0U);
 #endif

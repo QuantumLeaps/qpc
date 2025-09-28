@@ -37,59 +37,41 @@
     #include "qs_dummy.h" // disable the QS software tracing
 #endif // Q_SPY
 
-//Q_DEFINE_THIS_MODULE("qf_act")
+Q_DEFINE_THIS_MODULE("qf_act")
 
 // QP version string embedded in the binary image
 char const QP_versionStr[24] = "QP/C " QP_VERSION_STR;
 
-QF_Attr QF_priv_;
-
-//! @static @private @memberof QActive
-QActive * QActive_registry_[QF_MAX_ACTIVE + 1U];
-
-//............................................................................
-//! @static @private @memberof QF
-void QF_bzero_(
-    void * const start,
-    uint_fast16_t const len)
-{
-    uint8_t *ptr = (uint8_t *)start;
-    for (uint_fast16_t n = len; n > 0U; --n) {
-        *ptr = 0U;
-        ++ptr;
-    }
+//----------------------------------------------------------------------------
+//! @public @memberof QEvt
+void QEvt_ctor(QEvt * const me, enum_t const sig) {
+    me->sig      = (QSignal)sig;
+    me->poolNum_ = 0x00U; // not a pool event
+    me->refCtr_  = 0xE0U; // use as an "event marker"
 }
-
 //............................................................................
-#ifndef QF_LOG2
-uint_fast8_t QF_LOG2(QPSetBits const bitmask) {
-    static uint8_t const log2LUT[16] = {
-        0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
-        4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U
-    };
-    uint_fast8_t n = 0U;
-    QPSetBits x = bitmask;
-    QPSetBits tmp;
-
-#if (QF_MAX_ACTIVE > 16U)
-    tmp = (x >> 16U);
-    if (tmp != 0U) {
-        n += 16U;
-        x = tmp;
-    }
-#endif
-#if (QF_MAX_ACTIVE > 8U)
-    tmp = (x >> 8U);
-    if (tmp != 0U) {
-        n += 8U;
-        x = tmp;
-    }
-#endif
-    tmp = (x >> 4U);
-    if (tmp != 0U) {
-        n += 4U;
-        x = tmp;
-    }
-    return n + log2LUT[x];
+//! @public @memberof QEvt
+QEvt *QEvt_init(QEvt * const me, uint8_t const dummy) {
+    // initialize a dynamic event without parameters
+    Q_UNUSED_PAR(dummy);
+    return me;
 }
-#endif // ndef QF_LOG2
+//............................................................................
+//! @private @memberof QEvt
+void QEvt_refCtr_inc_(QEvt const * const me) {
+    // NOTE: this function must be called *inside* a critical section
+
+    // the event reference count must not exceed the number of AOs
+    // in the system plus each AO possibly holding one event reference
+    Q_REQUIRE_INCRIT(200, me->refCtr_ < (QF_MAX_ACTIVE + QF_MAX_ACTIVE));
+
+    QEvt * const mut_me = (QEvt*)me; // cast 'const' away
+    ++mut_me->refCtr_;
+}
+//............................................................................
+//! @private @memberof QEvt
+void QEvt_refCtr_dec_(QEvt const * const me) {
+    // NOTE: this function must be called inside a critical section
+    QEvt * const mut_me = (QEvt*)me; // cast 'const' away
+    --mut_me->refCtr_;
+}

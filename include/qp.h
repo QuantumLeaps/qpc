@@ -30,18 +30,14 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR "8.0.5"
-#define QP_VERSION     805U
-// <VER>=805 <DATE>=250811
-#define QP_RELEASE     0x6A81442A
+#define QP_VERSION_STR  "8.1.0"
+#define QP_VERSION      810U
+// <VER>=810 <DATE>=250930
+#define QP_RELEASE      0x6A6F1BB5U
 
-//============================================================================
+//----------------------------------------------------------------------------
 // default configuration settings
 //! @cond INTERNAL
-
-#ifndef Q_SIGNAL_SIZE
-#define Q_SIGNAL_SIZE 2U
-#endif
 
 #ifndef QF_MAX_ACTIVE
 #define QF_MAX_ACTIVE 32U
@@ -85,60 +81,61 @@
 
 //! @endcond
 
-//============================================================================
+//----------------------------------------------------------------------------
 // global types/utilities
 
-typedef int    int_t;
-typedef int    enum_t;
+typedef int int_t;
+typedef int enum_t;
 
 #define Q_UNUSED_PAR(par_)  ((void)(par_))
 #define Q_DIM(array_)       (sizeof(array_) / sizeof((array_)[0U]))
 #define Q_UINT2PTR_CAST(type_, uint_) ((type_ *)(uint_))
 
-//============================================================================
 extern char const QP_versionStr[24];
 
-// QSignal type
-#if (Q_SIGNAL_SIZE == 1U)
-    typedef uint8_t QSignal;
-#elif (Q_SIGNAL_SIZE == 2U)
-    typedef uint16_t QSignal;
-#elif (Q_SIGNAL_SIZE == 4U)
-    typedef uint32_t QSignal;
-#endif
+//----------------------------------------------------------------------------
+typedef uint16_t QSignal;
 
-//============================================================================
 //! @class QEvt
 typedef struct QEvt {
-    QSignal sig;              //!< @public @memberof QEvt
-    uint8_t poolNum_;         //!< @private @memberof QEvt
-    uint8_t volatile refCtr_; //!< @private @memberof QEvt
+    uint32_t sig         : 16; //!< @public @memberof QEvt
+    uint32_t poolNum_    :  8; //!< @private @memberof QEvt
+    uint32_t refCtr_     :  8; //!< @private @memberof QEvt
+    uint32_t filler_;          //!< @private @memberof QEvt
 } QEvt;
 
-#define QEVT_INITIALIZER(sig_) { (QSignal)(sig_), 0x00U, 0xE0U }
-//! @public @memberof QEvt
-static inline void QEvt_ctor(QEvt * const me,
-    enum_t const sig)
-{
-    me->sig      = (QSignal)sig;
-    me->poolNum_ = 0x00U;
-    me->refCtr_  = 0xE0U;
-}
+#define QEVT_INITIALIZER(sig_) { \
+    .sig      = (QSignal)(sig_), \
+    .poolNum_ = 0x00U, \
+    .refCtr_  = 0xE0U, \
+    .filler_  = 0xE0E0E0E0U }
 
 //! @public @memberof QEvt
-static inline QEvt * QEvt_init(QEvt * const me,
-    uint8_t const dummy)
-{
-    Q_UNUSED_PAR(dummy);
-    return me;
-}
+void QEvt_ctor(QEvt * const me, enum_t const sig);
+
+//! @public @memberof QEvt
+QEvt *QEvt_init(QEvt * const me, uint8_t const dummy);
+
+//! @private @memberof QEvt
+void QEvt_refCtr_inc_(QEvt const* const me);
+
+//! @private @memberof QEvt
+void QEvt_refCtr_dec_(QEvt const* const me);
+
+#ifndef Q_UNSAFE
+//! @private @memberof QEvt
+void QEvt_update_(QEvt * const me);
+
+//! @private @memberof QEvt
+bool QEvt_verify_(QEvt const * const me);
+#endif
 
 typedef QEvt const * QEvtPtr;
 
 #define QEVT_DYNAMIC           ((uint8_t)0)
 #define Q_EVT_CAST(class_)     ((class_ const *)(e))
 
-//============================================================================
+//----------------------------------------------------------------------------
 // QEP (hierarchical event processor) types
 
 typedef uint_fast8_t QState;
@@ -157,64 +154,56 @@ typedef struct QMState {
 } QMState;
 
 typedef struct QMTranActTable {
-    QMState const *target;        //!< @private @memberof QMTranActTable
-    QActionHandler const act[1];  //!< @private @memberof QMTranActTable
+    QMState const *target;            //!< @private @memberof QMTranActTable
+    QActionHandler const act[1];      //!< @private @memberof QMTranActTable
 } QMTranActTable;
 
 union QAsmAttr {
-    QStateHandler   fun;          //!< @private @memberof QAsmAttr
-    QActionHandler  act;          //!< @private @memberof QAsmAttr
-    QXThreadHandler thr;          //!< @private @memberof QAsmAttr
-    QMTranActTable  const *tatbl; //!< @private @memberof QAsmAttr
-    struct QMState  const *obj;   //!< @private @memberof QAsmAttr
-    uintptr_t       uint;         //!< @private @memberof QAsmAttr
+    QStateHandler   fun;              //!< @private @memberof QAsmAttr
+    QActionHandler  act;              //!< @private @memberof QAsmAttr
+    QXThreadHandler thr;              //!< @private @memberof QAsmAttr
+    QMTranActTable  const *tatbl;     //!< @private @memberof QAsmAttr
+    struct QMState  const *obj;       //!< @private @memberof QAsmAttr
+    uintptr_t       uint;             //!< @private @memberof QAsmAttr
 };
+
+#define Q_USER_SIG      ((enum_t)4)
 
 #define Q_STATE_CAST(handler_) ((QStateHandler)(handler_))
 #define Q_ACTION_CAST(action_) ((QActionHandler)(action_))
 #define Q_ACTION_NULL          ((QActionHandler)0)
 
-//============================================================================
+//----------------------------------------------------------------------------
 //! @class QAsm
 typedef struct {
-    struct QAsmVtable const * vptr; //!< @protected @memberof QAsm
-    union QAsmAttr state;           //!< @protected @memberof QAsm
-    union QAsmAttr temp;            //!< @protected @memberof QAsm
+    struct QAsmVtable const * vptr;   //!< @protected @memberof QAsm
+    union QAsmAttr state;             //!< @protected @memberof QAsm
+    union QAsmAttr temp;              //!< @protected @memberof QAsm
 } QAsm;
 
 // All possible values returned from state/action handlers...
-// NOTE: The ordering is important for algorithmic correctness.
-
-// unhandled and needs to "bubble up"
+// NOTE: The numerical order is important for algorithmic correctness.
 #define Q_RET_SUPER     ((QState)0U)
 #define Q_RET_UNHANDLED ((QState)1U)
-
-// handled and does not need to "bubble up"
 #define Q_RET_HANDLED   ((QState)2U)
-#define Q_RET_IGNORED   ((QState)3U)
+#define Q_RET_TRAN      ((QState)3U)
+#define Q_RET_TRAN_HIST ((QState)4U)
 
-// entry/exit/initial
-#define Q_RET_ENTRY     ((QState)4U)
-#define Q_RET_EXIT      ((QState)5U)
-#define Q_RET_TRAN_INIT ((QState)6U)
+// used in QHsm only...
+#define Q_RET_IGNORED   ((QState)5U)
 
-// regular tran./tran.-to-history
-#define Q_RET_TRAN      ((QState)7U)
-#define Q_RET_TRAN_HIST ((QState)8U)
+// used in QMsm only...
+#define Q_RET_ENTRY     ((QState)6U)
+#define Q_RET_EXIT      ((QState)7U)
+#define Q_RET_TRAN_INIT ((QState)8U)
 
-// Reserved signals by the QP-framework.
+// Reserved signals by the QP-framework (used in QHsm only)
 #define Q_EMPTY_SIG     ((QSignal)0U)
 #define Q_ENTRY_SIG     ((QSignal)1U)
 #define Q_EXIT_SIG      ((QSignal)2U)
 #define Q_INIT_SIG      ((QSignal)3U)
-#define Q_USER_SIG      ((enum_t)4)
 
-//! @protected @memberof QAsm
-static inline void QAsm_ctor(QAsm * const me) {
-    me->vptr      = (struct QAsmVtable *)0;
-    me->state.fun = (QStateHandler)0;
-    me->temp.fun  = (QStateHandler)0;
-}
+// NOTE: QAsm_ctor() not declared because this is a purely abstract class
 
 struct QAsmVtable {
     void (*init)(QAsm * const me, void const * const e,
@@ -223,7 +212,7 @@ struct QAsmVtable {
                      uint_fast8_t const qsId);
     bool (*isIn)(QAsm * const me, QStateHandler const stateHndl);
 #ifdef Q_SPY
-    QStateHandler (*getStateHandler)(QAsm * const me);
+    QStateHandler (*getStateHandler)(QAsm const * const me);
 #endif // Q_SPY
 };
 
@@ -243,7 +232,7 @@ struct QAsmVtable {
 
 #define Q_ASM_UPCAST(ptr_) ((QAsm *)(ptr_))
 
-//============================================================================
+//----------------------------------------------------------------------------
 //! @class QHsm
 //! @extends QAsm
 typedef struct {
@@ -255,14 +244,12 @@ void QHsm_ctor(QHsm * const me,
     QStateHandler const initial);
 
 //! @private @memberof QHsm
-void QHsm_init_(
-    QAsm * const me,
+void QHsm_init_(QAsm * const me,
     void const * const e,
     uint_fast8_t const qsId);
 
 //! @private @memberof QHsm
-void QHsm_dispatch_(
-    QAsm * const me,
+void QHsm_dispatch_(QAsm * const me,
     QEvt const * const e,
     uint_fast8_t const qsId);
 
@@ -273,7 +260,7 @@ bool QHsm_isIn_(
 
 #ifdef Q_SPY
 //! @private @memberof QHsm
-QStateHandler QHsm_getStateHandler_(QAsm * const me);
+QStateHandler QHsm_getStateHandler_(QAsm const * const me);
 #endif // def Q_SPY
 
 //! @protected @memberof QHsm
@@ -281,9 +268,7 @@ QState QHsm_top(QHsm const * const me,
     QEvt const * const e);
 
 //! @public @memberof QHsm
-static inline QStateHandler QHsm_state(QHsm const * const me) {
-    return me->super.state.fun;
-}
+QStateHandler QHsm_state(QHsm const * const me);
 
 //! @public @memberof QHsm
 QStateHandler QHsm_childState(QHsm * const me,
@@ -303,7 +288,7 @@ QStateHandler QHsm_childState(QHsm * const me,
 #define Q_HANDLED()   ((QState)Q_RET_HANDLED)
 #define Q_UNHANDLED() ((QState)Q_RET_UNHANDLED)
 
-//============================================================================
+//----------------------------------------------------------------------------
 //! @class QMsm
 //! @extends QAsm
 typedef struct {
@@ -333,17 +318,19 @@ bool QMsm_isIn_(
 
 #ifdef Q_SPY
 //! @public @memberof QMsm
-QStateHandler QMsm_getStateHandler_(QAsm * const me);
+QStateHandler QMsm_getStateHandler_(QAsm const * const me);
 #endif // def Q_SPY
 
 //! @public @memberof QMsm
-static inline QMState const * QMsm_stateObj(QMsm const * const me) {
-    return me->super.state.obj;
-}
+QMState const * QMsm_topQMState(void);
+
+//! @public @memberof QMsm
+QMState const * QMsm_stateObj(QMsm const * const me);
 
 //! @public @memberof QMsm
 QMState const * QMsm_childStateObj(QMsm const * const me,
-    QMState const * const parent);
+    QMState const * const parentHndl);
+
 //============================================================================
 // QEP-macros
 
@@ -374,7 +361,7 @@ QMState const * QMsm_childStateObj(QMsm const * const me,
 #define QM_SUPER()     ((QState)Q_RET_SUPER)
 #define QM_STATE_NULL  ((QMState *)0)
 
-//============================================================================
+//----------------------------------------------------------------------------
 // QF (active object framework) types
 
 typedef uint16_t QPrioSpec;
@@ -399,95 +386,37 @@ typedef uint16_t QPrioSpec;
     uint_fast8_t QF_LOG2(QPSetBits const bitmask);
 #endif // ndef QF_LOG2
 
-//============================================================================
+//----------------------------------------------------------------------------
 //! @class QPSet
 typedef struct {
     //! @private @memberof QPSet
-    QPSetBits bits[((QF_MAX_ACTIVE + (8U*sizeof(QPSetBits))) - 1U)
-                   / (8U*sizeof(QPSetBits))];
+    QPSetBits bits0;
+#if (QF_MAX_ACTIVE > 32U)
+    //! @private @memberof QPSet
+    QPSetBits bits1;
+#endif
 } QPSet;
 
 //! @public @memberof QPSet
-static inline void QPSet_setEmpty(QPSet * const me) {
-    me->bits[0] = 0U;
-#if (QF_MAX_ACTIVE > 32)
-    me->bits[1] = 0U;
-#endif
-}
+void QPSet_setEmpty(QPSet * const me);
 
 //! @public @memberof QPSet
-static inline bool QPSet_isEmpty(QPSet const * const me) {
-#if (QF_MAX_ACTIVE <= 32U)
-    return (me->bits[0] == 0U);
-#else
-    return (me->bits[0] == 0U) ? (me->bits[1] == 0U) : false;
-#endif
-}
+bool QPSet_isEmpty(QPSet const * const me);
 
 //! @public @memberof QPSet
-static inline bool QPSet_notEmpty(QPSet const * const me) {
-#if (QF_MAX_ACTIVE <= 32U)
-    return (me->bits[0] != 0U);
-#else
-    return (me->bits[0] != 0U) ? true : (me->bits[1] != 0U);
-#endif
-}
+bool QPSet_notEmpty(QPSet const * const me);
 
 //! @public @memberof QPSet
-static inline bool QPSet_hasElement(QPSet const * const me,
-    uint_fast8_t const n)
-{
-#if (QF_MAX_ACTIVE <= 32U)
-    return (me->bits[0] & ((QPSetBits)1U << (n - 1U))) != 0U;
-#else
-    return (n <= 32U)
-        ? ((me->bits[0] & ((QPSetBits)1U << (n - 1U)))  != 0U)
-        : ((me->bits[1] & ((QPSetBits)1U << (n - 33U))) != 0U);
-#endif
-}
+bool QPSet_hasElement(QPSet const * const me, uint_fast8_t const n);
 
 //! @public @memberof QPSet
-static inline void QPSet_insert(QPSet * const me,
-    uint_fast8_t const n)
-{
-#if (QF_MAX_ACTIVE <= 32U)
-    me->bits[0] = (me->bits[0] | ((QPSetBits)1U << (n - 1U)));
-#else
-    if (n <= 32U) {
-        me->bits[0] = (me->bits[0] | ((QPSetBits)1U << (n - 1U)));
-    }
-    else {
-        me->bits[1] = (me->bits[1] | ((QPSetBits)1U << (n - 33U)));
-    }
-#endif
-}
+void QPSet_insert(QPSet * const me, uint_fast8_t const n);
 
 //! @public @memberof QPSet
-static inline void QPSet_remove(QPSet * const me,
-    uint_fast8_t const n)
-{
-#if (QF_MAX_ACTIVE <= 32U)
-    me->bits[0] = (me->bits[0] & (QPSetBits)(~((QPSetBits)1U << (n - 1U))));
-#else
-    if (n <= 32U) {
-        (me->bits[0] = (me->bits[0] & ~((QPSetBits)1U << (n - 1U))));
-    }
-    else {
-        (me->bits[1] = (me->bits[1] & ~((QPSetBits)1U << (n - 33U))));
-    }
-#endif
-}
+void QPSet_remove(QPSet * const me, uint_fast8_t const n);
 
 //! @public @memberof QPSet
-static inline uint_fast8_t QPSet_findMax(QPSet const * const me) {
-#if (QF_MAX_ACTIVE <= 32U)
-    return QF_LOG2(me->bits[0]);
-#else
-    return (me->bits[1] != 0U)
-        ? (QF_LOG2(me->bits[1]) + 32U)
-        : (QF_LOG2(me->bits[0]));
-#endif
-}
+uint_fast8_t QPSet_findMax(QPSet const * const me);
 
 //! @struct QSubscrList
 typedef struct {
@@ -496,7 +425,7 @@ typedef struct {
 
 struct QEQueue; // forward declaration
 
-//============================================================================
+//----------------------------------------------------------------------------
 //! @class QActive
 //! @extends QAsm
 typedef struct QActive {
@@ -571,7 +500,13 @@ void QActive_publish_(
     uint_fast8_t const qsId);
 
 //! @static @public @memberof QActive
-uint_fast16_t QActive_getQueueMin(uint_fast8_t const prio);
+uint16_t QActive_getQueueUse(uint_fast8_t const prio);
+
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueFree(uint_fast8_t const prio);
+
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueMin(uint_fast8_t const prio);
 
 //! @protected @memberof QActive
 void QActive_subscribe(QActive const * const me,
@@ -594,14 +529,16 @@ bool QActive_recall(QActive * const me,
     struct QEQueue * const eq);
 
 //! @protected @memberof QActive
-uint_fast16_t QActive_flushDeferred(QActive const * const me,
+uint16_t QActive_flushDeferred(QActive const * const me,
     struct QEQueue * const eq,
     uint_fast16_t const num);
 
 //! @private @memberof QActive
 void QActive_evtLoop_(QActive * const me);
 
-//============================================================================
+#define Q_ACTIVE_UPCAST(ptr_) ((QActive *)(ptr_))
+
+//----------------------------------------------------------------------------
 //! @class QMActive
 //! @extends QActive
 typedef struct {
@@ -612,18 +549,20 @@ typedef struct {
 void QMActive_ctor(QMActive * const me,
     QStateHandler const initial);
 
-//============================================================================
+//----------------------------------------------------------------------------
+#if (QF_MAX_TICK_RATE > 0U)
+
 //! @class QTimeEvt
 //! @extends QEvt
 typedef struct QTimeEvt {
-    QEvt super;                      //!< @protected @memberof QTimeEvt
+    QEvt super;             //!< @protected @memberof QTimeEvt
 
-    struct QTimeEvt * volatile next; //!< @private @memberof QTimeEvt
-    void * act;                      //!< @private @memberof QTimeEvt
-    QTimeEvtCtr volatile ctr;        //!< @private @memberof QTimeEvt
-    QTimeEvtCtr interval;            //!< @private @memberof QTimeEvt
-    uint8_t tickRate;                //!< @private @memberof QTimeEvt
-    uint8_t flags;                   //!< @private @memberof QTimeEvt
+    struct QTimeEvt *next;  //!< @private @memberof QTimeEvt
+    void * act;             //!< @private @memberof QTimeEvt
+    QTimeEvtCtr ctr;        //!< @private @memberof QTimeEvt
+    QTimeEvtCtr interval;   //!< @private @memberof QTimeEvt
+    uint8_t tickRate;       //!< @private @memberof QTimeEvt
+    uint8_t flags;          //!< @private @memberof QTimeEvt
 } QTimeEvt;
 
 //! @public @memberof QTimeEvt
@@ -648,7 +587,7 @@ bool QTimeEvt_rearm(QTimeEvt * const me,
 bool QTimeEvt_wasDisarmed(QTimeEvt * const me);
 
 //! @public @memberof QTimeEvt
-QTimeEvtCtr QTimeEvt_currCtr(QTimeEvt const * const me);
+QTimeEvtCtr QTimeEvt_getCtr(QTimeEvt const * const me);
 
 //! @static @private @memberof QTimeEvt
 void QTimeEvt_init(void);
@@ -674,7 +613,7 @@ QTimeEvt * QTimeEvt_expire_(QTimeEvt * const me,
 //! @static @public @memberof QTimeEvt
 bool QTimeEvt_noActive(uint_fast8_t const tickRate);
 
-//============================================================================
+//----------------------------------------------------------------------------
 //! @class QTicker
 //! @extends QActive
 typedef struct {
@@ -686,23 +625,26 @@ void QTicker_ctor(QTicker * const me,
     uint_fast8_t const tickRate);
 
 //! @private @memberof QTicker
-void QTicker_init_(
-    QAsm * const me,
+void QTicker_init_(QAsm * const me,
     void const * const par,
     uint_fast8_t const qsId);
 
 //! @private @memberof QTicker
-void QTicker_dispatch_(
-    QAsm * const me,
+void QTicker_dispatch_(QAsm * const me,
     QEvt const * const e,
     uint_fast8_t const qsId);
 
 //! @private @memberof QTicker
-void QTicker_trig_(
-    QTicker * const me,
+void QTicker_trig_(QTicker * const me,
     void const * const sender);
 
-//============================================================================
+#else
+
+void QTimeEvt_init(void); // dummy init
+
+#endif // (QF_MAX_TICK_RATE > 0U)
+
+//----------------------------------------------------------------------------
 // QF base facilities
 
 //! @static @public @memberof QF
@@ -727,10 +669,14 @@ void QF_onCleanup(void);
         QActive * next);
 #endif // def QF_ON_CONTEXT_SW
 
-#define Q_PRIO(prio_, pthre_) ((QPrioSpec)((prio_) | ((pthre_) << 8U)))
+static inline QPrioSpec Q_PRIO(uint8_t const prio, uint8_t const pthre) {
+    // combine the QF prio. preemption-threshld pthre in the upper byte
+    return (QPrioSpec)((uint32_t)prio | ((uint32_t)pthre << 8U));
+}
+
 #define QF_NO_MARGIN ((uint_fast16_t)0xFFFFU)
 
-//============================================================================
+//----------------------------------------------------------------------------
 // QF dynamic memory facilities
 
 //! @static @public @memberof QF
@@ -740,10 +686,16 @@ void QF_poolInit(
     uint_fast16_t const evtSize);
 
 //! @static @public @memberof QF
-uint_fast16_t QF_poolGetMaxBlockSize(void);
+uint16_t QF_poolGetMaxBlockSize(void);
 
 //! @static @public @memberof QF
-uint_fast16_t QF_getPoolMin(uint_fast8_t const poolNum);
+uint16_t QF_getPoolUse(uint_fast8_t const poolNum);
+
+//! @static @public @memberof QF
+uint16_t QF_getPoolFree(uint_fast8_t const poolNum);
+
+//! @static @public @memberof QF
+uint16_t QF_getPoolMin(uint_fast8_t const poolNum);
 
 //! @static @private @memberof QF
 QEvt * QF_newX_(
@@ -814,7 +766,7 @@ void QF_gcFromISR(QEvt const * const e);
     #define QF_CRIT_EXIT_NOP() ((void)0)
 #endif // ndef QF_CRIT_EXIT_NOP
 
-//============================================================================
+//----------------------------------------------------------------------------
 // memory protection facilities
 
 #ifdef QF_MEM_ISOLATE

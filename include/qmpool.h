@@ -38,9 +38,9 @@
 
 #define QF_MPOOL_EL(evType_) struct { \
     void * sto_[((sizeof(evType_) - 1U) / sizeof(void *)) + \
-                    (sizeof(evType_) < (2U * sizeof(void *)) ? 2U : 1U)]; \
-}
+                    (sizeof(evType_) < (2U * sizeof(void *)) ? 2U : 1U)]; }
 
+//============================================================================
 #if (QF_MPOOL_SIZ_SIZE == 1U)
     typedef uint8_t QMPoolSize;
 #elif (QF_MPOOL_SIZ_SIZE == 2U)
@@ -64,13 +64,13 @@
 //============================================================================
 //! @class QMPool
 typedef struct {
-    void * * start;             //!< @private @memberof QMPool
-    void * * end;               //!< @private @memberof QMPool
-    void * * volatile freeHead; //!< @private @memberof QMPool
-    QMPoolSize blockSize;       //!< @private @memberof QMPool
-    QMPoolCtr nTot;             //!< @private @memberof QMPool
-    QMPoolCtr volatile nFree;   //!< @private @memberof QMPool
-    QMPoolCtr nMin;             //!< @private @memberof QMPool
+    void * *start;          //!< @private @memberof QMPool
+    void * *end;            //!< @private @memberof QMPool
+    void * *freeHead;       //!< @private @memberof QMPool
+    QMPoolSize blockSize;   //!< @private @memberof QMPool
+    QMPoolCtr nTot;         //!< @private @memberof QMPool
+    QMPoolCtr nFree;        //!< @private @memberof QMPool
+    QMPoolCtr nMin;         //!< @private @memberof QMPool
 } QMPool;
 
 //! @public @memberof QMPool
@@ -89,4 +89,13 @@ void QMPool_put(QMPool * const me,
     void * const block,
     uint_fast8_t const qsId);
 
-#endif  // QMPOOL_H_
+//! @public @memberof QMPool
+uint16_t QMPool_getUse(QMPool const * const me);
+
+//! @public @memberof QMPool
+uint16_t QMPool_getFree(QMPool const * const me);
+
+//! @public @memberof QMPool
+uint16_t QMPool_getMin(QMPool const * const me);
+
+#endif // QMPOOL_H_

@@ -75,8 +75,6 @@ static void thread_function(void *pVoid) { // embOS signature
 }
 //............................................................................
 void QF_init(void) {
-    QF_bzero_(&QF_priv_,             sizeof(QF_priv_));
-    QF_bzero_(&QActive_registry_[0], sizeof(QActive_registry_));
     QTimeEvt_init(); // initialize QTimeEvts
     OS_InitKern();   // initialize embOS
     OS_InitHW();     // initialize the hardware used by embOS
@@ -227,7 +225,6 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QS_END_PRE()
 
         if (e->poolNum_ != 0U) { // is it a pool event?
-            Q_ASSERT_INCRIT(205, e->refCtr_ < (2U * QF_MAX_ACTIVE));
             QEvt_refCtr_inc_(e); // increment the reference counter
         }
         QF_CRIT_EXIT();
@@ -271,7 +268,6 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QS_END_PRE()
 
     if (e->poolNum_ != 0U) { // is it a pool event?
-        Q_ASSERT_INCRIT(305, e->refCtr_ < (2U * QF_MAX_ACTIVE));
         QEvt_refCtr_inc_(e); // increment the reference counter
     }
     QF_CRIT_EXIT();
@@ -302,6 +298,24 @@ QEvt const *QActive_get_(QActive * const me) {
     QF_CRIT_EXIT();
 
     return e;
+}
+//............................................................................
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueUse(uint_fast8_t const prio) {
+    Q_UNUSED_PAR(prio);
+    return 0U; // current use level in a queue not supported in this RTOS
+}
+//............................................................................
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueFree(uint_fast8_t const prio) {
+    Q_UNUSED_PAR(prio);
+    return 0U; // current use level in a queue not supported in this RTOS
+}
+//............................................................................
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueMin(uint_fast8_t const prio) {
+    Q_UNUSED_PAR(prio);
+    return 0U; // minimum free entries in a queue not supported in this RTOS
 }
 
 //============================================================================

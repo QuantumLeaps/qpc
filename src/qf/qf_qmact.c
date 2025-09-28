@@ -44,14 +44,9 @@
 void QMActive_ctor(QMActive * const me,
     QStateHandler const initial)
 {
-    // clear the whole QMActive object, so that the framework can start
-    // correctly even if the startup code fails to clear the uninitialized
-    // data (as is required by the C Standard).
-    QF_bzero_(me, sizeof(*me));
-
-    // NOTE: QActive inherits the QActvie class, but it calls the
-    // constructor of the QMsm subclass. This is because QMActive inherits
-    // the behavior from the QMsm subclass.
+    // NOTE: QMActive indirectly inherits the abstract QAsm base class,
+    // but it will delegate the state machine behavior to the QMsm class,
+    // so the following initiaization is identical as in QMsm ctor:
     QMsm_ctor((QMsm *)(me), initial);
 
     // NOTE: this vtable is identical as QMsm, but is provided
