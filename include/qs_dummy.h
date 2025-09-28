@@ -7,20 +7,19 @@
 //                    ------------------------
 //                    Modern Embedded Software
 //
-// SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+// SPDX-License-Identifier: LicenseRef-QL-commercial
 //
-// This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// This software is licensed under the terms of the Quantum Leaps commercial
+// licenses. Please contact Quantum Leaps for more information about the
+// available licensing options.
 //
-// Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
-//
-// NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// RESTRICTIONS
+// You may NOT :
+// (a) redistribute, encumber, sell, rent, lease, sublicense, or otherwise
+//     transfer rights in this software,
+// (b) remove or alter any trademark, logo, copyright or other proprietary
+//     notices, legends, symbols or labels present in this software,
+// (c) plagiarize this software to sidestep the licensing obligations.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -43,9 +42,9 @@
 #define QS_GLB_FILTER(rec_)             ((void)0)
 #define QS_LOC_FILTER(qsId_)            ((void)0)
 
-#define QS_BEGIN_ID(rec_, qsId_)        if (false) {
+#define QS_BEGIN_ID(rec_, qsId_)        {
 #define QS_END()                        }
-#define QS_BEGIN_INCRIT(rec_, qsId_)    if (false) {
+#define QS_BEGIN_INCRIT(rec_, qsId_)    {
 #define QS_END_INCRIT()                 }
 
 #define QS_I8(width_, data_)            ((void)0)
@@ -84,6 +83,10 @@
 #define QS_RX_PUT(b_)                   ((void)0)
 #define QS_ONLY(code_)                  ((void)0)
 
+#define QS_CRIT_STAT
+#define QS_CRIT_ENTRY()                 ((void)0)
+#define QS_CRIT_EXIT()                  ((void)0)
+
 //============================================================================
 // interface used only for internal implementation, but not in applications
 #ifdef QP_IMPL
@@ -103,10 +106,6 @@
     #define QS_MPC_PRE(ctr_)            ((void)0)
     #define QS_MPS_PRE(size_)           ((void)0)
     #define QS_TEC_PRE(ctr_)            ((void)0)
-
-    #define QS_CRIT_STAT
-    #define QS_CRIT_ENTRY()              ((void)0)
-    #define QS_CRIT_EXIT()               ((void)0)
 
     #define QS_TR_CRIT_ENTRY()           ((void)0)
     #define QS_TR_CRIT_EXIT()            ((void)0)

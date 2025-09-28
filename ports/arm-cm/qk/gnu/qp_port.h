@@ -36,6 +36,9 @@
 // no-return function specifier (C11 Standard)
 #define Q_NORETURN   _Noreturn void
 
+// static assertion (C11 Standard)
+#define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+
 // QF configuration for QK -- data members of the QActive class...
 
 // QK event-queue used for AOs
@@ -162,8 +165,6 @@ void QF_int_disable_(void);
 void QF_int_enable_(void);
 void QF_crit_entry_(void);
 void QF_crit_exit_(void);
-
-extern int32_t volatile QF_int_lock_nest_;
 
 //============================================================================
 // NOTE1:

@@ -31,18 +31,75 @@
 
 #include "qp_port.h"      // QP port from the port directory
 #include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
-#ifdef Q_SPY // software tracing enabled?
+#ifdef Q_SPY              // software tracing enabled?
     #include "qs_port.h"  // QS/C port from the port directory
 #else
-    #include "qs_dummy.h" // QS/C dummy interface (inactive)
+    #include "qs_dummy.h" // QS/C dummy (inactive) interface
 #endif
 
 #ifndef QP_API_VERSION
     #define QP_API_VERSION 0
-#endif // #ifndef QP_API_VERSION
+#endif
 
 // QP API compatibility layer...
-//============================================================================
+
+#ifdef Q_SIGNAL_SIZE
+_Static_assert(Q_SIGNAL_SIZE == 2U,
+    "Q_SIGNAL_SIZE must be 2 bytes (16-bit signal space)");
+#endif
+
+// version 8.1.0 -------------------------------------------------------------
+#if (QP_API_VERSION < 810)
+
+#ifdef Q_SPY
+
+//! @deprecated instead use: QS_Groups
+enum QS_Groups_old {
+    QS_ALL_RECORDS = QS_GRP_ALL,
+    QS_SM_RECORDS  = QS_GRP_SM,
+    QS_AO_RECORDS  = QS_GRP_AO,
+    QS_EQ_RECORDS  = QS_GRP_EQ,
+    QS_MP_RECORDS  = QS_GRP_MP,
+    QS_TE_RECORDS  = QS_GRP_TE,
+    QS_QF_RECORDS  = QS_GRP_QF,
+    QS_SC_RECORDS  = QS_GRP_SC,
+    QS_SEM_RECORDS = QS_GRP_SEM,
+    QS_MTX_RECORDS = QS_GRP_MTX,
+    QS_U0_RECORDS  = QS_GRP_U0,
+    QS_U1_RECORDS  = QS_GRP_U1,
+    QS_U2_RECORDS  = QS_GRP_U2,
+    QS_U3_RECORDS  = QS_GRP_U3,
+    QS_U4_RECORDS  = QS_GRP_U4,
+    QS_UA_RECORDS  = QS_GRP_UA,
+};
+
+//! @deprecated instead use: QS_LocGroups
+enum QS_LocGroups_old {
+    QS_ALL_IDS = QS_IDS_ALL,
+    QS_AO_IDS  = QS_IDS_AO,
+    QS_EP_IDS  = QS_IDS_EP,
+    QS_EQ_IDS  = QS_IDS_EQ,
+    QS_AP_IDS  = QS_IDS_AP,
+};
+#define QS_AO_ID  QS_ID_AO
+#define QS_EP_ID  QS_ID_EP
+#define QS_EQ_ID  QS_ID_EQ
+#define QS_AP_ID  QS_ID_AP
+
+//! @deprecated instead use: enum QS_ObjKind
+enum QS_ObjKind_old {
+    SM_OBJ = QS_OBJ_SM,
+    AO_OBJ = QS_OBJ_AO,
+    MP_OBJ = QS_OBJ_MP,
+    EQ_OBJ = QS_OBJ_EQ,
+    TE_OBJ = QS_OBJ_TE,
+    AP_OBJ = QS_OBJ_AP,
+    SM_AO_OBJ = QS_OBJ_SM_AO,
+};
+
+#endif // Q_SPY
+
+// version 8.0.0 -------------------------------------------------------------
 #if (QP_API_VERSION < 800)
 
 #define QM_SUPER_SUB(host_)     error "submachines no longer supported"
@@ -69,7 +126,7 @@ typedef char char_t;
     (QXThread_start((QXThread *)(me_), (prioSpec_), \
         (qSto_), (qLen_), (stkSto_), (stkSize_), (par_)))
 
-//! @deprecated Assertion failure handler.
+//! @deprecated assertion failure handler.
 //! Use Q_onError() instead.
 #define Q_onAssert(module_, id_) Q_onError(module_, id_)
 
@@ -143,5 +200,6 @@ static inline void QF_psInit(
 #define QF_getQueueMin(prio_)   (QActive_getQueueMin((prio_)))
 
 #endif // QP_API_VERSION < 800
+#endif // QP_API_VERSION < 810
 
 #endif // QPC_H_

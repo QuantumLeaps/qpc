@@ -184,23 +184,26 @@ enum FreeRTOS_TaskAttrs {
 // interface used only inside QF, but not in applications
 
 #ifdef QP_IMPL
-    #define FREERTOS_TASK_PRIO(qp_prio_) \
-        ((UBaseType_t)((qp_prio_) + tskIDLE_PRIORITY))
 
-    // FreeRTOS scheduler locking for QF_publish_() (task context only)
-    #define QF_SCHED_STAT_
-    #define QF_SCHED_LOCK_(prio_) (vTaskSuspendAll())
-    #define QF_SCHED_UNLOCK_()    ((void)xTaskResumeAll())
+#define FREERTOS_TASK_PRIO(qp_prio_) \
+    ((UBaseType_t)((qp_prio_) + tskIDLE_PRIORITY))
 
-    // native QF event pool customization
-    #define QF_EPOOL_TYPE_        QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
-    #define QF_EPOOL_PUT_(p_, e_, qsId_) \
-        (QMPool_put(&(p_), (e_), (qsId_)))
+// FreeRTOS scheduler locking for QF_publish_() (task context only)
+#define QF_SCHED_STAT_
+#define QF_SCHED_LOCK_(prio_) (vTaskSuspendAll())
+#define QF_SCHED_UNLOCK_()    ((void)xTaskResumeAll())
+
+// QMPool operations
+#define QF_EPOOL_TYPE_  QMPool
+#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+            (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
+#define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+            ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+#define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
 #endif // def QP_IMPL
 

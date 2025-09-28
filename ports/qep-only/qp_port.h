@@ -32,6 +32,9 @@
 // no-return function specifier (C11 Standard)
 #define Q_NORETURN   _Noreturn void
 
+// static assertion (C11 Standard)
+#define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+
 // include files -------------------------------------------------------------
 #include <stdint.h>     // Exact-width types. WG14/N843 C99 Standard
 #include <stdbool.h>    // Boolean type.      WG14/N843 C99 Standard
