@@ -50,10 +50,10 @@
     snprintf(buf_, bufsiz_, format_, __VA_ARGS__)
 
 #define PRINTF_S(format_, ...) \
-    printf(format_, __VA_ARGS__)
+    (void)printf(format_, __VA_ARGS__)
 
 #define FPRINTF_S(fp_, format_, ...) \
-    fprintf(fp_, format_, __VA_ARGS__)
+    (void)fprintf(fp_, format_, __VA_ARGS__)
 
 #define FREAD_S(buf_, bufsiz_, elsiz_, count_, fp_) \
     fread(buf_, elsiz_, count_, fp_)

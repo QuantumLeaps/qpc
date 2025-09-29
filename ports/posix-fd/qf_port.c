@@ -187,21 +187,40 @@ void QF_updateNextTick_(void) {
 }
 
 //............................................................................
-int QF_getNextTimeoutMS_(void) {
-    int poll_timeout_ms = -1; // Infinite.
-    if ((l_tick.tv_sec != 0) || (l_tick.tv_nsec != 0)) {
-        struct timespec now_tick;
-        clock_gettime(CLOCK_MONOTONIC, &now_tick);
-        if (l_nextTick.tv_sec < now_tick.tv_sec) {
+int QF_getNextTimeoutMS_(struct timespec* timeout_spec) {
+    if ((l_tick.tv_sec == 0) && (l_tick.tv_nsec == 0)) {
+        return -1; // Infinite.
+    }
+    int poll_timeout_ms = -1;
+    struct timespec now_tick;
+    clock_gettime(CLOCK_MONOTONIC, &now_tick);
+    if (l_nextTick.tv_sec < now_tick.tv_sec) {
+        poll_timeout_ms = 0;
+        if (timeout_spec) {
+            timeout_spec->tv_sec = 0;
+            timeout_spec->tv_nsec = 0;
+        }
+    } else if (now_tick.tv_sec == l_nextTick.tv_sec) {
+        if (timeout_spec) {
+            timeout_spec->tv_sec = 0;
+        }
+        if (l_nextTick.tv_nsec <= now_tick.tv_nsec) {
             poll_timeout_ms = 0;
-        } else if (now_tick.tv_sec == l_nextTick.tv_sec) {
-            if (l_nextTick.tv_nsec <= now_tick.tv_nsec) {
-                poll_timeout_ms = 0;
-            } else {
-                poll_timeout_ms = (l_nextTick.tv_nsec - now_tick.tv_nsec) / NSEC_PER_MSEC;
+            if (timeout_spec) {
+                timeout_spec->tv_nsec = 0;
             }
         } else {
-            poll_timeout_ms = 1000 + (l_nextTick.tv_nsec - now_tick.tv_nsec) / NSEC_PER_MSEC;
+            poll_timeout_ms = (l_nextTick.tv_nsec - now_tick.tv_nsec) / NSEC_PER_MSEC;
+            if (timeout_spec) {
+                timeout_spec->tv_nsec = l_nextTick.tv_nsec - now_tick.tv_nsec;
+            }
+        }
+    } else {
+        const int32_t poll_timeout_nsec = NSEC_PER_SEC + (l_nextTick.tv_nsec - now_tick.tv_nsec);
+        poll_timeout_ms = poll_timeout_nsec / NSEC_PER_MSEC;
+        if (timeout_spec) {
+            timeout_spec->tv_sec = poll_timeout_nsec / NSEC_PER_SEC;
+            timeout_spec->tv_nsec = poll_timeout_nsec % NSEC_PER_SEC;
         }
     }
     return poll_timeout_ms;
@@ -256,11 +275,17 @@ int QF_run(void) {
     QF_preRun_();
 
     while (l_isRunning) {
-        int poll_timeout_ms = QF_getNextTimeoutMS_();
-
         struct pollfd pfds[1] = {
             {.fd = QF_getReadyFD_(), .events = POLLIN, .revents = 0}};
+#if defined(_GNU_SOURCE)
+        struct timespec poll_timeout_spec;
+        int poll_timeout_ms = QF_getNextTimeoutMS_(&poll_timeout_spec);
+        const struct timespec& poll_timeout_spec_ptr = (poll_timeout_ms < 0 ? NULL : &poll_timeout_spec);
+        int poll_result = ppoll(pfds, 1, poll_timeout_spec_ptr, NULL);
+#else // defined(_GNU_SOURCE)
+        int poll_timeout_ms = QF_getNextTimeoutMS_(NULL);
         int poll_result = poll(pfds, 1, poll_timeout_ms);
+#endif // defined(_GNU_SOURCE)
         if (poll_result < 0) {
             Q_ERROR();
         }
@@ -292,9 +317,11 @@ void QF_stop(void) {
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
     Q_UNUSED_PAR(tickPrio);
 
+#if !defined(_GNU_SOURCE)
     if (ticksPerSec > NSEC_PER_SEC / NSEC_PER_MSEC) {
         Q_ERROR();
     }
+#endif // !defined(_GNU_SOURCE)
     if (ticksPerSec != 0U) {
         l_tick.tv_nsec = NSEC_PER_SEC / ticksPerSec;
     }

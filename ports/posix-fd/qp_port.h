@@ -66,10 +66,14 @@
 
 #include <stdint.h>  // Exact-width types. WG14/N843 C99 Standard
 #include <stdbool.h> // Boolean type.      WG14/N843 C99 Standard
+#include <time.h>    // timespec type.     C11 Standard
 #include "qp_config.h"  // QP configuration from the application
 
 // no-return function specifier (C11 Standard)
 #define Q_NORETURN   _Noreturn void
+
+// static assertion (C11 Standard)
+#define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
 
 // QActive event queue and thread types for POSIX-FD
 #define QACTIVE_EQUEUE_TYPE  QEQueue
@@ -90,7 +94,8 @@ void QF_leaveCriticalSection_(void);
 
 // Set clock tick rate
 // (NOTE ticksPerSec==0 disables the poll timeout)
-// (NOTE ticksPerSec is limited to 1000 due to poll timeout resolution in milliseconds)
+// (NOTE ticksPerSec is limited to 1000 due to poll timeout resolution in milliseconds on POSIX,
+//  or it's limited by kernel capabilities on Linux's ppoll timeout resolution)
 // (NOTE tickPrio is ignored in this port, no background ticker thread, kept for compat.)
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio);
 
@@ -104,7 +109,7 @@ void QF_onClockTick(void);
 void QF_preRun_(void);
 int QF_getReadyFD_(void);
 void QF_updateNextTick_(void);
-int QF_getNextTimeoutMS_(void);
+int QF_getNextTimeoutMS_(struct timespec* timeout_spec);
 void QF_onReadySignal_(void);
 void QF_postRun_(void);
 
@@ -118,32 +123,34 @@ void QF_postRun_(void);
 
 #ifdef QP_IMPL
 
-    // QF scheduler locking for POSIX-FD (not needed in single-thread port)
-    #define QF_SCHED_STAT_
-    #define QF_SCHED_LOCK_(dummy) ((void)0)
-    #define QF_SCHED_UNLOCK_()    ((void)0)
+// QF scheduler locking for POSIX-FD (not needed in single-thread port)
+#define QF_SCHED_STAT_
+#define QF_SCHED_LOCK_(dummy) ((void)0)
+#define QF_SCHED_UNLOCK_()    ((void)0)
 
-    // QF event queue customization for POSIX-FD...
-    #define QACTIVE_EQUEUE_WAIT_(me_) ((void)0)
-    #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-        QPSet_insert(&QF_readySet_, (me_)->prio); \
-        QF_signalReadyOnPipe_()
+// QF event queue customization for POSIX-FD...
+#define QACTIVE_EQUEUE_WAIT_(me_) ((void)0)
+#define QACTIVE_EQUEUE_SIGNAL_(me_) \
+    QPSet_insert(&QF_readySet_, (me_)->prio); \
+    QF_signalReadyOnPipe_()
 
-    // native QF event pool operations
-    #define QF_EPOOL_TYPE_  QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
-    #define QF_EPOOL_PUT_(p_, e_, qsId_) \
-        (QMPool_put(&(p_), (e_), (qsId_)))
+// QMPool operations
+#define QF_EPOOL_TYPE_  QMPool
+#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+            (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
+#define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+            ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+#define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
-    extern QPSet QF_readySet_;
-    extern int QF_readyPipeWrite_; // Pipe to signal events
-    extern int QF_readyPipeRead_; // Pipe to signal events
+extern QPSet QF_readySet_;
+extern int QF_readyPipeWrite_; // Pipe to signal events
+extern int QF_readyPipeRead_; // Pipe to signal events
 
-    void QF_signalReadyOnPipe_(void);
+void QF_signalReadyOnPipe_(void);
 
 #endif // QP_IMPL
 
