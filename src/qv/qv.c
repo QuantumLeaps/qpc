@@ -49,7 +49,7 @@ QV_Attr QV_priv_;
 
 //............................................................................
 //! @static @public @memberof QV
-void QV_schedDisable(uint_fast8_t const ceiling) {
+void QV_schedDisable(uint8_t const ceiling) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
@@ -89,11 +89,9 @@ void QV_schedEnable(void) {
 //............................................................................
 //! @static @public @memberof QF
 void QF_init(void) {
-    QF_bzero_(&QF_priv_,                 sizeof(QF_priv_));
-    QF_bzero_(&QV_priv_,                 sizeof(QV_priv_));
-    QF_bzero_(&QActive_registry_[0],     sizeof(QActive_registry_));
-
+#ifndef Q_UNSAFE
     QTimeEvt_init(); // initialize QTimeEvts
+#endif // Q_UNSAFE
 
 #ifdef QV_INIT
     QV_INIT(); // port-specific initialization of the QV kernel
@@ -206,12 +204,9 @@ int_t QF_run(void) {
             QF_INT_DISABLE(); // disable interrupts before looping back
         }
     }
-#ifdef __GNUC__ // GNU compiler?
-    return 0;
-#endif
 }
 
-//============================================================================
+//----------------------------------------------------------------------------
 //! @public @memberof QActive
 void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
@@ -226,8 +221,13 @@ void QActive_start(QActive * const me,
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
+
+    // the VPTR for this AO must be valid
     Q_REQUIRE_INCRIT(300, me->super.vptr != (struct QAsmVtable *)0);
+
+    // stack storage must NOT be provided for the AO (QV does not need it)
     Q_REQUIRE_INCRIT(310, stkSto == (void *)0);
+
     QF_CRIT_EXIT();
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-prio.

@@ -44,8 +44,6 @@ static void task_function(void *pdata); // uC-OS2 task signature
 
 //............................................................................
 void QF_init(void) {
-    QF_bzero_(&QF_priv_,                 sizeof(QF_priv_));
-    QF_bzero_(&QActive_registry_[0],     sizeof(QActive_registry_));
     QTimeEvt_init(); // initialize QTimeEvts
     OSInit();        // initialize uC-OS2
 }
@@ -188,6 +186,24 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     }
     QF_CRIT_EXIT();
 }
+//............................................................................
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueUse(uint_fast8_t const prio) {
+    Q_UNUSED_PAR(prio);
+    return 0U; // current use level in a queue not supported in this RTOS
+}
+//............................................................................
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueFree(uint_fast8_t const prio) {
+    Q_UNUSED_PAR(prio);
+    return 0U; // current use level in a queue not supported in this RTOS
+}
+//............................................................................
+//! @static @public @memberof QActive
+uint16_t QActive_getQueueMin(uint_fast8_t const prio) {
+    Q_UNUSED_PAR(prio);
+    return 0U; // minimum free entries in a queue not supported in this RTOS
+}
 
 //............................................................................
 bool QActive_post_(QActive * const me, QEvt const * const e,
@@ -231,7 +247,6 @@ bool QActive_post_(QActive * const me, QEvt const * const e,
         QS_END_PRE()
 
         if (e->poolNum_ != 0U) { // is it a pool event?
-            Q_ASSERT_INCRIT(205, e->refCtr_ < (2U * QF_MAX_ACTIVE));
             QEvt_refCtr_inc_(e); // increment the reference counter
         }
         QF_CRIT_EXIT();
@@ -282,7 +297,6 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QS_END_PRE()
 
     if (e->poolNum_ != 0U) { // is it a pool event?
-        Q_ASSERT_INCRIT(305, e->refCtr_ < (2U * QF_MAX_ACTIVE));
         QEvt_refCtr_inc_(e); // increment the reference counter
     }
     QF_CRIT_EXIT();

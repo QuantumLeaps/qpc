@@ -52,7 +52,7 @@
     static char const Q_this_module_[] = name_;
 
 #define Q_ASSERT_INCRIT(id_, expr_) \
-    ((expr_) ? ((void)0) : Q_onError(&Q_this_module_[0], (id_)))
+    ((expr_) ? (void)0 : Q_onError(&Q_this_module_[0], (id_)))
 
 #define Q_ERROR_INCRIT(id_) \
     (Q_onError(&Q_this_module_[0], (id_)))
@@ -60,7 +60,7 @@
 #define Q_ASSERT_ID(id_, expr_) do { \
     QF_CRIT_STAT \
     QF_CRIT_ENTRY(); \
-    if (!(expr_)) Q_onError(&Q_this_module_[0], (id_)); \
+    ((expr_) ? (void)0 : Q_onError(&Q_this_module_[0], (id_))); \
     QF_CRIT_EXIT(); \
 } while (false)
 
@@ -75,6 +75,54 @@
         Q_onError(&Q_this_module_[0], (id_)); \
     } \
 } while (false)
+
+//----------------------------------------------------------------------------
+// Duplicate Inverse Storage (DIS) facilities
+
+#ifdef __cplusplus // C++ source code?
+
+namespace QP {
+
+    template<typename T_>
+    static T_ dis_update(T_ const org) {
+        // calculate the Duplicate Inverse Storage (DIS) for the original
+        // variable org
+        return static_cast<T_>(~org);
+    }
+    //........................................................................
+    template<typename T_>
+    static bool dis_verify(T_ const org, T_ const dis) {
+        // verify that the Duplicate Inverse Storage (DIS) dis matches
+        // the original variable org
+        return dis == static_cast<T_>(~org);
+    }
+    //........................................................................
+    static inline std::uintptr_t dis_ptr_update(void const* const ptr) {
+        // calculate the Duplicate Inverse Storage (DIS) for the original ptr
+        return static_cast<std::uintptr_t>(
+            ~reinterpret_cast<std::uintptr_t>(ptr));
+    }
+    //........................................................................
+    static inline bool dis_ptr_verify(
+        void const* const ptr, std::uintptr_t const dis)
+    {
+        // verify that the Duplicate Inverse Storage (DIS) matches
+        // the original pointer ptr
+        return dis == static_cast<std::uintptr_t>(
+            ~reinterpret_cast<std::uintptr_t>(ptr));
+    }
+
+} // namespace QP
+
+#else // C source code
+
+#define QP_DIS_UPDATE(T_, org_)        ((T_)(~(org_)))
+#define QP_DIS_VERIFY(T_, org_, dis_)  ((org_) == (T_)(~(dis_)))
+#define QP_DIS_PTR_UPDATE(org_)        ((uintptr_t)(~(uintptr_t)(org_)))
+#define QP_DIS_PTR_VERIFY(org_, dis_)  \
+    ((uintptr_t)(org_) == (uintptr_t)(~(dis_)))
+
+#endif
 
 // QF-FuSa disabled ==========================================================
 #else

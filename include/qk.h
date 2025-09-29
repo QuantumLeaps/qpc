@@ -42,12 +42,12 @@ typedef uint_fast8_t QSchedStatus;
 //============================================================================
 //! @class QK_Attr
 typedef struct {
-    QPSet readySet;        //!< @memberof QK_Attr
-    uint8_t actPrio;       //!< @memberof QK_Attr
-    uint8_t nextPrio;      //!< @memberof QK_Attr
-    uint8_t actThre;       //!< @memberof QK_Attr
-    uint8_t lockCeil;      //!< @memberof QK_Attr
-    uint8_t intNest;       //!< @memberof QK_Attr
+    QPSet readySet;        //!< @private @memberof QK_Attr
+    uint8_t actPrio;       //!< @private @memberof QK_Attr
+    uint8_t nextPrio;      //!< @private @memberof QK_Attr
+    uint8_t actThre;       //!< @private @memberof QK_Attr
+    uint8_t lockCeil;      //!< @private @memberof QK_Attr
+    uint8_t intNest;       //!< @private @memberof QK_Attr
 } QK_Attr;
 
 //! @static @private @memberof QK
@@ -65,7 +65,7 @@ uint_fast8_t QK_sched_act_(
 void QK_activate_(void);
 
 //! @static @public @memberof QK
-QSchedStatus QK_schedLock(uint_fast8_t const ceiling);
+QSchedStatus QK_schedLock(uint8_t const ceiling);
 
 //! @static @public @memberof QK
 void QK_schedUnlock(QSchedStatus const prevCeil);
@@ -104,15 +104,17 @@ void QK_onIdle(void);
     } \
 } while (false)
 
-// QF event pool customization for QK...
-#define QF_EPOOL_TYPE_ QMPool
+// QMPool operations
+#define QF_EPOOL_TYPE_  QMPool
 #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
     (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-#define QF_EPOOL_EVENT_SIZE_(p_) ((uint_fast16_t)(p_).blockSize)
+#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
 #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
     ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
-#define QF_EPOOL_PUT_(p_, e_, qsId_) \
-    (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)  ((ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)   ((ePool_)->nMin)
 
 #endif // QP_IMPL
 

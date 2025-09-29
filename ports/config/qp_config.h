@@ -79,20 +79,6 @@
 // </h>
 
 //..........................................................................
-// <h>QEP Event Processor (Events)
-// <i>Events and state machines.
-
-// <o>Event signal size (Q_SIGNAL_SIZE)
-//   <1U=>1
-//   <2U=>2 (default)
-//   <4U=>4
-// <i>Size of the QEvt signal for QEP/QF [bytes]
-// <i>Default: 2
-#define Q_SIGNAL_SIZE  2U
-
-// </h>
-
-//..........................................................................
 // <h>QF Framework (Active Objects)
 // <i>Active Object framework
 

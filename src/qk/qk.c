@@ -49,19 +49,19 @@ QK_Attr QK_priv_;
 
 //............................................................................
 //! @static @public @memberof QK
-QSchedStatus QK_schedLock(uint_fast8_t const ceiling) {
+QSchedStatus QK_schedLock(uint8_t const ceiling) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
+    // scheduler should never be locked inside an ISR
     Q_REQUIRE_INCRIT(100, !QK_ISR_CONTEXT_());
 
-    // first store the previous lock prio
     QSchedStatus stat = 0xFFU; // assume scheduler NOT locked
-    if (ceiling > QK_priv_.lockCeil) { // raising the lock ceiling?
+    if (ceiling > QK_priv_.lockCeil) { // increasing the lock ceiling?
         QS_BEGIN_PRE(QS_SCHED_LOCK, QK_priv_.actPrio)
             QS_TIME_PRE();   // timestamp
             // the previous lock ceiling & new lock ceiling
-            QS_2U8_PRE(QK_priv_.lockCeil, (uint8_t)ceiling);
+            QS_2U8_PRE(QK_priv_.lockCeil, ceiling);
         QS_END_PRE()
 
         // previous status of the lock
@@ -83,8 +83,11 @@ void QK_schedUnlock(QSchedStatus const prevCeil) {
         QF_CRIT_STAT
         QF_CRIT_ENTRY();
 
+        // scheduler should never be unlocked inside an ISR
         Q_REQUIRE_INCRIT(200, !QK_ISR_CONTEXT_());
-        Q_REQUIRE_INCRIT(210, QK_priv_.lockCeil > prevCeil);
+
+        // the current lock-ceiling must be higher than the previous ceiling
+        Q_REQUIRE_INCRIT(220, QK_priv_.lockCeil > prevCeil);
 
         QS_BEGIN_PRE(QS_SCHED_UNLOCK, QK_priv_.actPrio)
             QS_TIME_PRE(); // timestamp
@@ -129,7 +132,7 @@ uint_fast8_t QK_sched_(void) {
         }
     }
 
-    return p;
+    return p; // the next priority or 0
 }
 
 //............................................................................
@@ -145,7 +148,7 @@ uint_fast8_t QK_sched_act_(
         QPSet_remove(&QK_priv_.readySet, p);
     }
 
-    if (QPSet_isEmpty(&QK_priv_.readySet)) {
+    if (QPSet_isEmpty(&QK_priv_.readySet)) { // no AOs ready to run?
         p = 0U; // no activation needed
     }
     else {
@@ -176,8 +179,11 @@ void QK_activate_(void) {
     uint8_t const prio_in = QK_priv_.actPrio; // save initial prio.
     uint8_t p = QK_priv_.nextPrio; // next prio to run
 
-    Q_REQUIRE_INCRIT(520, prio_in <= QF_MAX_ACTIVE);
-    Q_REQUIRE_INCRIT(530, (0U < p) && (p <= QF_MAX_ACTIVE));
+    // the activated AO's prio must be in range and cannot be 0 (idle thread)
+    Q_REQUIRE_INCRIT(520, (0U < p) && (p <= QF_MAX_ACTIVE));
+
+    // the initial prio. must be lower than the activated AO's prio.
+    Q_REQUIRE_INCRIT(530, prio_in < p);
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
     uint8_t pprev = prio_in;
@@ -186,8 +192,10 @@ void QK_activate_(void) {
     QK_priv_.nextPrio = 0U; // clear for the next time
 
     uint8_t pthre_in = 0U; // assume preempting the idle thread
-    if (prio_in != 0U) { // preempting NOT the idle thread
+    if (prio_in > 0U) { // preempting a regular thread (NOT the idle thread)?
         QActive const * const a = QActive_registry_[prio_in];
+
+        // the AO must be registered at prio. prio_in
         Q_ASSERT_INCRIT(540, a != (QActive *)0);
 
         pthre_in = a->pthre;
@@ -196,7 +204,9 @@ void QK_activate_(void) {
     // loop until no more ready-to-run AOs of higher pthre than the initial
     do  {
         QActive * const a = QActive_registry_[p];
-        Q_ASSERT_INCRIT(570, a != (QActive *)0); // the AO must be registered
+
+        // the AO must be registered at prio. p
+        Q_ASSERT_INCRIT(570, a != (QActive *)0);
         uint8_t const pthre = a->pthre;
 
         // set new active prio. and preemption-threshold
@@ -232,7 +242,9 @@ void QK_activate_(void) {
 
         // determine the next highest-prio. AO ready to run...
         QF_INT_DISABLE(); // unconditionally disable interrupts
-        p = (uint8_t)QK_sched_act_(a, pthre_in); // schedule next AO
+
+        // schedule next AO
+        p = (uint8_t)QK_sched_act_(a, pthre_in);
 
     } while (p != 0U);
 
@@ -270,14 +282,12 @@ void QK_activate_(void) {
 //............................................................................
 //! @static @public @memberof QF
 void QF_init(void) {
-    QF_bzero_(&QF_priv_,                 sizeof(QF_priv_));
-    QF_bzero_(&QK_priv_,                 sizeof(QK_priv_));
-    QF_bzero_(&QActive_registry_[0],     sizeof(QActive_registry_));
-
     // setup the QK scheduler as initially locked and not running
     QK_priv_.lockCeil = (QF_MAX_ACTIVE + 1U); // scheduler locked
 
+#ifndef Q_UNSAFE
     QTimeEvt_init(); // initialize QTimeEvts
+#endif // Q_UNSAFE
 
 #ifdef QK_INIT
     QK_INIT(); // port-specific initialization of the QK kernel
@@ -322,12 +332,8 @@ int_t QF_run(void) {
     QF_onStartup(); // app. callback: configure and enable interrupts
 
     for (;;) { // QK idle loop...
-        QK_onIdle(); // application-specific QK on-idle callback
+        QK_onIdle(); // application-specific QK idle callback
     }
-
-#ifdef __GNUC__
-    return 0;
-#endif
 }
 
 //............................................................................
@@ -346,13 +352,16 @@ void QActive_start(QActive * const me,
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    Q_REQUIRE_INCRIT(300, stkSto == (void *)0);
-    Q_REQUIRE_INCRIT(310, me->super.vptr != (struct QAsmVtable *)0);
+    // the VPTR for this AO must be valid
+    Q_REQUIRE_INCRIT(900, me->super.vptr != (struct QAsmVtable *)0);
+
+    // stack storage must NOT be provided for an AO (QK does not need it)
+    Q_REQUIRE_INCRIT(910, stkSto == (void *)0);
     QF_CRIT_EXIT();
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-prio. of the AO
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); // prio. of the AO
     me->pthre = (uint8_t)(prioSpec >> 8U);   // preemption-threshold
-    QActive_register_(me); // make QF aware of this active object
+    QActive_register_(me); // register this AO with the framework
 
     QEQueue_init(&me->eQueue, qSto, qLen); // init the built-in queue
 
@@ -360,7 +369,7 @@ void QActive_start(QActive * const me,
     (*me->super.vptr->init)(&me->super, par, me->prio);
     QS_FLUSH(); // flush the trace buffer to the host
 
-    // See if this AO needs to be scheduled if QK is already running
+    // see if this AO needs to be scheduled if QK is already running
     QF_CRIT_ENTRY();
     if (QK_sched_() != 0U) { // activation needed?
         QK_activate_();

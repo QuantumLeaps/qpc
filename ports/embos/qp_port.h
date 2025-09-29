@@ -70,29 +70,31 @@ enum EmbOS_TaskAttrs {
 
 #ifdef QP_IMPL
 
-    // embOS-specific scheduler locking, see NOTE3
-    #define QF_SCHED_STAT_
-    #define QF_SCHED_LOCK_(dummy) do {            \
-        if (OS_INT_InInterrupt() == (OS_BOOL)0) { \
-            OS_TASK_EnterRegion();                \
-        }                                         \
-    } while (false)
+// embOS-specific scheduler locking, see NOTE3
+#define QF_SCHED_STAT_
+#define QF_SCHED_LOCK_(dummy) do {            \
+    if (OS_INT_InInterrupt() == (OS_BOOL)0) { \
+        OS_TASK_EnterRegion();                \
+    }                                         \
+} while (false)
 
-    #define QF_SCHED_UNLOCK_() do { \
-        if (OS_INT_InInterrupt() == (OS_BOOL)0) { \
-            OS_TASK_LeaveRegion();                \
-        }                                         \
-    } while (false)
+#define QF_SCHED_UNLOCK_() do { \
+    if (OS_INT_InInterrupt() == (OS_BOOL)0) { \
+        OS_TASK_LeaveRegion();                \
+    }                                         \
+} while (false)
 
-    // native QF event pool customization
-    #define QF_EPOOL_TYPE_        QMPool
-    #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-    #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint_fast16_t)(p_).blockSize)
-    #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
-    #define QF_EPOOL_PUT_(p_, e_, qsId_) \
-        (QMPool_put(&(p_), (e_), (qsId_)))
+// QMPool operations
+#define QF_EPOOL_TYPE_  QMPool
+#define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
+            (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
+#define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
+            ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+#define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
+#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
 #endif // QP_IMPL
 

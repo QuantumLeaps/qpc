@@ -1,5 +1,5 @@
 //============================================================================
-// SafeQP/C Real-Time Event Framework (RTEF)
+// QP/C Real-Time Event Framework (RTEF)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -7,19 +7,20 @@
 //                    ------------------------
 //                    Modern Embedded Software
 //
-// SPDX-License-Identifier: LicenseRef-QL-commercial
+// SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
-// This software is licensed under the terms of the Quantum Leaps commercial
-// licenses. Please contact Quantum Leaps for more information about the
-// available licensing options.
+// This software is dual-licensed under the terms of the open-source GNU
+// General Public License (GPL) or under the terms of one of the closed-
+// source Quantum Leaps commercial licenses.
 //
-// RESTRICTIONS
-// You may NOT :
-// (a) redistribute, encumber, sell, rent, lease, sublicense, or otherwise
-//     transfer rights in this software,
-// (b) remove or alter any trademark, logo, copyright or other proprietary
-//     notices, legends, symbols or labels present in this software,
-// (c) plagiarize this software to sidestep the licensing obligations.
+// Redistributions in source code must retain this top-level comment block.
+// Plagiarizing this software to sidestep the license obligations is illegal.
+//
+// NOTE:
+// The GPL does NOT permit the incorporation of this code into proprietary
+// programs. Please contact Quantum Leaps for commercial licensing options,
+// which expressly supersede the GPL and are designed explicitly for
+// closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -47,10 +48,10 @@
     _snprintf_s(buf_, bufsiz_, _TRUNCATE, format_, __VA_ARGS__)
 
 #define PRINTF_S(format_, ...) \
-    printf_s(format_, __VA_ARGS__)
+    (void)printf_s(format_, __VA_ARGS__)
 
 #define FPRINTF_S(fp_, format_, ...) \
-    fprintf_s(fp_, format_, __VA_ARGS__)
+    (void)fprintf_s(fp_, format_, __VA_ARGS__)
 
 #ifdef _MSC_VER
 #define FREAD_S(buf_, bufsiz_, elsiz_, count_, fp_) \
@@ -85,10 +86,10 @@ if (fopen_s(&fp_, fName_, mode_) != 0) { \
     snprintf(buf_, bufsiz_, format_, __VA_ARGS__)
 
 #define PRINTF_S(format_, ...) \
-    printf(format_, __VA_ARGS__)
+    (void)printf(format_, __VA_ARGS__)
 
 #define FPRINTF_S(fp_, format_, ...) \
-    fprintf(fp_, format_, __VA_ARGS__)
+    (void)fprintf(fp_, format_, __VA_ARGS__)
 
 #define FREAD_S(buf_, bufsiz_, elsiz_, count_, fp_) \
     fread(buf_, elsiz_, count_, fp_)
