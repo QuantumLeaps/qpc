@@ -49,25 +49,42 @@
 // main event loop:
 //  - QF_preRun_: Initializes the main loop (global) variables.
 //  - QF_getReadyFD_: Gets the file-descriptor to poll, indicating QP/C has events to process.
+//  - QF_getExternalFDs_: Gets the list of file-descriptors added by the QP/C application.
 //  - QF_updateNextTick_: Advances the time at which the next tick will occur.
 //  - QF_getNextTimeoutMS_: Gets the number of milliseconds until the next tick (or -1 for infinite timeout).
 //  - QF_onReadySignal_: Processes the next queued event in the QP/C kernel.
+//  - QF_onExternalFDs_: Processes the external events (driven by file descriptors) added by the QP/C application.
 //  - QF_postRun_: Finalizes the main loop, i.e., free resources.
 // See QF_run for a basic event-loop that uses the above parts.
 // The intent is for an external event-loop system, based on polling, to be
 // able to integrate those parts in a manner appropriate for that framework.
 //
 // As a single-threaded port, it is only safe to post or publish events to
-// QP/C while neither of the above functions (plus QF_onClockTick) are
-// running.
+// QP/C from an external source while neither of the above functions (and QF_onClockTick)
+// are running. This means that if other sources of events are used (e.g., /dev/input0),
+// they must either be included in the set of file-descriptors being polled
+// such that their QP/C events can be posted in the same thread when not
+// being inside a call to QF_onReadySignal_ or QF_onClockTick, or if the events
+// have to be received in a separate thread, then some mutex synchronization
+// would need to mutually exclude those functions.
+//
 
 #ifndef QP_PORT_H_
 #define QP_PORT_H_
 
+#include <stddef.h>  // size_t type.       WG14/N1570 C11 Standard
 #include <stdint.h>  // Exact-width types. WG14/N843 C99 Standard
 #include <stdbool.h> // Boolean type.      WG14/N843 C99 Standard
-#include <time.h>    // timespec type.     C11 Standard
+#include <time.h>    // timespec type.     WG14/N1570 C11 Standard
+#include <poll.h>    // struct pollfd      POSIX.1-2008
+
 #include "qp_config.h"  // QP configuration from the application
+
+// Capacity for external file-descriptor events from the system.
+// See `QF_addExternalFD`.
+#ifndef QF_POSIX_MAX_EXTERNAL_FDS
+#define QF_POSIX_MAX_EXTERNAL_FDS 0
+#endif
 
 // no-return function specifier (C11 Standard)
 #define Q_NORETURN   _Noreturn void
@@ -80,7 +97,7 @@
 //QACTIVE_OS_OBJ_TYPE  not used in this port
 //QACTIVE_THREAD_TYPE  not used in this port
 
-// QF critical section for POSIX-FD
+// QF critical section for POSIX-FD, see NOTE1
 #define QF_CRIT_STAT
 #define QF_CRIT_ENTRY()      QF_enterCriticalSection_()
 #define QF_CRIT_EXIT()       QF_leaveCriticalSection_()
@@ -112,6 +129,19 @@ void QF_updateNextTick_(void);
 int QF_getNextTimeoutMS_(struct timespec* timeout_spec);
 void QF_onReadySignal_(void);
 void QF_postRun_(void);
+
+#if QF_POSIX_MAX_EXTERNAL_FDS > 0
+// Function to register and unregister pollfds to be polled for external events (e.g. sockets, devices).
+// External FDs are added to the QP/C ready FD (`QF_getReadyFD_`) and polled in the main event-loop
+// and if the `fd_events` is triggered (POLLIN or POLLOUT), the corresponding `callback` function is
+// called with the `user_data` pointer passed to it, along with the FD (to help user identify the
+// source of the event). This callback is called in the main (and only) thread.
+void QF_addExternalFD(int fd, short fd_events, void (*callback)(int, void*), void* user_data);
+void QF_removeExternalFD(int fd);
+// Called by POSIX port to collect pollfds before going into poll.
+size_t QF_getExternalFDs_(struct pollfd* pfds, size_t pfds_len);
+void QF_onExternalFDs_(struct pollfd* pfds, size_t pfds_len);
+#endif // QF_POSIX_MAX_EXTERNAL_FDS > 0
 
 // include files -------------------------------------------------------------
 #include "qequeue.h"   // POSIX-FD needs the native event-queue
@@ -153,5 +183,24 @@ extern int QF_readyPipeRead_; // Pipe to signal events
 void QF_signalReadyOnPipe_(void);
 
 #endif // QP_IMPL
+
+//============================================================================
+// NOTE1:
+// QP, like all real-time frameworks, needs to execute certain sections of
+// code exclusively, meaning that only one thread can execute the code at
+// the time. Such sections of code are called "critical sections".
+//
+// This port uses a pair of functions QF_enterCriticalSection_() /
+// QF_leaveCriticalSection_() to enter/leave the critical section,
+// respectively.
+//
+// These functions are implemented in the qf_port.c module. Because this
+// port is single-threaded (and synchronized via pollfds), there is no
+// need to do anything when entering or leaving a critical section.
+// However, this port still checks that there is no nesting of critical
+// sections to verify correctness of the application, if it were to
+// run on a port with meaningful critical sections (multi-threaded or
+// with interrupts).
+//
 
 #endif // QP_PORT_H_

@@ -24,9 +24,11 @@ main event loop:
 
  - QF_preRun_: Initializes the main loop (global) variables.
  - QF_getReadyFD_: Gets the file-descriptor to poll, indicating QP/C has events to process.
+ - QF_getExternalFDs_: Gets the list of file-descriptors added by the QP/C application.
  - QF_updateNextTick_: Advances the time at which the next tick will occur.
  - QF_getNextTimeoutMS_: Gets the number of milliseconds until the next tick (or -1 for infinite timeout).
  - QF_onReadySignal_: Processes the next queued event in the QP/C kernel.
+ - QF_onExternalFDs_: Processes the external events (driven by file descriptors) added by the QP/C application.
  - QF_postRun_: Finalizes the main loop, i.e., free resources.
 
 See QF_run for a basic event-loop that uses the above parts.

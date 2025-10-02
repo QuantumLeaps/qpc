@@ -50,7 +50,7 @@
 #include <fcntl.h>
 #include <sys/poll.h>
 
-Q_DEFINE_THIS_MODULE("qf_port")
+Q_DEFINE_THIS_MODULE("qf_port");
 
 // Local objects =============================================================
 
@@ -74,6 +74,17 @@ static void sigIntHandler(int dummy) {
 QPSet QF_readySet_;
 int QF_readyPipeWrite_; // Pipe to signal events
 int QF_readyPipeRead_; // Pipe to signal events
+
+#if QF_POSIX_MAX_EXTERNAL_FDS > 0
+typedef struct _QF_ExternalPollFDCallback {
+    void (*callback)(int, void*);
+    void* user_data;
+} QF_ExternalPollFDCallback;
+
+static struct pollfd l_externalPollFDs[QF_POSIX_MAX_EXTERNAL_FDS];
+static QF_ExternalPollFDCallback l_externalPollFDCallbacks[QF_POSIX_MAX_EXTERNAL_FDS];
+static size_t l_externalPollFDsLength;
+#endif // QF_POSIX_MAX_EXTERNAL_FDS > 0
 
 //============================================================================
 // QF functions
@@ -108,6 +119,89 @@ void QF_leaveCriticalSection_(void) {
     --l_critSectNest;
 }
 
+#if QF_POSIX_MAX_EXTERNAL_FDS > 0
+//............................................................................
+void QF_addExternalFD(int fd, short fd_events, void (*callback)(int, void*), void* user_data) {
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_ASSERT_INCRIT(410, l_externalPollFDsLength < QF_POSIX_MAX_EXTERNAL_FDS); // Must have available capacity
+    Q_ASSERT_INCRIT(411, callback); // Must have a valid callback
+    Q_ASSERT_INCRIT(412, fd >= 0); // Must have a valid file descriptor
+    Q_ASSERT_INCRIT(413, fd_events != 0); // Must have an events flag
+    l_externalPollFDs[l_externalPollFDsLength].fd = fd;
+    l_externalPollFDs[l_externalPollFDsLength].events = fd_events;
+    l_externalPollFDs[l_externalPollFDsLength].revents = 0;
+    l_externalPollFDCallbacks[l_externalPollFDsLength].callback = callback;
+    l_externalPollFDCallbacks[l_externalPollFDsLength].user_data = user_data;
+    ++l_externalPollFDsLength;
+    QF_CRIT_EXIT();
+}
+
+//............................................................................
+void QF_removeExternalFD(int fd) {
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_ASSERT_INCRIT(420, fd >= 0); // Must have a valid file descriptor
+    // Takes a bit of time, but remove-fd should not be common.
+    for (size_t i = 0; i < l_externalPollFDsLength; ++i) {
+        if (l_externalPollFDs[i].fd != fd) {
+            continue;
+        }
+        // Leave a hole for this entry, will be cleaned up on next QF_getExternalFDs_ call.
+        // We do not move entries [0, len) that have been in the last pollfd set and might still
+        // be pending. We only reorganize (compress) entries when creating a new pollfd set.
+        l_externalPollFDs[i].events = 0;
+        l_externalPollFDCallbacks[i] = (QF_ExternalPollFDCallback){};
+        break;
+    }
+    QF_CRIT_EXIT();
+}
+
+//............................................................................
+size_t QF_getExternalFDs_(struct pollfd* pfds, size_t pfds_len) {
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_ASSERT_INCRIT(430, pfds_len >= l_externalPollFDsLength); // Must have enough capacity
+    size_t result = 0;
+    while (result < l_externalPollFDsLength) {
+        if ((l_externalPollFDs[result].fd < 0) || (l_externalPollFDs[result].events == 0) ||
+            !l_externalPollFDCallbacks[result].callback) {
+            // Replace with last entry
+            --l_externalPollFDsLength;
+            l_externalPollFDs[result] = l_externalPollFDs[l_externalPollFDsLength];
+            l_externalPollFDCallbacks[result] = l_externalPollFDCallbacks[l_externalPollFDsLength];
+            // Continue without incrementing result.
+            continue;
+        }
+        pfds[result] = l_externalPollFDs[result];
+        ++result;
+    }
+    QF_CRIT_EXIT();
+    return result;
+}
+
+//............................................................................
+void QF_onExternalFDs_(struct pollfd* pfds, size_t pfds_len) {
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_ASSERT_INCRIT(440, pfds_len <= QF_POSIX_MAX_EXTERNAL_FDS); // Must have correct count
+    for (size_t i = 0; i < pfds_len; ++i) {
+        if ((pfds[i].revents & pfds[i].events) == 0) {
+            continue;
+        }
+        pfds[i].revents = 0;
+        if (l_externalPollFDCallbacks[i].callback) {
+            // Copy before exiting critical section to call user code.
+            const QF_ExternalPollFDCallback tmp_cb_entry = l_externalPollFDCallbacks[i];
+            QF_CRIT_EXIT();
+            (*tmp_cb_entry.callback)(pfds[i].fd, tmp_cb_entry.user_data);
+            QF_CRIT_ENTRY();
+        }
+    }
+    QF_CRIT_EXIT();
+}
+#endif // QF_POSIX_MAX_EXTERNAL_FDS > 0
+
 //............................................................................
 void QF_init(void) {
     // init the pipe that signals events
@@ -136,6 +230,13 @@ void QF_init(void) {
 
     l_critSectNest = 0;
     QPSet_setEmpty(&QF_readySet_);
+
+#if QF_POSIX_MAX_EXTERNAL_FDS > 0
+    // Initialize external pollfd freelist.
+    memset(&l_externalPollFDs, 0, sizeof(l_externalPollFDs));
+    memset(&l_externalPollFDCallbacks, 0, sizeof(l_externalPollFDCallbacks));
+    l_externalPollFDsLength = 0;
+#endif // QF_POSIX_MAX_EXTERNAL_FDS > 0
 
     QTimeEvt_init(); // initialize QTimeEvts
 
@@ -175,14 +276,15 @@ int QF_getReadyFD_(void) {
 
 //............................................................................
 void QF_updateNextTick_(void) {
-    if ((l_tick.tv_sec != 0) || (l_tick.tv_nsec != 0)) {
-        // advance to the next tick (absolute time)
-        l_nextTick.tv_nsec += l_tick.tv_nsec;
-        if (l_nextTick.tv_nsec >= NSEC_PER_SEC) {
-            // Can only overflow by one second, since tick rate is a fraction of a second.
-            l_nextTick.tv_nsec -= NSEC_PER_SEC;
-            l_nextTick.tv_sec  += 1;
-        }
+    if ((l_tick.tv_sec == 0) && (l_tick.tv_nsec == 0)) {
+        return;
+    }
+    // advance to the next tick (absolute time)
+    l_nextTick.tv_nsec += l_tick.tv_nsec;
+    if (l_nextTick.tv_nsec >= NSEC_PER_SEC) {
+        // Can only overflow by one second, since tick rate is a fraction of a second.
+        l_nextTick.tv_nsec -= NSEC_PER_SEC;
+        l_nextTick.tv_sec  += 1;
     }
 }
 
@@ -275,30 +377,41 @@ int QF_run(void) {
     QF_preRun_();
 
     while (l_isRunning) {
-        struct pollfd pfds[1] = {
-            {.fd = QF_getReadyFD_(), .events = POLLIN, .revents = 0}};
+        struct pollfd pfds[1 + QF_POSIX_MAX_EXTERNAL_FDS];
+        pfds[0] = (struct pollfd){.fd = QF_getReadyFD_(), .events = POLLIN, .revents = 0};
+#if QF_POSIX_MAX_EXTERNAL_FDS > 0
+        const size_t ext_pfds_count = QF_getExternalFDs_(&pfds[1], QF_POSIX_MAX_EXTERNAL_FDS);
+#else // QF_POSIX_MAX_EXTERNAL_FDS > 0
+        const size_t ext_pfds_count = 0;
+#endif // QF_POSIX_MAX_EXTERNAL_FDS > 0
 #if defined(_GNU_SOURCE)
         struct timespec poll_timeout_spec;
         int poll_timeout_ms = QF_getNextTimeoutMS_(&poll_timeout_spec);
         const struct timespec& poll_timeout_spec_ptr = (poll_timeout_ms < 0 ? NULL : &poll_timeout_spec);
-        int poll_result = ppoll(pfds, 1, poll_timeout_spec_ptr, NULL);
+        int poll_result = ppoll(pfds, 1 + ext_pfds_count, poll_timeout_spec_ptr, NULL);
 #else // defined(_GNU_SOURCE)
         int poll_timeout_ms = QF_getNextTimeoutMS_(NULL);
-        int poll_result = poll(pfds, 1, poll_timeout_ms);
+        int poll_result = poll(pfds, 1 + ext_pfds_count, poll_timeout_ms);
 #endif // defined(_GNU_SOURCE)
         if (poll_result < 0) {
             Q_ERROR();
         }
+
+        // Handle timeout / clock-tick.
         if (poll_result == 0) {
             QF_onClockTick(); // must call QTIMEEVT_TICK_X()
             QF_updateNextTick_();
         }
 
-        if ((pfds[0].revents & POLLIN) == 0) {
-            continue;
+        // Handle internal QP/C events if any
+        if ((pfds[0].revents & POLLIN) != 0) {
+            QF_onReadySignal_();
         }
 
-        QF_onReadySignal_();
+#if QF_POSIX_MAX_EXTERNAL_FDS > 0
+        // Handle external events if any from pollfds
+        QF_onExternalFDs_(&pfds[1], ext_pfds_count);
+#endif // QF_POSIX_MAX_EXTERNAL_FDS > 0
     }
 
     QF_postRun_();
