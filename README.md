@@ -32,14 +32,15 @@ system (RTOS).
 
 ## QP Framework Family
 QP/C framework is part of the larger QP family, consisting of the following
-QP editions:
+QP editions (please also see [__QP Frameworks Feature Comparison__](https://www.state-machine.com/products/qp#Features)
+):
 
 |QP Edition |  Language   |      API         | Safety Functions   |Certification Artifacts| Licensing
 |:----------|:-----------:|:-----------------|:-------------------|:----------------|:---------
-| QP/C      | C (C11)     |same as SafeQP/C  |Selected Assertions |Req/Arch/Design  | [dual][Lic]
-| QP/C++    | C++ (C++17) |same as SafeQP/C++|Selected Assertions |Req/Arch/Design  | [dual][Lic]
-| SafeQP/C  | C (C11)     |same as QP/C      |All Safety Functions|Complete<br>Certification Kit| [commercial][Com]
-| SafeQP/C++| C++ (C++17) |same as QP/C++    |All Safety Functions|Complete<br>Certification Kit| [commercial][Com]
+| QP/C      | C (C11)     |same as<br>SafeQP/C  |Selected Assertions |Req/Arch/Design  | [open-source & commercial][Lic]
+| QP/C++    | C++ (C++17) |same as<br>SafeQP/C++|Selected Assertions |Req/Arch/Design  | [open-source & commercial][Lic]
+| SafeQP/C  | C (C11)     |same as<br>QP/C      |All Safety Functions|[SafeQP/C<br>Certification Kit][CERT-KIT]| [commercial][Com]
+| SafeQP/C++| C++ (C++17) |same as<br>QP/C++    |All Safety Functions|[SafeQP/C++<br>Certification Kit][CERT-KIT]| [commercial][Com]
 
 The **SafeQP/C** and **SafeQP/C++** frameworks were originally derived from QP/C and QP/C++,
 respectively, but were extensively reengineered for the safety market using compliant
@@ -50,10 +51,10 @@ mitigation by Safety Functions, which were subsequently implemented, verified, a
 The SafeQP frameworks are accompanied by the "SafeQP Certification Kits", which provide
 developers with ready-to-use artifacts, enabling them to save time, mitigate risk, and reduce
 costs during application certification for safety-critical devices in the industrial, medical,
-aerospace, and automotive industries. Please [contact Quantum Leaps](#contact-information)
+aerospace, and automotive industries. Please [contact Quantum Leaps][Cont]
 for more information about the SafeQP frameworks and the "Certification Kits".
 
-> **NOTE:** The SafeQP/C edition remain fully API- and functionally compatible with the
+> **NOTE:** The SafeQP/C edition remains fully API- and functionally compatible with the
 corresponding standard QP/C framework. This ensures existing QP/C Applications can transition
 seamlessly to SafeQP/C without requiring any modifications. SafeQP/C edition retains QP/C
 Frameworks' hallmark features: a small memory footprint, excellent efficiency, and hard
@@ -101,7 +102,7 @@ The open source GPL distribution of QP/C can be augmented by the
 ["QP/C Extras"][QPX/C], which provide more advanced QP/C features, such as:
 - [QS software tracing][QS] component (QP Spy)
 - [QXK real-time kernel][QXK] component
-- Static-analysis configuration and automation scripts for PC-Lint-Plus
+- Static-analysis configuration and automation scripts for PC-Lint-Plus (MISRA-C:2025 compliance)
 - Test suite (based on the [QUTest trace-based test harness][QUTest])
 that demonstrates 100% lines of code and 100% MC/DC code coverage for QP/C.
 
@@ -150,7 +151,7 @@ To view the offline documentation, open the file [html/index.html](html/index.ht
 in your web browser.
 
 
-# Contact Information
+# Support & Contact Information
 - [Free Support Forum](https://sourceforge.net/p/qpc/discussion/668726)
 - [Bug Reports](https://sourceforge.net/p/qpc/bugs/)
 - [Feature Requests](https://sourceforge.net/p/qpc/feature-requests/)
@@ -166,13 +167,14 @@ If you like this project, please give it a star (in the upper-right corner of yo
 <img src="https://www.state-machine.com/img/github-star.jpg"/><br>
 </p>
 
+   [Cont]:   <https://www.state-machine.com/contact>
    [RTEF]:   <https://www.state-machine.com/rtef>
    [QP]:     <https://www.state-machine.com/products/qp>
    [QP/C]:   <https://github.com/QuantumLeaps/qpc>
    [QP/C++]: <https://github.com/QuantumLeaps/qpcpp>
    [QPX/C]:  <https://www.state-machine.com/qpc/gs_extras.html>
-   [QPX/C++]: <https://www.state-machine.com/qpcpp/gs_extras.html>
-   [Cert]:   <https://www.state-machine.com/products/qp#CERT>
+   [QPX/C++]:  <https://www.state-machine.com/qpcpp/gs_extras.html>
+   [CERT-KIT]: <https://www.state-machine.com/products/qp#CERT-KIT>
    [QM]:     <https://github.com/QuantumLeaps/qm>
    [QTools]: <https://github.com/QuantumLeaps/qtools>
    [QUTest]: <https://www.state-machine.com/qtools/qutest.html>

@@ -3,7 +3,7 @@
 
 ::@echo off
 
-@set TRG=nucleo-u545re
+@set TRG=nucleo-c031c6
 @echo Target    : %TRG%
 @echo Target    : %TRG% > log_%TRG%.txt
 
@@ -17,7 +17,7 @@ exit /b
 @set LOGDIR=%HOMEDIR%
 @set MAKEFILE=%TRG%.mak
 @set LOGEXT=log
-@set LOGSEP=%LOGDIR%\log_sect_sep.txt
+@set LOGSEP=%HOMEDIR%\log_sect_sep.txt
 
 :: unit tests ================================================================
 set TEST=TUN_QP_qutest
