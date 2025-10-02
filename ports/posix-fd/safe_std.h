@@ -26,14 +26,50 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-
-#ifndef SAFE_STD_H
-#define SAFE_STD_H
+#ifndef SAFE_STD_H_
+#define SAFE_STD_H_
 
 #include <stdio.h>
 #include <string.h>
 
 // portable "safe" facilities from <stdio.h> and <string.h> ................
+#ifdef _WIN32 // Windows OS?
+
+#define MEMMOVE_S(dest_, num_, src_, count_) \
+    memmove_s(dest_, num_, src_, count_)
+
+#define STRNCPY_S(dest_, destsiz_, src_) \
+    strncpy_s(dest_, destsiz_, src_, _TRUNCATE)
+
+#define STRCAT_S(dest_, destsiz_, src_) \
+    strcat_s(dest_, destsiz_, src_)
+
+#define SNPRINTF_S(buf_, bufsiz_, format_, ...) \
+    _snprintf_s(buf_, bufsiz_, _TRUNCATE, format_, __VA_ARGS__)
+
+#define PRINTF_S(format_, ...) \
+    (void)printf_s(format_, __VA_ARGS__)
+
+#define FPRINTF_S(fp_, format_, ...) \
+    (void)fprintf_s(fp_, format_, __VA_ARGS__)
+
+#ifdef _MSC_VER
+#define FREAD_S(buf_, bufsiz_, elsiz_, count_, fp_) \
+    fread_s(buf_, bufsiz_, elsiz_, count_, fp_)
+#else
+#define FREAD_S(buf_, bufsiz_, elsiz_, count_, fp_) \
+    fread(buf_, elsiz_, count_, fp_)
+#endif // _MSC_VER
+
+#define FOPEN_S(fp_, fName_, mode_) \
+if (fopen_s(&fp_, fName_, mode_) != 0) { \
+    fp_ = (FILE *)0; \
+} else (void)0
+
+#define LOCALTIME_S(tm_, time_) \
+    localtime_s(tm_, time_)
+
+#else // other OS (Linux, MacOS, etc.) .....................................
 
 #define MEMMOVE_S(dest_, num_, src_, count_) \
     memmove(dest_, src_, count_)
@@ -64,4 +100,6 @@
 #define LOCALTIME_S(tm_, time_) \
     memcpy(tm_, localtime(time_), sizeof(struct tm))
 
-#endif // SAFE_STD_H
+#endif // _WIN32
+
+#endif // SAFE_STD_H_
