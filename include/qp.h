@@ -30,10 +30,10 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR  "8.1.0"
-#define QP_VERSION      810U
-// <VER>=810 <DATE>=250930
-#define QP_RELEASE      0x6A6F1BB5U
+#define QP_VERSION_STR  "8.1.1"
+#define QP_VERSION      811U
+// <VER>=810 <DATE>=251008
+#define QP_RELEASE      0x6A6334D4U
 
 //----------------------------------------------------------------------------
 // default configuration settings
@@ -211,9 +211,7 @@ struct QAsmVtable {
     void (*dispatch)(QAsm * const me, QEvt const * const e,
                      uint_fast8_t const qsId);
     bool (*isIn)(QAsm * const me, QStateHandler const stateHndl);
-#ifdef Q_SPY
     QStateHandler (*getStateHandler)(QAsm const * const me);
-#endif // Q_SPY
 };
 
 #ifdef Q_SPY
@@ -229,6 +227,9 @@ struct QAsmVtable {
     #define QASM_DISPATCH(me_, e_, dummy) \
         (*((QAsm *)(me_))->vptr->dispatch)((QAsm *)(me_), (e_), 0U)
 #endif // ndef Q_SPY
+
+#define QASM_GET_STATE_HANDLER(me_) \
+    (*((QAsm *)(me_))->vptr->getStateHandler)((QAsm *)(me_))
 
 #define Q_ASM_UPCAST(ptr_) ((QAsm *)(ptr_))
 
@@ -258,10 +259,8 @@ bool QHsm_isIn_(
     QAsm * const me,
     QStateHandler const stateHndl);
 
-#ifdef Q_SPY
 //! @private @memberof QHsm
 QStateHandler QHsm_getStateHandler_(QAsm const * const me);
-#endif // def Q_SPY
 
 //! @protected @memberof QHsm
 QState QHsm_top(QHsm const * const me,
@@ -316,10 +315,8 @@ bool QMsm_isIn_(
     QAsm * const me,
     QStateHandler const stateHndl);
 
-#ifdef Q_SPY
-//! @public @memberof QMsm
+//! @private @memberof QMsm
 QStateHandler QMsm_getStateHandler_(QAsm const * const me);
-#endif // def Q_SPY
 
 //! @public @memberof QMsm
 QMState const * QMsm_topQMState(void);

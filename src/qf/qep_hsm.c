@@ -163,10 +163,8 @@ void QHsm_ctor(QHsm * const me,
     static struct QAsmVtable const vtable = { // QAsm virtual table
         &QHsm_init_,
         &QHsm_dispatch_,
-        &QHsm_isIn_
-#ifdef Q_SPY
-        ,&QHsm_getStateHandler_
-#endif
+        &QHsm_isIn_,
+        &QHsm_getStateHandler_
     };
     // no need to call the superclass' constructor QAsm_ctor() here
     me->super.vptr      = &vtable; // QHsm class' VTABLE
@@ -284,7 +282,6 @@ void QHsm_dispatch_(QAsm * const me,
 
     // process the event hierarchically...
     QStateHandler path[QHSM_MAX_NEST_DEPTH_]; // entry path array
-    path[0] = s; // save current state
     me->temp.fun = s;
     QState r; // state handler return value
     int_fast8_t ip = QHSM_MAX_NEST_DEPTH_; // path index & fixed loop bound
@@ -307,7 +304,10 @@ void QHsm_dispatch_(QAsm * const me,
         }
     } while (r == Q_RET_SUPER); // loop as long as superstate returned
 
-    if (r == Q_RET_HANDLED) { // did the last handler handle event e?
+    if (r == Q_RET_IGNORED) { // was event e ignored?
+        QS_TRAN0_(QS_QEP_IGNORED, me->state.fun); // output QS record
+    }
+    else if (r == Q_RET_HANDLED) { // did the last handler handle event e?
         QS_TRAN0_(QS_QEP_INTERN_TRAN, s); // output QS record
     }
     else if ((r == Q_RET_TRAN) || (r == Q_RET_TRAN_HIST)) { // tran. taken?
@@ -340,15 +340,13 @@ void QHsm_dispatch_(QAsm * const me,
         // enter the target (possibly recursively) by initial trans.
         QHsm_enter_target_(me, &path[0], ip, qsId);
         QS_TRAN_END_(QS_QEP_TRAN, s, path[0]); // output QS record
-    }
-    else if (r == Q_RET_IGNORED) { // was event e ignored?
-        QS_TRAN0_(QS_QEP_IGNORED, me->state.fun); // output QS record
+
+        me->state.fun = path[0]; // change the current active state
     }
     else {
         Q_ERROR_LOCAL(360); // last state handler returned impossible value
     }
 
-    me->state.fun = path[0]; // change the current active state
 #ifndef Q_UNSAFE
     // establish stable state configuration
     me->temp.uint = QP_DIS_UPDATE(uintptr_t, me->state.uint);
@@ -644,11 +642,9 @@ QStateHandler QHsm_state(QHsm const * const me) {
 }
 
 //............................................................................
-#ifdef Q_SPY
 //! @private @memberof QHsm
 QStateHandler QHsm_getStateHandler_(QAsm const * const me) {
     // NOTE: this function does NOT apply critical section, so it can
     // be safely called from an already established critical section.
     return me->state.fun;
 }
-#endif // def Q_SPY

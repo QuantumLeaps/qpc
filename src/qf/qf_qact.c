@@ -61,10 +61,8 @@ void QActive_ctor(QActive * const me,
     static struct QAsmVtable const vtable = { // QActive virtual table
         &QHsm_init_,
         &QHsm_dispatch_,
-        &QHsm_isIn_
-#ifdef Q_SPY
-        ,&QHsm_getStateHandler_
-#endif
+        &QHsm_isIn_,
+        &QHsm_getStateHandler_
     };
     me->super.vptr = &vtable; // hook vptr to QActive vtable
 }

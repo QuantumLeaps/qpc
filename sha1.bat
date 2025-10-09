@@ -1,6 +1,6 @@
 @setlocal
 
-set FNAME=qpc_8.1.0.sha1
+set FNAME=qpc_8.1.1.sha1
 
 :: usage
 @echo Usage: sha1 [gen]

@@ -55,10 +55,8 @@ void QMActive_ctor(QMActive * const me,
     static struct QAsmVtable const vtable = { // QMActive virtual table
         &QMsm_init_,
         &QMsm_dispatch_,
-        &QMsm_isIn_
-#ifdef Q_SPY
-        ,&QMsm_getStateHandler_
-#endif
+        &QMsm_isIn_,
+        &QMsm_getStateHandler_
     };
     me->super.super.vptr = &vtable; // hook vptr to QMActive vtable
 }

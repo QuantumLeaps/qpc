@@ -142,10 +142,8 @@ void QMsm_ctor(QMsm * const me,
     static struct QAsmVtable const vtable = { // QAsm virtual table
         &QMsm_init_,
         &QMsm_dispatch_,
-        &QMsm_isIn_
-#ifdef Q_SPY
-        ,&QMsm_getStateHandler_
-#endif
+        &QMsm_isIn_,
+        &QMsm_getStateHandler_
     };
     // no need to call the superclass' constructor QAsm_ctor() here
     me->super.vptr      = &vtable;      // QMsm class' VTABLE
@@ -471,10 +469,8 @@ QMState const* QMsm_stateObj(QMsm const* const me) {
     return me->super.state.obj;
 }
 //............................................................................
-#ifdef Q_SPY
 //! @public @memberof QMsm
 QStateHandler QMsm_getStateHandler_(QAsm const * const me) {
     // return the current state handler (function pointer)
     return me->state.obj->stateHandler;
 }
-#endif
