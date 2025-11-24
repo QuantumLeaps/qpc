@@ -159,7 +159,7 @@ namespace QP {
 #define Q_ERROR_LOCAL(id_)             Q_ERROR_ID(id_)
 
 #ifndef Q_ASSERT_STATIC
-    #define Q_ASSERT_STATIC(expr_) extern char Q_static_assert_[(expr_) ? 1 : -1]
+    #define Q_ASSERT_STATIC(expr_) void Q_static_assert_(char (*c)[(expr_) ? 1 : -1])
 #endif // ndef Q_ASSERT_STATIC
 
 #ifndef Q_NORETURN
