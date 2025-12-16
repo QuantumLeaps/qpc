@@ -102,16 +102,21 @@ enum QS_ObjKind_old {
 // version 8.0.0 -------------------------------------------------------------
 #if (QP_API_VERSION < 800)
 
+//! @deprecated submachines no longer supported
 #define QM_SUPER_SUB(host_)     error "submachines no longer supported"
+
+//! @deprecated submachines no longer supported
 #define QM_TRAN_EP(tatbl_)      error "submachines no longer supported"
+
+//! @deprecated submachines no longer supported
 #define QM_TRAN_XP(xp_, tatbl_) error "submachines no longer supported"
 
 #ifdef QEVT_DYN_CTOR
-//! @deprecated #QEVT_DYN_CTOR, please use #QEVT_PAR_INIT
+//! @deprecated please use #QEVT_PAR_INIT
 #define QEVT_PAR_INIT
 #endif
 
-//! @deprecated plain 'char' is no longer forbidden in MISRA-C:2023
+//! @deprecated plain 'char' is no longer forbidden in MISRA-C:2025
 typedef char char_t;
 
 //! @deprecated Macro for starting an Active Object.
@@ -126,11 +131,10 @@ typedef char char_t;
     (QXThread_start((QXThread *)(me_), (prioSpec_), \
         (qSto_), (qLen_), (stkSto_), (stkSize_), (par_)))
 
-//! @deprecated assertion failure handler.
+//! @deprecated assertion failure handler, use custom error handler instead
 //! Use Q_onError() instead.
 #define Q_onAssert(module_, id_) Q_onError(module_, id_)
 
-//! @deprecated #Q_NASSERT preprocessor switch to disable QP assertions
 #ifdef Q_NASSERT
 
     // #Q_UNSAFE now replaces the functionality of Q_NASSERT
@@ -161,11 +165,8 @@ typedef char char_t;
 
 #endif
 
-//! @deprecated general purpose assertion without ID number
-//! that **always** evaluates the `expr_` expression.
-//! Instead of ID number, this macro is based on the standard
-//! `__LINE__` macro.
-//!
+//! @deprecated general-purpose assertion that **always** evaluates
+//! the `expr_` expression.
 //! @note The use of this macro is no longer recommended.
 #define Q_ALLEGE(expr_)         Q_ALLEGE_ID(__LINE__, (expr_))
 

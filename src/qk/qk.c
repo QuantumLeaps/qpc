@@ -45,7 +45,7 @@
 Q_DEFINE_THIS_MODULE("qk")
 
 //............................................................................
-QK_Attr QK_priv_;
+QK QK_priv_;
 
 //............................................................................
 //! @static @public @memberof QK
@@ -92,7 +92,8 @@ void QK_schedUnlock(QSchedStatus const prevCeil) {
         QS_BEGIN_PRE(QS_SCHED_UNLOCK, QK_priv_.actPrio)
             QS_TIME_PRE(); // timestamp
             // current lock ceiling (old), previous lock ceiling (new)
-            QS_2U8_PRE(QK_priv_.lockCeil, (uint8_t)prevCeil);
+            QS_2U8_PRE(QK_priv_.lockCeil,
+                       (uint8_t)prevCeil);
         QS_END_PRE()
 
         // restore the previous lock ceiling

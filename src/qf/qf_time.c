@@ -187,9 +187,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
 
 //............................................................................
 //! @public @memberof QTimeEvt
-bool QTimeEvt_rearm(QTimeEvt * const me,
-    uint32_t const nTicks)
-{
+bool QTimeEvt_rearm(QTimeEvt * const me, uint32_t const nTicks) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
@@ -289,7 +287,7 @@ void QTimeEvt_tick_(
     QF_CRIT_ENTRY();
 
     // the tick rate of this time event must be in range
-    Q_REQUIRE_INCRIT(800, tickRate < Q_DIM(QTimeEvt_timeEvtHead_));
+    Q_REQUIRE_INCRIT(800, tickRate < QF_MAX_TICK_RATE);
 
     QTimeEvt *prev = &QTimeEvt_timeEvtHead_[tickRate];
 
@@ -366,8 +364,9 @@ bool QTimeEvt_noActive(uint_fast8_t const tickRate) {
     // NOTE: this function must be called *inside* critical section
     Q_REQUIRE_INCRIT(900, tickRate < QF_MAX_TICK_RATE);
 
+    QTimeEvt const * const head = &QTimeEvt_timeEvtHead_[tickRate];
     bool const noActive =
-        (QTimeEvt_timeEvtHead_[tickRate].next == (QTimeEvt *)0);
+        (head->next == (QTimeEvt *)0) && (head->act == (void *)0);
 
     return noActive;
 }

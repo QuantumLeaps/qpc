@@ -31,21 +31,10 @@
 
 //============================================================================
 //! @class QV
-typedef struct QV {
-    //! @cond INTERNAL
-    uint8_t dummy;
-    //! @endcond
-} QV;
-
-//============================================================================
-//! @class QV_Attr
 typedef struct {
-    QPSet readySet;        //!< @private @memberof QV_Attr
-    uint8_t schedCeil;     //!< @private @memberof QV_Attr
-} QV_Attr;
-
-//! @static @private @memberof QV
-extern QV_Attr QV_priv_;
+    QPSet readySet;        //!< @private @memberof QV
+    uint8_t schedCeil;     //!< @private @memberof QV
+} QV;
 
 //! @static @public @memberof QV
 void QV_schedDisable(uint8_t const ceiling);
@@ -56,9 +45,14 @@ void QV_schedEnable(void);
 //! @static @public @memberof QV
 void QV_onIdle(void);
 
+//! @static @private @memberof QV
+extern QV QV_priv_;
+
 //============================================================================
 // interface used only for internal implementation, but not in applications
+
 #ifdef QP_IMPL
+//! @cond INTERNAL
 
 // scheduler locking for QV (not needed)...
 #define QF_SCHED_STAT_
@@ -82,6 +76,7 @@ void QV_onIdle(void);
 #define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
 #define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
+//! @endcond
 #endif // QP_IMPL
 
 #endif // QV_H_

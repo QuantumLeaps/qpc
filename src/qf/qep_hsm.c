@@ -26,6 +26,7 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
+#define QP_IMPL           // this is QP implementation
 #include "qp_port.h"      // QP port
 #include "qp_pkg.h"       // QP package-scope interface
 #include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
@@ -40,7 +41,7 @@ Q_DEFINE_THIS_MODULE("qep_hsm")
 
 // maximum depth of state nesting in a QHsm (including the top level),
 // must be >= 3
-#define QHSM_MAX_NEST_DEPTH_  6
+#define QHSM_MAX_NEST_DEPTH_  ((size_t)6U)
 
 //! @cond INTERNAL
 
@@ -134,28 +135,6 @@ static QEvt const l_resEvt_[4] = {
 //! @endcond
 
 //============================================================================
-// static and private helper function prototypes...
-
-//! @private @memberof QHsm
-static int_fast8_t QHsm_tran_simple_(
-    QAsm * const me,
-    QStateHandler * const path,
-    uint_fast8_t const qsId);
-
-//! @private @memberof QHsm
-static int_fast8_t QHsm_tran_complex_(
-    QAsm * const me,
-    QStateHandler * const path,
-    uint_fast8_t const qsId);
-
-//! @private @memberof QHsm
-static void QHsm_enter_target_(
-    QAsm * const me,
-    QStateHandler * const path,
-    int_fast8_t const depth,
-    uint_fast8_t const qsId);
-
-//============================================================================
 //! @protected @memberof QHsm
 void QHsm_ctor(QHsm * const me,
     QStateHandler const initial)
@@ -228,10 +207,8 @@ void QHsm_init_(QAsm * const me,
     // drill down into the state hierarchy with initial transitions...
     QStateHandler path[QHSM_MAX_NEST_DEPTH_]; // entry path array
 
-    int_fast8_t ip = -1; // path index & fixed loop bound (one below [0])
+    size_t ip = 0U; // path index & fixed loop bound
     do {
-        ++ip;
-
         // the entry path index must not overflow the allocated array
         Q_INVARIANT_LOCAL(260, ip < QHSM_MAX_NEST_DEPTH_);
 
@@ -239,13 +216,14 @@ void QHsm_init_(QAsm * const me,
         Q_ASSERT_LOCAL(270, me->temp.fun != Q_STATE_CAST(0));
 
         path[ip] = me->temp.fun; // store the entry path
+        ++ip;
 
         // find the superstate of 'm_temp.fun', ignore result
         (void)(*me->temp.fun)(me, &l_resEvt_[Q_EMPTY_SIG]);
     } while (me->temp.fun != s);
 
     // enter the target (possibly recursively) by initial trans.
-    QHsm_enter_target_(me, &path[0], ip, qsId);
+    QHsm_enter_target_(me, path, ip, qsId);
 
     QS_TOP_INIT_(QS_QEP_INIT_TRAN, path[0]); // output QS record
 
@@ -268,7 +246,7 @@ void QHsm_dispatch_(QAsm * const me,
     Q_UNUSED_PAR(qsId);
 #endif
 
-    // this state machine must be in a stable state configuration
+    // this state machine must be in a "stable state configuration"
     // NOTE: stable state configuration is established after every RTC step.
     Q_INVARIANT_LOCAL(300,
         QP_DIS_VERIFY(uintptr_t, me->state.uint, me->temp.uint));
@@ -277,7 +255,10 @@ void QHsm_dispatch_(QAsm * const me,
     Q_REQUIRE_LOCAL(310, e != (QEvt *)0);
 
     QStateHandler s = me->state.fun; // current state
-    me->temp.fun = Q_STATE_CAST(0); // invalidate
+#ifndef Q_UNSAFE
+    uintptr_t const state_dis = me->temp.uint; // from invariant-300
+#endif
+    me->temp.fun = Q_STATE_CAST(0); // invalidate "stable state configuration"
 
     QS_CRIT_STAT
     QS_TRAN0_(QS_QEP_DISPATCH, s); // output QS record
@@ -286,14 +267,13 @@ void QHsm_dispatch_(QAsm * const me,
     QStateHandler path[QHSM_MAX_NEST_DEPTH_]; // entry path array
     me->temp.fun = s;
     QState r; // state handler return value
-    int_fast8_t ip = QHSM_MAX_NEST_DEPTH_; // path index & fixed loop bound
+    size_t ip = QHSM_MAX_NEST_DEPTH_; // path index & fixed loop bound
     do {
-        --ip;
-
         // the entry path index must stay in range of the path[] array
-        Q_INVARIANT_LOCAL(340, ip >= 0);
+        Q_INVARIANT_LOCAL(340, ip != 0U);
 
         s = me->temp.fun; // set s to the superstate set previously
+        --ip; // build the entry path[] from the end
         path[ip] = s; // store the path to potential tran. source
 
         r = (*s)(me, e); // try to handle event e in state s
@@ -306,15 +286,19 @@ void QHsm_dispatch_(QAsm * const me,
         }
     } while (r == Q_RET_SUPER); // loop as long as superstate returned
 
-    if (r == Q_RET_IGNORED) { // was event e ignored?
+    // me->state should not change, so it must match the saved DIS
+    Q_INVARIANT_LOCAL(350,
+        QP_DIS_VERIFY(uintptr_t, me->state.uint, state_dis));
+
+    if (r == Q_RET_IGNORED) { // was event ignored?
         QS_TRAN0_(QS_QEP_IGNORED, me->state.fun); // output QS record
     }
-    else if (r == Q_RET_HANDLED) { // did the last handler handle event e?
+    else if (r == Q_RET_HANDLED) { // did the last handler handle the event?
         QS_TRAN0_(QS_QEP_INTERN_TRAN, s); // output QS record
     }
     else if ((r == Q_RET_TRAN) || (r == Q_RET_TRAN_HIST)) { // tran. taken?
-        // tran. must set temp to the target state
-        Q_ASSERT_LOCAL(350, me->temp.fun != Q_STATE_CAST(0));
+        // tran. must have set me->temp to the target state
+        Q_ASSERT_LOCAL(360, me->temp.fun != Q_STATE_CAST(0));
 
 #ifdef Q_SPY
         if (r == Q_RET_TRAN_HIST) { // tran. to history?
@@ -325,7 +309,7 @@ void QHsm_dispatch_(QAsm * const me,
         path[0] = me->temp.fun; // save tran. target in path[0]
 
         // exit current state to tran. source (path[0] not used)...
-        for (int_fast8_t iq = QHSM_MAX_NEST_DEPTH_ - 1; iq > ip; --iq) {
+        for (size_t iq = QHSM_MAX_NEST_DEPTH_ - 1U; iq > ip; --iq) {
             // exit from 'path[iq]'
             if ((*path[iq])(me, &l_resEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED) {
                 QS_STATE_ACT_(QS_QEP_STATE_EXIT, path[iq]); //output QS record
@@ -334,30 +318,30 @@ void QHsm_dispatch_(QAsm * const me,
         path[2] = s; // save tran. source in path[2]
 
         // take the tran...
-        ip = QHsm_tran_simple_(me, &path[0], qsId); // try simple tran. first
-        if (ip < -1) { // not a simple tran.?
-            ip = QHsm_tran_complex_(me, &path[0], qsId);
+        ip = QHsm_tran_simple_(me, path, qsId); // try simple tran. first
+        if (ip > 1U) { // not a simple tran.?
+            ip = QHsm_tran_complex_(me, path, qsId);
         }
 
         // enter the target (possibly recursively) by initial trans.
-        QHsm_enter_target_(me, &path[0], ip, qsId);
+        QHsm_enter_target_(me, path, ip, qsId);
         QS_TRAN_END_(QS_QEP_TRAN, s, path[0]); // output QS record
 
         me->state.fun = path[0]; // change the current active state
     }
     else {
-        Q_ERROR_LOCAL(360); // last state handler returned impossible value
+        Q_ERROR_LOCAL(370); // last state handler returned impossible value
     }
 
 #ifndef Q_UNSAFE
-    // establish stable state configuration
+    // establish "stable state configuration"
     me->temp.uint = QP_DIS_UPDATE(uintptr_t, me->state.uint);
 #endif
 }
 
 //............................................................................
 //! @private @memberof QHsm
-static int_fast8_t QHsm_tran_simple_(
+size_t QHsm_tran_simple_(
     QAsm * const me,
     QStateHandler * const path,
     uint_fast8_t const qsId)
@@ -368,7 +352,7 @@ static int_fast8_t QHsm_tran_simple_(
 
     QStateHandler t = path[0];       // target
     QStateHandler const s = path[2]; // source
-    int_fast8_t ip = 0; // assume to enter the target
+    size_t ip = 1U; // assume to enter the target
     QS_CRIT_STAT
 
     // (a) check source==target (tran. to self)...
@@ -380,7 +364,7 @@ static int_fast8_t QHsm_tran_simple_(
     }
     else { // not a tran. to self
         // find superstate of target in 't'
-        QState const r =(*t)(me, &l_resEvt_[Q_EMPTY_SIG]);
+        QState const r = (*t)(me, &l_resEvt_[Q_EMPTY_SIG]);
 
         // state handler t must return the superstate for Q_EMPTY_SIG
         Q_ASSERT_LOCAL(440, r == Q_RET_SUPER);
@@ -410,11 +394,11 @@ static int_fast8_t QHsm_tran_simple_(
                 if ((*s)(me, &l_resEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED) {
                     QS_STATE_ACT_(QS_QEP_STATE_EXIT, s); // output QS record
                 }
-                ip = -1; // set entry path index not to enter the target
+                ip = 0U; // set entry path index NOT to enter the target
             }
-            else {
+            else { // tran. more complex
                 path[1] = t; // save the superstate of target
-                ip = -2; // cause execution of QHsm_tran_complex_()
+                ip = 2U; // need QHsm_tran_complex_()
             }
         }
     }
@@ -425,7 +409,7 @@ static int_fast8_t QHsm_tran_simple_(
 
 //............................................................................
 //! @private @memberof QHsm
-static int_fast8_t QHsm_tran_complex_(QAsm * const me,
+size_t QHsm_tran_complex_(QAsm * const me,
     QStateHandler * const path,
     uint_fast8_t const qsId)
 {
@@ -436,29 +420,28 @@ static int_fast8_t QHsm_tran_complex_(QAsm * const me,
     QStateHandler s = path[2];             // tran. source
     QStateHandler const ss = me->temp.fun; // source->super
     me->temp.fun = path[1];                // target->super
-    int_fast8_t iq = 0; // assume that LCA is NOT found
     QState r;
 
     // (e) check rest of source == target->super->super...
     // and store the target entry path along the way
-    int_fast8_t ip = 0; // path index & fixed loop bound (one below [1])
+    size_t ip = 1U; // path index & fixed loop bound
+    size_t iq = 0U; // assume that LCA is NOT found
     do {
-        ++ip;
-
         // the entry path index must stay in range of the path[] array
         Q_INVARIANT_LOCAL(540, ip < QHSM_MAX_NEST_DEPTH_);
 
         path[ip] = me->temp.fun; // store temp in the entry path array
+        ++ip;
 
         // find superstate of 'm_temp.fun'
         r = (*me->temp.fun)(me, &l_resEvt_[Q_EMPTY_SIG]);
         if (me->temp.fun == s) { // is temp the LCA?
-            iq = 1; // indicate that LCA is found
+            iq = 1U; // indicate that LCA is found
             break;
         }
     } while (r == Q_RET_SUPER); // loop as long as superstate reached
 
-    if (iq == 0) { // the LCA not found yet?
+    if (iq == 0U) { // the LCA not found yet?
         QS_CRIT_STAT
 
 #ifndef Q_SPY
@@ -467,7 +450,7 @@ static int_fast8_t QHsm_tran_complex_(QAsm * const me,
 #else
         // exit the source 's'
         if ((*s)(me, &l_resEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED) {
-            QS_STATE_ACT_(QS_QEP_STATE_EXIT, s);
+            QS_STATE_ACT_(QS_QEP_STATE_EXIT, s); // output QS record
         }
 #endif // def Q_SPY
 
@@ -475,11 +458,12 @@ static int_fast8_t QHsm_tran_complex_(QAsm * const me,
         // source->super... == target->super->super...
         s = ss; // source->super
         r = Q_RET_IGNORED; // assume that the LCA NOT found
-        iq = ip; // outside for(;;) to comply with MC:2023 R14.2
-        for (; iq >= 0; --iq) {
+        iq = ip;
+        while (iq > 0U) {
+            --iq;
             if (s == path[iq]) { // is this the LCA?
                 r = Q_RET_HANDLED; // indicate the LCA found
-                ip = iq - 1; // do not enter the LCA
+                ip = iq; // do NOT enter the LCA
                 break;
             }
         }
@@ -496,10 +480,11 @@ static int_fast8_t QHsm_tran_complex_(QAsm * const me,
                 }
                 s = me->temp.fun; // set to super of s
                 // NOTE: loop bounded per invariant:540
-                iq = ip; // outside for(;;) to comply with MC:2023 R14.2
-                for (; iq >= 0; --iq) {
+                iq = ip;
+                while (iq > 0U) {
+                    --iq;
                     if (s == path[iq]) { // is this the LCA?
-                        ip = iq - 1; // indicate not to enter the LCA
+                        ip = iq; // do NOT to enter the LCA
                         r = Q_RET_HANDLED; // cause break from outer loop
                         break;
                     }
@@ -513,9 +498,9 @@ static int_fast8_t QHsm_tran_complex_(QAsm * const me,
 
 //............................................................................
 //! @private @memberof QHsm
-static void QHsm_enter_target_(QAsm * const me,
+void QHsm_enter_target_(QAsm * const me,
     QStateHandler * const path,
-    int_fast8_t const depth,
+    size_t const depth,
     uint_fast8_t const qsId)
 {
 #ifndef Q_SPY
@@ -523,12 +508,16 @@ static void QHsm_enter_target_(QAsm * const me,
 #endif
 
     QS_CRIT_STAT
-    int_fast8_t ip = depth;
+    size_t ip = depth;
+
+    Q_REQUIRE_LOCAL(600, ip <= QHSM_MAX_NEST_DEPTH_);
+
     // execute entry actions from LCA to tran target...
-    for (; ip >= 0; --ip) {
+    while (ip > 0U) {
+        --ip;
         // enter 'path[ip]'
         if ((*path[ip])(me, &l_resEvt_[Q_ENTRY_SIG]) == Q_RET_HANDLED) {
-            QS_STATE_ACT_(QS_QEP_STATE_ENTRY, path[ip]);
+            QS_STATE_ACT_(QS_QEP_STATE_ENTRY, path[ip]); // output QS record
         }
     }
     QStateHandler t = path[0]; // tran. target
@@ -543,13 +532,13 @@ static void QHsm_enter_target_(QAsm * const me,
         QS_TRAN_SEG_(QS_QEP_STATE_INIT, t, me->temp.fun); // output QS record
 
         // find superstate of initial tran. target...
-        ip = -1; // entry path index and fixed loop bound (one below [0])
+        ip = 0U; // entry path index and fixed loop bound
         do {
-            ++ip;
             // the entry path index must stay in range of the path[] array
             Q_INVARIANT_LOCAL(660, ip < QHSM_MAX_NEST_DEPTH_);
 
             path[ip] = me->temp.fun; // store the entry path
+            ++ip;
 
             // find superstate of 'temp.fun'
             QState const r = (*me->temp.fun)(me, &l_resEvt_[Q_EMPTY_SIG]);
@@ -562,7 +551,8 @@ static void QHsm_enter_target_(QAsm * const me,
         } while (me->temp.fun != t); //loop as long as tran.target not reached
 
         // retrace the entry path in reverse (correct) order...
-        for (; ip >= 0; --ip) {
+        while (ip > 0U) {
+            --ip;
             // enter 'path[ip]'
             if ((*path[ip])(me, &l_resEvt_[Q_ENTRY_SIG]) == Q_RET_HANDLED) {
                 QS_STATE_ACT_(QS_QEP_STATE_ENTRY, path[ip]);//output QS record

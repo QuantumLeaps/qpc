@@ -66,6 +66,16 @@ typedef struct {
 
 extern QF_Attr QF_priv_; //!< @static @private @memberof QF
 
+//----------------------------------------------------------------------------
+// Duplicate Inverse Storage (DIS) facilities
+
+#ifndef Q_UNSAFE
+
+#define QP_DIS_UPDATE(T_, org_)        ((T_)(~(org_)))
+#define QP_DIS_VERIFY(T_, org_, dis_)  ((org_) == (T_)(~(dis_)))
+
+#endif // Q_UNSAFE
+
 #endif // QP_IMPL
 
 #endif // QP_PKG_H_

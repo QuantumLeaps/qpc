@@ -30,10 +30,10 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR  "8.1.1"
-#define QP_VERSION      811U
-// <VER>=810 <DATE>=251008
-#define QP_RELEASE      0x6A6334D4U
+#define QP_VERSION_STR  "8.1.2"
+#define QP_VERSION      812U
+// <VER>=812 <DATE>=260105
+#define QP_RELEASE      0x64F71D43U
 
 //----------------------------------------------------------------------------
 // default configuration settings
@@ -272,6 +272,25 @@ QStateHandler QHsm_state(QHsm const * const me);
 //! @public @memberof QHsm
 QStateHandler QHsm_childState(QHsm * const me,
     QStateHandler const parentHndl);
+
+//! @private @memberof QHsm
+size_t QHsm_tran_simple_(
+    QAsm * const me,
+    QStateHandler * const path,
+    uint_fast8_t const qsId);
+
+//! @private @memberof QHsm
+size_t QHsm_tran_complex_(
+    QAsm * const me,
+    QStateHandler * const path,
+    uint_fast8_t const qsId);
+
+//! @private @memberof QHsm
+void QHsm_enter_target_(
+    QAsm * const me,
+    QStateHandler * const path,
+    size_t const depth,
+    uint_fast8_t const qsId);
 
 #define Q_HSM_UPCAST(ptr_) ((QHsm *)(ptr_))
 
@@ -762,12 +781,5 @@ void QF_gcFromISR(QEvt const * const e);
 #ifndef QF_CRIT_EXIT_NOP
     #define QF_CRIT_EXIT_NOP() ((void)0)
 #endif // ndef QF_CRIT_EXIT_NOP
-
-//----------------------------------------------------------------------------
-// memory protection facilities
-
-#ifdef QF_MEM_ISOLATE
-    #error Memory isolation not supported in this QP edition, need SafeQP
-#endif
 
 #endif // QP_H_

@@ -81,5 +81,6 @@ zephyr/qutest_port.c
 
 static-analysis/pclp/
 
+tests/shared/
 tests/TIN*/
 tests/TUN*/

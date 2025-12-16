@@ -26,6 +26,7 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
+#define QP_IMPL           // this is QP implementation
 #include "qp_port.h"      // QP port
 #include "qp_pkg.h"       // QP package-scope interface
 #include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
@@ -39,7 +40,7 @@
 Q_DEFINE_THIS_MODULE("qep_msm")
 
 // maximum depth of state nesting in a QMsm (including the top level)
-#define QMSM_MAX_NEST_DEPTH_  ((int_fast8_t)6)
+#define QMSM_MAX_NEST_DEPTH_  ((size_t)6U)
 
 //! @cond INTERNAL
 
@@ -316,23 +317,24 @@ static QState QMsm_execTatbl_(
     QS_CRIT_STAT
     QState r = Q_RET_SUPER;
     QActionHandler const *a = &tatbl->act[0];
-    while (*a != Q_ACTION_CAST(0)) { // not at the end of the table?
+    while (*a != Q_ACTION_CAST(0)) { // not the end of the tran-action table?
         r = (*(*a))(me); // call the action through the 'a' pointer
-        ++a;
+        ++a; // advance to the next entry in the tran-action table
 
-        if (r == Q_RET_ENTRY) {
+        if (r == Q_RET_ENTRY) { // was the action a state entry?
             QS_STATE_ACT_(QS_QEP_STATE_ENTRY, me->temp.obj->stateHandler);
         }
-        else if (r == Q_RET_EXIT) {
+        else if (r == Q_RET_EXIT) { // was the action a state exit?
             QS_STATE_ACT_(QS_QEP_STATE_EXIT, me->temp.obj->stateHandler);
         }
-        else if (r == Q_RET_TRAN_INIT) {
+        else if (r == Q_RET_TRAN_INIT) { // was the action a state init?
             QS_TRAN_SEG_(QS_QEP_STATE_INIT,
                 tatbl->target->stateHandler,
                 me->temp.tatbl->target->stateHandler);
         }
         else {
-            Q_ERROR_LOCAL(460); //last action handler returned impossible value
+            // the last action handler returned impossible value (corrupt SM?)
+            Q_ERROR_LOCAL(460);
         }
 
     }
@@ -383,12 +385,12 @@ static QState QMsm_enterHistory_(
     // record the entry path from current state to history
     QMState const *path[QMSM_MAX_NEST_DEPTH_];
     QMState const *s = hist;
-    int_fast8_t i = -1; // entry path index (one below [0])
+    size_t ip = 0U; // entry path index
     while (s != me->state.obj) {
         if (s->entryAction != Q_ACTION_CAST(0)) { // does s have an entry action?
-            ++i;
-            Q_INVARIANT_LOCAL(610, i < QMSM_MAX_NEST_DEPTH_);
-            path[i] = s;
+            Q_INVARIANT_LOCAL(610, ip < QMSM_MAX_NEST_DEPTH_);
+            path[ip] = s;
+            ++ip;
         }
         s = s->superstate;
     }
@@ -396,10 +398,11 @@ static QState QMsm_enterHistory_(
     QS_CRIT_STAT
     // retrace the entry path in reverse (desired) order...
     // NOTE: i is the fixed loop bound already checked in invariant 610
-    for (; i >= 0; --i) {
-        // enter the state in path[i], ignore the result
-        (void)(*path[i]->entryAction)(me);
-        QS_STATE_ACT_(QS_QEP_STATE_ENTRY, path[i]->stateHandler);
+    while (ip > 0U) {
+        --ip;
+        // enter the state in path[ip], ignore the result
+        (void)(*path[ip]->entryAction)(me);
+        QS_STATE_ACT_(QS_QEP_STATE_ENTRY, path[ip]->stateHandler);
     }
 
     me->state.obj = hist; // set current state to the tran. target
