@@ -30,14 +30,6 @@
 #include "qp_port.h"
 #include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
 
-// prototypes ----------------------------------------------------------------
-void PendSV_Handler(void);
-#ifdef QK_USE_IRQ_HANDLER           // if use IRQ...
-void QK_USE_IRQ_HANDLER(void);
-#else                               // use default (NMI)
-void NMI_Handler(void);
-#endif
-
 #define SCB_SYSPRI   ((uint32_t volatile *)0xE000ED18U)
 #define NVIC_EN      ((uint32_t volatile *)0xE000E100U)
 #define NVIC_IP      ((uint32_t volatile *)0xE000E400U)
@@ -49,6 +41,16 @@ void NMI_Handler(void);
 // helper macros to "stringify" values
 #define VAL(x) #x
 #define STRINGIFY(x) VAL(x)
+
+//============================================================================
+
+// prototypes ----------------------------------------------------------------
+void PendSV_Handler(void);
+#ifdef QK_USE_IRQ_HANDLER           // if use IRQ...
+void QK_USE_IRQ_HANDLER(void);
+#else                               // use default (NMI)
+void NMI_Handler(void);
+#endif
 
 //============================================================================
 // interrupts and critical section...
@@ -305,7 +307,7 @@ __asm volatile (
     "  LSRS    r3,r1,#3         \n" // r3 := (r1 >> 3), set T bit (new xpsr)
     "  LDR     r2,=QK_activate_ \n" // address of QK_activate_
     "  SUBS    r2,r2,#1         \n" // align Thumb-address at halfword (new pc)
-    "  LDR     r1,=QK_thread_ret \n" // return address after the call  (new lr)
+    "  LDR     r1,=QK_thread_ret\n" // return address after the call  (new lr)
 
     "  SUB     sp,sp,#8*4       \n" // reserve space for exception stack frame
     "  ADD     r0,sp,#5*4       \n" // r0 := 5 registers below the SP
@@ -321,7 +323,7 @@ __asm volatile (
 }
 
 //============================================================================
-// QK_thread_ret is a helper function executed when the QXK activator returns.
+// QK_thread_ret is a helper function executed when the QK activator returns.
 //
 // After the QK activator returns, we need to resume the preempted
 // thread. However, this must be accomplished by a return-from-exception,

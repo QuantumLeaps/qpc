@@ -30,28 +30,19 @@
 #define QK_H_
 
 //============================================================================
-//! @class QK
-typedef struct QK {
-    //! @cond INTERNAL
-    uint8_t dummy;
-    //! @endcond
-} QK;
 
 typedef uint_fast8_t QSchedStatus;
 
-//============================================================================
-//! @class QK_Attr
+//----------------------------------------------------------------------------
+//! @class QK
 typedef struct {
-    QPSet readySet;        //!< @private @memberof QK_Attr
-    uint8_t actPrio;       //!< @private @memberof QK_Attr
-    uint8_t nextPrio;      //!< @private @memberof QK_Attr
-    uint8_t actThre;       //!< @private @memberof QK_Attr
-    uint8_t lockCeil;      //!< @private @memberof QK_Attr
-    uint8_t intNest;       //!< @private @memberof QK_Attr
-} QK_Attr;
-
-//! @static @private @memberof QK
-extern QK_Attr QK_priv_;
+    QPSet readySet;        //!< @private @memberof QK
+    uint8_t actPrio;       //!< @private @memberof QK
+    uint8_t nextPrio;      //!< @private @memberof QK
+    uint8_t actThre;       //!< @private @memberof QK
+    uint8_t lockCeil;      //!< @private @memberof QK
+    uint8_t intNest;       //!< @private @memberof QK
+} QK;
 
 //! @static @private @memberof QK
 uint_fast8_t QK_sched_(void);
@@ -73,9 +64,14 @@ void QK_schedUnlock(QSchedStatus const prevCeil);
 //! @static @public @memberof QK
 void QK_onIdle(void);
 
+//! @static @private @memberof QK
+extern QK QK_priv_;
+
 //============================================================================
 // interface used only for internal implementation, but not in applications
+
 #ifdef QP_IMPL
+//! @cond INTERNAL
 
 // scheduler locking for QK...
 #define QF_SCHED_STAT_ QSchedStatus lockStat_;
@@ -116,6 +112,7 @@ void QK_onIdle(void);
 #define QF_EPOOL_FREE_(ePool_)  ((ePool_)->nFree)
 #define QF_EPOOL_MIN_(ePool_)   ((ePool_)->nMin)
 
+//! @endcond
 #endif // QP_IMPL
 
 #endif // QK_H_

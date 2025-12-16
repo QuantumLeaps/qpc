@@ -38,7 +38,6 @@
 
 #define QS_INIT(arg_)                   ((uint8_t)1U)
 #define QS_EXIT()                       ((void)0)
-#define QS_DUMP()                       ((void)0)
 #define QS_GLB_FILTER(rec_)             ((void)0)
 #define QS_LOC_FILTER(qsId_)            ((void)0)
 

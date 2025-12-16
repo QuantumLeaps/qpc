@@ -31,6 +31,7 @@
 
 #include <stdint.h>     // Exact-width types. WG14/N843 C99 Standard
 #include <stdbool.h>    // Boolean type.      WG14/N843 C99 Standard
+#include <stddef.h>     // size_t type        ISO/IEC 9899:1990 Standard
 #include "qp_config.h"  // QP configuration from the application
 
 #if defined(__TI_COMPILER_VERSION__) || defined(__GNUC__)
