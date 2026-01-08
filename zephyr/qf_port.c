@@ -273,10 +273,8 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QEvt_refCtr_inc_(e); // increment the reference counter
     }
 
-    // NOTE: Zephyr message queue does not currently support LIFO posting
-    // so normal FIFO posting is used instead.
     QF_CRIT_EXIT(); // exit crit.sect. before calling Zephyr API
-    int err = k_msgq_put(&me->eQueue, (void *)&e, K_NO_WAIT);
+    int err = k_msgq_put_front(&me->eQueue, (void *)&e);
     QF_CRIT_ENTRY(); // re-enter crit.sect. after calling Zephyr API
 
     Q_ASSERT_INCRIT(310, err == 0);
