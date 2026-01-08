@@ -115,9 +115,14 @@
         void Q_assert_(char (*Q_static_assert_error)[(expr_) ? 1 : -1])
 #endif
 
+//============================================================================
 //! @cond INTERNAL
 #ifndef Q_NORETURN
-    #define Q_NORETURN _Noreturn void
+#ifdef __cplusplus
+    #define Q_NORETURN  [[ noreturn ]] void
+#else
+    #define Q_NORETURN   _Noreturn void
+#endif
 #endif
 
 // Is this header file used outside QP?

@@ -26,18 +26,18 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-#define QP_IMPL           // this is QP implementation
-#include "qp_port.h"      // QP port
-#include "qp_pkg.h"       // QP package-scope interface
-#include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
-#ifdef Q_SPY              // QS software tracing enabled?
-    #include "qs_port.h"  // QS port
-    #include "qs_pkg.h"   // QS package-scope internal interface
+#define QP_IMPL             // this is QP implementation
+#include "qp_port.h"        // QP port
+#include "qp_pkg.h"         // QP package-scope interface
+#include "qsafe.h"          // QP Functional Safety (FuSa) Subsystem
+#ifdef Q_SPY                // QS software tracing enabled?
+    #include "qs_port.h"    // QS port
+    #include "qs_pkg.h"     // QS package-scope internal interface
 #else
-    #include "qs_dummy.h" // disable the QS software tracing
+    #include "qs_dummy.h"   // disable the QS software tracing
 #endif // Q_SPY
 
-#include <limits.h>       // limits of dynamic range for integers
+#include <limits.h>         // limits of dynamic range for integers
 
 Q_DEFINE_THIS_MODULE("qf_port")
 
@@ -63,7 +63,7 @@ void QF_enterCriticalSection_(void) {
 }
 //............................................................................
 void QF_leaveCriticalSection_(void) {
-    Q_ASSERT_INCRIT(200, l_critSectNest == 1); // crit.sect. must ballace!
+    Q_ASSERT_INCRIT(200, l_critSectNest == 1); // crit.sect. must balance!
     if ((--l_critSectNest) == 0) {
         LeaveCriticalSection(&l_win32CritSect);
     }
@@ -117,6 +117,7 @@ int QF_run(void) {
 
     //DeleteCriticalSection(&l_startupCritSect);
     //DeleteCriticalSection(&l_win32CritSect);
+
     return 0; // return success
 }
 //............................................................................
@@ -125,7 +126,11 @@ void QF_stop(void) {
 }
 //............................................................................
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
-    Q_REQUIRE_ID(600, ticksPerSec != 0U);
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_REQUIRE_INCRIT(600, ticksPerSec != 0U);
+    QF_CRIT_EXIT();
+
     l_tickMsec = 1000UL / ticksPerSec;
     l_tickPrio = tickPrio;
 }
@@ -152,7 +157,7 @@ int QF_consoleWaitForKey(void) {
     return (int)_getwch();
 }
 
-#endif // #ifdef QF_CONSOLE
+#endif // QF_CONSOLE
 
 // QActive functions =========================================================
 
@@ -166,12 +171,14 @@ void QActive_start(QActive * const me,
     Q_UNUSED_PAR(stkSize);
 
     // no external AO-stack storage needed for this port
-    Q_REQUIRE_ID(800, stkSto == (void *)0);
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_REQUIRE_INCRIT(800, stkSto == (void *)0);
+    QF_CRIT_EXIT();
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority
-    me->pthre = 0U; // preemption-threshold (not used in QF, but in Win32)
+    me->pthre = 0U; // preemption-threshold (not used in this port)
     QActive_register_(me); // register this AO
-
 
     // create the Win32 "event" to throttle the AO's event queue
     me->osObject = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -190,7 +197,9 @@ void QActive_start(QActive * const me,
         me,
         0,
         NULL);
-    Q_ENSURE_ID(830, me->thread != (HANDLE)0); // must succeed
+    QF_CRIT_ENTRY();
+    Q_ENSURE_INCRIT(830, me->thread != (HANDLE)0); // must succeed
+    QF_CRIT_EXIT();
 
     // set the priority of the Win32 thread based on the
     // "prio-threshold" field provided in the `prioSpec` parameter
@@ -211,6 +220,7 @@ void QActive_start(QActive * const me,
     }
     SetThreadPriority(me->thread, win32Prio);
 }
+
 //............................................................................
 #ifdef QACTIVE_CAN_STOP
 void QActive_stop(QActive * const me) {
@@ -220,12 +230,17 @@ void QActive_stop(QActive * const me) {
     me->thread = (void *)0; // stop the thread loop (see ao_thread())
 }
 #endif
+
 //............................................................................
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     Q_UNUSED_PAR(me);
     Q_UNUSED_PAR(attr1);
     Q_UNUSED_PAR(attr2);
+
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
     Q_ERROR_INCRIT(900); // should not be called in this QP port
+    QF_CRIT_EXIT();
 }
 
 //============================================================================
@@ -237,18 +252,20 @@ static DWORD WINAPI ao_thread(LPVOID arg) { // for CreateThread()
     EnterCriticalSection(&l_startupCritSect);
     LeaveCriticalSection(&l_startupCritSect);
 
+    // the event-loop...
 #ifdef QACTIVE_CAN_STOP
-    while (act->thread)
+    while (act->thread) {
 #else
-    for (;;) // for-ever
+    for (;;) { // for-ever
 #endif
-    {
-        QEvt const *e = QActive_get_(act); // wait for event
-        QASM_DISPATCH(&act->super, e, act->prio); // dispatch to the SM
+        QEvt const *e = QActive_get_(act); // BLOCK for event
+        QASM_DISPATCH(act, e, act->prio); // dispatch to the SM
+#if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // check if the event is garbage, and collect it if so
+#endif
     }
 #ifdef QACTIVE_CAN_STOP
-    QActive_unregister_(act); // un-register this active object
+    QActive_unregister_(act); // un-register this AO
 #endif
     return (DWORD)0; // return success
 }

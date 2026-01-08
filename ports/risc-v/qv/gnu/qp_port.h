@@ -34,8 +34,19 @@
 #include <stddef.h>     // size_t type        ISO/IEC 9899:1990 Standard
 #include "qp_config.h"  // QP configuration from the application
 
-// no-return function specifier (C11 Standard)
-#define Q_NORETURN   _Noreturn void
+#ifdef __cplusplus
+    // no-return function specifier (C++11 Standard)
+    #define Q_NORETURN  [[ noreturn ]] void
+
+    // static assertion (C++11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  static_assert((expr_), "QP static assert")
+#else
+    // no-return function specifier (C11 Standard)
+    #define Q_NORETURN   _Noreturn void
+
+    // static assertion (C11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+#endif
 
 // interrupt disabling policy, see NOTE2
 #define QF_INT_DISABLE()       __asm__ volatile("csrc mstatus,8")

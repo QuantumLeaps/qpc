@@ -196,20 +196,14 @@ static void parse_input(void) {
 static void handle_evts(void) {
     while (QPSet_notEmpty(&QF_readySet_)) {
         uint_fast8_t const p = QPSet_findMax(&QF_readySet_);
-        QActive* const a = QActive_registry_[p];
+        QActive * const a = QActive_registry_[p];
 
-        // perform the run-to-completion (RTC) step...
-        // 1. retrieve the event from the AO's event queue, which by this
-        //   time must be non-empty and The QV kernel asserts it.
-        // 2. dispatch the event to the AO's state machine.
-        // 3. determine if event is garbage and collect it if so
-        //
         QEvt const* const e = QActive_get_(a);
         QS_FLUSH();
-        QASM_DISPATCH(&a->super, e, a->prio);
+        QASM_DISPATCH(a, e, a->prio); // dispatch event (virtual call)
         QS_FLUSH();
 #if (QF_MAX_EPOOL > 0U)
-        QF_gc(e);
+        QF_gc(e); // check if the event is garbage, and collect it if so
         QS_FLUSH();
 #endif
         if (a->eQueue.frontEvt == (QEvt*)0) { // empty queue?
@@ -320,7 +314,7 @@ int_t QF_run(void) {
 
     fputs(COLOR_DFLT "\n", stdout);
 
-    // event loop...
+    // the event-loop...
     for (;;) {
         PRINTF_S("%s>", l_currAO_name);
         if (fgets(l_line, sizeof(l_line), stdin) != (char*)0) {

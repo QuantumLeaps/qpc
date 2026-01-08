@@ -137,10 +137,6 @@ void QF_init(void) {
     // lock memory so we're never swapped out to disk
     //mlockall(MCL_CURRENT | MCL_FUTURE); // un-comment when supported
 
-    // lock the startup mutex to block any active objects started before
-    // calling QF_run()
-    pthread_mutex_lock(&l_startupMutex);
-
     QTimeEvt_init(); // initialize QTimeEvts
 
     l_tick.tv_sec = 0;
@@ -152,6 +148,10 @@ void QF_init(void) {
     memset(&sig_act, 0, sizeof(sig_act));
     sig_act.sa_handler = &sigIntHandler;
     sigaction(SIGINT, &sig_act, NULL);
+
+    // lock the startup mutex to block any active objects started before
+    // calling QF_run()
+    pthread_mutex_lock(&l_startupMutex);
 }
 
 //............................................................................
@@ -173,9 +173,10 @@ int QF_run(void) {
         // setting priority failed, probably due to insufficient privileges
     }
 
-    // exit the startup critical section to unblock any active objects
+    // unlock the startup mutex to unblock any active objects
     // started before calling QF_run()
     pthread_mutex_unlock(&l_startupMutex);
+
     l_isRunning = true;
 
     // The provided clock tick service configured?
@@ -219,7 +220,7 @@ int QF_run(void) {
             QF_onClockTick();
         }
     }
-    QF_onCleanup(); // application cleanup callback
+    QF_onCleanup(); // cleanup callback
     QS_EXIT();      // cleanup the QSPY connection
 
     pthread_mutex_destroy(&l_startupMutex);
@@ -233,6 +234,11 @@ void QF_stop(void) {
 }
 //............................................................................
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_REQUIRE_INCRIT(600, ticksPerSec != 0U);
+    QF_CRIT_EXIT();
+
     if (ticksPerSec != 0U) {
         l_tick.tv_nsec = NSEC_PER_SEC / ticksPerSec;
     }
@@ -254,7 +260,8 @@ void QF_consoleSetup(void) {
 
     tcgetattr(0, &l_tsav); // save the current terminal attributes
     tcgetattr(0, &tio);    // obtain the current terminal attributes
-    tio.c_lflag &= ~(ICANON | ECHO); // disable the canonical mode & echo
+    // disable the canonical mode & echo
+    tio.c_lflag &= (tcflag_t)~(ICANON | ECHO);
     tcsetattr(0, TCSANOW, &tio);     // set the new attributes
 }
 //............................................................................
@@ -276,7 +283,8 @@ int QF_consoleGetKey(void) {
 int QF_consoleWaitForKey(void) {
     return (int)getchar();
 }
-#endif
+
+#endif // #ifdef QF_CONSOLE
 
 //============================================================================
 static void *thread_routine(void *arg) { // the expected POSIX signature
@@ -293,9 +301,11 @@ static void *thread_routine(void *arg) { // the expected POSIX signature
     for (;;) // for-ever
 #endif
     {
-        QEvt const *e = QActive_get_(act); // wait for event
-        QASM_DISPATCH(&act->super, e, act->prio); // dispatch to the HSM
+        QEvt const *e = QActive_get_(act); // BLOCK for event
+        QASM_DISPATCH(act, e, act->prio); // dispatch event (virtual call)
+#if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // check if the event is garbage, and collect it if so
+#endif
     }
 #ifdef QACTIVE_CAN_STOP
     QActive_unregister_(act); // un-register this active object
@@ -303,7 +313,7 @@ static void *thread_routine(void *arg) { // the expected POSIX signature
     return (void *)0; // return success
 }
 
-// QActive functions =======================================================
+//............................................................................
 void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
     QEvtPtr * const qSto, uint_fast16_t const qLen,
@@ -314,18 +324,22 @@ void QActive_start(QActive * const me,
     Q_UNUSED_PAR(stkSize);
 
     // p-threads allocate stack internally
-    Q_REQUIRE_ID(800, stkSto == (void *)0);
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_REQUIRE_INCRIT(800, stkSto == (void *)0);
+    QF_CRIT_EXIT();
 
-    QEQueue_init(&me->eQueue, qSto, qLen);
+    // create the condition variable to throttle the AO's event queue
     pthread_cond_init(&me->osObject, NULL);
+    QEQueue_init(&me->eQueue, qSto, qLen);
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority
     me->pthre = 0U; // preemption-threshold (not used in this port)
     QActive_register_(me); // register this AO
 
-    // top-most initial tran. (virtual call)
-    (*me->super.vptr->init)(&me->super, par, me->prio);
-    QS_FLUSH(); // flush the trace buffer to the host
+    // the top-most initial tran. (virtual)
+    QASM_INIT(&me->super, par, me->prio);
+    QS_FLUSH(); // flush the QS trace buffer to the host
 
     pthread_attr_t attr;
     pthread_attr_init(&attr);
@@ -338,14 +352,14 @@ void QActive_start(QActive * const me,
 
     // priority of the p-thread, see NOTE04
     struct sched_param param;
-    param.sched_priority = me->prio
+    param.sched_priority = (int)me->prio
                            + (sched_get_priority_max(SCHED_FIFO)
-                              - QF_MAX_ACTIVE - 3U);
+                              - (int)QF_MAX_ACTIVE - 3);
     pthread_attr_setschedparam(&attr, &param);
 
     pthread_attr_setstacksize(&attr,
-        (stkSize < (int_fast16_t)PTHREAD_STACK_MIN
-        ? PTHREAD_STACK_MIN
+        (stkSize < (uint_fast16_t)PTHREAD_STACK_MIN
+        ? (size_t)PTHREAD_STACK_MIN
         : stkSize));
     pthread_t thread;
     int err = pthread_create(&thread, &attr, &thread_routine, me);
@@ -358,13 +372,16 @@ void QActive_start(QActive * const me,
         pthread_attr_setschedparam(&attr, &param);
         err = pthread_create(&thread, &attr, &thread_routine, me);
     }
-    Q_ASSERT_ID(810, err == 0); // AO thread must be created
+    QF_CRIT_ENTRY();
+    Q_ASSERT_INCRIT(810, err == 0); // AO thread must be created
+    QF_CRIT_EXIT();
 
     //pthread_attr_getschedparam(&attr, &param);
     //printf("param.sched_priority==%d\n", param.sched_priority);
 
     pthread_attr_destroy(&attr);
 }
+
 //............................................................................
 #ifdef QACTIVE_CAN_STOP
 void QActive_stop(QActive * const me) {
@@ -374,12 +391,16 @@ void QActive_stop(QActive * const me) {
     me->thread = false; // stop the thread loop (see thread_routine())
 }
 #endif
+
 //............................................................................
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     Q_UNUSED_PAR(me);
     Q_UNUSED_PAR(attr1);
     Q_UNUSED_PAR(attr2);
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
     Q_ERROR_INCRIT(900); // should not be called in this QP port
+    QF_CRIT_EXIT();
 }
 
 //============================================================================

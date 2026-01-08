@@ -105,10 +105,10 @@ typedef struct QEvt {
 } QEvt;
 
 #define QEVT_INITIALIZER(sig_) { \
-    .sig      = (QSignal)(sig_), \
-    .poolNum_ = 0x00U, \
-    .refCtr_  = 0xE0U, \
-    .filler_  = 0xE0E0E0E0U }
+    (QSignal)(sig_), \
+    (uint8_t)0x00U, \
+    (uint8_t)0xE0U, \
+    (uint32_t)0xE0E0E0E0U }
 
 //! @public @memberof QEvt
 void QEvt_ctor(QEvt * const me, enum_t const sig);

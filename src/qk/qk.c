@@ -232,13 +232,12 @@ void QK_activate_(void) {
 
         QF_INT_ENABLE(); // unconditionally enable interrupts
 
-        QEvt const * const e = QActive_get_(a);
+        QEvt const * const e = QActive_get_(a); // queue not empty
         // NOTE QActive_get_() performs QF_MEM_APP() before return
 
-        // dispatch event (virtual call)
-        (*a->super.vptr->dispatch)(&a->super, e, p);
+        QASM_DISPATCH(a, e, p); // dispatch event (virtual call)
 #if (QF_MAX_EPOOL > 0U)
-        QF_gc(e);
+        QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
 
         // determine the next highest-prio. AO ready to run...
@@ -367,7 +366,7 @@ void QActive_start(QActive * const me,
     QEQueue_init(&me->eQueue, qSto, qLen); // init the built-in queue
 
     // top-most initial tran. (virtual call)
-    (*me->super.vptr->init)(&me->super, par, me->prio);
+    QASM_INIT(me, par, me->prio);
     QS_FLUSH(); // flush the trace buffer to the host
 
     // see if this AO needs to be scheduled if QK is already running

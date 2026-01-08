@@ -33,15 +33,22 @@
 #include <stdbool.h>       // Boolean type.      WG14/N843 C99 Standard
 #include <stddef.h>        // size_t type        ISO/IEC 9899:1990 Standard
 #include "qp_config.h"     // QP configuration from the application
-#include <zephyr/kernel.h> // Zephyr kernel API
 
-// no-return function specifier (C11 Standard)
-#define Q_NORETURN   _Noreturn void
+#ifdef __cplusplus
+    // no-return function specifier (C++11 Standard)
+    #define Q_NORETURN  [[ noreturn ]] void
 
-// static assertion (C11 Standard)
-#define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+    // static assertion (C++11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  static_assert((expr_), "QP static assert")
+#else
+    // no-return function specifier (C11 Standard)
+    #define Q_NORETURN   _Noreturn void
 
-// event queue and thread types
+    // static assertion (C11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+#endif
+
+// QActive event queue and thread types
 #define QACTIVE_EQUEUE_TYPE  struct k_msgq
 #define QACTIVE_THREAD_TYPE  struct k_thread
 
@@ -60,12 +67,17 @@
 #endif
 
 // include files -------------------------------------------------------------
+#include <zephyr/kernel.h> // Zephyr kernel API
 #include "qequeue.h"       // used for event deferral
 #include "qmpool.h"        // this QP port uses the native QF memory pool
 #include "qp.h"            // QP platform-independent public interface
 
 // Zephyr spinlock for QF critical section
 extern struct k_spinlock QF_spinlock;
+
+#if defined(QF_IDLE) || defined(Q_SPY)
+void QF_onIdle(void);
+#endif
 
 //============================================================================
 // interface used only inside QF implementation, but not in applications
@@ -74,15 +86,15 @@ extern struct k_spinlock QF_spinlock;
 // scheduler locking, see NOTE2
 #define QF_SCHED_STAT_
 #define QF_SCHED_LOCK_(dummy) do { \
-    if (!k_is_in_isr()) {       \
-        k_sched_lock();         \
-    }                           \
+    if (!k_is_in_isr()) { \
+        k_sched_lock();   \
+    }                     \
 } while (false)
 
 #define QF_SCHED_UNLOCK_() do { \
-    if (!k_is_in_isr()) {       \
-        k_sched_unlock();       \
-    } \
+    if (!k_is_in_isr()) { \
+        k_sched_unlock(); \
+    }                     \
 } while (false)
 
 // QMPool operations
@@ -93,9 +105,9 @@ extern struct k_spinlock QF_spinlock;
 #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
             ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
 #define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
-#define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
-#define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
-#define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
+#define QF_EPOOL_USE_(ePool_)     (QMPool_getUse(ePool_))
+#define QF_EPOOL_FREE_(ePool_)    ((uint16_t)(ePool_)->nFree)
+#define QF_EPOOL_MIN_(ePool_)     ((uint16_t)(ePool_)->nMin)
 
 #endif // QP_IMPL
 
@@ -113,4 +125,3 @@ extern struct k_spinlock QF_spinlock;
 //
 
 #endif // QP_PORT_H_
-

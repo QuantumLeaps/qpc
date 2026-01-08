@@ -26,15 +26,15 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-#define QP_IMPL           // this is QP implementation
-#include "qp_port.h"      // QP port
-#include "qp_pkg.h"       // QP package-scope interface
-#include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
-#ifdef Q_SPY              // QS software tracing enabled?
-    #include "qs_port.h"  // QS port
-    #include "qs_pkg.h"   // QS facilities for pre-defined trace records
+#define QP_IMPL             // this is QP implementation
+#include "qp_port.h"        // QP port
+#include "qp_pkg.h"         // QP package-scope interface
+#include "qsafe.h"          // QP Functional Safety (FuSa) Subsystem
+#ifdef Q_SPY                // QS software tracing enabled?
+    #include "qs_port.h"    // QS port
+    #include "qs_pkg.h"     // QS facilities for pre-defined trace records
 #else
-    #include "qs_dummy.h" // disable the QS software tracing
+    #include "qs_dummy.h"   // disable the QS software tracing
 #endif // Q_SPY
 
 Q_DEFINE_THIS_MODULE("qf_qeq")
@@ -85,16 +85,12 @@ bool QEQueue_post(QEQueue * const me,
 
     QEQueueCtr nFree = me->nFree; // get member into temporary
 
-    bool status = (nFree > 0U);
-    if (margin == QF_NO_MARGIN) { // no margin requested?
-        // queue must not overflow
-        Q_ASSERT_INCRIT(130, status);
-    }
-    else {
-        status = (nFree > (QEQueueCtr)margin);
-    }
-
+    bool const status = ((margin == QF_NO_MARGIN)
+        || (nFree > (QEQueueCtr)margin));
     if (status) { // can post the event?
+
+        // the queue must have a free slot
+        Q_ASSERT_INCRIT(130, nFree != 0U);
 
 #if (QF_MAX_EPOOL > 0U)
         if (e->poolNum_ != 0U) { // is it a mutable event?
@@ -197,7 +193,6 @@ void QEQueue_postLIFO(QEQueue * const me,
 
     if (frontEvt != (QEvt *)0) { // was the queue NOT empty?
         QEQueueCtr tail = me->tail; // get member into temporary
-
         ++tail;
         if (tail == me->end) { // need to wrap the tail?
             tail = 0U; // wrap around
@@ -306,4 +301,3 @@ bool QEQueue_isEmpty(QEQueue const * const me) {
     // be safely called from an already established critical section.
     return me->frontEvt == (struct QEvt *)0;
 }
-

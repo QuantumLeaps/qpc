@@ -26,21 +26,21 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-#define QP_IMPL           // this is QP implementation
-#include "qp_port.h"      // QP port
-#include "qp_pkg.h"       // QP package-scope interface
-#include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
-#ifdef Q_SPY              // QS software tracing enabled?
-    #include "qs_port.h"  // QS port
-    #include "qs_pkg.h"   // QS facilities for pre-defined trace records
+#define QP_IMPL             // this is QP implementation
+#include "qp_port.h"        // QP port
+#include "qp_pkg.h"         // QP package-scope interface
+#include "qsafe.h"          // QP Functional Safety (FuSa) Subsystem
+#ifdef Q_SPY                // QS software tracing enabled?
+    #include "qs_port.h"    // QS port
+    #include "qs_pkg.h"     // QS facilities for pre-defined trace records
 #else
-    #include "qs_dummy.h" // disable the QS software tracing
+    #include "qs_dummy.h"   // disable the QS software tracing
 #endif // Q_SPY
 
 Q_DEFINE_THIS_MODULE("qf_actq")
 
 //............................................................................
-// static helper function
+//! @private @memberof QActive
 static void QActive_postFIFO_(QActive * const me,
     QEvt const * const e,
     void const * const sender);
@@ -68,33 +68,29 @@ bool QActive_post_(QActive * const me,
 
     QEQueueCtr const nFree = me->eQueue.nFree; // get member into temporary
 
-    bool status = (nFree > 0U);
-    if (margin == QF_NO_MARGIN) { // no margin requested?
-        // queue must not overflow
-        Q_ASSERT_INCRIT(130, status);
-    }
-    else {
-        status = (nFree > (QEQueueCtr)margin);
-    }
+    bool const status = ((margin == QF_NO_MARGIN)
+        || (nFree > (QEQueueCtr)margin));
+    if (status) { // should try to post the event?
+
+        // the queue must have a free slot
+        Q_ASSERT_INCRIT(130, nFree != 0U);
 
 #if (QF_MAX_EPOOL > 0U)
-    if (e->poolNum_ != 0U) { // is it a mutable event?
-        QEvt_refCtr_inc_(e); // increment the reference counter
-    }
+        if (e->poolNum_ != 0U) { // is it a mutable event?
+            QEvt_refCtr_inc_(e); // increment the reference counter
+        }
 #endif // (QF_MAX_EPOOL > 0U)
 
-    if (status) { // can post the event?
-        QActive_postFIFO_(me, e, sender);
+        QActive_postFIFO_(me, e, sender); // called in crit.sect.
+
+        QF_CRIT_EXIT();
 #ifdef Q_UTEST
         if (QS_LOC_CHECK_(me->prio)) {
-            QF_CRIT_EXIT();
             QS_onTestPost(sender, me, e, true); // QUTest callback
-            QF_CRIT_ENTRY();
         }
 #endif // def Q_UTEST
-        QF_CRIT_EXIT();
     }
-    else { // event cannot be posted
+    else { // event cannot be posted, but it is OK
         QS_BEGIN_PRE(QS_QF_ACTIVE_POST_ATTEMPT, me->prio)
             QS_TIME_PRE();       // timestamp
             QS_OBJ_PRE(sender);  // the sender object
@@ -105,15 +101,13 @@ bool QActive_post_(QActive * const me,
             QS_EQC_PRE(margin);  // margin requested
         QS_END_PRE()
 
+        QF_CRIT_EXIT();
+
 #ifdef Q_UTEST
         if (QS_LOC_CHECK_(me->prio)) {
-            QF_CRIT_EXIT();
             QS_onTestPost(sender, me, e, status); // QUTEst callback
-            QF_CRIT_ENTRY();
         }
 #endif // def Q_USTEST
-
-        QF_CRIT_EXIT();
 
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // recycle the event to avoid a leak
@@ -125,9 +119,7 @@ bool QActive_post_(QActive * const me,
 
 //............................................................................
 //! @private @memberof QActive
-void QActive_postLIFO_(QActive * const me,
-    QEvt const * const e)
-{
+void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 #ifdef Q_UTEST // test?
 #if (Q_UTEST != 0) // testing QP-stub?
     if (me->super.temp.fun == Q_STATE_CAST(0)) { // QActiveDummy?
@@ -398,9 +390,7 @@ uint16_t QActive_getQueueMin(uint_fast8_t const prio) {
 
 //............................................................................
 //! @public @memberof QTicker
-void QTicker_ctor(QTicker * const me,
-    uint_fast8_t const tickRate)
-{
+void QTicker_ctor(QTicker * const me, uint_fast8_t const tickRate) {
     QActive_ctor(&me->super, Q_STATE_CAST(0)); // superclass' ctor
 
     static struct QAsmVtable const vtable = { // QTicker virtual table
@@ -468,9 +458,7 @@ void QTicker_dispatch_(QAsm * const me,
 
 //............................................................................
 //! @private @memberof QTicker
-void QTicker_trig_(QTicker * const me,
-    void const * const sender)
-{
+void QTicker_trig_(QTicker * const me, void const * const sender) {
 #ifndef Q_SPY
     Q_UNUSED_PAR(sender);
 #endif

@@ -30,22 +30,22 @@
 // expose features from the 2008 POSIX standard (IEEE Standard 1003.1-2008)
 #define _POSIX_C_SOURCE 200809L
 
-#define QP_IMPL           // this is QP implementation
-#include "qp_port.h"      // QP port
-#include "qp_pkg.h"       // QP package-scope interface
-#include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
-#ifdef Q_SPY              // QS software tracing enabled?
-    #include "qs_port.h"  // QS port
-    #include "qs_pkg.h"   // QS package-scope internal interface
+#define QP_IMPL             // this is QP implementation
+#include "qp_port.h"        // QP port
+#include "qp_pkg.h"         // QP package-scope interface
+#include "qsafe.h"          // QP Functional Safety (FuSa) Subsystem
+#ifdef Q_SPY                // QS software tracing enabled?
+    #include "qs_port.h"    // QS port
+    #include "qs_pkg.h"     // QS package-scope internal interface
 #else
-    #include "qs_dummy.h" // disable the QS software tracing
+    #include "qs_dummy.h"   // disable the QS software tracing
 #endif // Q_SPY
 
-#include <limits.h>       // for PTHREAD_STACK_MIN
-#include <sys/mman.h>     // for mlockall()
+#include <limits.h>         // for PTHREAD_STACK_MIN
+#include <sys/mman.h>       // for mlockall()
 #include <sys/ioctl.h>
-#include <time.h>         // for clock_nanosleep()
-#include <string.h>       // for memcpy() and memset()
+#include <time.h>           // for clock_nanosleep()
+#include <string.h>         // for memcpy() and memset()
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -106,7 +106,10 @@ static void *ticker_thread(void *arg) { // for pthread_create()
     Q_UNUSED_PAR(arg);
 
     // system clock tick must be configured
-    Q_REQUIRE_ID(100, l_tick.tv_nsec != 0);
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
+    Q_REQUIRE_INCRIT(100, l_tick.tv_nsec != 0);
+    QF_CRIT_EXIT();
 
     // get the absolute monotonic time for no-drift sleeping
     static struct timespec next_tick;
@@ -142,9 +145,9 @@ static void sigIntHandler(int dummy) {
     exit(-1);
 }
 
-// Global objects ============================================================
+//============================================================================
 QPSet QF_readySet_;
-pthread_cond_t QF_condVar_; // Cond.var. to signal events
+pthread_cond_t QF_condVar_; // cond.var. to signal events
 
 //============================================================================
 // QF functions
@@ -258,9 +261,11 @@ int QF_run(void) {
             Q_ASSERT_INCRIT(320, a != (QActive *)0);
             QF_CRIT_EXIT();
 
-            QEvt const *e = QActive_get_(a);
-            QASM_DISPATCH(&a->super, e, a->prio); // dispatch to the HSM
-            QF_gc(e);
+            QEvt const *e = QActive_get_(a); // queue not empty
+            QASM_DISPATCH(a, e, a->prio); // dispatch event (virtual call)
+#if (QF_MAX_EPOOL > 0U)
+            QF_gc(e); // check if the event is garbage, and collect it if so
+#endif
 
             QF_CRIT_ENTRY();
             if (a->eQueue.frontEvt == (QEvt *)0) { // empty queue?
@@ -323,7 +328,7 @@ void QF_consoleSetup(void) {
 
     tcgetattr(0, &l_tsav); // save the current terminal attributes
     tcgetattr(0, &tio);    // obtain the current terminal attributes
-    tio.c_lflag &= ~(ICANON | ECHO); // disable the canonical mode & echo
+    tio.c_lflag &= (tcflag_t)~(ICANON | ECHO); // disable the canonical mode & echo
     tcsetattr(0, TCSANOW, &tio);     // set the new attributes
 }
 //............................................................................
@@ -365,14 +370,13 @@ void QActive_start(QActive * const me,
     Q_REQUIRE_INCRIT(800, stkSto == (void *)0);
     QF_CRIT_EXIT();
 
+    QEQueue_init(&me->eQueue, qSto, qLen);
+
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
     me->pthre = 0U; // preemption-threshold (not used in this port)
     QActive_register_(me); // register this AO
 
-    QEQueue_init(&me->eQueue, qSto, qLen);
-
-    // top-most initial tran. (virtual call)
-    (*me->super.vptr->init)(&me->super, par, me->prio);
+    QASM_INIT(me, par, me->prio); // top-most initial tran. (virtual call)
     QS_FLUSH(); // flush the QS trace buffer to the host
 }
 

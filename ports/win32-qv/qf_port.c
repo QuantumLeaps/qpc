@@ -26,18 +26,18 @@
 // <www.state-machine.com/licensing>
 // <info@state-machine.com>
 //============================================================================
-#define QP_IMPL           // this is QP implementation
-#include "qp_port.h"      // QP port
-#include "qp_pkg.h"       // QP package-scope interface
-#include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
-#ifdef Q_SPY              // QS software tracing enabled?
-    #include "qs_port.h"  // QS port
-    #include "qs_pkg.h"   // QS package-scope internal interface
+#define QP_IMPL             // this is QP implementation
+#include "qp_port.h"        // QP port
+#include "qp_pkg.h"         // QP package-scope interface
+#include "qsafe.h"          // QP Functional Safety (FuSa) Subsystem
+#ifdef Q_SPY                // QS software tracing enabled?
+    #include "qs_port.h"    // QS port
+    #include "qs_pkg.h"     // QS package-scope internal interface
 #else
-    #include "qs_dummy.h" // disable the QS software tracing
+    #include "qs_dummy.h"   // disable the QS software tracing
 #endif // Q_SPY
 
-#include <limits.h>       // limits of dynamic range for integers
+#include <limits.h>         // limits of dynamic range for integers
 
 Q_DEFINE_THIS_MODULE("qf_port")
 
@@ -72,12 +72,9 @@ static DWORD WINAPI ticker_thread(LPVOID arg) { // for CreateThread()
     return 0U; // return success
 }
 
-// Global objects ============================================================
-QPSet QF_readySet_;
-QPSet QF_readySet_dis_;
-HANDLE QF_win32Event_; // Win32 event to signal events
 //============================================================================
-// QF functions
+QPSet QF_readySet_;
+HANDLE QF_win32Event_; // Win32 event to signal events
 
 static CRITICAL_SECTION l_win32CritSect;
 static int_t l_critSectNest;   // critical section nesting up-down counter
@@ -90,7 +87,7 @@ void QF_enterCriticalSection_(void) {
 }
 //............................................................................
 void QF_leaveCriticalSection_(void) {
-    Q_ASSERT_INCRIT(200, l_critSectNest == 1); // crit.sect. must ballace!
+    Q_ASSERT_INCRIT(200, l_critSectNest == 1); // crit.sect. must balance!
     if ((--l_critSectNest) == 0) {
         LeaveCriticalSection(&l_win32CritSect);
     }
@@ -112,13 +109,13 @@ int QF_run(void) {
 
     QF_onStartup(); // application-specific startup callback
 
-    QF_CRIT_STAT
 
     if (l_tickMsec != 0U) { // system clock tick configured?
         // create the ticker thread...
         HANDLE ticker = CreateThread(NULL, 1024, &ticker_thread,
                                     (void *)0, 0U, NULL);
 #ifndef Q_UNSAFE
+        QF_CRIT_STAT
         QF_CRIT_ENTRY();
         Q_ASSERT_INCRIT(310, ticker != 0); // thread must be created
         QF_CRIT_EXIT();
@@ -145,9 +142,11 @@ int QF_run(void) {
             Q_ASSERT_INCRIT(320, a != (QActive *)0);
             QF_CRIT_EXIT();
 
-            QEvt const *e = QActive_get_(a);
-            QASM_DISPATCH(&a->super, e, a->prio); // dispatch to the HSM
-            QF_gc(e);
+            QEvt const *e = QActive_get_(a); // queue not empty
+            QASM_DISPATCH(a, e, a->prio); // dispatch event (virtual call)
+#if (QF_MAX_EPOOL > 0U)
+            QF_gc(e); // check if the event is garbage, and collect it if so
+#endif
 
             QF_CRIT_ENTRY();
             if (a->eQueue.frontEvt == (QEvt *)0) { // empty queue?
@@ -215,7 +214,7 @@ int QF_consoleWaitForKey(void) {
     return (int)_getwch();
 }
 
-#endif // #ifdef QF_CONSOLE
+#endif // QF_CONSOLE
 
 // QActive functions =========================================================
 
@@ -228,20 +227,20 @@ void QActive_start(QActive * const me,
     Q_UNUSED_PAR(stkSto);
     Q_UNUSED_PAR(stkSize);
 
-    // no per-AO stack needed for this port
+    // no external AO-stack storage needed for this port
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
     Q_REQUIRE_INCRIT(800, stkSto == (void *)0);
     QF_CRIT_EXIT();
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
+    QEQueue_init(&me->eQueue, qSto, qLen);
+
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority
     me->pthre = 0U; // preemption-threshold (not used in this port)
     QActive_register_(me); // register this AO
 
-    QEQueue_init(&me->eQueue, qSto, qLen);
-
     // top-most initial tran. (virtual call)
-    (*me->super.vptr->init)(&me->super, par, me->prio);
+    QASM_INIT(me, par, me->prio);
     QS_FLUSH(); // flush the QS trace buffer to the host
 }
 
@@ -260,11 +259,16 @@ void QActive_stop(QActive * const me) {
 
     QActive_unregister_(me);
 }
-#endif
+#endif // QACTIVE_CAN_STOP
+
 //............................................................................
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     Q_UNUSED_PAR(me);
     Q_UNUSED_PAR(attr1);
     Q_UNUSED_PAR(attr2);
+
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
     Q_ERROR_INCRIT(900); // should not be called in this QP port
+    QF_CRIT_EXIT();
 }
