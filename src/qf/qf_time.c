@@ -305,7 +305,7 @@ void QTimeEvt_tick_(
 
         if (te == (QTimeEvt *)0) { // end of the list?
             // set 'te' to the the newly-armed linked list
-            te = QTimeEvt_timeEvtHead_[tickRate].act;
+            te = (QTimeEvt *)QTimeEvt_timeEvtHead_[tickRate].act;
             if (te == (void *)0) { // no newly-armed time events?
                 break; // terminate the loop
             }

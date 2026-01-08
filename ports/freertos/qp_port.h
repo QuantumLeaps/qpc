@@ -34,8 +34,19 @@
 #include <stddef.h>     // size_t type        ISO/IEC 9899:1990 Standard
 #include "qp_config.h"  // QP configuration from the application
 
-// no-return function specifier (C11 Standard)
-#define Q_NORETURN   _Noreturn void
+#ifdef __cplusplus
+    // no-return function specifier (C++11 Standard)
+    #define Q_NORETURN  [[ noreturn ]] void
+
+    // static assertion (C++11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  static_assert((expr_), "QP static assert")
+#else
+    // no-return function specifier (C11 Standard)
+    #define Q_NORETURN   _Noreturn void
+
+    // static assertion (C11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+#endif
 
 // QActive event queue and thread types for FreeRTOS
 #define QACTIVE_EQUEUE_TYPE     QueueHandle_t
@@ -68,7 +79,6 @@ typedef struct {
 #include "qequeue.h"   // QP event queue (for deferring events)
 #include "qmpool.h"    // QP memory pool (for event pools)
 #include "qp.h"        // QP platform-independent public interface
-
 
 // the "FromISR" versions of the QF APIs, see NOTE3
 #ifdef Q_SPY
