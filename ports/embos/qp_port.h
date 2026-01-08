@@ -34,8 +34,19 @@
 #include <stddef.h>     // size_t type        ISO/IEC 9899:1990 Standard
 #include "qp_config.h"  // QP configuration from the application
 
-// no-return function specifier (C11 Standard)
-#define Q_NORETURN   _Noreturn void
+#ifdef __cplusplus
+    // no-return function specifier (C++11 Standard)
+    #define Q_NORETURN  [[ noreturn ]] void
+
+    // static assertion (C++11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  static_assert((expr_), "QP static assert")
+#else
+    // no-return function specifier (C11 Standard)
+    #define Q_NORETURN   _Noreturn void
+
+    // static assertion (C11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+#endif
 
 // embOS message mailbox and thread types
 #define QACTIVE_EQUEUE_TYPE     OS_MAILBOX
@@ -59,12 +70,10 @@
 #include "qmpool.h"    // QP memory pool (for event pools)
 #include "qp.h"        // QP platform-independent public interface
 
-
 enum EmbOS_TaskAttrs {
     TASK_NAME_ATTR,
     TASK_USES_FPU
 };
-
 
 //============================================================================
 // interface used only inside QF, but not in applications

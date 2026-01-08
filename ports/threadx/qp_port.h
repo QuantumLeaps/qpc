@@ -29,13 +29,24 @@
 #ifndef QP_PORT_H_
 #define QP_PORT_H_
 
-#include <stdint.h>     // Exact-width types. WG14/N843 C99 Standard
-#include <stdbool.h>    // Boolean type.      WG14/N843 C99 Standard
-#include <stddef.h>     // size_t type        ISO/IEC 9899:1990 Standard
-#include "qp_config.h"  // QP configuration from the application
+#include <stdint.h>        // Exact-width types. WG14/N843 C99 Standard
+#include <stdbool.h>       // Boolean type.      WG14/N843 C99 Standard
+#include <stddef.h>        // size_t type        ISO/IEC 9899:1990 Standard
+#include "qp_config.h"     // QP configuration from the application
 
-// no-return function specifier (C11 Standard)
-#define Q_NORETURN   _Noreturn void
+#ifdef __cplusplus
+    // no-return function specifier (C++11 Standard)
+    #define Q_NORETURN  [[ noreturn ]] void
+
+    // static assertion (C++11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  static_assert((expr_), "QP static assert")
+#else
+    // no-return function specifier (C11 Standard)
+    #define Q_NORETURN   _Noreturn void
+
+    // static assertion (C11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+#endif
 
 // ThreadX event queue and thread types
 #define QACTIVE_EQUEUE_TYPE     TX_QUEUE
@@ -48,7 +59,7 @@
 #ifndef QF_MAX_ACTIVE
     #define QF_MAX_ACTIVE    (TX_MAX_PRIORITIES - QF_TX_PRIO_OFFSET)
 #else
-   #error QF_MAX_ACTIVE shouild not be externally defined in QP-ThreadX port
+    #error QF_MAX_ACTIVE shouild not be externally defined in QP-ThreadX port
 #endif
 
 // mapping between QF-priority and TX-priority, see NOTE1
@@ -66,11 +77,10 @@
 #define QF_CRIT_EST()    ((void)tx_interrupt_control(TX_INT_DISABLE))
 
 // include files -------------------------------------------------------------
-#include "tx_api.h"    // ThreadX API
-
-#include "qequeue.h"   // QP event queue (for deferring events)
-#include "qmpool.h"    // QP memory pool (for event pools)
-#include "qp.h"        // QP platform-independent public interface
+#include "tx_api.h"        // ThreadX API
+#include "qequeue.h"       // used for event deferral
+#include "qmpool.h"        // this QP port uses the native QF memory pool
+#include "qp.h"            // QP platform-independent public interface
 
 enum ThreadX_ThreadAttrs {
     THREAD_NAME_ATTR
@@ -80,7 +90,7 @@ enum ThreadX_ThreadAttrs {
 // interface used only inside QF implementation, but not in applications
 #ifdef QP_IMPL
 
-// ThreadX-specific scheduler locking (implemented in qf_port.cpp)
+// ThreadX-specific scheduler locking
 #define QF_SCHED_STAT_ QFSchedLock lockStat_;
 #define QF_SCHED_LOCK_(prio_) do {            \
     if (TX_THREAD_GET_SYSTEM_STATE() != 0U) { \
@@ -120,7 +130,7 @@ extern ULONG _tx_thread_system_state;
 #define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)
 #define QF_EPOOL_MIN_(ePool_)   ((uint16_t)(ePool_)->nMin)
 
-#endif // ifdef QP_IMPL
+#endif // QP_IMPL
 
 //============================================================================
 // NOTE1:

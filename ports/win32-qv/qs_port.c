@@ -30,13 +30,13 @@
     #error Q_SPY must be defined to compile qs_port.c
 #endif // Q_SPY
 
-#define QP_IMPL        // this is QP implementation
-#include "qp_port.h"   // QP port
-#include "qsafe.h"     // QP Functional Safety (FuSa) System
-#include "qs_port.h"   // QS port
-#include "qs_pkg.h"    // QS package-scope interface
+#define QP_IMPL             // this is QP implementation
+#include "qp_port.h"        // QP port
+#include "qsafe.h"          // QP Functional Safety (FuSa) System
+#include "qs_port.h"        // QS port
+#include "qs_pkg.h"         // QS package-scope interface
 
-#include "safe_std.h"  // portable "safe" <stdio.h>/<string.h> facilities
+#include "safe_std.h"       // portable "safe" <stdio.h>/<string.h> facilities
 #include <stdlib.h>
 #include <time.h>
 
@@ -64,9 +64,9 @@
 static SOCKET l_sock = INVALID_SOCKET;
 
 static char *l_rxBuf;
-static int   l_rxBufLen;
+static size_t l_rxBufLen;
 
-//----------------------------------------------------------------------------
+//============================================================================
 uint8_t QS_onStartup(void const *arg) {
     char hostName[128];
     char const *serviceName = "6601";  // default QSPY server port
@@ -88,7 +88,7 @@ uint8_t QS_onStartup(void const *arg) {
     static uint8_t qsRxBuf[QS_RX_SIZE]; // buffer for QS-RX channel
     QS_rxInitBuf(qsRxBuf, sizeof(qsRxBuf));
     l_rxBuf    = (char *)qsRxBuf;
-    l_rxBufLen = (int)sizeof(qsRxBuf);
+    l_rxBufLen = sizeof(qsRxBuf);
 
     // initialize Windows sockets version 2.2
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != NO_ERROR) {
@@ -114,6 +114,8 @@ uint8_t QS_onStartup(void const *arg) {
     if (*src == ':') {
         serviceName = src + 1;
     }
+    //PRINTF_S("<TARGET> Connecting to QSPY on Host=%s:%s...\n",
+    //         hostName, serviceName);
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
@@ -123,7 +125,7 @@ uint8_t QS_onStartup(void const *arg) {
     if (status != 0) {
         FPRINTF_S(stderr,
             "<TARGET> ERROR   cannot resolve host Name=%s:%s,Err=%d\n",
-                    hostName, serviceName, status);
+            hostName, serviceName, status);
         goto error;
     }
 
@@ -144,27 +146,28 @@ uint8_t QS_onStartup(void const *arg) {
 
     // socket could not be opened & connected?
     if (l_sock == INVALID_SOCKET) {
-        FPRINTF_S(stderr, "<TARGET> ERROR   cannot connect to QSPY at "
-            "host=%s:%s\n",
+        FPRINTF_S(stderr,
+            "<TARGET> ERROR   cannot connect to QSPY at host=%s:%s\n",
             hostName, serviceName);
         goto error;
     }
 
     // set the socket to non-blocking mode
     ioctl_opt = 1;
-    if (ioctlsocket(l_sock, FIONBIO, &ioctl_opt) != NO_ERROR) {
-        FPRINTF_S(stderr, "<TARGET> ERROR   %s WASErr=%d\n,",
-            "Failed to set non-blocking socket", WSAGetLastError());
+    if (ioctlsocket(l_sock, (long int)FIONBIO, &ioctl_opt) != NO_ERROR) {
+        FPRINTF_S(stderr,
+            "<TARGET> ERROR   Failed to set non-blocking socket WSAErr=%d\n",
+            WSAGetLastError());
         goto error;
     }
 
     // configure the socket to reuse the address and not to linger
     sockopt_bool = TRUE;
     setsockopt(l_sock, SOL_SOCKET, SO_REUSEADDR,
-               (const char *)&sockopt_bool, sizeof(sockopt_bool));
+        (const char *)&sockopt_bool, sizeof(sockopt_bool));
     sockopt_bool = TRUE;
     setsockopt(l_sock, SOL_SOCKET, SO_DONTLINGER,
-               (const char *)&sockopt_bool, sizeof(sockopt_bool));
+        (const char *)&sockopt_bool, sizeof(sockopt_bool));
 
     //PRINTF_S("<TARGET> Connected to QSPY at Host=%s:%d\n",
     //       hostName, port_remote);
@@ -183,7 +186,7 @@ void QS_onCleanup(void) {
         l_sock = INVALID_SOCKET;
     }
     WSACleanup();
-    //PRINTF_S("<TARGET> Disconnected from QSPY\n");
+    //PRINTF_S("%s\n", "<TARGET> Disconnected from QSPY");
 }
 //............................................................................
 void QS_onReset(void) {
@@ -194,21 +197,20 @@ void QS_onReset(void) {
 //............................................................................
 void QS_onFlush(void) {
     // NOTE:
-    // No critical section in QS::onFlush() to avoid nesting of critical
-    // sections in case QS::onFlush() is called from Q_onError().
+    // No critical section in QS_onFlush() to avoid nesting of critical
+    // sections in case QS_onFlush() is called from Q_onError().
 
     if (l_sock == INVALID_SOCKET) { // socket NOT initialized?
-        FPRINTF_S(stderr, "<TARGET> ERROR   %s\n",
-                  "invalid TCP socket");
-        QF_stop(); // <== stop and exit the application
+        FPRINTF_S(stderr, "%s\n", "<TARGET> ERROR   invalid TCP socket");
         return;
     }
 
     uint16_t nBytes = QS_TX_CHUNK;
     uint8_t const *data;
     while ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
+        int len = (int)nBytes;
         for (;;) { // for-ever until break or return
-            int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
+            int nSent = send(l_sock, (char const *)data, len, 0);
             if (nSent == SOCKET_ERROR) { // sending failed?
                 int err = WSAGetLastError();
                 if (err == WSAEWOULDBLOCK) {
@@ -217,17 +219,17 @@ void QS_onFlush(void) {
                     Sleep(QS_TIMEOUT_MS);
                 }
                 else { // some other socket error...
-                    FPRINTF_S(stderr, "<TARGET> ERROR   %s WASErr=%d\n",
-                              "sending data over TCP", err);
-                    QF_stop(); // <== stop and exit the application
+                    FPRINTF_S(stderr,
+                        "<TARGET> ERROR   sending data over TCP,WSAErr=%d\n",
+                        err);
                     return;
                 }
             }
-            else if (nSent < (int)nBytes) { // sent fewer than requested?
+            else if (nSent < len) { // sent fewer than requested?
                 Sleep(QS_TIMEOUT_MS); // sleep for the timeout
                 // adjust the data and loop back to send() the rest
-                data   += nSent;
-                nBytes -= (uint16_t)nSent;
+                data += nSent;
+                len  -= nSent;
             }
             else {
                 break;
@@ -247,21 +249,20 @@ QSTimeCtr QS_onGetTime(void) {
 //............................................................................
 void QS_output(void) {
     if (l_sock == INVALID_SOCKET) { // socket NOT initialized?
-        FPRINTF_S(stderr, "<TARGET> ERROR   %s\n",
-                  "invalid TCP socket");
-        QF_stop(); // <== stop and exit the application
+        FPRINTF_S(stderr, "%s\n", "<TARGET> ERROR   invalid TCP socket");
         return;
     }
 
+    uint16_t nBytes = QS_TX_CHUNK;
     QS_CRIT_STAT
     QS_CRIT_ENTRY();
-    uint16_t nBytes = QS_TX_CHUNK;
     uint8_t const *data = QS_getBlock(&nBytes);
     QS_CRIT_EXIT();
 
     if (nBytes > 0U) { // any bytes to send?
+        int len = (int)nBytes;
         for (;;) { // for-ever until break or return
-            int nSent = send(l_sock, (char const *)data, (int)nBytes, 0);
+            int nSent = send(l_sock, (char const *)data, len, 0);
             if (nSent == SOCKET_ERROR) { // sending failed?
                 int err = WSAGetLastError();
                 if (err == WSAEWOULDBLOCK) {
@@ -270,17 +271,17 @@ void QS_output(void) {
                     Sleep(QS_TIMEOUT_MS);
                 }
                 else { // some other socket error...
-                    FPRINTF_S(stderr, "<TARGET> ERROR   sending data over TCP,"
-                           "WASErr=%d\n", err);
-                    QF_stop(); // <== stop and exit the application
+                    FPRINTF_S(stderr,
+                        "<TARGET> ERROR   sending data over TCP,WSAErr=%d\n",
+                        err);
                     return;
                 }
             }
-            else if (nSent < (int)nBytes) { // sent fewer than requested?
+            else if (nSent < len) { // sent fewer than requested?
                 Sleep(QS_TIMEOUT_MS); // sleep for the timeout
                 // adjust the data and loop back to send() the rest
-                data   += nSent;
-                nBytes -= (uint16_t)nSent;
+                data += nSent;
+                len  -= nSent;
             }
             else {
                 break; // break out of the for-ever loop
@@ -290,7 +291,7 @@ void QS_output(void) {
 }
 //............................................................................
 void QS_rx_input(void) {
-    int len = recv(l_sock, l_rxBuf, l_rxBufLen, 0);
+    int len = recv(l_sock, l_rxBuf, (int)l_rxBufLen, 0);
     if (len > 0) { // any data received?
         QS_rxParseBuf((uint16_t)len);
     }

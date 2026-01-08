@@ -34,41 +34,26 @@
 #include <stddef.h>     // size_t type        ISO/IEC 9899:1990 Standard
 #include "qp_config.h"  // QP configuration from the application
 
-#ifdef __GNUC__
+#ifdef __cplusplus
+    // no-return function specifier (C++11 Standard)
+    #define Q_NORETURN  [[ noreturn ]] void
 
-    // no-return function specifier (GCC compiler)
-    #define Q_NORETURN   __attribute__ ((noreturn)) void
+    // static assertion (C++11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  static_assert((expr_), "QP static assert")
+#else
+    // no-return function specifier (C11 Standard)
+    #define Q_NORETURN   _Noreturn void
 
-#elif (defined _MSC_VER)
-    #ifdef __cplusplus
-        // no-return function specifier (Microsoft Visual Studio C++ compiler)
-        #define Q_NORETURN   [[ noreturn ]] void
-    #else
-        // no-return function specifier C11
-        #define Q_NORETURN   _Noreturn void
-    #endif
-
-    // This is the case where QP is compiled by the Microsoft Visual C++
-    // compiler in the C++ mode, which can happen when qep_port.h is included
-    // in a C++ module, or the compilation is forced to C++ by the option /TP.
-    //
-    // The following pragma suppresses the level-4 C++ warnings C4510, C4512,
-    // and C4610, which warn that default constructors and assignment operators
-    // could not be generated for structures QMState and QMTranActTable.
-    //
-    // The QP source code cannot be changed to avoid these C++ warnings
-    // because the structures QMState and QMTranActTable must remain PODs
-    // (Plain Old Datatypes) to be initializable statically with constant
-    // initializers.
-    //
-    #pragma warning (disable: 4510 4512 4610)
-
+    // static assertion (C11 Standard)
+    #define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
 #endif
 
-// static assertion (C11 Standard)
-#define Q_ASSERT_STATIC(expr_)  _Static_assert((expr_), "QP static assert")
+#ifdef _MSC_VER
+    // Visual C++ warnings, see NOTE0
+    #pragma warning (disable: 4510 4512 4610)
+#endif
 
-// QActive event queue, os-type, and thread types
+// QActive event queue type
 #define QACTIVE_EQUEUE_TYPE  QEQueue
 #define QACTIVE_OS_OBJ_TYPE  void*
 #define QACTIVE_THREAD_TYPE  void*
@@ -110,6 +95,7 @@ void QF_onClockTick(void);
 #include "qp.h"        // QP platform-independent public interface
 
 #ifdef _MSC_VER
+    // restore Visual C++ warnings, see NOTE0
     #pragma warning (default: 4510 4512 4610)
 #endif
 
@@ -163,6 +149,20 @@ void QF_onClockTick(void);
 #endif // QP_IMPL
 
 //============================================================================
+// NOTE0:
+// This is the case where QP is compiled by the Microsoft Visual C++ compiler
+// in the C++ mode, which can happen when qep_port.h is included in a C++
+// module, or the compilation is forced to C++ by the option /TP.
+//
+// The pragma suppresses the level-4 C++ warnings C4510, C4512, and C4610,
+// which warn that default constructors and assignment operators could not
+// be generated for structures QMState and QMTranActTable.
+//
+// The QP source code cannot be changed to avoid these C++ warnings
+// because the structures QMState and QMTranActTable must remain PODs
+// (Plain Old Datatypes) to be initializable statically with constant
+// initializers.
+//
 // NOTE1:
 // QP, like all real-time frameworks, needs to execute certain sections of
 // code exclusively, meaning that only one thread can execute the code at

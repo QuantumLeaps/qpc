@@ -236,7 +236,7 @@ void QK_activate_(void) {
         // NOTE QActive_get_() performs QF_MEM_APP() before return
 
         // dispatch event (virtual call)
-        (*a->super.vptr->dispatch)(&a->super, e, p);
+        QASM_DISPATCH(a, e, p);
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e);
 #endif
@@ -367,7 +367,7 @@ void QActive_start(QActive * const me,
     QEQueue_init(&me->eQueue, qSto, qLen); // init the built-in queue
 
     // top-most initial tran. (virtual call)
-    (*me->super.vptr->init)(&me->super, par, me->prio);
+    QASM_INIT(me, par, me->prio);
     QS_FLUSH(); // flush the trace buffer to the host
 
     // see if this AO needs to be scheduled if QK is already running
