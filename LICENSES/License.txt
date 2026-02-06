@@ -1,6 +1,6 @@
 Quantum Leaps Dual-Licensing:
 
-The QP/C Real-Time Embedded Framework is dually-licensed under
+The QP/C real-time event framework is dually-licensed under
 the following two alternatives:
 
 1. Open source GNU General Public License (GPL) version 3,

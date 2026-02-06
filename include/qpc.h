@@ -44,8 +44,8 @@
 // QP API compatibility layer...
 
 #ifdef Q_SIGNAL_SIZE
-_Static_assert(Q_SIGNAL_SIZE == 2U,
-    "Q_SIGNAL_SIZE must be 2 bytes (16-bit signal space)");
+    // Q_SIGNAL_SIZE must be 2 bytes (16-bit signal space)
+    Q_ASSERT_STATIC(Q_SIGNAL_SIZE == 2U);
 #endif
 
 // version 8.1.0 -------------------------------------------------------------

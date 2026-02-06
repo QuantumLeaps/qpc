@@ -41,23 +41,25 @@
     #error QF_EQUEUE_CTR_SIZE defined incorrectly, expected 1U or 2U
 #endif
 
-struct QEvt; // forward declaration
+// forward declarations (NOTE must be consistent with "qp.h")
+struct QEvt;
+typedef struct QEvt const * QEvtPtr;
 
 //============================================================================
 //! @class QEQueue
 typedef struct QEQueue {
-    struct QEvt const *frontEvt;   //!< @private @memberof QEQueue
-    struct QEvt const * *ring;     //!< @private @memberof QEQueue
-    QEQueueCtr end;                //!< @private @memberof QEQueue
-    QEQueueCtr head;               //!< @private @memberof QEQueue
-    QEQueueCtr tail;               //!< @private @memberof QEQueue
-    QEQueueCtr nFree;              //!< @private @memberof QEQueue
-    QEQueueCtr nMin;               //!< @private @memberof QEQueue
+    QEvtPtr frontEvt;       //!< @private @memberof QEQueue
+    QEvtPtr *ring;          //!< @private @memberof QEQueue
+    QEQueueCtr end;         //!< @private @memberof QEQueue
+    QEQueueCtr head;        //!< @private @memberof QEQueue
+    QEQueueCtr tail;        //!< @private @memberof QEQueue
+    QEQueueCtr nFree;       //!< @private @memberof QEQueue
+    QEQueueCtr nMin;        //!< @private @memberof QEQueue
 } QEQueue;
 
 //! @public @memberof QEQueue
 void QEQueue_init(QEQueue * const me,
-    struct QEvt const  * * const qSto,
+    QEvtPtr * const qSto,
     uint_fast16_t const qLen);
 
 //! @public @memberof QEQueue

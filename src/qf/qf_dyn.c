@@ -294,7 +294,7 @@ void QF_gc(QEvt const * const e) {
             // the maximum count of initialized pools must be in configured range
             Q_ASSERT_INCRIT(740, maxPool <= QF_MAX_EPOOL);
 
-            // the event poolNum must be one one the initialized event pools
+            // the event poolNum must be one of the initialized event pools
             Q_ASSERT_INCRIT(750, poolNum <= maxPool);
 #endif
             QS_BEGIN_PRE(QS_QF_GC, QS_ID_EP + poolNum)
