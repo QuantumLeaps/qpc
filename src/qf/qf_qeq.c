@@ -42,7 +42,7 @@ Q_DEFINE_THIS_MODULE("qf_qeq")
 //............................................................................
 //! @public @memberof QEQueue
 void QEQueue_init(QEQueue * const me,
-    struct QEvt const * * const qSto,
+    QEvtPtr * const qSto,
     uint_fast16_t const qLen)
 {
     QF_CRIT_STAT

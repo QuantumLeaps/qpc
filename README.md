@@ -30,6 +30,14 @@ Active Objects [UML 2.5], [Sutter:10], [ROOM:94]. The QP/C Framework can be
 viewed as a modern, asynchronous, and truly event-driven real-time operating
 system (RTOS).
 
+## State Machines to Code
+The behavior of active objects is specified in QP/C by means of
+[hierarchical state machines (UML statecharts)][HSM]. The framework supports manual
+coding of UML state machines in C as well as fully automatic code generation using
+the free graphical [QM model-based design (MBD) tool][QM].
+
+![Blinky state machine and the code](https://www.state-machine.com/img/blinky_smc.png)
+
 ## QP Framework Family
 QP/C framework is part of the larger QP family, consisting of the following
 QP editions (please also see [__QP Frameworks Feature Comparison__](https://www.state-machine.com/products/qp#Features)

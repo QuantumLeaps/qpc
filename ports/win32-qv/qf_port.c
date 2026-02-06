@@ -109,7 +109,6 @@ int QF_run(void) {
 
     QF_onStartup(); // application-specific startup callback
 
-
     if (l_tickMsec != 0U) { // system clock tick configured?
         // create the ticker thread...
         HANDLE ticker = CreateThread(NULL, 1024, &ticker_thread,
