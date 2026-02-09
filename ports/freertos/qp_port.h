@@ -186,9 +186,17 @@ enum FreeRTOS_TaskAttrs {
     void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName);
 #endif
 #if (configSUPPORT_STATIC_ALLOCATION > 0)
+
+#ifdef configSTACK_DEPTH_TYPE
     void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
                                        StackType_t **ppxIdleTaskStackBuffer,
-                                       uint32_t *pulIdleTaskStackSize);
+                                       configSTACK_DEPTH_TYPE *pulIdleTaskStackSize);
+#else
+    void vApplicationGetIdleTaskMemory(StaticTask_t **ppxIdleTaskTCBBuffer,
+									   StackType_t **ppxIdleTaskStackBuffer,
+									   uint32_t *pulIdleTaskStackSize);
+#endif
+
 #endif
 
 //============================================================================
