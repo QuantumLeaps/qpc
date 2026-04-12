@@ -111,7 +111,7 @@ void QF_onClockTick(void);
 
 // QF event queue customization for Win32...
 #define QACTIVE_EQUEUE_WAIT_(me_) \
-    while ((me_)->eQueue.frontEvt == (QEvt *)0) { \
+    while ((me_)->eQueue.frontEvt.e == (QEvt *)0) { \
         QF_CRIT_EXIT(); \
         (void)WaitForSingleObject((me_)->osObject, (DWORD)INFINITE); \
         QF_CRIT_ENTRY(); \

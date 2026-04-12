@@ -206,7 +206,7 @@ static void handle_evts(void) {
         QF_gc(e); // check if the event is garbage, and collect it if so
         QS_FLUSH();
 #endif
-        if (a->eQueue.frontEvt == (QEvt*)0) { // empty queue?
+        if (a->eQueue.frontEvt.e == (QEvt*)0) { // empty queue?
             QPSet_remove(&QF_readySet_, p);
         }
     }

@@ -61,6 +61,7 @@ static void thread_main(ULONG thread_input) { // ThreadX signature
 // Active Object customization...
 
 //............................................................................
+//! @private @memberof QActive
 bool QActive_post_(QActive * const me,
     QEvt const * const e,
     uint_fast16_t const margin,
@@ -77,10 +78,11 @@ bool QActive_post_(QActive * const me,
     Q_REQUIRE_INCRIT(100, e != (QEvt *)0);
 
     // the number of free slots available in the ThreadX queue
-    uint_fast16_t nFree = (uint_fast16_t)me->eQueue.tx_queue_available_storage;
+    QEQueueCtr const nFree =
+        (QEQueueCtr)me->eQueue.tx_queue_available_storage;
 
-    bool status = ((margin == QF_NO_MARGIN) || (nFree > (QEQueueCtr)margin));
-
+    bool status = ((margin == QF_NO_MARGIN)
+        || (nFree > (QEQueueCtr)margin));
     if (status) { // should try to post the event?
 #if (QF_MAX_EPOOL > 0U)
         if (e->poolNum_ != 0U) { // is it a mutable event?
@@ -88,26 +90,30 @@ bool QActive_post_(QActive * const me,
         }
 #endif // (QF_MAX_EPOOL > 0U)
 
+        // assume that event posting will be successful, see NOTE3
         QS_BEGIN_PRE(QS_QF_ACTIVE_POST, me->prio)
             QS_TIME_PRE();      // timestamp
             QS_OBJ_PRE(sender); // the sender object
             QS_SIG_PRE(e->sig); // the signal of the event
             QS_OBJ_PRE(me);     // this active object (recipient)
-            QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Id & ref-Count
+            QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Num & ref-Count
             QS_EQC_PRE(nFree);  // # free entries available
             QS_EQC_PRE(0U);     // min # free entries (unknown)
         QS_END_PRE()
 
         QF_CRIT_EXIT(); // exit crit.sect. before calling RTOS API
 
-        // post the event to the ThreadX event queue, see NOTE3
-        status = (tx_queue_send(&me->eQueue, (VOID *)&e, TX_NO_WAIT)
+        // post the following evtPtr to the RTOS queue, see NOTE3
+        QEvtPtr const evtPtr = {
+            e
+        };
+        status = (tx_queue_send(&me->eQueue, (VOID *)&evtPtr, TX_NO_WAIT)
                   == TX_SUCCESS);
+
+        QF_CRIT_ENTRY(); // re-enter crit.sec.
     }
 
     if (!status) { // event NOT posted?
-        QF_CRIT_ENTRY();
-
         // posting is allowed to fail only when margin != QF_NO_MARGIN
         Q_ASSERT_INCRIT(130, margin != QF_NO_MARGIN);
 
@@ -116,8 +122,8 @@ bool QActive_post_(QActive * const me,
             QS_OBJ_PRE(sender); // the sender object
             QS_SIG_PRE(e->sig); // the signal of the event
             QS_OBJ_PRE(me);     // this active object (recipient)
-            QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Id&ref-Count
-            QS_EQC_PRE(nFree);  // # free entries available
+            QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Num & ref-Count
+            QS_EQC_PRE(nFree);  // # free entries
             QS_EQC_PRE(margin); // margin requested
         QS_END_PRE()
 
@@ -127,10 +133,14 @@ bool QActive_post_(QActive * const me,
         QF_gc(e); // recycle the event to avoid a leak
 #endif
     }
+    else {
+        QF_CRIT_EXIT();
+    }
 
     return status;
 }
 //............................................................................
+//! @private @memberof QActive
 void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
@@ -148,14 +158,18 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QS_TIME_PRE();       // timestamp
         QS_SIG_PRE(e->sig);  // the signal of this event
         QS_OBJ_PRE(me);      // this active object
-        QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Id & ref-Count
+        QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Num & ref-Count
         QS_EQC_PRE(me->eQueue.tx_queue_available_storage); // # free entries
         QS_EQC_PRE(0U);      // min # free entries (unknown)
     QS_END_PRE()
 
-    QF_CRIT_EXIT(); // exit crit.sect. before calling uC-OS2 API
+    QF_CRIT_EXIT(); // exit crit.sect. before calling RTOS API
 
-    UINT const err = tx_queue_front_send(&me->eQueue, (VOID *)&e, TX_NO_WAIT);
+    QEvtPtr const evtPtr = {
+        e
+    };
+    UINT const err = tx_queue_front_send(&me->eQueue,
+        (VOID *)&evtPtr, TX_NO_WAIT);
 
 #ifndef Q_UNSAFE
     QF_CRIT_ENTRY();
@@ -167,11 +181,12 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 #endif
 }
 //............................................................................
+//! @private @memberof QActive
 QEvt const *QActive_get_(QActive * const me) {
     // wait for an event (forever)
-    QEvtPtr e;
+    QEvtPtr evtPtr;
     UINT const err = tx_queue_receive(&me->eQueue,
-                     (VOID *)&e, TX_WAIT_FOREVER);
+                     (VOID *)&evtPtr, TX_WAIT_FOREVER);
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
@@ -184,33 +199,37 @@ QEvt const *QActive_get_(QActive * const me) {
 
     QS_BEGIN_PRE(QS_QF_ACTIVE_GET, me->prio)
         QS_TIME_PRE();       // timestamp
-        QS_SIG_PRE(e->sig);  // the signal of this event
+        QS_SIG_PRE(evtPtr.e->sig); // the signal of this event
         QS_OBJ_PRE(me);      // this active object
-        QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Num & ref-Count
+        QS_2U8_PRE(evtPtr.e->poolNum_, evtPtr.e->refCtr_);
         QS_EQC_PRE(me->eQueue.tx_queue_available_storage); // # free entries
     QS_END_PRE()
 
     QF_CRIT_EXIT();
 
-    return e;
+    return evtPtr.e;
 }
 //............................................................................
+//! @static @public @memberof QActive
 uint16_t QActive_getQueueUse(uint_fast8_t const prio) {
     Q_UNUSED_PAR(prio);
     return 0U; // current use level in a queue not supported in this RTOS
 }
 //............................................................................
+//! @static @public @memberof QActive
 uint16_t QActive_getQueueFree(uint_fast8_t const prio) {
     Q_UNUSED_PAR(prio);
     return 0U; // current use level in a queue not supported in this RTOS
 }
 //............................................................................
+//! @static @public @memberof QActive
 uint16_t QActive_getQueueMin(uint_fast8_t const prio) {
     Q_UNUSED_PAR(prio);
     return 0U; // minimum free entries in a queue not supported in this RTOS
 }
 
 //............................................................................
+//! @public @memberof QActive
 void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
     QEvtPtr * const qSto, uint_fast16_t const qLen,
@@ -230,7 +249,7 @@ void QActive_start(QActive * const me,
     Q_ASSERT_INCRIT(400, err == TX_SUCCESS);
     QF_CRIT_EXIT();
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QP-priority
     me->pthre = (uint8_t)(prioSpec >> 8U); // QF preemption-threshold
     QActive_register_(me); // make QF aware of this AO
 
@@ -263,6 +282,7 @@ void QActive_start(QActive * const me,
 #endif
 }
 //............................................................................
+//! @public @memberof QActive
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     // NOTE: this function must be called *before* QActive_start(),
     // which implies that me->thread.tx_thread_name must not be used yet;
@@ -282,7 +302,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     QF_CRIT_EXIT();
 }
 
-//----------------------------------------------------------------------------
+//============================================================================
 // QF customization
 
 //............................................................................
@@ -291,7 +311,7 @@ void QF_init(void) {
 }
 //............................................................................
 int_t QF_run(void) {
-    QF_onStartup(); // the startup callback
+    QF_onStartup(); // QF callback
 
     // produce the QS_QF_RUN trace record
 #ifdef Q_SPY

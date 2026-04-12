@@ -170,8 +170,8 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     }
 #endif // def Q_UTEST
 
-    QEvt const * const frontEvt = me->eQueue.frontEvt;
-    me->eQueue.frontEvt = e; // deliver the event directly to the front
+    QEvt const * const frontEvt = me->eQueue.frontEvt.e;
+    me->eQueue.frontEvt.e = e; // deliver the event directly to the front
 
     if (frontEvt != (QEvt *)0) { // was the queue NOT empty?
         QEQueueCtr tail = me->eQueue.tail; // get member into temporary
@@ -180,7 +180,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
             tail = 0U; // wrap around
         }
         me->eQueue.tail = tail;
-        me->eQueue.ring[tail] = frontEvt;
+        me->eQueue.ring[tail].e = frontEvt;
     }
     else { // queue was empty
         QACTIVE_EQUEUE_SIGNAL_(me); // signal the event queue
@@ -200,7 +200,7 @@ QEvt const * QActive_get_(QActive * const me) {
     QACTIVE_EQUEUE_WAIT_(me);
 
     // always remove event from the front
-    QEvt const * const e = me->eQueue.frontEvt;
+    QEvt const * const e = me->eQueue.frontEvt.e;
 
     // the queue must NOT be empty
     Q_REQUIRE_INCRIT(310, e != (QEvt *)0);
@@ -215,7 +215,7 @@ QEvt const * QActive_get_(QActive * const me) {
         // remove event from the tail
         QEQueueCtr tail = me->eQueue.tail; // get member into temporary
 
-        QEvt const * const frontEvt = me->eQueue.ring[tail];
+        QEvt const * const frontEvt = me->eQueue.ring[tail].e;
 
         // the event queue must not be empty (frontEvt != NULL)
         Q_ASSERT_INCRIT(350, frontEvt != (QEvt *)0);
@@ -228,7 +228,7 @@ QEvt const * QActive_get_(QActive * const me) {
             QS_EQC_PRE(nFree);   // # free entries
         QS_END_PRE()
 
-        me->eQueue.frontEvt = frontEvt; // update the original
+        me->eQueue.frontEvt.e = frontEvt; // update the original
         if (tail == 0U) { // need to wrap the tail?
             tail = me->eQueue.end;
         }
@@ -236,10 +236,10 @@ QEvt const * QActive_get_(QActive * const me) {
         me->eQueue.tail = tail; // update the original
     }
     else {
-        me->eQueue.frontEvt = (QEvt *)0; // queue becomes empty
+        me->eQueue.frontEvt.e = (QEvt *)0; // queue becomes empty
 
         // all entries in the queue must be free (+1 for fronEvt)
-        Q_ASSERT_INCRIT(360, nFree == (me->eQueue.end + 1U));
+        Q_ASSERT_INCRIT(370, nFree == (me->eQueue.end + 1U));
 
         QS_BEGIN_PRE(QS_QF_ACTIVE_GET_LAST, me->prio)
             QS_TIME_PRE();       // timestamp
@@ -283,8 +283,8 @@ static void QActive_postFIFO_(QActive * const me,
         QS_EQC_PRE(me->eQueue.nMin); // min # free entries
     QS_END_PRE()
 
-    if (me->eQueue.frontEvt == (QEvt *)0) { // is the queue empty?
-        me->eQueue.frontEvt = e; // deliver event directly
+    if (me->eQueue.frontEvt.e == (QEvt *)0) { // is the queue empty?
+        me->eQueue.frontEvt.e = e; // deliver event directly
 
 #ifdef QXK_H_
         if (me->super.state.act == Q_ACTION_CAST(0)) { // extended thread?
@@ -299,7 +299,7 @@ static void QActive_postFIFO_(QActive * const me,
     }
     else { // queue was not empty, insert event into the ring-buffer
         QEQueueCtr head = me->eQueue.head; // get member into temporary
-        me->eQueue.ring[head] = e; // insert e into buffer
+        me->eQueue.ring[head].e = e; // insert e into buffer
 
         if (head == 0U) { // need to wrap the head?
             head = me->eQueue.end;
@@ -473,16 +473,16 @@ void QTicker_trig_(QTicker * const me, void const * const sender) {
 
     if (nTicks == 0U) { // no ticks accumulated yet?
         // when no ticks accumulated, eQueue.fronEvt must be NULL
-        Q_REQUIRE_INCRIT(930, me->super.eQueue.frontEvt == (QEvt *)0);
+        Q_REQUIRE_INCRIT(930, me->super.eQueue.frontEvt.e == (QEvt *)0);
 
-        me->super.eQueue.frontEvt = &tickEvt; // deliver event directly
+        me->super.eQueue.frontEvt.e = &tickEvt; // deliver event directly
         me->super.eQueue.nFree = 0U;
 
         QACTIVE_EQUEUE_SIGNAL_(&me->super); // signal the event queue
     }
     else { // some tick have accumulated (and were not processed yet)
         // when some ticks accumulated, eQueue.fronEvt must be &tickEvt
-        Q_REQUIRE_INCRIT(940, me->super.eQueue.frontEvt == &tickEvt);
+        Q_REQUIRE_INCRIT(940, me->super.eQueue.frontEvt.e == &tickEvt);
 
         // the nTicks counter must accept one more count without overflowing
         Q_REQUIRE_INCRIT(950, nTicks < 0xFFU);

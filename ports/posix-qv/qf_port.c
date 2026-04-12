@@ -268,7 +268,7 @@ int QF_run(void) {
 #endif
 
             QF_CRIT_ENTRY();
-            if (a->eQueue.frontEvt == (QEvt *)0) { // empty queue?
+            if (a->eQueue.frontEvt.e == (QEvt *)0) { // empty queue?
                 QPSet_remove(&QF_readySet_, p);
             }
         }

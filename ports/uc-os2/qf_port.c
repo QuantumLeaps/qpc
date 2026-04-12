@@ -61,6 +61,7 @@ static void task_main(void *pdata) { // uC-OS2 task signature
 // Active Object customization...
 
 //............................................................................
+//! @private @memberof QActive
 bool QActive_post_(QActive * const me,
     QEvt const * const e,
     uint_fast16_t const margin,
@@ -77,12 +78,12 @@ bool QActive_post_(QActive * const me,
     Q_REQUIRE_INCRIT(100, e != (QEvt *)0);
 
     // the number of free slots available in the uC-OS2 queue
-    uint_fast16_t const nFree =
-        (uint_fast16_t)(((OS_Q_DATA *)me->eQueue)->OSQSize
+    QEQueueCtr const nFree =
+        (QEQueueCtr)(((OS_Q_DATA *)me->eQueue)->OSQSize
          - ((OS_Q_DATA *)me->eQueue)->OSNMsgs);
 
-    bool status = ((margin == QF_NO_MARGIN) || (nFree > (QEQueueCtr)margin));
-
+    bool status = ((margin == QF_NO_MARGIN)
+        || (nFree > (QEQueueCtr)margin));
     if (status) { // should try to post the event?
 #if (QF_MAX_EPOOL > 0U)
         if (e->poolNum_ != 0U) { // is it a mutable event?
@@ -90,6 +91,7 @@ bool QActive_post_(QActive * const me,
         }
 #endif // (QF_MAX_EPOOL > 0U)
 
+        // assume that event posting will be successful, see NOTE3
         QS_BEGIN_PRE(QS_QF_ACTIVE_POST, me->prio)
             QS_TIME_PRE();      // timestamp
             QS_OBJ_PRE(sender); // the sender object
@@ -104,11 +106,11 @@ bool QActive_post_(QActive * const me,
 
         // post the event to the uC-OS2 event queue, see NOTE3
         status = (OSQPost(me->eQueue, (void *)e) == OS_ERR_NONE);
+
+        QF_CRIT_ENTRY(); // re-enter crit.sec.
     }
 
     if (!status) { // event NOT posted?
-        QF_CRIT_ENTRY();
-
         // posting is allowed to fail only when margin != QF_NO_MARGIN
         Q_ASSERT_INCRIT(130, margin != QF_NO_MARGIN);
 
@@ -118,7 +120,7 @@ bool QActive_post_(QActive * const me,
             QS_SIG_PRE(e->sig); // the signal of the event
             QS_OBJ_PRE(me);     // this active object (recipient)
             QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Num & ref-Count
-            QS_EQC_PRE(nFree);  // # free entries available
+            QS_EQC_PRE(nFree);  // # free entries
             QS_EQC_PRE(margin); // margin requested
         QS_END_PRE()
 
@@ -128,10 +130,14 @@ bool QActive_post_(QActive * const me,
         QF_gc(e); // recycle the event to avoid a leak
 #endif
     }
+    else {
+        QF_CRIT_EXIT();
+    }
 
     return status;
 }
 //............................................................................
+//! @private @memberof QActive
 void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
@@ -149,7 +155,8 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QS_TIME_PRE();       // timestamp
         QS_SIG_PRE(e->sig);  // the signal of this event
         QS_OBJ_PRE(me);      // this active object
-        QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Id & ref-Count
+        QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Num & ref-Count
+                             // # free entries
         QS_EQC_PRE(((OS_Q *)me->eQueue)->OSQSize
                      - ((OS_Q *)me->eQueue)->OSQEntries); // # free entries
         QS_EQC_PRE(0U);      // min # free entries (unknown)
@@ -169,6 +176,7 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 #endif
 }
 //............................................................................
+//! @private @memberof QActive
 QEvt const *QActive_get_(QActive * const me) {
     // wait for an event (forever)
     INT8U err;
@@ -189,6 +197,7 @@ QEvt const *QActive_get_(QActive * const me) {
         QS_SIG_PRE(e->sig);  // the signal of this event
         QS_OBJ_PRE(me);      // this active object
         QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Id & ref-Count
+                             // # free entries
         QS_EQC_PRE(((OS_Q *)me->eQueue)->OSQSize
                     - ((OS_Q *)me->eQueue)->OSQEntries); // # free entries
     QS_END_PRE()
@@ -198,22 +207,26 @@ QEvt const *QActive_get_(QActive * const me) {
     return e;
 }
 //............................................................................
+//! @static @public @memberof QActive
 uint16_t QActive_getQueueUse(uint_fast8_t const prio) {
     Q_UNUSED_PAR(prio);
     return 0U; // current use level in a queue not supported in this RTOS
 }
 //............................................................................
+//! @static @public @memberof QActive
 uint16_t QActive_getQueueFree(uint_fast8_t const prio) {
     Q_UNUSED_PAR(prio);
     return 0U; // current use level in a queue not supported in this RTOS
 }
 //............................................................................
+//! @static @public @memberof QActive
 uint16_t QActive_getQueueMin(uint_fast8_t const prio) {
     Q_UNUSED_PAR(prio);
     return 0U; // minimum free entries in a queue not supported in this RTOS
 }
 
 //............................................................................
+//! @public @memberof QActive
 void QActive_start(QActive * const me,
     QPrioSpec const prioSpec,
     QEvtPtr * const qSto, uint_fast16_t const qLen,
@@ -223,7 +236,7 @@ void QActive_start(QActive * const me,
     // extract data temporarily saved in QActive_setAttr()
     void * const task_name = (void *)me->eQueue;
 
-    // create the uC-OS2 message queue
+    // create the uC-OS2 message queue (holding only pointers QEvt*)
     me->eQueue = OSQCreate((void **)qSto, qLen);  // create uC-OS2 queue
 
     QF_CRIT_STAT
@@ -275,6 +288,7 @@ void QActive_start(QActive * const me,
 #endif
 }
 //............................................................................
+//! @public @memberof QActive
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     // NOTE: this function must be called *before* QActive_start(),
     // which implies that me->thread.tx_thread_name must not be used yet;
@@ -304,7 +318,7 @@ void QF_init(void) {
 }
 //............................................................................
 int_t QF_run(void) {
-    QF_onStartup(); // the startup callback, see NOTE4
+    QF_onStartup(); // QF callback, see NOTE4
 
     // produce the QS_QF_RUN trace record
 #ifdef Q_SPY

@@ -53,7 +53,7 @@ void QEQueue_init(QEQueue * const me,
     Q_REQUIRE_INCRIT(10, qLen < 0xFFU);
 #endif
 
-    me->frontEvt = (QEvt *)0; // no events in the queue
+    me->frontEvt.e = (QEvt *)0; // no events in the queue
     me->ring     = qSto;      // the beginning of the ring buffer
     me->end      = (QEQueueCtr)qLen; // index of the last element
     if (qLen > 0U) { // queue buffer storage provided?
@@ -115,12 +115,12 @@ bool QEQueue_post(QEQueue * const me,
         QS_END_PRE()
 #endif // def Q_SPY
 
-        if (me->frontEvt == (QEvt *)0) { // is the queue empty?
-            me->frontEvt = e; // deliver event directly
+        if (me->frontEvt.e == (QEvt *)0) { // is the queue empty?
+            me->frontEvt.e = e; // deliver event directly
         }
         else { // queue was not empty, insert event into the ring-buffer
             QEQueueCtr head = me->head; // get member into temporary
-            me->ring[head] = e; // insert e into buffer
+            me->ring[head].e = e; // insert e into buffer
 
             if (head == 0U) { // need to wrap the head?
                 head = me->end;
@@ -188,8 +188,8 @@ void QEQueue_postLIFO(QEQueue * const me,
         QS_EQC_PRE(me->nMin); // min # free entries
     QS_END_PRE()
 
-    QEvt const * const frontEvt = me->frontEvt; // get member into temporary
-    me->frontEvt = e; // deliver the event directly to the front
+    QEvt const * const frontEvt = me->frontEvt.e; // get member into temporary
+    me->frontEvt.e = e; // deliver the event directly to the front
 
     if (frontEvt != (QEvt *)0) { // was the queue NOT empty?
         QEQueueCtr tail = me->tail; // get member into temporary
@@ -198,7 +198,7 @@ void QEQueue_postLIFO(QEQueue * const me,
             tail = 0U; // wrap around
         }
         me->tail = tail; // update the member original
-        me->ring[tail] = frontEvt;
+        me->ring[tail].e = frontEvt;
     }
 
     QF_CRIT_EXIT();
@@ -216,7 +216,7 @@ struct QEvt const * QEQueue_get(QEQueue * const me,
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    QEvt const * const e = me->frontEvt; // always remove evt from the front
+    QEvt const * const e = me->frontEvt.e; // always remove evt from the front
 
     if (e != (QEvt *)0) { // is the queue NOT empty?
         QEQueueCtr nFree = me->nFree; // get member into temporary
@@ -228,7 +228,7 @@ struct QEvt const * QEQueue_get(QEQueue * const me,
             // remove event from the tail
             QEQueueCtr tail = me->tail; // get member into temporary
 
-            QEvt const * const frontEvt = me->ring[tail];
+            QEvt const * const frontEvt = me->ring[tail].e;
 
             // the queue must have at least one event (at the front)
             Q_ASSERT_INCRIT(350, frontEvt != (QEvt *)0);
@@ -241,7 +241,7 @@ struct QEvt const * QEQueue_get(QEQueue * const me,
                 QS_EQC_PRE(nFree);  // # free entries
             QS_END_PRE()
 
-            me->frontEvt = frontEvt; // update the member original
+            me->frontEvt.e = frontEvt; // update the member original
 
             if (tail == 0U) { // need to wrap the tail?
                 tail = me->end; // wrap around
@@ -250,10 +250,10 @@ struct QEvt const * QEQueue_get(QEQueue * const me,
             me->tail = tail; // update the member original
         }
         else {
-            me->frontEvt = (QEvt *)0; // queue becomes empty
+            me->frontEvt.e = (QEvt *)0; // queue becomes empty
 
             // all entries in the queue must be free (+1 for frontEvt)
-            Q_ASSERT_INCRIT(360, nFree == (me->end + 1U));
+            Q_ASSERT_INCRIT(370, nFree == (me->end + 1U));
 
             QS_BEGIN_PRE(QS_QF_EQUEUE_GET_LAST, qsId)
                 QS_TIME_PRE();      // timestamp
@@ -275,7 +275,7 @@ uint16_t QEQueue_getUse(QEQueue const * const me) {
     // NOTE: this function does NOT apply critical section, so it can
     // be safely called from an already established critical section.
     uint16_t nUse = 0U;
-    if (me->frontEvt != (QEvt *)0) { // queue not empty?
+    if (me->frontEvt.e != (QEvt *)0) { // queue not empty?
         nUse = (uint16_t)((uint16_t)me->end + 1U - (uint16_t)me->nFree);
     }
     return nUse;
@@ -299,5 +299,5 @@ uint16_t QEQueue_getMin(QEQueue const * const me) {
 bool QEQueue_isEmpty(QEQueue const * const me) {
     // NOTE: this function does NOT apply critical section, so it can
     // be safely called from an already established critical section.
-    return me->frontEvt == (struct QEvt *)0;
+    return me->frontEvt.e == (struct QEvt *)0;
 }

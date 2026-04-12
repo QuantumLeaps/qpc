@@ -171,7 +171,7 @@ int_t QF_run(void) {
 #endif
             QF_INT_DISABLE();
 
-            if (a->eQueue.frontEvt == (QEvt *)0) { // empty queue?
+            if (a->eQueue.frontEvt.e == (QEvt *)0) { // empty queue?
                 QPSet_remove(&QV_priv_.readySet, p);
             }
         }

@@ -145,7 +145,7 @@ uint_fast8_t QK_sched_act_(
     // NOTE: this function is entered with interrupts DISABLED
 
     uint8_t p = act->prio;
-    if (act->eQueue.frontEvt == (QEvt *)0) { // empty queue?
+    if (act->eQueue.frontEvt.e == (QEvt *)0) { // empty queue?
         QPSet_remove(&QK_priv_.readySet, p);
     }
 

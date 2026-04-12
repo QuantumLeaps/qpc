@@ -41,7 +41,7 @@ Q_DEFINE_THIS_MODULE("qf_port")
 
 //----------------------------------------------------------------------------
 static void thread_main(void *p1, void *p2, void *p3);  // prototype
-static void thread_main(void *p1, void *p2, void *p3) { // Zephyr thread
+static void thread_main(void *p1, void *p2, void *p3) { // Zephyr signature
     Q_UNUSED_PAR(p2);
     Q_UNUSED_PAR(p3);
     QActive * const act = (QActive *)p1;
@@ -81,11 +81,11 @@ bool QActive_post_(QActive * const me,
 
     // the number of free slots available in the Zephyr queue
     // NOTE: k_msgq_num_free_get() can be safely called from crit.sect.
-    uint_fast16_t const nFree =
-        (uint_fast16_t)k_msgq_num_free_get(&me->eQueue);
+    QEQueueCtr const nFree =
+        (QEQueueCtr)k_msgq_num_free_get(&me->eQueue);
 
-    bool status = ((margin == QF_NO_MARGIN) || (nFree > (QEQueueCtr)margin));
-
+    bool status = ((margin == QF_NO_MARGIN)
+        || (nFree > (QEQueueCtr)margin));
     if (status) { // should try to post the event?
 #if (QF_MAX_EPOOL > 0U)
         if (e->poolNum_ != 0U) { // is it a mutable event?
@@ -93,6 +93,7 @@ bool QActive_post_(QActive * const me,
         }
 #endif // (QF_MAX_EPOOL > 0U)
 
+        // assume that event posting will be successful, see NOTE3
         QS_BEGIN_PRE(QS_QF_ACTIVE_POST, me->prio)
             QS_TIME_PRE();      // timestamp
             QS_OBJ_PRE(sender); // the sender object
@@ -105,14 +106,17 @@ bool QActive_post_(QActive * const me,
 
         QF_CRIT_EXIT(); // exit crit.sect. before calling RTOS API
 
-        // post the event to the Zephyr event queue, see NOTE3
-        status = (k_msgq_put(&me->eQueue, (void const *)&e, K_NO_WAIT)
-                  == 0);
+        // post the following evtPtr to the RTOS queue, see NOTE3
+        QEvtPtr const evtPtr = {
+            e
+        };
+        status = (k_msgq_put(&me->eQueue,
+            (void const *)&evtPtr, K_NO_WAIT) == 0);
+
+        QF_CRIT_ENTRY(); // re-enter crit.sec.
     }
 
     if (!status) { // event NOT posted?
-        QF_CRIT_ENTRY();
-
         // posting is allowed to fail only when margin != QF_NO_MARGIN
         Q_ASSERT_INCRIT(130, margin != QF_NO_MARGIN);
 
@@ -122,7 +126,7 @@ bool QActive_post_(QActive * const me,
             QS_SIG_PRE(e->sig); // the signal of the event
             QS_OBJ_PRE(me);     // this active object (recipient)
             QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Num & ref-Count
-            QS_EQC_PRE(nFree);  // # free entries available
+            QS_EQC_PRE(nFree);  // # free entries
             QS_EQC_PRE(margin); // margin requested
         QS_END_PRE()
 
@@ -131,6 +135,9 @@ bool QActive_post_(QActive * const me,
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // recycle the event to avoid a leak
 #endif
+    }
+    else {
+        QF_CRIT_EXIT();
     }
 
     return status;
@@ -154,18 +161,22 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
         QS_TIME_PRE();       // timestamp
         QS_SIG_PRE(e->sig);  // the signal of this event
         QS_OBJ_PRE(me);      // this active object
-        QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Id & ref-Count
+        QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Num & ref-Count
         QS_EQC_PRE(k_msgq_num_free_get(&me->eQueue)); // # free entries
         QS_EQC_PRE(0U);      // min # free entries (unknown)
     QS_END_PRE()
 
     QF_CRIT_EXIT(); // exit crit.sect. before calling RTOS API
 
-    int const err = k_msgq_put_front(&me->eQueue, (void const *)&e);
+    // post the following evtPtr to the RTOS queue, see NOTE3
+    QEvtPtr const evtPtr = {
+        e
+    };
+    int const err = k_msgq_put_front(&me->eQueue, (void const *)&evtPtr);
 
 #ifndef Q_UNSAFE
     QF_CRIT_ENTRY();
-    // LIFO posting to the Zephyr queue must succeed, see NOTE3
+    // LIFO posting to the RTOS queue must succeed, see NOTE3
     Q_ASSERT_INCRIT(230, err == 0);
     QF_CRIT_EXIT();
 #else
@@ -176,8 +187,8 @@ void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 //! @private @memberof QActive
 QEvt const *QActive_get_(QActive * const me) {
     // wait for an event (forever)
-    QEvtPtr e;
-    int const err = k_msgq_get(&me->eQueue, (void *)&e, K_FOREVER);
+    QEvtPtr evtPtr;
+    int const err = k_msgq_get(&me->eQueue, (void *)&evtPtr, K_FOREVER);
 
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
@@ -190,15 +201,15 @@ QEvt const *QActive_get_(QActive * const me) {
 
     QS_BEGIN_PRE(QS_QF_ACTIVE_GET, me->prio)
         QS_TIME_PRE();       // timestamp
-        QS_SIG_PRE(e->sig);  // the signal of this event
+        QS_SIG_PRE(evtPtr.e->sig); // the signal of this event
         QS_OBJ_PRE(me);      // this active object
-        QS_2U8_PRE(e->poolNum_, e->refCtr_); // pool-Id & ref-Count
+        QS_2U8_PRE(evtPtr.e->poolNum_, evtPtr.e->refCtr_);
         QS_EQC_PRE(k_msgq_num_free_get(&me->eQueue)); // # free entries
     QS_END_PRE()
 
     QF_CRIT_EXIT();
 
-    return e;
+    return evtPtr.e;
 }
 //............................................................................
 //! @static @public @memberof QActive
@@ -236,7 +247,7 @@ void QActive_start(QActive * const me,
     // initialize the Zephyr message queue
     k_msgq_init(&me->eQueue, (char *)qSto, sizeof(QEvtPtr), (uint32_t)qLen);
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QP-priority
     me->pthre = 0U; // preemption-threshold (not used for AO registration)
     QActive_register_(me); // make QF aware of this AO
 
@@ -244,7 +255,7 @@ void QActive_start(QActive * const me,
     QASM_INIT(me, par, me->prio);
     QS_FLUSH(); // flush the trace buffer to the host
 
-    // Zehyr priority, see NOTE1
+    // Zephyr priority, see NOTE1
     int zephyr_prio = (int)(prioSpec >> 8U);
     if (zephyr_prio == 0) {
         zephyr_prio = (int)(QF_MAX_ACTIVE - me->prio);
@@ -280,6 +291,8 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 }
 
 //============================================================================
+// QF customization
+
 // Zephyr spinlock for QF critical section
 struct k_spinlock QF_spinlock = (struct k_spinlock){};
 
@@ -291,7 +304,7 @@ void QF_init(void) {
 }
 //............................................................................
 int_t QF_run(void) {
-    QF_onStartup(); // the startup callback
+    QF_onStartup(); // QF callback
 
     // produce the QS_QF_RUN trace record
 #ifdef Q_SPY
@@ -361,7 +374,7 @@ void QF_stop(void) {
 // posting the event to the queue.
 //
 // NOTE4:
-// Durring the initial transient (from QF_init() till QF_run()), the Zephyr
+// During the initial transient (from QF_init() till QF_run()), the Zephyr
 // scheduler remains *locked*, to ensure that the threads created during that
 // time start running only after the control is passed to the framework (after
 // calling QF_run()).

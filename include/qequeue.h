@@ -43,7 +43,9 @@
 
 // forward declarations (NOTE must be consistent with "qp.h")
 struct QEvt;
-typedef struct QEvt const * QEvtPtr;
+typedef struct {
+    struct QEvt const *e;
+} QEvtPtr;
 
 //============================================================================
 //! @class QEQueue

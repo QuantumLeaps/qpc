@@ -30,10 +30,10 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR  "8.1.3"
-#define QP_VERSION      813U
-// <VER>=813 <DATE>=260309
-#define QP_RELEASE      0x64D7FC82U
+#define QP_VERSION_STR  "8.1.4"
+#define QP_VERSION      814U
+// <VER>=814 <DATE>=260413
+#define QP_RELEASE      0x64C81E01U
 
 //----------------------------------------------------------------------------
 // default configuration settings
@@ -132,7 +132,9 @@ bool QEvt_verify_(QEvt const * const me);
 
 #ifndef QEQUEUE_H_
 // NOTE must be consistent with "qequeue.h"
-typedef QEvt const * QEvtPtr;
+typedef struct {
+    QEvt const *e;
+} QEvtPtr;
 #endif
 
 #define QEVT_DYNAMIC           ((uint8_t)0)
