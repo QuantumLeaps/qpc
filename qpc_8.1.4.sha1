@@ -40,7 +40,7 @@ b1d2def9b8f6cde464170af7682ab0f01f4f40f6 *src/qv/CMakeLists.txt
 364d41c441cae7a61a9265c3c184c037f93d5b12 *src/qxk/qxk_mutex.c
 3b1cf83b8cd92de9150fb0627420335e71c88287 *src/qxk/qxk_sema.c
 186c95ebd095bc5a786a44d7e7b26a544de47a1d *src/qxk/qxk_xthr.c
-f05f057626a23e5c90f4913a6607b6a2e4b7041d *ports/arm-cm/config/qp_config.h
+11fd44badb4d0e2a4c0bce5208dadc72be956fa7 *ports/arm-cm/config/qp_config.h
 55550e2a1633a67dd8e14d0ee1caf993811a27f8 *ports/arm-cm/qk/armclang/qk_port.c
 165f44e83a8d72e6568c8e249efff5324d400cdf *ports/arm-cm/qk/armclang/qp_port.h
 4efebcfb83036649c8e7c6feb5a98cda01877ae9 *ports/arm-cm/qk/armclang/qs_port.h
@@ -73,7 +73,7 @@ c402bd1af21c5c0484b4214163e37c768298752b *ports/arm-cm/qxk/armclang/qxk_port.c
 bc9e9c8a381bba79673569e2a78f6cbce083a1ad *ports/arm-cm/qxk/iar/qxk_port.c
 e8df5a3a3001ae95493908090f87f6c0ff79e0d9 *ports/arm-cm/qutest/qp_port.h
 4efebcfb83036649c8e7c6feb5a98cda01877ae9 *ports/arm-cm/qutest/qs_port.h
-bf3b3291715029baad44b0ff73afd6b1829aa56a *ports/arm-cr/config/qp_config.h
+fbb79b334e75e376c4475f9428cfedb9a650b2fa *ports/arm-cr/config/qp_config.h
 67255fed4e9a25fcee7f40cef6fa76c3b0236c66 *ports/arm-cr/qk/gnu/qp_port.h
 4efebcfb83036649c8e7c6feb5a98cda01877ae9 *ports/arm-cr/qk/gnu/qs_port.h
 e479243980f3ada6a341742a6826a0ca7da662ab *ports/arm-cr/qk/iar/qp_port.h
@@ -92,7 +92,7 @@ fe088835c9143e4dbdf2b7df6743fadfeaf7abb9 *ports/msp430/qv/qp_port.h
 becde567ef7edc053a98b11f210d956505e30314 *ports/msp430/qv/qs_port.h
 149bbb9052c87e8014aafd1c01df921120e4054b *ports/msp430/qutest/qp_port.h
 becde567ef7edc053a98b11f210d956505e30314 *ports/msp430/qutest/qs_port.h
-f63a7074c2193ad818e6518f4a09fc435864bc6b *ports/config/qp_config.h
+869086d28e651a579c7c6c5e15a9e2f340eaeb07 *ports/config/qp_config.h
 2ee7f5594f6121705bbc57145175b5c5867e0070 *ports/embos/CMakeLists.txt
 00eac046f09bed909dde7c4a25bc3ab6195939d7 *ports/embos/qf_port.c
 77fa025b1255c2c51f21567a84afc6f027db1733 *ports/embos/qp_port.h

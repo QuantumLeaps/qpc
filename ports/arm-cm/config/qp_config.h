@@ -1,5 +1,5 @@
 //============================================================================
-// QP/C configuration file (QV/QK/QXK on ARM Cortex-M)
+// QP configuration file (QV/QK/QXK on ARM Cortex-M)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -46,37 +46,6 @@
 // <i>that no backwards compatibility layer should be enabled.
 // <i>Default: 0 (All supported)
 #define QP_API_VERSION 0
-
-//..........................................................................
-// <h>QP Functional Safety (FuSa) Subsystem (Q_UNSAFE)
-// <i>The QP FuSa Subsystem consists of the following facilities:
-// <i>- Software assertions as a recommended technique
-// <i>  (called Failure Assertion Programming (FAP) in IEC 61508)
-// <i>- Software Self-Monitoring (SSM), which encompasses such techniques:
-// <i>  * Duplicate Inverse Storage for critical variables
-// <i>  * Memory Markers for critical objects (e.g., events)
-// <i>  * Hard-limits for all loops
-// <i>  * Memory Isolation by means of Memory Protection Unit (MPU)
-
-// <c3>Disable QP FuSa in development (NOT recommended)
-// <i>Disable assertions and other self monitoring features
-// <i>in development build configurations (NDEBUG undefined).
-// <i>NOTE: Disabling safety *violates* functional safety standards.
-//#ifndef NDEBUG
-//#define Q_UNSAFE
-//#endif
-// </c>
-
-// <c3>Disable QP FuSa in production release (NOT recommended)
-// <i>Disable assertions and other safety features
-// <i>in the release build configurations (NDEBUG defined).
-// <i>NOTE: Disabling safety *violates* functional safety standards.
-//#ifdef NDEBUG
-//#define Q_UNSAFE
-//#endif
-// </c>
-
-// </h>
 
 //..........................................................................
 // <h>QF Framework (Active Objects)
@@ -184,7 +153,7 @@
 // <c2>Kernel uses critical section based on BASEPRI (QF_USE_BASEPRI)
 // <i>If not selected, critical section will be based on PRIMASK
 // <i>NOTE: The BASEPRI threshold can be adjusted in the "Text Editor" mode.
-//#define QF_USE_BASEPRI 0x3F
+#define QF_USE_BASEPRI 0x3F
 // </c>
 #endif // (__ARM_ARCH > 6)
 

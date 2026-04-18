@@ -1,5 +1,5 @@
 //============================================================================
-// QP/C configuration file (generic)
+// QP configuration file (generic)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
@@ -34,7 +34,7 @@
 // <o>QP API compatibility version (QP_API_VERSION)
 //   <0=>  0   (Maximum compatibility)
 //   <691=>691 (QP 6.9.1 or newer)
-//   <734=>7.3.4 (QP 7.3.4 or newer)
+//   <750=>750 (QP 7.5.0 or newer)
 //   <9999=>9999 (Latest only)
 // <i>QP API backwards compatibility with the QP API version.
 // <i>Lower QP_API_VERSION values enable backwards compatibility
@@ -46,37 +46,6 @@
 // <i>that no backwards compatibility layer should be enabled.
 // <i>Default: 0 (All supported)
 #define QP_API_VERSION 0
-
-//..........................................................................
-// <h>QP Functional Safety (FuSa) Subsystem (Q_UNSAFE)
-// <i>The QP FuSa Subsystem consists of the following facilities:
-// <i>- Software assertions as a recommended technique
-// <i>  (called Failure Assertion Programming (FAP) in IEC 61508)
-// <i>- Software Self-Monitoring (SSM), which encompasses such techniques:
-// <i>  * Duplicate Inverse Storage for critical variables
-// <i>  * Memory Markers for critical objects (e.g., events)
-// <i>  * Hard-limits for all loops
-// <i>  * Memory Isolation by means of Memory Protection Unit (MPU)
-
-// <c3>Disable QP FuSa in development (NOT recommended)
-// <i>Disable assertions and other self monitoring features
-// <i>in development build configurations (NDEBUG undefined).
-// <i>NOTE: Disabling safety *violates* functional safety standards.
-//#ifndef NDEBUG
-//#define Q_UNSAFE
-//#endif
-// </c>
-
-// <c3>Disable QP FuSa in production release (NOT recommended)
-// <i>Disable assertions and other safety features
-// <i>in the release build configurations (NDEBUG defined).
-// <i>NOTE: Disabling safety *violates* functional safety standards.
-//#ifdef NDEBUG
-//#define Q_UNSAFE
-//#endif
-// </c>
-
-// </h>
 
 //..........................................................................
 // <h>QF Framework (Active Objects)
