@@ -105,16 +105,13 @@ void QF_init(void) {
 
 //............................................................................
 int QF_run(void) {
-    l_isRunning = true; // QF is running
-
-    QF_onStartup(); // application-specific startup callback
+    QF_CRIT_STAT
 
     if (l_tickMsec != 0U) { // system clock tick configured?
         // create the ticker thread...
         HANDLE ticker = CreateThread(NULL, 1024, &ticker_thread,
                                     (void *)0, 0U, NULL);
 #ifndef Q_UNSAFE
-        QF_CRIT_STAT
         QF_CRIT_ENTRY();
         Q_ASSERT_INCRIT(310, ticker != 0); // thread must be created
         QF_CRIT_EXIT();
@@ -123,13 +120,20 @@ int QF_run(void) {
 #endif
     }
 
-    // the combined event-loop and background-loop of the QV kernel
     QF_CRIT_ENTRY();
 
     // produce the QS_QF_RUN trace record
     QS_BEGIN_PRE(QS_QF_RUN, 0U)
     QS_END_PRE()
 
+    l_isRunning = true; // QF is running
+
+    // Application callback: configure and enable individual interrupts.
+    // NOTE: called within critical section and returns also in
+    // critical section.
+    QF_onStartup();
+
+    // the combined event-loop and background-loop of the QV kernel
     while (l_isRunning) {
         // find the maximum priority AO ready to run
         if (QPSet_notEmpty(&QF_readySet_)) {

@@ -135,7 +135,7 @@ bool QEvt_verify_(QEvt const * const me);
 typedef struct {
     QEvt const *e;
 } QEvtPtr;
-#endif
+#endif // QEQUEUE_HPP_
 
 #define QEVT_DYNAMIC           ((uint8_t)0)
 #define Q_EVT_CAST(class_)     ((class_ const *)(e))
@@ -691,7 +691,7 @@ void QF_onCleanup(void);
 #endif // def QF_ON_CONTEXT_SW
 
 static inline QPrioSpec Q_PRIO(uint8_t const prio, uint8_t const pthre) {
-    // combine the QF prio. preemption-threshld pthre in the upper byte
+    // combine the QF prio. preemption-threshold pthre in the upper byte
     return (QPrioSpec)((uint32_t)prio | ((uint32_t)pthre << 8U));
 }
 
