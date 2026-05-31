@@ -44,8 +44,8 @@
 
 // QActive event queue type
 #define QACTIVE_EQUEUE_TYPE  QEQueue
-// QACTIVE_OS_OBJ_TYPE not used in this port
-// QACTIVE_THREAD_TYPE not used in this port
+// QACTIVE_OS_OBJ_TYPE   not used in this port
+// QACTIVE_THREAD_TYPE   not used in this port
 
 // QF critical section
 #define QF_CRIT_STAT         QCritStatus critStat_;
@@ -85,10 +85,10 @@
 // QMPool operations
 #define QF_EPOOL_TYPE_  QMPool
 #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
-        (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
+    (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
 #define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
 #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
-        ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
+    ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
 #define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))
 #define QF_EPOOL_USE_(ePool_)   (QMPool_getUse(ePool_))
 #define QF_EPOOL_FREE_(ePool_)  ((uint16_t)(ePool_)->nFree)

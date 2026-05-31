@@ -327,10 +327,12 @@ int_t QF_run(void) {
         QK_activate_();
     }
 
+    // Application callback: configure and enable individual interrupts.
+    // NOTE: called with interrupts disabled and returns also with
+    // interrupts disabled
+    QF_onStartup();
+
     QF_INT_ENABLE();
-
-    QF_onStartup(); // app. callback: configure and enable interrupts
-
     for (;;) { // QK idle loop...
         QK_onIdle(); // application-specific QK idle callback
     }
