@@ -156,12 +156,14 @@ void QF_init(void) {
 
 //............................................................................
 int QF_run(void) {
-
-    QF_onStartup(); // application-specific startup callback
-
     // produce the QS_QF_RUN trace record
     QS_BEGIN_PRE(QS_QF_RUN, 0U)
     QS_END_PRE()
+
+    // Application callback: configure and enable individual interrupts.
+    // NOTE: called within critical section and returns also in
+    // critical section.
+    QF_onStartup();
 
     // try to set the priority of the ticker thread, see NOTE01
     struct sched_param sparam;
