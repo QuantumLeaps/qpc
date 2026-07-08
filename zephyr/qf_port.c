@@ -49,7 +49,7 @@ static void thread_main(void *p1, void *p2, void *p3) { // Zephyr signature
     // the event-loop...
     for (;;) { // for-ever
         QEvt const * const e = QActive_get_(act); // BLOCK for event
-        QASM_DISPATCH(act, e, act->prio); // dispatch event (virtual call)
+        QASM_DISPATCH(act, e, act->prio); // virtual call
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -251,8 +251,7 @@ void QActive_start(QActive * const me,
     me->pthre = 0U; // preemption-threshold (not used for AO registration)
     QActive_register_(me); // make QF aware of this AO
 
-    // top-most initial tran. (virtual call)
-    QASM_INIT(me, par, me->prio);
+    QASM_INIT(me, par, me->prio); // top-most initial tran. (virtual call)
     QS_FLUSH(); // flush the trace buffer to the host
 
     // Zephyr priority, see NOTE1
@@ -299,8 +298,9 @@ struct k_spinlock QF_spinlock = (struct k_spinlock){};
 //............................................................................
 void QF_init(void) {
     k_sched_lock(); // lock the Zephyr scheduler until QF_run(), see NOTE4
-
+#if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
+#endif
 }
 //............................................................................
 int_t QF_run(void) {

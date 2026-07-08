@@ -28,10 +28,10 @@
 #ifndef QS_PORT_H_
 #define QS_PORT_H_
 
-#if defined(__LP64__) || defined(_LP64) // 64-bit architecture?
+#if defined(_WIN64) || defined(__LP64__) || defined(_LP64)  // 64-bit OS?
     #define QS_OBJ_PTR_SIZE 8U
     #define QS_FUN_PTR_SIZE 8U
-#else                                   // 32-bit architecture
+#else  // 32-bit OS
     #define QS_OBJ_PTR_SIZE 4U
     #define QS_FUN_PTR_SIZE 4U
 #endif

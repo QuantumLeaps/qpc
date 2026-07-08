@@ -47,7 +47,7 @@ static void task_main(void *pdata) { // uC-OS2 task signature
     // the event-loop...
     for (;;) { // for-ever
         QEvt const * const e = QActive_get_(act); // BLOCK for event
-        QASM_DISPATCH(act, e, act->prio); // dispatch event (virtual call)
+        QASM_DISPATCH(act, e, act->prio); // virtual call
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -249,8 +249,7 @@ void QActive_start(QActive * const me,
     me->pthre = 0U; // preemption-threshold (not used for AO registration)
     QActive_register_(me); // make QF aware of this AO
 
-    // top-most initial tran. (virtual call)
-    QASM_INIT(me, par, me->prio);
+    QASM_INIT(me, par, me->prio); // top-most initial tran. (virtual call)
     QS_FLUSH(); // flush the trace buffer to the host
 
     // uC-OS2 priority, see NOTE1
@@ -313,8 +312,10 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 
 //............................................................................
 void QF_init(void) {
-    QTimeEvt_init(); // initialize QTimeEvts
     OSInit();        // initialize uC-OS2
+#if (QF_MAX_TICK_RATE > 0U)
+    QTimeEvt_init(); // initialize QTimeEvts
+#endif
 }
 //............................................................................
 int_t QF_run(void) {

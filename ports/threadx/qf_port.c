@@ -47,7 +47,7 @@ static void thread_main(ULONG thread_input) { // ThreadX signature
     // the event-loop...
     for (;;) { // for-ever
         QEvt const * const e = QActive_get_(act); // BLOCK for event
-        QASM_DISPATCH(act, e, act->prio); // dispatch event (virtual call)
+        QASM_DISPATCH(act, e, act->prio); // virtual call
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -253,8 +253,7 @@ void QActive_start(QActive * const me,
     me->pthre = (uint8_t)(prioSpec >> 8U); // QF preemption-threshold
     QActive_register_(me); // make QF aware of this AO
 
-    // top-most initial tran. (virtual call)
-    QASM_INIT(me, par, me->prio);
+    QASM_INIT(me, par, me->prio); // top-most initial tran. (virtual call)
     QS_FLUSH(); // flush the trace buffer to the host
 
     // ThreadX priority, see NOTE1
@@ -307,7 +306,9 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 
 //............................................................................
 void QF_init(void) {
+#if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
+#endif
 }
 //............................................................................
 int_t QF_run(void) {

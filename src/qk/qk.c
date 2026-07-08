@@ -235,7 +235,7 @@ void QK_activate_(void) {
         QEvt const * const e = QActive_get_(a); // queue not empty
         // NOTE QActive_get_() performs QF_MEM_APP() before return
 
-        QASM_DISPATCH(a, e, p); // dispatch event (virtual call)
+        QASM_DISPATCH(a, e, p); // virtual call
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -285,9 +285,9 @@ void QF_init(void) {
     // setup the QK scheduler as initially locked and not running
     QK_priv_.lockCeil = (QF_MAX_ACTIVE + 1U); // scheduler locked
 
-#ifndef Q_UNSAFE
+#if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
-#endif // Q_UNSAFE
+#endif
 
 #ifdef QK_INIT
     QK_INIT(); // port-specific initialization of the QK kernel
@@ -367,8 +367,7 @@ void QActive_start(QActive * const me,
 
     QEQueue_init(&me->eQueue, qSto, qLen); // init the built-in queue
 
-    // top-most initial tran. (virtual call)
-    QASM_INIT(me, par, me->prio);
+    QASM_INIT(me, par, me->prio); // top-most initial tran. (virtual call)
     QS_FLUSH(); // flush the trace buffer to the host
 
     // see if this AO needs to be scheduled if QK is already running

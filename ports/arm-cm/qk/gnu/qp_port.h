@@ -88,24 +88,6 @@
     #define QF_AWARE_ISR_CMSIS_PRI 0
 #endif // QF_USE_BASEPRI
 
-// Memory isolation ----------------------------------------------------------
-#ifdef QF_MEM_ISOLATE
-
-    // Memory isolation requires the context-switch
-    #define QF_ON_CONTEXT_SW   1U
-
-    // Memory System setting
-    #define QF_MEM_SYS() QF_onMemSys()
-
-    // Memory Application setting
-    #define QF_MEM_APP() QF_onMemApp()
-
-    // callback functions for memory settings (provided by applications)
-    void QF_onMemSys(void);
-    void QF_onMemApp(void);
-
-#endif // QF_MEM_ISOLATE
-
 // determination if the code executes in the ISR context
 #define QK_ISR_CONTEXT_()     (QK_get_IPSR() != 0U)
 
@@ -119,27 +101,14 @@ static inline uint32_t QK_get_IPSR(void) {
 // QK ISR entry and exit
 #define QK_ISR_ENTRY() ((void)0)
 
-#ifdef QF_MEM_ISOLATE
-    #define QK_ISR_EXIT()  do {                                   \
-        QF_INT_DISABLE();                                         \
-        QF_MEM_SYS();                                             \
-        if (QK_sched_() != 0U) {                                  \
-            *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28U);\
-        }                                                         \
-        QF_MEM_APP();                                             \
-        QF_INT_ENABLE();                                          \
-        QK_ARM_ERRATUM_838869();                                  \
-    } while (false)
-#else
-    #define QK_ISR_EXIT()  do {                                   \
-        QF_INT_DISABLE();                                         \
-        if (QK_sched_() != 0U) {                                  \
-            *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28U);\
-        }                                                         \
-        QF_INT_ENABLE();                                          \
-        QK_ARM_ERRATUM_838869();                                  \
-    } while (false)
-#endif
+#define QK_ISR_EXIT()  do {                                   \
+    QF_INT_DISABLE();                                         \
+    if (QK_sched_() != 0U) {                                  \
+        *Q_UINT2PTR_CAST(uint32_t, 0xE000ED04U) = (1U << 28U);\
+    }                                                         \
+    QF_INT_ENABLE();                                          \
+    QK_ARM_ERRATUM_838869();                                  \
+} while (false)
 
 #if (__ARM_ARCH == 6) // ARMv6-M?
     #define QK_ARM_ERRATUM_838869() ((void)0)

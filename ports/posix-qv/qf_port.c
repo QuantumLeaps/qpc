@@ -30,22 +30,22 @@
 // expose features from the 2008 POSIX standard (IEEE Standard 1003.1-2008)
 #define _POSIX_C_SOURCE 200809L
 
-#define QP_IMPL             // this is QP implementation
-#include "qp_port.h"        // QP port
-#include "qp_pkg.h"         // QP package-scope interface
-#include "qsafe.h"          // QP Functional Safety (FuSa) Subsystem
-#ifdef Q_SPY                // QS software tracing enabled?
-    #include "qs_port.h"    // QS port
-    #include "qs_pkg.h"     // QS package-scope internal interface
+#define QP_IMPL           // this is QP implementation
+#include "qp_port.h"      // QP port
+#include "qp_pkg.h"       // QP package-scope interface
+#include "qsafe.h"        // QP Functional Safety (FuSa) Subsystem
+#ifdef Q_SPY              // QS software tracing enabled?
+    #include "qs_port.h"  // QS port
+    #include "qs_pkg.h"   // QS package-scope internal interface
 #else
-    #include "qs_dummy.h"   // disable the QS software tracing
+    #include "qs_dummy.h" // disable the QS software tracing
 #endif // Q_SPY
 
-#include <limits.h>         // for PTHREAD_STACK_MIN
-#include <sys/mman.h>       // for mlockall()
+#include <limits.h>       // for PTHREAD_STACK_MIN
+#include <sys/mman.h>     // for mlockall()
 #include <sys/ioctl.h>
-#include <time.h>           // for clock_nanosleep()
-#include <string.h>         // for memcpy() and memset()
+#include <time.h>         // for clock_nanosleep()
+#include <string.h>       // for memcpy() and memset()
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -182,7 +182,9 @@ void QF_init(void) {
     // lock memory so we're never swapped out to disk
     //mlockall(MCL_CURRENT | MCL_FUTURE); // un-comment when supported
 
+#if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
+#endif
 
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default rate
@@ -198,6 +200,7 @@ void QF_init(void) {
 //............................................................................
 int QF_run(void) {
     QF_CRIT_STAT
+
     // system clock tick configured?
     if ((l_tick.tv_sec != 0) || (l_tick.tv_nsec != 0)) {
 
@@ -264,8 +267,8 @@ int QF_run(void) {
             Q_ASSERT_INCRIT(320, a != (QActive *)0);
             QF_CRIT_EXIT();
 
-            QEvt const *e = QActive_get_(a); // queue not empty
-            QASM_DISPATCH(a, e, a->prio); // dispatch event (virtual call)
+            QEvt const *e = QActive_get_(a); // NO blocking (not empty)
+            QASM_DISPATCH(a, e, a->prio); // virtual call
 #if (QF_MAX_EPOOL > 0U)
             QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -310,6 +313,7 @@ void QF_stop(void) {
 }
 //............................................................................
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
+    // NOTE: called inside crit.section
     if (ticksPerSec != 0U) {
         l_tick.tv_nsec = NSEC_PER_SEC / ticksPerSec;
     }
@@ -331,7 +335,8 @@ void QF_consoleSetup(void) {
 
     tcgetattr(0, &l_tsav); // save the current terminal attributes
     tcgetattr(0, &tio);    // obtain the current terminal attributes
-    tio.c_lflag &= (tcflag_t)~(ICANON | ECHO); // disable the canonical mode & echo
+    // disable the canonical mode & echo
+    tio.c_lflag &= (tcflag_t)~(ICANON | ECHO);
     tcsetattr(0, TCSANOW, &tio);     // set the new attributes
 }
 //............................................................................
@@ -354,7 +359,7 @@ int QF_consoleWaitForKey(void) {
     return (int)getchar();
 }
 
-#endif // #ifdef QF_CONSOLE
+#endif // QF_CONSOLE
 
 // QActive functions =========================================================
 
@@ -375,7 +380,7 @@ void QActive_start(QActive * const me,
 
     QEQueue_init(&me->eQueue, qSto, qLen);
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority of the AO
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority
     me->pthre = 0U; // preemption-threshold (not used in this port)
     QActive_register_(me); // register this AO
 
@@ -399,12 +404,17 @@ void QActive_stop(QActive * const me) {
     QActive_unregister_(me);
 }
 #endif
+
 //............................................................................
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     Q_UNUSED_PAR(me);
     Q_UNUSED_PAR(attr1);
     Q_UNUSED_PAR(attr2);
+
+    QF_CRIT_STAT
+    QF_CRIT_ENTRY();
     Q_ERROR_INCRIT(900); // should not be called in this QP port
+    QF_CRIT_EXIT();
 }
 
 //============================================================================

@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Get Support
+    url: https://sourceforge.net/p/qpc/discussion/668726/
+    about: Please visit the Free Support Forum hosted on SourceForge for all troubleshooting and support questions.
+
+  - name: File a Bug
+    url: https://sourceforge.net/p/qpc/bugs/
+    about: Please use the Bug Tracker hosted on SourceForge to submit a formal bug report.
+
+  - name: Request a Feature
+    url: https://sourceforge.net/p/qpc/feature-requests/
+    about: Please use the Feature-request Tracker hosted on SourceForge to request a new feature.

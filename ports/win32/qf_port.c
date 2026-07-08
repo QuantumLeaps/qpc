@@ -73,7 +73,9 @@ void QF_leaveCriticalSection_(void) {
 void QF_init(void) {
     InitializeCriticalSection(&l_win32CritSect);
 
+#if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
+#endif
 
     // initialize and enter the startup critical section object to block
     // any active objects started before calling QF_run()
@@ -128,11 +130,7 @@ void QF_stop(void) {
 }
 //............................................................................
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
-    QF_CRIT_STAT
-    QF_CRIT_ENTRY();
-    Q_REQUIRE_INCRIT(600, ticksPerSec != 0U);
-    QF_CRIT_EXIT();
-
+    // NOTE: called inside crit.section
     l_tickMsec = 1000UL / ticksPerSec;
     l_tickPrio = tickPrio;
 }
@@ -178,16 +176,15 @@ void QActive_start(QActive * const me,
     Q_REQUIRE_INCRIT(800, stkSto == (void *)0);
     QF_CRIT_EXIT();
 
-    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority
-    me->pthre = 0U; // preemption-threshold (not used in this port)
-    QActive_register_(me); // register this AO
-
     // create the Win32 "event" to throttle the AO's event queue
     me->osObject = CreateEvent(NULL, FALSE, FALSE, NULL);
     QEQueue_init(&me->eQueue, qSto, qLen);
 
-    // the top-most initial tran. (virtual)
-    QASM_INIT(&me->super, par, me->prio);
+    me->prio  = (uint8_t)(prioSpec & 0xFFU); // QF-priority
+    me->pthre = 0U; // preemption-threshold (not used in this port)
+    QActive_register_(me); // register this AO
+
+    QASM_INIT(me, par, me->prio); // virtual call
     QS_FLUSH(); // flush the QS trace buffer to the host
 
     // create a Win32 thread for the AO;

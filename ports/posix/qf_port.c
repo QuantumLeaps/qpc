@@ -137,7 +137,9 @@ void QF_init(void) {
     // lock memory so we're never swapped out to disk
     //mlockall(MCL_CURRENT | MCL_FUTURE); // un-comment when supported
 
+#if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
+#endif
 
     l_tick.tv_sec = 0;
     l_tick.tv_nsec = NSEC_PER_SEC / DEFAULT_TICKS_PER_SEC; // default rate
@@ -236,11 +238,7 @@ void QF_stop(void) {
 }
 //............................................................................
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
-    QF_CRIT_STAT
-    QF_CRIT_ENTRY();
-    Q_REQUIRE_INCRIT(600, ticksPerSec != 0U);
-    QF_CRIT_EXIT();
-
+    // NOTE: called inside crit.section
     if (ticksPerSec != 0U) {
         l_tick.tv_nsec = NSEC_PER_SEC / ticksPerSec;
     }
@@ -286,7 +284,7 @@ int QF_consoleWaitForKey(void) {
     return (int)getchar();
 }
 
-#endif // #ifdef QF_CONSOLE
+#endif // QF_CONSOLE
 
 //============================================================================
 static void *thread_routine(void *arg) { // the expected POSIX signature
@@ -298,13 +296,12 @@ static void *thread_routine(void *arg) { // the expected POSIX signature
 
 #ifdef QACTIVE_CAN_STOP
     act->thread = true;
-    while (act->thread)
+    while (act->thread) {
 #else
-    for (;;) // for-ever
+    for (;;) { // for-ever
 #endif
-    {
-        QEvt const *e = QActive_get_(act); // BLOCK for event
-        QASM_DISPATCH(act, e, act->prio); // dispatch event (virtual call)
+        QEvt const * const e = QActive_get_(act); // BLOCK for event
+        QASM_DISPATCH(act, e, act->prio); // virtual call
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -399,6 +396,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
     Q_UNUSED_PAR(me);
     Q_UNUSED_PAR(attr1);
     Q_UNUSED_PAR(attr2);
+
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
     Q_ERROR_INCRIT(900); // should not be called in this QP port
