@@ -90,24 +90,6 @@
     #define QF_AWARE_ISR_CMSIS_PRI 0
 #endif // QF_USE_BASEPRI
 
-// Memory isolation ----------------------------------------------------------
-#ifdef QF_MEM_ISOLATE
-
-    // Memory isolation requires the context-switch
-    #define QF_ON_CONTEXT_SW   1U
-
-    // Memory System setting
-    #define QF_MEM_SYS() QF_onMemSys()
-
-    // Memory Application setting
-    #define QF_MEM_APP() QF_onMemApp()
-
-    // callback functions for memory settings (provided by applications)
-    void QF_onMemSys(void);
-    void QF_onMemApp(void);
-
-#endif // QF_MEM_ISOLATE
-
 // QV kernel sleep mode transition
 #ifdef QF_USE_BASEPRI
 

@@ -48,50 +48,11 @@ Q_DEFINE_THIS_MODULE("qv")
 QV QV_priv_;
 
 //............................................................................
-//! @static @public @memberof QV
-void QV_schedDisable(uint8_t const ceiling) {
-    QF_CRIT_STAT
-    QF_CRIT_ENTRY();
-
-    if (ceiling > QV_priv_.schedCeil) { // raising the scheduler ceiling?
-
-        QS_BEGIN_PRE(QS_SCHED_LOCK, 0U)
-            QS_TIME_PRE();   // timestamp
-            // the previous sched ceiling & new sched ceiling
-            QS_2U8_PRE(QV_priv_.schedCeil,
-                       (uint8_t)ceiling);
-        QS_END_PRE()
-
-        QV_priv_.schedCeil = (uint8_t)ceiling;
-    }
-    QF_CRIT_EXIT();
-}
-
-//............................................................................
-//! @static @public @memberof QV
-void QV_schedEnable(void) {
-    QF_CRIT_STAT
-    QF_CRIT_ENTRY();
-
-    if (QV_priv_.schedCeil != 0U) { // actually enabling the scheduler?
-
-        QS_BEGIN_PRE(QS_SCHED_UNLOCK, 0U)
-            QS_TIME_PRE(); // timestamp
-            // current sched ceiling (old), previous sched ceiling (new)
-            QS_2U8_PRE(QV_priv_.schedCeil, 0U);
-        QS_END_PRE()
-
-        QV_priv_.schedCeil = 0U;
-    }
-    QF_CRIT_EXIT();
-}
-
-//............................................................................
 //! @static @public @memberof QF
 void QF_init(void) {
-#ifndef Q_UNSAFE
+#if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
-#endif // Q_UNSAFE
+#endif
 
 #ifdef QV_INIT
     QV_INIT(); // port-specific initialization of the QV kernel
@@ -135,12 +96,9 @@ int_t QF_run(void) {
     QF_onStartup();
 
     for (;;) { // QV event-loop...
-        // find the maximum prio. AO ready to run
-        uint_fast8_t const p = (QPSet_notEmpty(&QV_priv_.readySet)
-                               ? QPSet_findMax(&QV_priv_.readySet)
-                               : 0U);
-
-        if (p > QV_priv_.schedCeil) { // is it above the sched ceiling?
+        if (QPSet_notEmpty(&QV_priv_.readySet)) { // any AOs ready to run?
+            // find the maximum prio. AO ready to run
+            uint_fast8_t const p = QPSet_findMax(&QV_priv_.readySet);
             QActive * const a = QActive_registry_[p];
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
@@ -165,7 +123,7 @@ int_t QF_run(void) {
             QF_INT_ENABLE();
 
             QEvt const * const e = QActive_get_(a); // queue not empty
-            QASM_DISPATCH(a, e, p); // dispatch event (virtual call)
+            QASM_DISPATCH(a, e, p); // virtual call
 #if (QF_MAX_EPOOL > 0U)
             QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -234,7 +192,6 @@ void QActive_start(QActive * const me,
 
     QEQueue_init(&me->eQueue, qSto, qLen);
 
-    // top-most initial tran. (virtual call)
-    QASM_INIT(me, par, me->prio);
+    QASM_INIT(me, par, me->prio); // top-most initial tran. (virtual call)
     QS_FLUSH(); // flush the trace buffer to the host
 }

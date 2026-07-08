@@ -437,10 +437,4 @@ QTimeEvt * QTimeEvt_expire_(QTimeEvt * const me,
     return prev;
 }
 
-#else // (QF_MAX_TICK_RATE > 0U)
-
-//............................................................................
-void QTimeEvt_init(void) { // dummy init
-}
-
 #endif // (QF_MAX_TICK_RATE > 0U)

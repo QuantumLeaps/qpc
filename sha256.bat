@@ -1,21 +1,21 @@
 @setlocal
 
-set FNAME=qpc_8.1.4.sha1
+set FNAME=qpc_8.1.5.sha256
 
 :: usage
-@echo Usage: sha1 [gen]
+@echo Usage: sha256 [gen]
 @echo examples of use:
-@echo sha1     : check the sha1 sums in the file %FNAME%
-@echo sha1 gen : generate the sha1 file %FNAME%
+@echo sha256     : check the sha256 sums in the file %FNAME%
+@echo sha256 gen : generate the sha256 file %FNAME%
 @echo.
 
 @if NOT "%1"=="gen" (
-sha1sum --check --warn %FNAME%
+sha256sum --check --warn %FNAME%
 goto end
 )
 
 @echo generating %FNAME%...
-@sha1sum ^
+@sha256sum ^
     include/* ^
     src/qf/* src/qk/* src/qs/* src/qv/* src/qxk/* ^
     ports/arm-cm/config/* ^

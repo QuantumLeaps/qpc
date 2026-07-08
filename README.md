@@ -6,9 +6,7 @@
 
 View QP/C Revision History at: https://www.state-machine.com/qpc/history.html
 
-> **NOTE:** If you're interested in the latest QP/C version from GitHub,
-it is recommended that you clone this repo like that:
-
+If you're interested in the latest QP/C version from GitHub, it is recommended that you clone this repo like that:
 ```
 git clone https://github.com/QuantumLeaps/qpc --recurse-submodules --depth 1
 ```
@@ -16,6 +14,21 @@ git clone https://github.com/QuantumLeaps/qpc --recurse-submodules --depth 1
 However, the easiest and most recommended way of
 [getting started with QP/C](#getting-started-with-qpc) is to download
 the QP-bundle, as [described below](#getting-started-with-qpc).
+
+# Issue Tacking and Support
+
+> [!IMPORTANT]
+> **This repository does NOT use GitHub Issues for technical support.**
+
+Please use the following official support channels [hosted on SourceForge](https://sourceforge.net/p/qpc):
+- **Bug Reports:** [**Bug Tracker database**](https://sourceforge.net/p/qpc/bugs)
+- **Feature Requests:** [**Feature Requests database**](https://sourceforge.net/p/qpc/feature-requests)
+- **Questions & Discussion:** [**Free Support Forum**](https://sourceforge.net/p/qpc/discussion/668726)
+
+[![Free Support Forum](https://www.state-machine.com/attachments/support.png "Free QP/QM Support Forum")](https://sourceforge.net/p/qpc/discussion/668726)
+
+> [!NOTE]
+> The [QP/QM Free Support Forum](https://sourceforge.net/p/qpc/discussion/668726) has been active for decades &mdash; *predating GitHub* &mdash; and provides a **searchable** archive of answers, troubleshooting guidance, and resolved issues. Posts to this forum benefit the entire community and are typically answered the same day.
 
 
 # About QP/C Real-Time Event Framework
@@ -62,7 +75,8 @@ costs during application certification for safety-critical devices in the indust
 aerospace, and automotive industries. Please [contact Quantum Leaps][Cont]
 for more information about the SafeQP frameworks and the "Certification Kits".
 
-> **NOTE:** The SafeQP/C edition remains fully API- and functionally compatible with the
+> [!NOTE]
+> The SafeQP/C edition remains fully API- and functionally compatible with the
 corresponding standard QP/C framework. This ensures existing QP/C Applications can transition
 seamlessly to SafeQP/C without requiring any modifications. SafeQP/C edition retains QP/C
 Frameworks' hallmark features: a small memory footprint, excellent efficiency, and hard
@@ -76,8 +90,8 @@ which includes QP/C as well as the [QM modeling tool][QM] and the
 [QTools collection][QTools]. The main advantage of obtaining QP/C bundled
 together is that you get all components, tools, and _examples_ all ready to go.
 
-> **NOTE:**
-Perhaps the most important fact to remember is that in embedded systems,
+> [!TIP]
+> Perhaps the most important fact to remember is that in embedded systems,
 nothing works until everything works. This means that you should always start
 with a _working system_ and gradually evolve it, changing one thing at a time
 and making sure that it keeps working every step of the way.
@@ -114,12 +128,14 @@ The open source GPL distribution of QP/C can be augmented by the
 - Test suite (based on the [QUTest trace-based test harness][QUTest])
 that demonstrates 100% lines of code and 100% MC/DC code coverage for QP/C.
 
-> **NOTE:** The ["QP/C Extras"][QPX/C] are [licensed commercially][Lic] only
+> [!NOTE]
+> The ["QP/C Extras"][QPX/C] are [licensed commercially][Lic] only
 and available to the commercial licensees with the active Support Term. Please contact
 [Quantum Leaps technical support][Sup] to get the matching ["QP/C Extras"][QPX/C]
 for the public QP/C version.
 
-> **NOTE:** The ["QP/C Extras"][QPX/C] are also __available for evaluation__
+> [!NOTE]
+> The ["QP/C Extras"][QPX/C] are also __available for evaluation__
 ([upon request][ReqForm]).
 
 
@@ -131,7 +147,8 @@ the following licensing options:
 1. [Open-source licensing](https://www.state-machine.com/licensing#Open) under the
 [GNU General Public License (GPLv3)](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-> NOTE: The GPL requires that all modifications to the original code
+> [!NOTE]
+> The GPL requires that all modifications to the original code
 as well as your application code (Derivative Works as defined in the
 Copyright Law) must also be released under the terms of the GPL
 open source license.
@@ -141,11 +158,13 @@ open source license.
 which are specifically designed for users interested in retaining the
 proprietary status of their code.
 
-> NOTE: If your company has a policy forbidding open source in your product,
+> [!NOTE]
+> If your company has a policy forbidding open source in your product,
 all QP frameworks can be licensed commercially, in which case you don't use
 any open source license and you do not violate your policy.
 
-> NOTE: The **SafeQP** frameworks and the accompanying "Certification Kits"
+> [!NOTE]
+> The **SafeQP** frameworks and the accompanying "Certification Kits"
 are licensed commercially only.
 
 
@@ -159,10 +178,7 @@ To view the offline documentation, open the file [html/index.html](html/index.ht
 in your web browser.
 
 
-# Support & Contact Information
-- [Free Support Forum](https://sourceforge.net/p/qpc/discussion/668726)
-- [Bug Reports](https://sourceforge.net/p/qpc/bugs/)
-- [Feature Requests](https://sourceforge.net/p/qpc/feature-requests/)
+# Contact Information
 - [Quantum Leaps website](https://www.state-machine.com)
 - [Quantum Leaps licensing](https://www.state-machine.com/licensing)
 - [info@state-machine.com](mailto:info@state-machine.com)

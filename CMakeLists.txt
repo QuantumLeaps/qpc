@@ -15,12 +15,22 @@ foreach(p in HOST RTOS BAREMETAL MISC)
 endforeach()
 
 # project configuration
+# Kernel
 if(DEFINED ENV{QPC_CFG_KERNEL} AND (NOT QPC_CFG_KERNEL))
     set(QPC_CFG_KERNEL $ENV{QPC_CFG_KERNEL})
     message("Using QPC_CFG_KERNEL from environment ('${QPC_CFG_KERNEL}')")
 elseif(NOT QPC_CFG_KERNEL)
     set(QPC_CFG_KERNEL qv)
     message("Set QPC_CFG_KERNEL to ('${QPC_CFG_KERNEL}') since not specified")
+endif()
+
+# lib type
+if(DEFINED ENV{QPC_CFG_LIB_TYPE} AND (NOT QPC_CFG_LIB_TYPE))
+    set(QPC_CFG_LIB_TYPE $ENV{QPC_CFG_LIB_TYPE})
+    message("Using QPC_CFG_LIB_TYPE from environment ('${QPC_CFG_LIB_TYPE}')")
+elseif(NOT QPC_CFG_LIB_TYPE)
+    set(QPC_CFG_LIB_TYPE static)
+    message("Set QPC_CFG_LIB_TYPE to ('${QPC_CFG_LIB_TYPE}') since not specified")
 endif()
 
 if(DEFINED ENV{QPC_CFG_PORT} AND (NOT QPC_CFG_PORT))
@@ -112,7 +122,20 @@ if(NOT (${KERNEL} IN_LIST kernList))
 endif()
 unset(kernList)
 
-add_library(qpc STATIC "")
+# check/set lib type
+string(TOUPPER ${QPC_CFG_LIB_TYPE} LIB_TYPE)
+list (APPEND libTypeList OBJECT STATIC)
+if(NOT (${LIB_TYPE} IN_LIST libTypeList))
+    if(QPC_CFG_LIB_TYPE)
+        message(WARNING "Unknown library type '${QPC_CFG_LIB_TYPE}' specified!
+    Falling back to 'STATIC' library")
+    endif()
+    set(LIB_TYPE STATIC)
+    set(QPC_CFG_LIB_TYPE ${LIB_TYPE} CACHE STRING "set to the desired library type (STATIC or OBJECT)" FORCE)
+endif()
+unset(libTypeList)
+
+add_library(qpc ${LIB_TYPE} "")
 
 # set position independent code compile/link parameters
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.14")
@@ -155,7 +178,7 @@ target_link_libraries(qpc PUBLIC
 message(STATUS
 "========================================================
   Configured project ${PROJECT_NAME} for ${PORT}
-    PROJECT_NAME                = ${QPC_PROJECT}
+    PROJECT_NAME                = ${PROJECT_NAME}
     TARGET                      = ${TARGET}
     IMAGE                       = ${IMAGE}
     SW_VERSION                  = ${SW_VERSION}

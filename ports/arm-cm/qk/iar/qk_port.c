@@ -70,6 +70,7 @@ void NMI_Handler(void);
 #pragma weak QF_crit_exit_
 
 extern char const QF_port_module_[];
+__root // prevent removal with multi-file compilation
 char const QF_port_module_[] = "qk_port";
 
 //............................................................................
@@ -291,9 +292,9 @@ __asm volatile (
     // The PendSV exception handler can be preempted by an interrupt,
     // which might pend PendSV exception again. The following write to
     // ICSR[27] un-pends any such spurious instance of PendSV.
-    "  LDR     r2,=" STRINGIFY(SCB_ICSR) "\n" // Interrupt Control and State
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#27        \n" // r1 := (1 << 27) (UNPENDSVSET bit)
+    "  LDR     r2,=" STRINGIFY(SCB_ICSR) "\n" // Interrupt Control and State
     "  STR     r1,[r2]          \n" // ICSR[27] := 1 (unpend PendSV)
 
     // The QK activator must be called in a Thread mode, while this code
@@ -473,7 +474,7 @@ uint_fast8_t QF_qlog2(uint32_t x) {
     uint_fast8_t n;
 
 __asm volatile (
-    "  MOVS    %[n],#0           \n"
+    "  MOVS    %[n],#0          \n"
 #if (QF_MAX_ACTIVE > 16U)
     "  LSRS    r2,r0,#16        \n"
     "  BEQ     QF_qlog2_1       \n"

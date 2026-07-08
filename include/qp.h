@@ -30,10 +30,10 @@
 #define QP_H_
 
 //============================================================================
-#define QP_VERSION_STR  "8.1.4"
-#define QP_VERSION      814U
-// <VER>=814 <DATE>=260413
-#define QP_RELEASE      0x64C81E01U
+#define QP_VERSION_STR  "8.1.5"
+#define QP_VERSION      815U
+// <VER>=815 <DATE>=260805
+#define QP_RELEASE      0x648C4D80U
 
 //----------------------------------------------------------------------------
 // default configuration settings
@@ -658,10 +658,6 @@ void QTicker_dispatch_(QAsm * const me,
 //! @private @memberof QTicker
 void QTicker_trig_(QTicker * const me,
     void const * const sender);
-
-#else
-
-void QTimeEvt_init(void); // dummy init
 
 #endif // (QF_MAX_TICK_RATE > 0U)
 

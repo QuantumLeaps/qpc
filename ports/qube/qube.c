@@ -198,9 +198,9 @@ static void handle_evts(void) {
         uint_fast8_t const p = QPSet_findMax(&QF_readySet_);
         QActive * const a = QActive_registry_[p];
 
-        QEvt const* const e = QActive_get_(a);
+        QEvt const * const e = QActive_get_(a);
         QS_FLUSH();
-        QASM_DISPATCH(a, e, a->prio); // dispatch event (virtual call)
+        QASM_DISPATCH(a, e, a->prio); // virtual call
         QS_FLUSH();
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // check if the event is garbage, and collect it if so
@@ -251,7 +251,9 @@ void QF_init(void) {
     PRINTF_S("Qube %s (c) state-machine.com\n\n%s\n\n",
              QP_VERSION_STR, HELP_STR);
 
+#if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
+#endif
 
     l_currAO_name[0] = '\0';
 

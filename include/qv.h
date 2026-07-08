@@ -33,14 +33,7 @@
 //! @class QV
 typedef struct {
     QPSet readySet;        //!< @private @memberof QV
-    uint8_t schedCeil;     //!< @private @memberof QV
 } QV;
-
-//! @static @public @memberof QV
-void QV_schedDisable(uint8_t const ceiling);
-
-//! @static @public @memberof QV
-void QV_schedEnable(void);
 
 //! @static @public @memberof QV
 void QV_onIdle(void);

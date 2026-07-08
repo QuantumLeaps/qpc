@@ -65,6 +65,7 @@ void NMI_Handler(void);
 // but they can be implemented in C as well.
 
 extern char const QF_port_module_[];
+__attribute__((used)) // prevent removal with link-time optimization
 char const QF_port_module_[] = "qk_port";
 
 //............................................................................
@@ -77,7 +78,7 @@ char const QF_port_module_[] = "qk_port";
 // Additionally, the function also asserts that the interrupts are
 // NOT disabled upon the entry to the function, which means that
 // this interrupt management policy CANNOT nest.
-__attribute__ ((naked, weak))
+__attribute__ ((used, naked))
 void QF_int_disable_(void) {
 __asm volatile (
 #ifdef QF_USE_BASEPRI   //--------- use BASEPRI for interrupt disabling?
@@ -92,10 +93,17 @@ __asm volatile (
     "  BNE     QF_int_disable_error\n"
     "  BX      lr               \n"
     "QF_int_disable_error:      \n"
-    "  LDR     r0,=QF_port_module_ \n"
+    "  LDR     r0,QF_int_disable_module \n"
     "  MOVS    r1,#100          \n"
-    "  LDR     r2,=Q_onError    \n"
+    "  LDR     r2,QF_int_disable_onError \n"
     "  BX      r2               \n"
+
+    // Literal pool ---------------
+    "  .ALIGN  2                \n"
+    "QF_int_disable_module:     \n"
+    "  .WORD QF_port_module_    \n"
+    "QF_int_disable_onError:    \n"
+    "  .WORD Q_onError          \n"
     );
 }
 //............................................................................
@@ -108,7 +116,7 @@ __asm volatile (
 // Additionally, the function also asserts that the interrupts ARE
 // disabled upon the entry to the function, which means that
 // this interrupt management policy CANNOT nest.
-__attribute__ ((naked, weak))
+__attribute__ ((used, naked))
 void QF_int_enable_(void) {
 __asm volatile (
 #ifdef QF_USE_BASEPRI   //--------- use BASEPRI for enabling interrupts?
@@ -127,10 +135,17 @@ __asm volatile (
 #endif                  //--------- use PRIMASK for enabling interrupts
     "  BX      lr               \n"
     "QF_int_enable_error:       \n"
-    "  LDR     r0,=QF_port_module_ \n"
+    "  LDR     r0,QF_int_enable_module \n"
     "  MOVS    r1,#101          \n"
-    "  LDR     r2,=Q_onError    \n"
+    "  LDR     r2,QF_int_enable_onError \n"
     "  BX      r2               \n"
+
+    // Literal pool ---------------
+    "  .ALIGN  2                \n"
+    "QF_int_enable_module:      \n"
+    "  .WORD QF_port_module_    \n"
+    "QF_int_enable_onError:     \n"
+    "  .WORD Q_onError          \n"
     );
 }
 //............................................................................
@@ -143,7 +158,7 @@ __asm volatile (
 // Additionally, the function also asserts that the interrupts are
 // NOT disabled upon the entry to the function, which means that
 // this critical section CANNOT nest.
-__attribute__ ((naked, weak))
+__attribute__ ((used, naked))
 void QF_crit_entry_(void) {
 __asm volatile (
 #ifdef QF_USE_BASEPRI   //--------- use BASEPRI for critical section?
@@ -158,10 +173,17 @@ __asm volatile (
     "  BNE     QF_crit_entry_error\n"
     "  BX      lr               \n"
     "QF_crit_entry_error:       \n"
-    "  LDR     r0,=QF_port_module_ \n"
+    "  LDR     r0,QF_crit_entry_module \n"
     "  MOVS    r1,#110          \n"
-    "  LDR     r2,=Q_onError    \n"
+    "  LDR     r2,QF_crit_entry_onError \n"
     "  BX      r2               \n"
+
+    // Literal pool ---------------
+    "  .ALIGN  2                \n"
+    "QF_crit_entry_module:      \n"
+    "  .WORD QF_port_module_    \n"
+    "QF_crit_entry_onError:     \n"
+    "  .WORD Q_onError          \n"
     );
 }
 //............................................................................
@@ -174,7 +196,7 @@ __asm volatile (
 // Additionally, the function also asserts that the interrupts ARE
 // disabled upon the entry to the function, which means that
 // this critical section CANNOT nest.
-__attribute__ ((naked, weak))
+__attribute__ ((used, naked))
 void QF_crit_exit_(void) {
 __asm volatile (
 #ifdef QF_USE_BASEPRI   //--------- use BASEPRI for critical section?
@@ -192,10 +214,17 @@ __asm volatile (
 #endif                  //--------- use PRIMASK
     "  BX      lr               \n"
     "QF_crit_exit_error:        \n"
-    "  LDR     r0,=QF_port_module_ \n"
+    "  LDR     r0,QF_crit_exit_module \n"
     "  MOVS    r1,#111          \n"
-    "  LDR     r2,=Q_onError    \n"
+    "  LDR     r2,QF_crit_exit_onError \n"
     "  BX      r2               \n"
+
+    // Literal pool ---------------
+    "  .ALIGN  2                \n"
+    "QF_crit_exit_module:       \n"
+    "  .WORD QF_port_module_    \n"
+    "QF_crit_exit_onError:      \n"
+    "  .WORD Q_onError          \n"
     );
 }
 
@@ -269,26 +298,26 @@ void QK_init(void) {
 // entered immediately after the exit from the *last* nested interrupt (or
 // exception). In QK, this is exactly the time when the QK activator needs to
 // handle the asynchronous preemption.
-__attribute__ ((naked))
+__attribute__ ((used, naked))
 void PendSV_Handler(void) {
 __asm volatile (
     "  PUSH    {r0,lr}          \n" // save stack-aligner + EXC_RETURN
 
     //<<<<<<<<<<<<<<<<<<<<<<< CRITICAL SECTION BEGIN <<<<<<<<<<<<<<<<<<<<<<<<
-    "  LDR     r0,=QF_int_disable_ \n"
+    "  LDR     r0,PendSV_QF_int_disable \n"
     "  BLX     r0               \n" // call QF_int_disable_()
 
 #ifdef QF_MEM_ISOLATE
-    "  LDR     r0,=QF_onMemSys  \n"
+    "  LDR     r0,PendSV_QF_onMemSys \n"
     "  BLX     r0               \n" // call QF_onMemSys()
 #endif
 
     // The PendSV exception handler can be preempted by an interrupt,
     // which might pend PendSV exception again. The following write to
     // ICSR[27] un-pends any such spurious instance of PendSV.
-    "  LDR     r2,=" STRINGIFY(SCB_ICSR) "\n" // Interrupt Control and State
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#27        \n" // r1 := (1 << 27) (UNPENDSVSET bit)
+    "  LDR     r2,PendSV_SCB_ICSR \n" // Interrupt Control and State
     "  STR     r1,[r2]          \n" // ICSR[27] := 1 (unpend PendSV)
 
     // The QK activator must be called in a Thread mode, while this code
@@ -300,12 +329,12 @@ __asm volatile (
     // NOTE: the QK activator is called with interrupts DISABLED and also
     // returns with interrupts DISABLED.
     "  LSRS    r3,r1,#3         \n" // r3 := (r1 >> 3), set T bit (new xpsr)
-    "  LDR     r2,=QK_activate_ \n" // address of QK_activate_
+    "  LDR     r2,PendSV_QK_activate \n" // address of QK_activate_
     "  SUBS    r2,r2,#1         \n" // align Thumb-address at halfword (new pc)
-    "  LDR     r1,=QK_thread_ret\n" // return address after the call  (new lr)
+    "  LDR     r1,PendSV_QK_thread_ret\n" // return address after the call  (new lr)
 
-    "  SUB     sp,sp,#8*4       \n" // reserve space for exception stack frame
-    "  ADD     r0,sp,#5*4       \n" // r0 := 5 registers below the SP
+    "  SUB     sp,sp,#(8*4)     \n" // reserve space for exception stack frame
+    "  ADD     r0,sp,#(5*4)     \n" // r0 := 5 registers below the SP
     "  STM     r0!,{r1-r3}      \n" // save xpsr,pc,lr
 
     "  MOVS    r0,#6            \n"
@@ -314,6 +343,21 @@ __asm volatile (
     "  DSB                      \n" // ARM Erratum 838869
 #endif                  //--------- ARMv7-M and higher
     "  BX      r0               \n" // exception-return to the QK activator
+
+    // Literal pool ---------------
+    "  .ALIGN  2                \n"
+    "PendSV_SCB_ICSR:           \n"
+    "  .WORD " STRINGIFY(SCB_ICSR) " \n"
+    "PendSV_QF_int_disable:     \n"
+    "  .WORD QF_int_disable_    \n"
+    "PendSV_QK_activate:        \n"
+    "  .WORD QK_activate_       \n"
+    "PendSV_QK_thread_ret:      \n"
+    "  .WORD QK_thread_ret      \n"
+#ifdef QF_MEM_ISOLATE
+    "PendSV_QF_onMemSys:        \n"
+    "  .WORD QF_onMemSys        \n"
+#endif
     );
 }
 
@@ -331,28 +375,28 @@ __asm volatile (
 // NOT used to return from QK_thread_ret(). Instead QK_thread_ret()
 // "returns" by entering an exception (either NMI or IRQ).
 //
-__attribute__ ((naked, used))
+__attribute__ ((used, naked))
 void QK_thread_ret(void) {
     __asm volatile (
 #ifdef QF_MEM_ISOLATE
-    "  LDR     r0,=QF_onMemApp  \n"
+    "  LDR     r0,QK_thread_ret_onMemApp \n"
     "  BLX     r0               \n" // call QF_onMemApp()
 #endif
 
 #if (__ARM_ARCH == 6)   //--------- if ARMv6-M...
 
 #ifdef QK_USE_IRQ_NUM   //--------- IRQ defined, use the specified IRQ
-    "  LDR     r0,=" STRINGIFY(NVIC_PEND + ((QK_USE_IRQ_NUM >> 5) << 2)) "\n"
+    "  LDR     r0,QK_thread_ret_NVIC_PEND_IRQ \n"
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#" STRINGIFY(QK_USE_IRQ_NUM & 0x1F) "\n" // r1 := IRQ bit
     "  STR     r1,[r0]          \n" // pend the IRQ
 
-    "  LDR     r0,=QF_int_enable_ \n"
+    "  LDR     r0,QK_thread_ret_int_enable \n"
     "  BLX     r0               \n" // enable interrupts with PRIMASK
     // This code stops here and continues in the IRQ handler
 
 #else                   //--------- use the NMI (default)
-    "  LDR     r0,=" STRINGIFY(SCB_ICSR) "\n" // Interrupt Control and State
+    "  LDR     r0,QK_thread_ret_SCB_ICSR \n" // Interrupt Control and State
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#31        \n" // r1 := (1 << 31) (NMI bit)
     "  STR     r1,[r0]          \n" // ICSR[31] := 1 (pend NMI)
@@ -365,7 +409,7 @@ void QK_thread_ret(void) {
 
 #ifdef QF_USE_BASEPRI   //--------- QF_USE_BASEPRI
     "  CPSID   i                \n" // disable interrupts with PRIMASK
-    "  LDR     r0,=QF_int_enable_ \n"
+    "  LDR     r0,QK_thread_ret_int_enable \n"
     "  BLX     r0               \n" // enable interrupts with BASEPRI
 #endif                  //--------- QF_USE_BASEPRI
     // NOTE: interrupts remain disabled with PRIMASK
@@ -379,20 +423,20 @@ void QK_thread_ret(void) {
 #endif                  //--------- VFP available
 
 #ifdef QK_USE_IRQ_NUM   //--------- IRQ defined, use the specified IRQ
-    "  LDR     r0,=" STRINGIFY(NVIC_PEND + ((QK_USE_IRQ_NUM >> 5) << 2)) "\n"
+    "  LDR     r0,QK_thread_ret_NVIC_PEND_IRQ \n"
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#" STRINGIFY(QK_USE_IRQ_NUM & 0x1F) "\n" // r1 := IRQ bit
     "  STR     r1,[r0]          \n" // pend the IRQ
 #ifdef QF_USE_BASEPRI  //--------- QF_USE_BASEPRI
     "  CPSIE   i                \n" // enable interrupts with PRIMASK
 #else                  //--------- interrupt disabling with PRIMASK
-    "  LDR     r0,=QF_int_enable_ \n"
+    "  LDR     r0,QK_thread_ret_int_enable \n"
     "  BLX     r0               \n" // enable interrupts with BASEPRI
 #endif                  //--------- interrupt disabling with PRIMASK
     // This code stops here and continues in the IRQ handler
 
 #else                   //--------- use the NMI (default)
-    "  LDR     r0,=" STRINGIFY(SCB_ICSR) "\n" // Interrupt Control and State
+    "  LDR     r0,QK_thread_ret_SCB_ICSR \n" // Interrupt Control and State
     "  MOVS    r1,#1            \n"
     "  LSLS    r1,r1,#31        \n" // r1 := (1 << 31) (NMI bit)
     "  STR     r1,[r0]          \n" // ICSR[31] := 1 (pend NMI)
@@ -405,12 +449,34 @@ void QK_thread_ret(void) {
 
     // execution should *never* reach here, so the following code
     // enters the Q_onError() error handler
-    "  LDR     r0,=QF_int_disable_ \n"
+    "  LDR     r0,QK_thread_ret_int_disable \n"
     "  BLX     r0               \n" // call QF_int_disable_()
-    "  LDR     r0,=QF_port_module_ \n"
+    "  LDR     r0,QK_thread_ret_module \n"
     "  MOVS    r1,#121          \n"
-    "  LDR     r2,=Q_onError    \n"
+    "  LDR     r2,QK_thread_ret_onError \n"
     "  BX      r2               \n"
+
+    // Literal pool ---------------
+    "  .ALIGN  2                \n"
+    "QK_thread_ret_int_disable: \n"
+    "  .WORD QF_int_disable_    \n"
+    "QK_thread_ret_int_enable:  \n"
+    "  .WORD QF_int_enable_     \n"
+    "QK_thread_ret_module:      \n"
+    "  .WORD QF_port_module_    \n"
+    "QK_thread_ret_onError:     \n"
+    "  .WORD Q_onError          \n"
+#ifdef QK_USE_IRQ_NUM
+    "QK_thread_ret_NVIC_PEND_IRQ: \n"
+    "  .WORD " STRINGIFY(NVIC_PEND + ((QK_USE_IRQ_NUM >> 5) << 2)) " \n"
+#else
+    "QK_thread_ret_SCB_ICSR:    \n"
+    "  .WORD " STRINGIFY(SCB_ICSR) "\n"
+#endif
+#ifdef QF_MEM_ISOLATE
+    "QK_thread_ret_onMemApp:    \n"
+    "  .WORD QF_onMemApp        \n"
+#endif
     );
 }
 
@@ -421,7 +487,7 @@ void QK_thread_ret(void) {
 #ifdef QK_USE_IRQ_NUM   //--------- IRQ defined, use the specified IRQ
 
 // NOTE: The IRQ Handler is entered with interrupts already ENABLED
-__attribute__ ((naked))
+__attribute__ ((used, naked))
 void QK_USE_IRQ_HANDLER(void) {
 __asm volatile (
     "  ADD     sp,sp,#(8*4)     \n" // remove one 8-register exception frame
@@ -442,13 +508,20 @@ __asm volatile (
     // NOTE: QF_int_enable_() already called
     "  CPSIE   i                \n" // enable interrupts with PRIMASK
 #else                  //--------- interrupt disabling with PRIMASK
-    "  LDR     r0,=QF_int_enable_ \n"
+    "  LDR     r0,NMI_Handler_int_enable \n"
     "  BLX     r0               \n" // enable interrupts with PRIMASK
 
     // NOTE: calling QF_int_enable_() corrupted the lr (EXC_RETURN), but
     // it is NOT used to used to return from the exception. (See POP {r0,pc})
 #endif                  //--------- interrupt disabling with PRIMASK
     "  POP     {r0,pc}          \n" // pop stack aligner and EXC_RETURN to pc
+
+    // Literal pool ---------------
+    "  .ALIGN  2                \n"
+#ifndef QF_USE_BASEPRI
+    "NMI_Handler_int_enable:    \n"
+    "  .WORD QF_int_enable_     \n"
+#endif
     );
     // NOTE: this causes exception-return to the preempted *thread* context
 }
@@ -459,7 +532,7 @@ __asm volatile (
 #if (__ARM_ARCH == 6) // if ARMv6-M...
 
 // hand-optimized quick LOG2 in assembly (no CLZ instruction in ARMv6-M)
-__attribute__ ((naked))
+__attribute__ ((used, naked))
 uint_fast8_t QF_qlog2(uint32_t x) {
 __asm volatile (
     "  MOVS    r1,#0            \n"
@@ -482,13 +555,17 @@ __asm volatile (
     "  ADDS    r1,r1,#4         \n"
     "  MOV     r0,r2            \n"
     "QF_qlog2_3:                \n"
-    "  LDR     r2,=QF_qlog2_LUT \n"
+    "  LDR     r2,QF_qlog2_LUT_addr \n"
     "  LDRB    r0,[r2,r0]       \n"
     "  ADDS    r0,r1,r0         \n"
     "  BX      lr               \n"
-    "  .align                   \n"
+
+    // Literal pool ---------------
+    "  .ALIGN  2                \n"
+    "QF_qlog2_LUT_addr:         \n"
+    "  .WORD  QF_qlog2_LUT      \n"
     "QF_qlog2_LUT:              \n"
-    "  .byte 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4"
+    "  .BYTE 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4"
     );
 }
 

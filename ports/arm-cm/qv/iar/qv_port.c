@@ -57,6 +57,7 @@
 #pragma weak QF_crit_exit_
 
 extern char const QF_port_module_[];
+__root // prevent removal with multi-file compilation
 char const QF_port_module_[] = "qv_port";
 
 //............................................................................

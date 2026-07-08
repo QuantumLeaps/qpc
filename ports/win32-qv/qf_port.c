@@ -100,14 +100,17 @@ void QF_init(void) {
 
     QPSet_setEmpty(&QF_readySet_);
 
+#if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
+#endif
 }
 
 //............................................................................
 int QF_run(void) {
     QF_CRIT_STAT
 
-    if (l_tickMsec != 0U) { // system clock tick configured?
+    // system clock tick configured?
+    if (l_tickMsec != 0U) {
         // create the ticker thread...
         HANDLE ticker = CreateThread(NULL, 1024, &ticker_thread,
                                     (void *)0, 0U, NULL);
@@ -145,8 +148,8 @@ int QF_run(void) {
             Q_ASSERT_INCRIT(320, a != (QActive *)0);
             QF_CRIT_EXIT();
 
-            QEvt const *e = QActive_get_(a); // queue not empty
-            QASM_DISPATCH(a, e, a->prio); // dispatch event (virtual call)
+            QEvt const * const e = QActive_get_(a); // NO blocking (not empty)
+            QASM_DISPATCH(a, e, a->prio); // virtual call
 #if (QF_MAX_EPOOL > 0U)
             QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -174,6 +177,7 @@ int QF_run(void) {
 
     //CloseHandle(win32Event_);
     //DeleteCriticalSection(&l_win32CritSect);
+
     return 0; // return success
 }
 //............................................................................
@@ -186,6 +190,7 @@ void QF_stop(void) {
 }
 //............................................................................
 void QF_setTickRate(uint32_t ticksPerSec, int tickPrio) {
+    // NOTE: called inside crit.section
     if (ticksPerSec != 0U) {
         l_tickMsec = 1000UL / ticksPerSec;
     }
@@ -230,7 +235,7 @@ void QActive_start(QActive * const me,
     Q_UNUSED_PAR(stkSto);
     Q_UNUSED_PAR(stkSize);
 
-    // no external AO-stack storage needed for this port
+    // no per-AO stack needed for this port
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
     Q_REQUIRE_INCRIT(800, stkSto == (void *)0);
@@ -242,8 +247,7 @@ void QActive_start(QActive * const me,
     me->pthre = 0U; // preemption-threshold (not used in this port)
     QActive_register_(me); // register this AO
 
-    // top-most initial tran. (virtual call)
-    QASM_INIT(me, par, me->prio);
+    QASM_INIT(me, par, me->prio); // top-most initial tran. (virtual call)
     QS_FLUSH(); // flush the QS trace buffer to the host
 }
 
@@ -262,7 +266,7 @@ void QActive_stop(QActive * const me) {
 
     QActive_unregister_(me);
 }
-#endif // QACTIVE_CAN_STOP
+#endif
 
 //............................................................................
 void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
