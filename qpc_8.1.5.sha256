@@ -40,7 +40,6 @@ a2af22fdee62c508bdd7f537a4b593f82fd683d64d0dba05abc96aa15a430c7f *src/qxk/qxk.c
 9862e602516af98738a226559e9370700d0d93b18b03ad329fda0800b5c9dac9 *src/qxk/qxk_mutex.c
 feb8d9af91f0d101989927ebbb98570d0db71ca5b2eab5dfe5850e33fab7813b *src/qxk/qxk_sema.c
 52445ab956fa9a00d778795cda51bb2869501950ccb57617f7346cbaca5cc860 *src/qxk/qxk_xthr.c
-209b572f1a5bf81d56781dfa6e574b65e7e012382e07ea211359818ac608b6ed *ports/arm-cm/config/qp_config.h
 dafb1515dd5101cca07146b3f03399972b0a0dda0f1c2c7cfaadcc328fcd1cee *ports/arm-cm/qk/armclang/qk_port.c
 64a78a2de19176b32f4af0fa1e05764f676bd23ebc2a0fa644407747eb932deb *ports/arm-cm/qk/armclang/qp_port.h
 573f687bd4a1c01b5eb2896683a43fba9827bdb12c94d76751283f6d863116a6 *ports/arm-cm/qk/armclang/qs_port.h
@@ -73,7 +72,6 @@ bbe1680c0ae98b59ede5b65dd61f6d8f5a09bf3e26a2a5d6ad989dbf9cda4c06 *ports/arm-cm/q
 86c157ab036007a86dfd1f1f95a2655e6dee3f90ae42b84c462ccb4e6b1b85ba *ports/arm-cm/qxk/iar/qxk_port.c
 7e2bc8842a7a8b9108fa3c1f394b7e23deccecf8a52a85a5d80348236252f836 *ports/arm-cm/qutest/qp_port.h
 573f687bd4a1c01b5eb2896683a43fba9827bdb12c94d76751283f6d863116a6 *ports/arm-cm/qutest/qs_port.h
-66524be49ea196de1f872e90dc3964584cf28f4168a0f87fd03b68d2d6f7ea55 *ports/arm-cr/config/qp_config.h
 453329ee1763901fef24a75881eab84970c511eaafb751e93b5eaa5106b36b38 *ports/arm-cr/qk/gnu/qp_port.h
 573f687bd4a1c01b5eb2896683a43fba9827bdb12c94d76751283f6d863116a6 *ports/arm-cr/qk/gnu/qs_port.h
 908a84c14811f4d678931b9763b0a72e99a856d23073cd8bf0ad62dd9eb1a705 *ports/arm-cr/qk/iar/qp_port.h
@@ -92,7 +90,6 @@ ab14101fa68fffe1845e4f91bb0f4e3c597a56a065492b055741f8c9a7f7507c *ports/msp430/q
 1cc6e90c04169e906b74612f88814a69e112cfbe0921fb6753b20c35f44e9638 *ports/msp430/qv/qs_port.h
 b1e746df672734fa430261cba0b99d276a576d7dc9fed775754d336b052759eb *ports/msp430/qutest/qp_port.h
 1cc6e90c04169e906b74612f88814a69e112cfbe0921fb6753b20c35f44e9638 *ports/msp430/qutest/qs_port.h
-3e7096a0962911ff47b2f85f991b532c0429978df12ab6e11731d9ed54918284 *ports/config/qp_config.h
 09eed4d0cfa24601332c9552fd482ea0a8469651accfd8a4f2486ffc3f11373e *ports/embos/CMakeLists.txt
 913ebacac3ff8b288e4b23dd8eae1dea65ada88f61c1010bf604b65f0e690f4a *ports/embos/qf_port.c
 b08bcee5f421ea7157af8ea485191a4358e25f4d0792d79cd6b5dbf582e4df4b *ports/embos/qp_port.h

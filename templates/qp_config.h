@@ -1,11 +1,11 @@
 //============================================================================
-// QP configuration file (QV/QK/QXK on ARM Cortex-M)
+// QP/C configuration template (to be customized in each application)
 //
 // Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
 //
-//                    Q u a n t u m  L e a P s
-//                    ------------------------
-//                    Modern Embedded Software
+//                   Q u a n t u m  L e a P s
+//                   ------------------------
+//                   Modern Embedded Software
 //
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
