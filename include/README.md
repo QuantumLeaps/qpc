@@ -84,7 +84,7 @@ qpc/             // qpc installation directory
 |   \---pclp
 |       |   au-barr.lnt      // BARR-C:2018 stylistic guidelines for C code
 |       |   au-ds.lnt        // Dan Saks' recommendations for placing 'const' and 'volatile'
-|       |   au-misra5.lnt    // PCLP MISRA-C:2025 (MC5) confiuration for rules checking
+|       |   au-misra5.lnt    // PCLP MISRA-C:2025 (MC5) configuration for rules checking
 |       |   co-gnu_arm.bat   // script to generate configuration for GNU-ARM toolset
 |       |   co-gnu_arm.h     // generated PCLP header file for GNU-ARM (14.3 at this time)
 |       |   co-gnu_arm.lnt   // generated PCLP configuration file for GNU-ARM (14.3 at this time)

@@ -1,26 +1,26 @@
 //============================================================================
 // QP/C configuration template (to be customized in each application)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
-//                   Q u a n t u m  L e a P s
-//                   ------------------------
-//                   Modern Embedded Software
+//                    Q u a n t u m  L e a P s
+//                    ------------------------
+//                    Modern Embedded Software
 //
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -74,16 +74,7 @@
 // <i>Default: 1
 #define QF_MAX_TICK_RATE 1U
 
-// <o>Event size (QF_EVENT_SIZ_SIZE)
-//   <1U=>1
-//   <2U=>2 (default)
-//   <4U=>4
-// <i>Size of the dynamic events for QF [bytes]
-// <i>Default: 2 (64K bytes maximum event size)
-#define QF_EVENT_SIZ_SIZE   2U
-
 // <o>Time event counter size (QF_TIMEEVT_CTR_SIZE)
-//   <1U=>1
 //   <2U=>2
 //   <4U=>4 (default)
 // <i>Size of the QTimeEvt counter [bytes]
@@ -100,18 +91,9 @@
 // <o>Memory pool counter size (QF_MPOOL_CTR_SIZE)
 //   <1U=>1
 //   <2U=>2 (default)
-//   <4U=>4
 // <i>Size of memory pool counter [bytes]
 // <i>Default: 2 (64K blocks maximum in a pool)
 #define QF_MPOOL_CTR_SIZE 2U
-
-// <o>Memory block size (QF_MPOOL_SIZ_SIZE)
-//   <1U=>1
-//   <2U=>2 (default)
-//   <4U=>4
-// <i>Size of memory pool block [bytes]
-// <i>Default: 2 (64K bytes maximum block size)
-#define QF_MPOOL_SIZ_SIZE 2U
 
 // <c2>Enable event parameter initialization (QEVT_PAR_INIT)
 // <i>Initialize parameters of dynamic events at allocation

@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,17 +10,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -52,6 +52,13 @@ extern QTimeEvt QTimeEvt_timeEvtHead_[QF_MAX_TICK_RATE];
 #define QTE_FLAG_IS_LINKED      (1U << 7U)
 #define QTE_FLAG_WAS_DISARMED   (1U << 6U)
 
+// maximum number of time events linked at one tick rate (see code.dox)
+#if ((2U * QF_MAX_ACTIVE) > 8U)
+    #define QTE_MAX_LINKED      (2U * QF_MAX_ACTIVE)
+#else
+    #define QTE_MAX_LINKED      8U
+#endif
+
 #endif // (QF_MAX_TICK_RATE > 0U)
 
 //----------------------------------------------------------------------------
@@ -65,6 +72,11 @@ typedef struct {
 } QF_Attr;
 
 extern QF_Attr QF_priv_; //!< @static @private @memberof QF
+
+//----------------------------------------------------------------------------
+// maximum supported nesting depth of a state machine
+#define QASM_MAX_NEST_DEPTH_  ((size_t)5U)
+Q_ASSERT_STATIC(QASM_MAX_NEST_DEPTH_ >= 3U);
 
 //----------------------------------------------------------------------------
 // Duplicate Inverse Storage (DIS) facilities

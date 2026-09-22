@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,17 +10,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -143,6 +143,7 @@ uint_fast8_t QK_sched_act_(
     uint_fast8_t const pthre_in)
 {
     // NOTE: this function is entered with interrupts DISABLED
+    // and must also return with interrupts DISABLED.
 
     uint8_t p = act->prio;
     if (act->eQueue.frontEvt.e == (QEvt *)0) { // empty queue?
@@ -176,6 +177,7 @@ uint_fast8_t QK_sched_act_(
 //! @static @private @memberof QK
 void QK_activate_(void) {
     // NOTE: this function is entered with interrupts DISABLED
+    // and must also return with interrupts DISABLED.
 
     uint8_t const prio_in = QK_priv_.actPrio; // save initial prio.
     uint8_t p = QK_priv_.nextPrio; // next prio to run
@@ -233,9 +235,8 @@ void QK_activate_(void) {
         QF_INT_ENABLE(); // unconditionally enable interrupts
 
         QEvt const * const e = QActive_get_(a); // queue not empty
-        // NOTE QActive_get_() performs QF_MEM_APP() before return
-
-        QASM_DISPATCH(a, e, p); // virtual call
+        // dispatch e to the AO's state machine (virtual call)
+        (*a->super.vptr->dispatch)(&a->super, e, p);
 #if (QF_MAX_EPOOL > 0U)
         QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -279,9 +280,11 @@ void QK_activate_(void) {
 #endif // QF_ON_CONTEXT_SW || Q_SPY
 }
 
-//............................................................................
+//----------------------------------------------------------------------------
 //! @static @public @memberof QF
 void QF_init(void) {
+    // NOTE: QK_priv_ is assumed zero-initialized (static storage, .bss)
+
     // setup the QK scheduler as initially locked and not running
     QK_priv_.lockCeil = (QF_MAX_ACTIVE + 1U); // scheduler locked
 
@@ -293,18 +296,13 @@ void QF_init(void) {
     QK_INIT(); // port-specific initialization of the QK kernel
 #endif
 }
-
-//............................................................................
-//! @static @public @memberof QF
-void QF_stop(void) {
-    QF_onCleanup(); // application-specific cleanup callback
-    // nothing else to do for the preemptive QK kernel
-}
-
 //............................................................................
 //! @static @public @memberof QF
 int_t QF_run(void) {
     QF_INT_DISABLE();
+    // no AO may be scheduled before QF_run()
+    Q_REQUIRE_INCRIT(610, QK_priv_.nextPrio == 0U);
+
 #ifdef Q_SPY
     // produce the QS_QF_RUN trace record
     QS_beginRec_((uint_fast8_t)QS_QF_RUN);
@@ -319,7 +317,7 @@ int_t QF_run(void) {
 
 #ifdef QF_ON_CONTEXT_SW
     // officially switch to the idle context
-    QF_onContextSw((QActive *)0, QActive_registry_[QK_priv_.nextPrio]);
+    QF_onContextSw((QActive *)0, (QActive *)0);
 #endif
 
     // activate AOs to process events posted so far
@@ -362,12 +360,13 @@ void QActive_start(QActive * const me,
     QF_CRIT_EXIT();
 
     me->prio  = (uint8_t)(prioSpec & 0xFFU); // prio. of the AO
-    me->pthre = (uint8_t)(prioSpec >> 8U);   // preemption-threshold
+    me->pthre = (uint8_t)(prioSpec >> 8U);   // preemption-thre.
     QActive_register_(me); // register this AO with the framework
 
     QEQueue_init(&me->eQueue, qSto, qLen); // init the built-in queue
 
-    QASM_INIT(me, par, me->prio); // top-most initial tran. (virtual call)
+    // top-most initial tran. (virtual call)
+    (*me->super.vptr->init)(&me->super, par, me->prio);
     QS_FLUSH(); // flush the trace buffer to the host
 
     // see if this AO needs to be scheduled if QK is already running

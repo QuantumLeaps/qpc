@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,17 +10,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -50,6 +50,7 @@ QV QV_priv_;
 //............................................................................
 //! @static @public @memberof QF
 void QF_init(void) {
+    // NOTE: QV_priv_ is assumed zero-initialized (static storage, .bss)
 #if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
 #endif
@@ -57,13 +58,6 @@ void QF_init(void) {
 #ifdef QV_INIT
     QV_INIT(); // port-specific initialization of the QV kernel
 #endif
-}
-
-//............................................................................
-//! @static @public @memberof QF
-void QF_stop(void) {
-    QF_onCleanup(); // application-specific cleanup callback
-    // nothing else to do for the QV kernel
 }
 
 //............................................................................
@@ -84,7 +78,7 @@ int_t QF_run(void) {
     uint_fast8_t pprev = 0U; // previous prio.
 
 #ifdef QF_ON_CONTEXT_SW
-    // officially switch to the idle cotext
+    // officially switch to the idle context
     QF_onContextSw((QActive *)0, (QActive *)0);
 #endif // def QF_ON_CONTEXT_SW
 
@@ -100,6 +94,9 @@ int_t QF_run(void) {
             // find the maximum prio. AO ready to run
             uint_fast8_t const p = QPSet_findMax(&QV_priv_.readySet);
             QActive * const a = QActive_registry_[p];
+
+            // the AO must be registered at prio. p
+            Q_ASSERT_INCRIT(330, a != (QActive *)0);
 
 #if (defined QF_ON_CONTEXT_SW) || (defined Q_SPY)
             if (p != pprev) { // changing threads?
@@ -123,7 +120,8 @@ int_t QF_run(void) {
             QF_INT_ENABLE();
 
             QEvt const * const e = QActive_get_(a); // queue not empty
-            QASM_DISPATCH(a, e, p); // virtual call
+            // dispatch e to the AO's state machine (virtual call)
+            (*a->super.vptr->dispatch)(&a->super, e, p);
 #if (QF_MAX_EPOOL > 0U)
             QF_gc(e); // check if the event is garbage, and collect it if so
 #endif
@@ -192,6 +190,7 @@ void QActive_start(QActive * const me,
 
     QEQueue_init(&me->eQueue, qSto, qLen);
 
-    QASM_INIT(me, par, me->prio); // top-most initial tran. (virtual call)
+    // top-most initial tran. (virtual call)
+    (*me->super.vptr->init)(&me->super, par, me->prio);
     QS_FLUSH(); // flush the trace buffer to the host
 }

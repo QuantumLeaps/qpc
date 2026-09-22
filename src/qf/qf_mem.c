@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,17 +10,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -52,6 +52,11 @@ void QMPool_init(QMPool * const me,
     // the pool storage must be provided
     Q_REQUIRE_INCRIT(100, poolSto != (void *)0);
 
+    // the block size must fit in QMPoolSize after rounding up to
+    // a multiple of sizeof(void *)
+    Q_REQUIRE_INCRIT(105, (uint_fast32_t)blockSize
+        <= ((uint_fast32_t)0x10000U - (uint_fast32_t)sizeof(void *)));
+
     me->start    = (void * *)poolSto;
     me->freeHead = me->start;
 
@@ -65,6 +70,18 @@ void QMPool_init(QMPool * const me,
 
     // the pool buffer must fit at least one rounded-up block
     Q_ASSERT_INCRIT(110, poolSize >= me->blockSize);
+
+    // the total number of blocks must fit in the dynamic range of QMPoolCtr,
+    // i.e., (poolSize / blockSize) < 0xFF or 0xFFFF (checked before writing
+    // any block)
+    // NOTE: both factors are uint_fast32_t (>= 32 bits) for 16- to 64-bit CPUs
+#if (QF_MPOOL_CTR_SIZE == 1U)
+    Q_ASSERT_INCRIT(160,
+        poolSize < ((uint_fast32_t)0xFFU * (uint_fast32_t)me->blockSize));
+#elif (QF_MPOOL_CTR_SIZE == 2U)
+    Q_ASSERT_INCRIT(160,
+        poolSize < ((uint_fast32_t)0xFFFFU * (uint_fast32_t)me->blockSize));
+#endif
 
     // start at the head of the free list
     void * *pfb = me->freeHead; // pointer to free block
@@ -83,13 +100,6 @@ void QMPool_init(QMPool * const me,
         ++nTot; // one more free block in the pool
     }
     pfb[0] = (void *)0; // the last link points to NULL
-
-    // the total number of blocks must fit in the configured dynamic range
-#if (QF_MPOOL_CTR_SIZE == 1U)
-    Q_ASSERT_INCRIT(160, nTot < 0xFFU);
-#elif (QF_MPOOL_CTR_SIZE == 2U)
-    Q_ASSERT_INCRIT(160, nTot < 0xFFFFU);
-#endif
 
     me->nTot  = (QMPoolCtr)nTot;
     me->nFree = me->nTot; // all blocks are free
@@ -155,7 +165,7 @@ void * QMPool_get(QMPool * const me,
 
         // change the allocated block contents so that it is different
         // than a free block inside the pool.
-        pfb[0] = &me->end[1]; // invalid location beyond the end
+        pfb[0] = &me->end[1]; // NOT a valid block start in this pool
 #ifndef Q_UNSAFE
         pfb[1] = (void *)0; // invalidate the Duplicate Storage
 #endif
@@ -255,6 +265,13 @@ uint16_t QMPool_getMin(QMPool const * const me) {
     // NOTE: this function does NOT apply critical section, so it can
     // be safely called from an already established critical section.
     return (uint16_t)me->nMin;
+}
+//............................................................................
+//! @public @memberof QMPool
+QMPoolSize QMPool_getBlockSize(QMPool const * const me) {
+    // NOTE: this function does NOT apply critical section, so it can
+    // be safely called from an already established critical section.
+    return me->blockSize;
 }
 
 //============================================================================

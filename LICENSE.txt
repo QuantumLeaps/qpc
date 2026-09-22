@@ -1,0 +1,40 @@
+QP/C Real-Time Event Framework (RTEF)
+
+Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
+
+                   Q u a n t u m  L e a P s
+                   ------------------------
+                   Modern Embedded Software
+
+SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
+
+This software is dual-licensed. You may use it under the terms of either:
+
+1. the open-source GNU General Public License, version 3 or later
+   (SPDX-License-Identifier: GPL-3.0-or-later), provided in
+   LICENSES/GPL-3.0-or-later.txt, or, alternatively,
+
+2. one of the closed-source Quantum Leaps commercial licenses
+   (SPDX-License-Identifier: LicenseRef-QL-commercial), summarized in
+   LICENSES/LicenseRef-QL-commercial.txt and governed by the signed
+   license agreement.
+
+Individual files may be licensed differently (for example, only under
+LicenseRef-QL-commercial). The SPDX-License-Identifier in the top-level
+comment block of each file states the license(s) that apply to that file.
+
+An additional permission under section 7 of the GPL, applicable to the
+Raspberry Pi platform, is provided in LICENSES/QP-RasPi_GPL_Exception.txt.
+
+Redistributions in source code must retain the top-level comment blocks
+in all files.
+
+NOTE:
+The GPL does NOT permit distributing this code as part of proprietary
+(closed-source) programs. For such use, please contact Quantum Leaps for
+a commercial license, which is an alternative to the GPL designed
+explicitly for closed-source distribution.
+
+Quantum Leaps contact information:
+<www.state-machine.com/licensing>
+<info@state-machine.com>

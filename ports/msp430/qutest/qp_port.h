@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,16 +10,31 @@
 // SPDX-License-Identifier: LicenseRef-QL-commercial
 //
 // This software is licensed under the terms of the Quantum Leaps commercial
-// licenses. Please contact Quantum Leaps for more information about the
-// available licensing options.
+// license agreement. This header is a notice of that license, not a
+// substitute for it; the signed agreement governs in case of conflict.
+// Use of this software requires a valid Quantum Leaps commercial or
+// evaluation license. Contact Quantum Leaps for licensing options.
 //
 // RESTRICTIONS
-// You may NOT :
+// Unless otherwise agreed in writing with Quantum Leaps, the licensee
+// may NOT:
 // (a) redistribute, encumber, sell, rent, lease, sublicense, or otherwise
-//     transfer rights in this software,
-// (b) remove or alter any trademark, logo, copyright or other proprietary
-//     notices, legends, symbols or labels present in this software,
-// (c) plagiarize this software to sidestep the licensing obligations.
+//     transfer rights in this software to any third party,
+// (b) remove, obscure, or alter any trademark, copyright, or other
+//     proprietary notice, legend, symbol, or label present in this
+//     software,
+// (c) create derivative works, or modify or repackage this software, for
+//     the purpose of concealing its origin or evading the licensing
+//     obligations that apply to it,
+// (d) use this software, or any portion of it, as input to train,
+//     fine-tune, evaluate, or otherwise develop any artificial
+//     intelligence or machine learning model, or use such a model to
+//     replicate, emulate, or compete with the functionality of this
+//     software, whether for internal use or in any product or service
+//     offered to a third party.
+//
+// This software is provided "AS IS," without warranty of any kind, express
+// or implied, except as expressly stated in the governing license agreement.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -40,7 +55,8 @@
     #define Q_NORETURN   __noreturn void
 #endif
 
-// QF configuration for QK -- data members of the QActive class...
+#define Q_ASSERT_STATIC(expr_) \
+    void Q_assert_(char (*Q_static_assert_error)[(expr_) ? 1 : -1])
 
 // QActive event queue type
 #define QACTIVE_EQUEUE_TYPE  QEQueue
@@ -79,14 +95,17 @@
 
 // native QEQueue operations
 #define QACTIVE_EQUEUE_WAIT_(me_) ((void)0)
+
+// QUTest stub scheduler: mark the AO as ready to run (see qf_stub.c)
+void QF_readySetInsert_(uint_fast8_t const prio);
 #define QACTIVE_EQUEUE_SIGNAL_(me_) \
-    QPSet_insert(&QS_tstPriv_.readySet, (uint_fast8_t)(me_)->prio)
+    (QF_readySetInsert_((uint_fast8_t)(me_)->prio))
 
 // QMPool operations
 #define QF_EPOOL_TYPE_  QMPool
 #define QF_EPOOL_INIT_(p_, poolSto_, poolSize_, evtSize_) \
     (QMPool_init(&(p_), (poolSto_), (poolSize_), (evtSize_)))
-#define QF_EPOOL_EVENT_SIZE_(p_)  ((uint16_t)(p_).blockSize)
+#define QF_EPOOL_EVENT_SIZE_(p_)  (QMPool_getBlockSize(&(p_)))
 #define QF_EPOOL_GET_(p_, e_, m_, qsId_) \
     ((e_) = (QEvt *)QMPool_get(&(p_), (m_), (qsId_)))
 #define QF_EPOOL_PUT_(p_, e_, qsId_) (QMPool_put(&(p_), (e_), (qsId_)))

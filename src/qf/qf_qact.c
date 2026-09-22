@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,17 +10,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -52,7 +52,7 @@ void QActive_ctor(QActive * const me,
 {
     // NOTE: QActive indirectly inherits the abstract QAsm base class,
     // but it will delegate the state machine behavior to the QHsm class,
-    // so the following initiaization is identical as in QHsm ctor:
+    // so the following initialization is identical as in QHsm ctor:
     QHsm_ctor((QHsm *)(me), initial);
 
     // NOTE: this vtable is identical as QHsm, but is provided
@@ -65,6 +65,9 @@ void QActive_ctor(QActive * const me,
         &QHsm_getStateHandler_
     };
     me->super.vptr = &vtable; // hook vptr to QActive vtable
+
+    me->prio  = 0U; // QF-prio. (assigned when the AO is started)
+    me->pthre = 0U; // preemption-threshold (assigned when the AO is started)
 }
 
 //............................................................................
@@ -85,6 +88,9 @@ void QActive_register_(QActive * const me) {
 
     // the AO's prio. must not exceed the preemption threshold
     Q_REQUIRE_INCRIT(130, me->prio <= me->pthre);
+
+    // the AO's preemption threshold must be in range
+    Q_REQUIRE_INCRIT(140, me->pthre <= QF_MAX_ACTIVE);
 
 #ifndef Q_UNSAFE
     uint8_t prev_thre = me->pthre;
@@ -187,7 +193,7 @@ bool QPSet_isEmpty(QPSet const * const me) {
     return (me->bits0 == 0U);  // check only bitmask for elements 1..32
 #else
     return (me->bits0 == 0U)   // bitmask for elements 1..32 empty?
-           ? (me->bits1 == 0U) // check bitmask for for elements 33..64
+           ? (me->bits1 == 0U) // check bitmask for elements 33..64
            : false;             // the set is NOT empty
 #endif
 }
@@ -197,9 +203,9 @@ bool QPSet_notEmpty(QPSet const * const me) {
 #if (QF_MAX_ACTIVE <= 32U)
     return (me->bits0 != 0U);   // check only bitmask for elements 1..32
 #else
-    return (me->bits0 != 0U)    // bitmask for elements 1..32 empty?
+    return (me->bits0 != 0U)    // bitmask for elements 1..32 not empty?
            ? true                // the set is NOT empty
-           : (me->bits1 != 0U); // check bitmask for for elements 33..64
+           : (me->bits1 != 0U); // check bitmask for elements 33..64
 #endif
 }
 //............................................................................
@@ -224,7 +230,7 @@ void QPSet_insert(QPSet * const me, uint_fast8_t const n) {
     if (n <= 32U) { // set the bit in the bitmask for elements 1..32?
         me->bits0 = (me->bits0 | ((QPSetBits)1U << (n - 1U)));
     }
-    else { // set the bit in the bitmask for for elements 33..64
+    else { // set the bit in the bitmask for elements 33..64
         me->bits1 = (me->bits1 | ((QPSetBits)1U << (n - 33U)));
     }
 #endif
@@ -239,7 +245,7 @@ void QPSet_remove(QPSet * const me, uint_fast8_t const n) {
     if (n <= 32U) { // clear the bit in the bitmask for elements 1..32?
         (me->bits0 = (me->bits0 & ~((QPSetBits)1U << (n - 1U))));
     }
-    else { // clear the bit in the bitmask for for elements 33..64
+    else { // clear the bit in the bitmask for elements 33..64
         (me->bits1 = (me->bits1 & ~((QPSetBits)1U << (n - 33U))));
     }
 #endif
@@ -251,7 +257,7 @@ uint_fast8_t QPSet_findMax(QPSet const * const me) {
     // check only the bitmask for elements 1..32
     return QF_LOG2(me->bits0);
 #else
-    return (me->bits1 != 0U) // bitmask for elements 32..64 not empty?
+    return (me->bits1 != 0U) // bitmask for elements 33..64 not empty?
         ? (32U + QF_LOG2(me->bits1)) // 32 + log2(bits 33..64)
         : (QF_LOG2(me->bits0));      // log2(bits 1..32)
 #endif

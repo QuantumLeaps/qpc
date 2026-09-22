@@ -1,94 +1,60 @@
-Quantum Leaps Commercial Licenses
+Quantum Leaps Commercial License Notice
+========================================
 
-Copyright (C) 2005 Quantum Leaps, LLC <https://www.state-machine.com>
+This software is licensed under the terms of the Quantum Leaps commercial
+license agreement. This notice is a summary of that license, not a
+substitute for it; the signed agreement governs in case of conflict.
+Contact Quantum Leaps for licensing options.
 
-Quantum Leaps commercial licenses are traditional closed-source, paid-for
-licenses designed for licensees interested in retaining the proprietary
-status of their code.
+For software that is also available under an open-source license (for
+example, SPDX-License-Identifier: GPL-3.0-or-later OR
+LicenseRef-QL-commercial), the Quantum Leaps commercial license is an
+alternative to the open-source license: a licensee who obtains the
+software under the commercial license uses it under the terms of the
+license agreement, not under the terms of the open-source license.
 
-The Quantum Leaps commercial licenses expressly supersede the GPL open source
-license. This means that when you license the QP/C or QP/C++ Real-Time
-Event Frameworks under a Quantum Leaps commercial license, you specifically
-do not use the software under the open source license and therefore you are
-not subject to any of its terms.
+Software licensed under this identifier is licensed to a specific, named
+licensee. Where the licensed source files carry a licensee attribution
+notice (licensee name, contact URL, and license number), that attribution
+is a material term of the license; removing, obscuring, or altering it is
+a material breach and may be treated as evidence of unauthorized use or
+distribution.
 
-Quantum Leaps commercial licensing options are described below:
+RESTRICTIONS
+Unless otherwise agreed in writing with Quantum Leaps, the licensee may
+NOT:
+(a) redistribute, encumber, sell, rent, lease, sublicense, or otherwise
+    transfer rights in this software to any third party,
+(b) remove, obscure, or alter any trademark, copyright, licensee-
+    attribution, or other proprietary notice, legend, symbol, or label
+    present in this software,
+(c) create derivative works, or modify or repackage this software, for
+    the purpose of concealing its origin or evading the licensing
+    obligations that apply to it,
+(d) use this software, or any portion of it, as input to train,
+    fine-tune, evaluate, or otherwise develop any artificial
+    intelligence or machine learning model, or use such a model to
+    replicate, emulate, or compete with the functionality of this
+    software, whether for internal use or in any product or service
+    offered to a third party.
 
+AI / MACHINE LEARNING TRAINING: NO LICENSE GRANTED
+No license, right, or permission -- express, implied, or by estoppel --
+is granted under this or any other section to use this software, in
+whole or in part and in any form (source, object, comments, or
+documentation), for the uses described in restriction (d) above. Such
+use is outside the scope of this license: it constitutes copyright
+infringement as well as a material breach of this license, regardless
+of whether any resulting model or its output reproduces this software
+verbatim. To the fullest extent permitted by applicable law, Quantum
+Leaps expressly reserves all rights with respect to text and data
+mining of this software, including under Article 4(3) of Directive
+(EU) 2019/790; no text-and-data-mining exception or exemption under any
+law authorizes the uses this paragraph prohibits.
 
-SPDX-License-Identifier: LicenseRef-QL-Single-Product
------------------------------------------------------
-Single Product License allows a given company ("Licensee") to embed the
-specified type(s) of the QP Real-Time Event Framework(s) into one end-
-product of the Licensee (Single Product). Licensee can distribute/sell an
-unlimited number of units of the Single Product (royalty-free licensing),
-for the life of the Single Product. A different Single Product license is
-required for each different end product (i.e. model) even if the end-product
-is in the same family as a previously licensed end product. This license
-is specific to the Licensee and the name and model of the Single Product,
-which needs to be defined in the license. The general rule we apply is:
+This software is provided "AS IS," without warranty of any kind, express
+or implied, except as expressly stated in the governing license agreement.
 
-If you consider it a separate product... so do we!
-
-Volume discounts are offered if several Single Products are licensed at once
-with one license agreement.
-
-
-SPDX-License-Identifier: LicenseRef-QL-Product-Line
----------------------------------------------------
-Product Line License allows a given company ("Licensee") to embed the
-specified type(s) of the QP Real-Time Event Framework(s) into any number
-of end-products within a family of related products (Product Line). Licensee
-can distribute/sell an unlimited number of units of each of those products
-(royalty-free licensing), for the life of the end-products within the
-Product Line. Product Line License applies to all end-products that do
-similar functions within the same Product Line.
-
-
-SPDX-License-Identifier: LicenseRef-QL-Any-Product
---------------------------------------------------
-Any-Product License allows a given company ("Licensee") to embed the
-specified type(s) of the QP Real-Time Event Framework(s) into any end-
-product of that company. The Licensee can distribute/sell an unlimited number
-of the products containing the licensed QP framework type(s) (royalty-free
-licensing).
-
-
-SPDX-License-Identifier: LicenseRef-QL-Site
--------------------------------------------
-Site-License allows a given company ("Licensee") to embed the specified
-type(s) of the QP Real-Time Event Framework(s) into any end-customer
-product, as long as the products are designed at a given physical location
-(Site), which must be defined in the license. This license gives the
-Licensee also limited sublicensing rights for its clients and is specifically
-designed for development contractors and consultants, who develop embedded
-software for other companies.
-
-
-SPDX-License-Identifier: LicenseRef-QL-OEM
-------------------------------------------
-OEM License allows a given company ("Licensee") to embed the specified
-type(s) of the QP Real-Time Event Framework(s) in any product of that
-company (Original Equipment Manufacturer) and gives limited sublicensing
-rights to system integrators, subsystem vendors, subcontractors, and other
-affiliates. OEM licenses are customizable to match exactly the specific
-licensing needs of a given Licensee.
-
-
-SPDX-License-Identifier: LicenseRef-QL-Eval
--------------------------------------------
-Evaluation License allows a specific company ("Licensee") to temporarily
-use the specified type(s) of the QP Real-Time Event Framework(s) for
-in-house evaluation. This license expressly prohibits any distribution
-of the licensed QP software.
-
-
-****
-NOTE: Please use the contact information below to find the current prices
-of the Quantum Leaps commercial licenses and to request the license
-agreements and price quotes.
-****
-
-Contact Information:
-====================
-- https://www.state-machine.com/licensing
-- mailto:info@state-machine.com
+Quantum Leaps contact information:
+<www.state-machine.com/licensing>
+<info@state-machine.com>

@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,17 +10,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -39,9 +39,8 @@
 
 Q_DEFINE_THIS_MODULE("qep_hsm")
 
-// maximum depth of state nesting in a QHsm (including the top level),
-// must be >= 3
-#define QHSM_MAX_NEST_DEPTH_  ((size_t)6U)
+// length of the path[] arrays (all nesting levels and the top state)
+#define QHSM_MAX_PATH_LEN_    (QASM_MAX_NEST_DEPTH_ + 1U)
 
 //! @cond INTERNAL
 
@@ -173,8 +172,8 @@ void QHsm_init_(QAsm * const me,
     QS_CRIT_STAT
     QS_CRIT_ENTRY();
     bool toDo = false; // assume that dictionary not produced
-    if ((QS_priv_.flags & 0x01U) == 0U) { // dictionary not produced yet?
-        QS_priv_.flags |= 0x01U; // mark the QHsm_top dictionary as produced
+    if (!QS_isFlagSet(0U)) { // dictionary not produced yet?
+        QS_flagSet(0U); // mark the QHsm_top dictionary as produced
         toDo = true;
     }
     QS_CRIT_EXIT();
@@ -205,12 +204,12 @@ void QHsm_init_(QAsm * const me,
     QS_TRAN_SEG_(QS_QEP_STATE_INIT, s, me->temp.fun); // output QS record
 
     // drill down into the state hierarchy with initial transitions...
-    QStateHandler path[QHSM_MAX_NEST_DEPTH_]; // entry path array
+    QStateHandler path[QASM_MAX_NEST_DEPTH_]; // entry path array
 
     size_t ip = 0U; // path index & fixed loop bound
     do {
         // the entry path index must not overflow the allocated array
-        Q_INVARIANT_LOCAL(260, ip < QHSM_MAX_NEST_DEPTH_);
+        Q_INVARIANT_LOCAL(260, ip < QASM_MAX_NEST_DEPTH_);
 
         // the initial tran. must set target in temp
         Q_ASSERT_LOCAL(270, me->temp.fun != Q_STATE_CAST(0));
@@ -227,7 +226,7 @@ void QHsm_init_(QAsm * const me,
 
     QS_TOP_INIT_(QS_QEP_INIT_TRAN, path[0]); // output QS record
 
-    me->state.fun = path[0]; // change the current active state
+    me->state.fun = path[0U]; // change the current active state
 #ifndef Q_UNSAFE
     // establish stable state configuration
     me->temp.uint = QP_DIS_UPDATE(uintptr_t, me->state.uint);
@@ -264,10 +263,10 @@ void QHsm_dispatch_(QAsm * const me,
     QS_TRAN0_(QS_QEP_DISPATCH, s); // output QS record
 
     // process the event hierarchically...
-    QStateHandler path[QHSM_MAX_NEST_DEPTH_]; // entry path array
+    QStateHandler path[QHSM_MAX_PATH_LEN_]; // entry path array
     me->temp.fun = s;
     QState r; // state handler return value
-    size_t ip = QHSM_MAX_NEST_DEPTH_; // path index & fixed loop bound
+    size_t ip = QHSM_MAX_PATH_LEN_; // path index & fixed loop bound
     do {
         // the entry path index must stay in range of the path[] array
         Q_INVARIANT_LOCAL(340, ip != 0U);
@@ -309,7 +308,7 @@ void QHsm_dispatch_(QAsm * const me,
         path[0] = me->temp.fun; // save tran. target in path[0]
 
         // exit current state to tran. source (path[0] not used)...
-        for (size_t iq = QHSM_MAX_NEST_DEPTH_ - 1U; iq > ip; --iq) {
+        for (size_t iq = QHSM_MAX_PATH_LEN_ - 1U; iq > ip; --iq) {
             // exit from 'path[iq]'
             if ((*path[iq])(me, &l_resEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED) {
                 QS_STATE_ACT_(QS_QEP_STATE_EXIT, path[iq]); //output QS record
@@ -428,7 +427,7 @@ size_t QHsm_tran_complex_(QAsm * const me,
     size_t iq = 0U; // assume that LCA is NOT found
     do {
         // the entry path index must stay in range of the path[] array
-        Q_INVARIANT_LOCAL(540, ip < QHSM_MAX_NEST_DEPTH_);
+        Q_INVARIANT_LOCAL(540, ip < QHSM_MAX_PATH_LEN_);
 
         path[ip] = me->temp.fun; // store temp in the entry path array
         ++ip;
@@ -444,15 +443,10 @@ size_t QHsm_tran_complex_(QAsm * const me,
     if (iq == 0U) { // the LCA not found yet?
         QS_CRIT_STAT
 
-#ifndef Q_SPY
-        // exit the source 's', ignore the result
-        (void)(*s)(me, &l_resEvt_[Q_EXIT_SIG]);
-#else
         // exit the source 's'
         if ((*s)(me, &l_resEvt_[Q_EXIT_SIG]) == Q_RET_HANDLED) {
             QS_STATE_ACT_(QS_QEP_STATE_EXIT, s); // output QS record
         }
-#endif // def Q_SPY
 
         // (f) check the rest of
         // source->super... == target->super->super...
@@ -510,7 +504,7 @@ void QHsm_enter_target_(QAsm * const me,
     QS_CRIT_STAT
     size_t ip = depth;
 
-    Q_REQUIRE_LOCAL(600, ip <= QHSM_MAX_NEST_DEPTH_);
+    Q_REQUIRE_LOCAL(600, ip <= QASM_MAX_NEST_DEPTH_);
 
     // execute entry actions from LCA to tran target...
     while (ip > 0U) {
@@ -534,8 +528,8 @@ void QHsm_enter_target_(QAsm * const me,
         // find superstate of initial tran. target...
         ip = 0U; // entry path index and fixed loop bound
         do {
-            // the entry path index must stay in range of the path[] array
-            Q_INVARIANT_LOCAL(660, ip < QHSM_MAX_NEST_DEPTH_);
+            // the entry path index must stay in range (see code.dox)
+            Q_INVARIANT_LOCAL(660, ip < (QASM_MAX_NEST_DEPTH_ - 1U));
 
             path[ip] = me->temp.fun; // store the entry path
             ++ip;

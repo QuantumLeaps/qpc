@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,17 +10,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -83,12 +83,9 @@ void QTimeEvt_armX(QTimeEvt * const me,
     QF_CRIT_ENTRY();
 
     // nTicks and interval parameters must fit in the configured dynamic range
-#if (QF_TIMEEVT_CTR_SIZE == 1U)
-    Q_REQUIRE_INCRIT(400, nTicks   < 0xFFU);
-    Q_REQUIRE_INCRIT(410, interval < 0xFFU);
-#elif (QF_TIMEEVT_CTR_SIZE == 2U)
-    Q_REQUIRE_INCRIT(400, nTicks   < 0xFFFFU);
-    Q_REQUIRE_INCRIT(410, interval < 0xFFFFU);
+#if (QF_TIMEEVT_CTR_SIZE == 2U)
+    Q_REQUIRE_INCRIT(400, nTicks   <= 0xFFFFU);
+    Q_REQUIRE_INCRIT(410, interval <= 0xFFFFU);
 #endif
 
 #ifndef Q_UNSAFE
@@ -111,6 +108,7 @@ void QTimeEvt_armX(QTimeEvt * const me,
 
     me->ctr = (QTimeEvtCtr)nTicks;
     me->interval = (QTimeEvtCtr)interval;
+    me->flags &= (uint8_t)(~QTE_FLAG_WAS_DISARMED & 0xFFU); // armed again
 
     // is the time event unlinked?
     // NOTE: For the duration of a single clock tick of the specified tick
@@ -118,10 +116,10 @@ void QTimeEvt_armX(QTimeEvt * const me,
     // because un-linking is performed exclusively in QTimeEvt_tick_().
     if ((me->flags & QTE_FLAG_IS_LINKED) == 0U) {
         // The time event is initially inserted into the separate
-        // "freshly armed" list based on timeEvtHead_[tickRate].act.
+        // "freshly armed" list based on QTimeEvt_timeEvtHead_[tickRate].act.
         // Only later, inside QTimeEvt_tick_(), the "freshly armed"
         // list is appended to the main list of armed time events based on
-        // timeEvtHead_[tickRate].next. Again, this is to keep any
+        // QTimeEvt_timeEvtHead_[tickRate].next. Again, this is to keep any
         // changes to the main list exclusively inside QTimeEvt_tick_().
 
         me->flags |= QTE_FLAG_IS_LINKED; // mark as linked
@@ -147,7 +145,7 @@ bool QTimeEvt_disarm(QTimeEvt * const me) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    QTimeEvtCtr const ctr = me->ctr; // move member into temporary
+    QTimeEvtCtr const ctr = me->ctr; // get member into temporary
 
 #ifdef Q_SPY
     uint_fast8_t const qsId = QACTIVE_CAST_(me->act)->prio;
@@ -192,10 +190,8 @@ bool QTimeEvt_rearm(QTimeEvt * const me, uint32_t const nTicks) {
     QF_CRIT_ENTRY();
 
     // nTicks parameter must fit in the configured dynamic range
-#if (QF_TIMEEVT_CTR_SIZE == 1U)
-    Q_REQUIRE_INCRIT(600, nTicks < 0xFFU);
-#elif (QF_TIMEEVT_CTR_SIZE == 2U)
-    Q_REQUIRE_INCRIT(600, nTicks < 0xFFFFU);
+#if (QF_TIMEEVT_CTR_SIZE == 2U)
+    Q_REQUIRE_INCRIT(600, nTicks <= 0xFFFFU);
 #endif
 
     uint8_t const tickRate = me->tickRate;
@@ -215,6 +211,7 @@ bool QTimeEvt_rearm(QTimeEvt * const me, uint32_t const nTicks) {
 #endif
 
     me->ctr = (QTimeEvtCtr)nTicks;
+    me->flags &= (uint8_t)(~QTE_FLAG_WAS_DISARMED & 0xFFU); // armed again
 
     // was the time evt not running?
     bool wasArmed = false;
@@ -228,11 +225,13 @@ bool QTimeEvt_rearm(QTimeEvt * const me, uint32_t const nTicks) {
         if ((me->flags & QTE_FLAG_IS_LINKED) == 0U) {
 
             // The time event is initially inserted into the separate
-            // "freshly armed" list based on timeEvtHead_[tickRate].act.
-            // Only later, inside QTimeEvt_tick_(), the "freshly armed"
-            // list is appended to the main list of armed time events based on
-            // timeEvtHead_[tickRate].next. Again, this is to keep any
-            // changes to the main list exclusively inside QTimeEvt_tick()_.
+            // "freshly armed" list based on
+            // QTimeEvt_timeEvtHead_[tickRate].act. Only later, inside
+            // QTimeEvt_tick_(), the "freshly armed" list is appended to the
+            // main list of armed time events based on
+            // QTimeEvt_timeEvtHead_[tickRate].next. Again, this is to keep
+            // any changes to the main list exclusively inside
+            // QTimeEvt_tick_().
 
             me->flags |= QTE_FLAG_IS_LINKED; // mark as linked
             me->next = (QTimeEvt *)QTimeEvt_timeEvtHead_[tickRate].act;
@@ -263,7 +262,7 @@ bool QTimeEvt_wasDisarmed(QTimeEvt * const me) {
     QF_CRIT_STAT
     QF_CRIT_ENTRY();
 
-    // was this time-event disarmed automatically upon expiration?
+    // was this time-event truly disarmed (since it was last armed)?
     bool const wasDisarmed = (me->flags & QTE_FLAG_WAS_DISARMED) != 0U;
 
     me->flags |= QTE_FLAG_WAS_DISARMED; // mark as disarmed (SIDE EFFECT!)
@@ -290,21 +289,19 @@ void QTimeEvt_tick_(
     Q_REQUIRE_INCRIT(800, tickRate < QF_MAX_TICK_RATE);
 
     QTimeEvt *prev = &QTimeEvt_timeEvtHead_[tickRate];
+    ++prev->ctr;
 
-#ifdef Q_SPY
     QS_BEGIN_PRE(QS_QF_TICK, 0U)
-        ++prev->ctr;
         QS_TEC_PRE(prev->ctr);   // tick ctr
         QS_U8_PRE(tickRate);     // tick rate
     QS_END_PRE()
-#endif
 
     // scan the linked-list of time events at this tick rate...
     for (;;) {
         QTimeEvt *te = prev->next; // advance down the time evt. list
 
         if (te == (QTimeEvt *)0) { // end of the list?
-            // set 'te' to the the newly-armed linked list
+            // set 'te' to the newly-armed linked list
             te = (QTimeEvt *)QTimeEvt_timeEvtHead_[tickRate].act;
             if (te == (void *)0) { // no newly-armed time events?
                 break; // terminate the loop
@@ -314,7 +311,7 @@ void QTimeEvt_tick_(
             QTimeEvt_timeEvtHead_[tickRate].act = (void *)0;
         }
 
-        QTimeEvtCtr ctr = te->ctr; // move member into temporary
+        QTimeEvtCtr ctr = te->ctr; // get member into temporary
 
         if (ctr == 0U) { // time event scheduled for removal?
             prev->next = te->next;
@@ -336,14 +333,16 @@ void QTimeEvt_tick_(
             else {
                 QF_CRIT_EXIT(); // exit crit. section before posting
 
-                // QACTIVE_POST() asserts if the queue overflows
-                QACTIVE_POST(act, &te->super, sender);
+                // QActive_post_(..QF_NO_MARGIN..) asserts internally
+                // if the queue overflows
+                (void)QActive_post_(act, &te->super, QF_NO_MARGIN, sender);
             }
 #else // not QXK
             QF_CRIT_EXIT(); // exit crit. section before posting
 
-            // QACTIVE_POST() asserts if the queue overflows
-            QACTIVE_POST(act, &te->super, sender);
+            // QActive_post_(..QF_NO_MARGIN..) asserts internally
+            // if the queue overflows
+            (void)QActive_post_(act, &te->super, QF_NO_MARGIN, sender);
 #endif
         }
         else { // time event keeps timing out

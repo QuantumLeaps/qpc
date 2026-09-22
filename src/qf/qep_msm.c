@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,17 +10,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -38,9 +38,6 @@
 #endif // Q_SPY
 
 Q_DEFINE_THIS_MODULE("qep_msm")
-
-// maximum depth of state nesting in a QMsm (including the top level)
-#define QMSM_MAX_NEST_DEPTH_  ((size_t)6U)
 
 //! @cond INTERNAL
 
@@ -219,6 +216,9 @@ void QMsm_dispatch_(
 
     QMState const *s = me->state.obj; // the current state
     QMState const * const t = s; // store the current state for later
+#ifndef Q_UNSAFE
+    me->temp.fun = Q_STATE_CAST(0); // invalidate "stable state configuration"
+#endif
     QS_CRIT_STAT
     QS_TRAN0_(QS_QEP_DISPATCH, s->stateHandler);
 
@@ -275,16 +275,12 @@ void QMsm_dispatch_(
             (void)QMsm_execTatbl_(me, tatbl, qsId);
             r = QMsm_enterHistory_(me, hist, qsId);
         }
-#ifdef Q_SPY
         s = me->state.obj;
-#endif
 
         while (r == Q_RET_TRAN_INIT) { // initial tran. in the target?
 
             r = QMsm_execTatbl_(me, me->temp.tatbl, qsId);
-#ifdef Q_SPY
             s = me->state.obj;
-#endif
 
         }
 
@@ -359,7 +355,7 @@ static void QMsm_exitToTranSource_(
     // exit states from the current state to the tran. source state
     // NOTE: the following loop does not need the fixed loop bound check
     // because the path from the current state to the tran.source has
-    // been already checked in the invariant 340.
+    // been already checked in the invariant 341.
     QMState const *s = curr_state;
     while (s != tran_source) {
         if (s->exitAction != Q_ACTION_CAST(0)) { // exit action provided?
@@ -383,12 +379,12 @@ static QState QMsm_enterHistory_(
 #endif
 
     // record the entry path from current state to history
-    QMState const *path[QMSM_MAX_NEST_DEPTH_];
+    QMState const *path[QASM_MAX_NEST_DEPTH_];
     QMState const *s = hist;
     size_t ip = 0U; // entry path index
     while (s != me->state.obj) {
         if (s->entryAction != Q_ACTION_CAST(0)) { // does s have an entry action?
-            Q_INVARIANT_LOCAL(610, ip < QMSM_MAX_NEST_DEPTH_);
+            Q_INVARIANT_LOCAL(610, ip < (QASM_MAX_NEST_DEPTH_ - 1U));
             path[ip] = s;
             ++ip;
         }
@@ -426,6 +422,11 @@ QMState const * QMsm_topQMState(void) {
 //............................................................................
 //! @private @memberof QMsm
 bool QMsm_isIn_(QAsm * const me, QStateHandler const stateHndl) {
+    // this state machine must be in a stable state configuration
+    // NOTE: stable state configuration is established after every RTC step.
+    Q_INVARIANT_LOCAL(700,
+        QP_DIS_VERIFY(uintptr_t, me->state.uint, me->temp.uint));
+
     bool inState = false; // assume that this SM is not in 'state'
     QMState const *s = me->state.obj;
     while (s != (QMState *)0) {
@@ -456,6 +457,13 @@ QMState const * QMsm_childStateObj(
         child = s;
         s = s->superstate;
     }
+    // the top state object is not linked as the superstate of the top-level
+    // states (their superstate is NULL), so for the top state object as
+    // the parent, the child is the top-level state at the end of the chain
+    if (parentHndl == &l_msm_top_s) {
+        isFound = true;
+    }
+
     // the child state must be found, or the state machine is corrupt
     Q_ENSURE_LOCAL(890, isFound);
 

@@ -1,7 +1,7 @@
 //============================================================================
 // QP/C Real-Time Event Framework (RTEF)
 //
-// Copyright (C) 2005 Quantum Leaps, LLC. All rights reserved.
+// Copyright (C) 2005-2026 Quantum Leaps, LLC. All rights reserved.
 //
 //                    Q u a n t u m  L e a P s
 //                    ------------------------
@@ -10,17 +10,17 @@
 // SPDX-License-Identifier: GPL-3.0-or-later OR LicenseRef-QL-commercial
 //
 // This software is dual-licensed under the terms of the open-source GNU
-// General Public License (GPL) or under the terms of one of the closed-
-// source Quantum Leaps commercial licenses.
+// General Public License, version 3 or later (GPL-3.0-or-later), or,
+// alternatively, under the terms of one of the closed-source Quantum Leaps
+// commercial licenses.
 //
 // Redistributions in source code must retain this top-level comment block.
-// Plagiarizing this software to sidestep the license obligations is illegal.
 //
 // NOTE:
-// The GPL does NOT permit the incorporation of this code into proprietary
-// programs. Please contact Quantum Leaps for commercial licensing options,
-// which expressly supersede the GPL and are designed explicitly for
-// closed-source distribution.
+// The GPL does NOT permit distributing this code as part of proprietary
+// (closed-source) programs. For such use, please contact Quantum Leaps for
+// a commercial license, which is an alternative to the GPL designed
+// explicitly for closed-source distribution.
 //
 // Quantum Leaps contact information:
 // <www.state-machine.com/licensing>
@@ -73,12 +73,8 @@ void QF_poolInit(
 
 #ifdef Q_SPY
     // generate the QS object-dictionary entry for the initialized pool
-    {
-        uint8_t obj_name[9] = "EvtPool?"; // initial event pool name
-        // replace the "?" with the one-digit pool number (1-based)
-        obj_name[7] = (uint8_t)((uint8_t)'0' + QF_priv_.maxPool_);
-        QS_obj_dict_pre_(&QF_priv_.ePool_[poolNum], (char const *)obj_name);
-    }
+    QS_epool_dict_pre_(&QF_priv_.ePool_[poolNum],
+                       (uint_fast8_t)(poolNum + 1U));
 #endif // Q_SPY
 }
 
@@ -149,7 +145,7 @@ uint16_t QF_getPoolFree(uint_fast8_t const poolNum) {
     // the maximum count of initialized pools must be in configured range
     Q_REQUIRE_INCRIT(410, maxPool <= QF_MAX_EPOOL);
 
-    // the poolNum paramter must be in range
+    // the poolNum parameter must be in range
     Q_REQUIRE_INCRIT(420, (0U < poolNum) && (poolNum <= maxPool));
 #endif
     uint16_t const nFree = QF_EPOOL_FREE_(&QF_priv_.ePool_[poolNum - 1U]);
@@ -173,7 +169,7 @@ uint16_t QF_getPoolMin(uint_fast8_t const poolNum) {
     // the maximum count of initialized pools must be in configured range
     Q_REQUIRE_INCRIT(510, maxPool <= QF_MAX_EPOOL);
 
-    // the poolNum paramter must be in range
+    // the poolNum parameter must be in range
     Q_REQUIRE_INCRIT(520, (0U < poolNum) && (poolNum <= maxPool));
 #endif
     // call port-specific operation for the minimum of free blocks so far
@@ -209,7 +205,7 @@ QEvt * QF_newX_(
         }
     }
 
-    // event pool must be found, which means that the reqeusted event size
+    // event pool must be found, which means that the requested event size
     // fits in one of the initialized pools
     Q_ASSERT_INCRIT(620, poolNum < maxPool);
 
@@ -219,14 +215,9 @@ QEvt * QF_newX_(
 
     // get event e (port-dependent)...
     QEvt *e;
-#ifdef Q_SPY
     QF_EPOOL_GET_(QF_priv_.ePool_[poolNum - 1U], e,
                   ((margin != QF_NO_MARGIN) ? margin : 0U),
                   QS_ID_EP + poolNum);
-#else
-    QF_EPOOL_GET_(QF_priv_.ePool_[poolNum - 1U], e,
-                  ((margin != QF_NO_MARGIN) ? margin : 0U), 0U);
-#endif
 
     if (e != (QEvt *)0) { // was e allocated correctly?
         e->sig      = (QSignal)sig; // set the signal
@@ -236,7 +227,7 @@ QEvt * QF_newX_(
         QS_CRIT_ENTRY();
         QS_BEGIN_PRE(QS_QF_NEW, QS_ID_EP + poolNum)
             QS_TIME_PRE();        // timestamp
-            QS_EVS_PRE(evtSize);  // the size of the event
+            QS_U16_PRE(evtSize);  // the size of the event
             QS_SIG_PRE(sig);      // the signal of the event
         QS_END_PRE()
         QS_CRIT_EXIT();
@@ -251,14 +242,14 @@ QEvt * QF_newX_(
 
         QS_BEGIN_PRE(QS_QF_NEW_ATTEMPT, QS_ID_EP + poolNum)
             QS_TIME_PRE();        // timestamp
-            QS_EVS_PRE(evtSize);  // the size of the event
+            QS_U16_PRE(evtSize);  // the size of the event
             QS_SIG_PRE(sig);      // the signal of the event
         QS_END_PRE()
 
         QF_CRIT_EXIT();
     }
 
-    // if we can't tolerate failed allocation (margin != QF_NO_MARGIN),
+    // if the caller can't tolerate failed allocation (margin != QF_NO_MARGIN),
     // the returned event e is guaranteed to be valid (not NULL).
     return e;
 }
@@ -307,12 +298,8 @@ void QF_gc(QEvt const * const e) {
 
             // call port-specific operation to put the event to a given pool
             // NOTE: casting 'const' away is legit because 'e' is a pool event
-#ifdef Q_SPY
             QF_EPOOL_PUT_(QF_priv_.ePool_[poolNum - 1U], (QEvt *)e,
                 QS_ID_EP + poolNum);
-#else
-            QF_EPOOL_PUT_(QF_priv_.ePool_[poolNum - 1U], (QEvt *)e, 0U);
-#endif
         }
     }
     else {
@@ -336,17 +323,17 @@ QEvt const * QF_newRef_(
     // the referenced event must be valid
     Q_REQUIRE_INCRIT(800, e != (QEvt *)0);
 
-    // the event reference count must not exceed the number of AOs
-    // in the system plus each AO possibly holding one event reference
-    Q_REQUIRE_INCRIT(820, e->refCtr_ < (QF_MAX_ACTIVE + QF_MAX_ACTIVE));
-
-    // the event ref must be valid
-    Q_REQUIRE_INCRIT(830, evtRef == (void *)0);
-
     uint8_t const poolNum = (uint8_t)e->poolNum_;
 
     // the referenced event must be a pool event (not an immutable event)
-    Q_ASSERT_INCRIT(840, poolNum != 0U);
+    Q_REQUIRE_INCRIT(820, poolNum != 0U);
+
+    // the event reference count must not exceed the number of AOs
+    // in the system plus each AO possibly holding one event reference
+    Q_REQUIRE_INCRIT(830, e->refCtr_ < (2U * QF_MAX_ACTIVE));
+
+    // the event ref must be valid
+    Q_REQUIRE_INCRIT(840, evtRef == (void *)0);
 
     QEvt_refCtr_inc_(e); // increments the ref counter
 
@@ -385,9 +372,7 @@ void QF_deleteRef_(void const * const evtRef) {
 
     QF_CRIT_EXIT();
 
-#if (QF_MAX_EPOOL > 0U)
     QF_gc(e); // recycle the referenced event
-#endif
 }
 
 #endif // (QF_MAX_EPOOL > 0U) mutable events configured
