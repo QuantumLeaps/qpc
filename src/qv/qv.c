@@ -61,13 +61,6 @@ void QF_init(void) {
 
 //............................................................................
 //! @static @public @memberof QF
-void QF_stop(void) {
-    QF_onCleanup(); // application-specific cleanup callback
-    // nothing else to do for the QV kernel
-}
-
-//............................................................................
-//! @static @public @memberof QF
 int_t QF_run(void) {
     QF_INT_DISABLE();
 #ifdef Q_SPY

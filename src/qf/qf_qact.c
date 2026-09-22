@@ -52,7 +52,7 @@ void QActive_ctor(QActive * const me,
 {
     // NOTE: QActive indirectly inherits the abstract QAsm base class,
     // but it will delegate the state machine behavior to the QHsm class,
-    // so the following initiaization is identical as in QHsm ctor:
+    // so the following initialization is identical as in QHsm ctor:
     QHsm_ctor((QHsm *)(me), initial);
 
     // NOTE: this vtable is identical as QHsm, but is provided

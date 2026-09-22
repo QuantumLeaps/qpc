@@ -279,7 +279,7 @@ void QK_activate_(void) {
 #endif // QF_ON_CONTEXT_SW || Q_SPY
 }
 
-//............................................................................
+//----------------------------------------------------------------------------
 //! @static @public @memberof QF
 void QF_init(void) {
     // setup the QK scheduler as initially locked and not running
@@ -292,13 +292,6 @@ void QF_init(void) {
 #ifdef QK_INIT
     QK_INIT(); // port-specific initialization of the QK kernel
 #endif
-}
-
-//............................................................................
-//! @static @public @memberof QF
-void QF_stop(void) {
-    QF_onCleanup(); // application-specific cleanup callback
-    // nothing else to do for the preemptive QK kernel
 }
 
 //............................................................................

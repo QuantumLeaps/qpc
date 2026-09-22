@@ -1,6 +1,6 @@
 @setlocal
 
-set FNAME=qpc_8.1.5.sha256
+set FNAME=qpc_8.1.6.sha256
 
 :: usage
 @echo Usage: sha256 [gen]

@@ -53,11 +53,9 @@ bool QActive_post_(QActive * const me,
     void const * const sender)
 {
 #ifdef Q_UTEST // test?
-#if (Q_UTEST != 0) // testing QP-stub?
-    if (me->super.temp.fun == Q_STATE_CAST(0)) { // QActiveDummy?
+    if (me->super.state.fun == &QHsmDummy_dummyHandler) { // QActiveDummy?
         return QActiveDummy_fakePost_(me, e, margin, sender);
     }
-#endif // (Q_UTEST != 0)
 #endif // def Q_UTEST
 
     QF_CRIT_STAT
@@ -121,12 +119,10 @@ bool QActive_post_(QActive * const me,
 //! @private @memberof QActive
 void QActive_postLIFO_(QActive * const me, QEvt const * const e) {
 #ifdef Q_UTEST // test?
-#if (Q_UTEST != 0) // testing QP-stub?
-    if (me->super.temp.fun == Q_STATE_CAST(0)) { // QActiveDummy?
+    if (me->super.state.fun == &QHsmDummy_dummyHandler) { // QActiveDummy?
         QActiveDummy_fakePostLIFO_(me, e);
         return;
     }
-#endif // (Q_UTEST != 0)
 #endif // def Q_UTEST
 
     QF_CRIT_STAT

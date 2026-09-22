@@ -104,7 +104,7 @@ __asm volatile (
     "  .WORD QF_port_module_    \n"
     "QF_int_disable_onError:    \n"
     "  .WORD Q_onError          \n"
-    );
+    : : : "memory"); // explicit memory clobber, see NOTE1
 }
 //............................................................................
 // Unconditionally enable interrupts.
@@ -146,7 +146,7 @@ __asm volatile (
     "  .WORD QF_port_module_    \n"
     "QF_int_enable_onError:     \n"
     "  .WORD Q_onError          \n"
-    );
+    : : : "memory"); // explicit memory clobber, see NOTE1
 }
 //............................................................................
 // Enter QF critical section.
@@ -184,7 +184,7 @@ __asm volatile (
     "  .WORD QF_port_module_    \n"
     "QF_crit_entry_onError:     \n"
     "  .WORD Q_onError          \n"
-    );
+    : : : "memory"); // explicit memory clobber, see NOTE1
 }
 //............................................................................
 // Exit QF critical section.
@@ -225,7 +225,7 @@ __asm volatile (
     "  .WORD QF_port_module_    \n"
     "QF_crit_exit_onError:      \n"
     "  .WORD Q_onError          \n"
-    );
+    : : : "memory"); // explicit memory clobber, see NOTE1
 }
 
 //============================================================================
@@ -585,3 +585,29 @@ __asm volatile (
 
 #endif // ARMv6-M
 
+//============================================================================
+// NOTE1:
+// The "memory" clobber: tells the compiler this asm may read and/or write
+// memory beyond the (empty) operand list, i.e. it is NOT a pure register-only
+// operation.
+//
+// Effect inside this function: none by itself, since the function body
+// is nothing but this one asm statement (naked, no other C code to
+// flush/reload around it).
+//
+// Effect on the rest of the program (the actual reason it's here): if this
+// function's body is ever visible to interprocedural or whole-program (LTO)
+// analysis, the clobber forces the compiler to classify it as having memory
+// side effects, so it can never be auto-promoted to "pure" or "const".
+// That keeps every CALL SITE of the function treated as opaque: the compiler
+// cannot hoist a load of shared state (e.g., variables inside the critical
+// section) from before the call to after it, nor sink a store from after the
+// call to before it. In other words, it makes this call a full COMPILER
+// BARRIER at the exact point where interrupts (and therefore ISR-driven
+// writes to that shared state) become live again, rather than relying on
+// "naked functions happen not to get inlined or auto-purified by this compiler
+// version", which is default behavior, not a guaranteed contract.
+//
+// This is a COMPILER BARRIER only, not a CPU barrier. It says nothing about
+// instruction reordering or pipeline effects around CPSIE/MSR BASEPRI on the
+// core itself; that side is handled separately.
