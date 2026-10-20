@@ -77,6 +77,7 @@
 #define QS_TEST_PROBE(code_)
 #define QS_TEST_PROBE_ID(id_, code_)
 #define QS_TEST_PAUSE()                 ((void)0)
+#define QS_TEST_POST(sender_, recipient_, e_, status_) ((void)0)
 
 #define QS_OUTPUT()                     ((void)0)
 #define QS_RX_INPUT()                   ((void)0)

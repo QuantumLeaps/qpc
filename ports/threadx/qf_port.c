@@ -305,7 +305,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 // QF customization
 
 //............................................................................
-void QF_init(void) {
+void QF_INIT_CFGCHK_(void) {
 #if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
 #endif

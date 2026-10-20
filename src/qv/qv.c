@@ -49,7 +49,7 @@ QV QV_priv_;
 
 //............................................................................
 //! @static @public @memberof QF
-void QF_init(void) {
+void QF_INIT_CFGCHK_(void) {
     // NOTE: QV_priv_ is assumed zero-initialized (static storage, .bss)
 #if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
@@ -63,6 +63,8 @@ void QF_init(void) {
 //............................................................................
 //! @static @public @memberof QF
 int_t QF_run(void) {
+    QS_FLUSH(); // flush the trace buffer produced during the startup
+
     QF_INT_DISABLE();
 #ifdef Q_SPY
     // produce the QS_QF_RUN trace record
@@ -192,5 +194,4 @@ void QActive_start(QActive * const me,
 
     // top-most initial tran. (virtual call)
     (*me->super.vptr->init)(&me->super, par, me->prio);
-    QS_FLUSH(); // flush the trace buffer to the host
 }

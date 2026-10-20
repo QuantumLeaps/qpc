@@ -69,6 +69,12 @@
 #define QS_RX_SIZE     (2*1024)
 #define QS_TX_CHUNK    QS_TX_SIZE
 #define QS_TIMEOUT_MS  10L
+#define QS_FLUSH_TOUT_MS   5000L // max wait for QSPY to accept output [ms]
+#define QS_EXIT_QSPY_LOST  2     // exit code: the QSPY connection was lost
+
+#ifndef MSG_NOSIGNAL // no MSG_NOSIGNAL? (e.g., macOS uses SO_NOSIGPIPE)
+#define MSG_NOSIGNAL 0
+#endif
 
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR   -1
@@ -81,6 +87,52 @@ static struct timespec const c_timeout = { 0, QS_TIMEOUT_MS*1000000L };
 
 static char *l_rxBuf;
 static size_t l_rxBufLen;
+
+// The connection to QSPY has been lost (e.g., QSPY has terminated, or QSPY
+// has replaced this Target by a new one): report it and terminate cleanly
+// with the exit code QS_EXIT_QSPY_LOST (consistent with the QUTest port).
+static void connectionLost(void) {
+    FPRINTF_S(stderr, "%s\n", "<TARGET> ERROR QSPY connection lost");
+    if (l_sock != INVALID_SOCKET) {
+        close(l_sock);
+        l_sock = INVALID_SOCKET;
+    }
+    exit(QS_EXIT_QSPY_LOST);
+}
+
+// sends ALL 'len' bytes to QSPY; terminates (connectionLost()) when the
+// connection is lost or QSPY does not accept data for QS_FLUSH_TOUT_MS
+static void sendAll(uint8_t const *data, int len) {
+    long waited = 0L; // time waited for QSPY to accept data [ms]
+    while (len > 0) {
+        int const nSent = (int)send(l_sock, (char const *)data,
+                                    (size_t)len, MSG_NOSIGNAL);
+        if (nSent > 0) { // some data sent?
+            data  += nSent;
+            len   -= nSent;
+            waited = 0L; // progress made
+        }
+        else if ((nSent == 0) || (errno == EWOULDBLOCK) || (errno == EAGAIN)
+                 || (errno == EINTR)) {
+            // QSPY does not accept data at this time...
+            if (waited >= QS_FLUSH_TOUT_MS) {
+                FPRINTF_S(stderr, "%s\n",
+                    "<TARGET> ERROR QSPY does not accept data");
+                connectionLost();
+            }
+            // sleep for the timeout and then loop back
+            // to send() the SAME data again
+            nanosleep(&c_timeout, NULL);
+            waited += (long)QS_TIMEOUT_MS;
+        }
+        else { // some other socket error (e.g., QSPY is gone)
+            FPRINTF_S(stderr,
+                "<TARGET> ERROR   sending data over TCP,Err=%d\n",
+                errno);
+            connectionLost();
+        }
+    }
+}
 
 //============================================================================
 uint8_t QS_onStartup(void const *arg) {
@@ -174,13 +226,15 @@ uint8_t QS_onStartup(void const *arg) {
         goto error;
     }
 
-    // configure the socket to reuse the address and not to linger
+    // no SIGPIPE when QSPY is gone: the loss of QSPY is handled (reported)
+    // by connectionLost() (Linux: MSG_NOSIGNAL in send(), macOS: below)
     sockopt_bool = 1;
-    setsockopt(l_sock, SOL_SOCKET, SO_REUSEADDR,
-               &sockopt_bool, sizeof(sockopt_bool));
-    sockopt_bool = 0; // negative option
-    setsockopt(l_sock, SOL_SOCKET, SO_LINGER,
-               &sockopt_bool, sizeof(sockopt_bool));
+#ifdef SO_NOSIGPIPE
+    (void)setsockopt(l_sock, SOL_SOCKET, SO_NOSIGPIPE,
+                     &sockopt_bool, sizeof(sockopt_bool));
+#else
+    (void)sockopt_bool; // unused on this platform
+#endif
     QS_onFlush();
 
     return 1U; // success
@@ -205,8 +259,8 @@ void QS_onReset(void) {
 //............................................................................
 void QS_onFlush(void) {
     // NOTE:
-    // No critical section in QS::onFlush() to avoid nesting of critical
-    // sections in case QS::onFlush() is called from Q_onError().
+    // No critical section in QS_onFlush() to avoid nesting of critical
+    // sections in case QS_onFlush() is called from Q_onError().
 
     if (l_sock == INVALID_SOCKET) { // socket NOT initialized?
         FPRINTF_S(stderr, "%s\n", "<TARGET> ERROR   invalid TCP socket");
@@ -216,34 +270,8 @@ void QS_onFlush(void) {
     uint16_t nBytes = QS_TX_CHUNK;
     uint8_t const *data;
     while ((data = QS_getBlock(&nBytes)) != (uint8_t *)0) {
-        int len = (int)nBytes;
-        for (;;) { // for-ever until break or return
-            int nSent = send(l_sock, (char const *)data, (size_t)len, 0);
-            if (nSent == SOCKET_ERROR) { // sending failed?
-                if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
-                    // sleep for the timeout and then loop back
-                    // to send() the SAME data again
-                    nanosleep(&c_timeout, NULL);
-                }
-                else { // some other socket error...
-                    FPRINTF_S(stderr,
-                        "<TARGET> ERROR   sending data over TCP,Err=%d\n",
-                        errno);
-                    return;
-                }
-            }
-            else if (nSent < len) { // sent fewer than requested?
-                nanosleep(&c_timeout, NULL); // sleep for the timeout
-                // adjust the data and loop back to send() the rest
-                data += nSent;
-                len  -= nSent;
-            }
-            else {
-                break;
-            }
-        }
-        // set nBytes for the next call to QS_getBlock()
-        nBytes = QS_TX_CHUNK;
+        sendAll(data, (int)nBytes); // NOTE: exits if QSPY is lost
+        nBytes = QS_TX_CHUNK; // for the next call to QS_getBlock()
     }
 }
 //............................................................................
@@ -271,39 +299,27 @@ void QS_output(void) {
     QS_CRIT_EXIT();
 
     if (nBytes > 0U) { // any bytes to send?
-        int len = (int)nBytes;
-        for (;;) { // for-ever until break or return
-            int nSent = send(l_sock, (char const *)data, (size_t)len, 0);
-            if (nSent == SOCKET_ERROR) { // sending failed?
-                if ((errno == EWOULDBLOCK) || (errno == EAGAIN)) {
-                    // sleep for the timeout and then loop back
-                    // to send() the SAME data again
-                    nanosleep(&c_timeout, NULL);
-                }
-                else { // some other socket error...
-                    FPRINTF_S(stderr,
-                        "<TARGET> ERROR   sending data over TCP,Err=%d\n",
-                        errno);
-                    return;
-                }
-            }
-            else if (nSent < len) { // sent fewer than requested?
-                nanosleep(&c_timeout, NULL); // sleep for the timeout
-                // adjust the data and loop back to send() the rest
-                data += nSent;
-                len  -= nSent;
-            }
-            else {
-                break; // break out of the for-ever loop
-            }
-        }
+        sendAll(data, (int)nBytes); // NOTE: exits if QSPY is lost
     }
 }
 //............................................................................
 void QS_rx_input(void) {
-    int len = recv(l_sock, l_rxBuf, l_rxBufLen, 0);
+    if (l_sock == INVALID_SOCKET) { // socket NOT initialized?
+        return;
+    }
+    ssize_t const len = recv(l_sock, l_rxBuf, l_rxBufLen, 0);
     if (len > 0) { // any data received?
         QS_rxParseBuf((uint16_t)len);
+    }
+    else if (len == 0) { // QSPY has closed the connection?
+        connectionLost();
+    }
+    else if ((errno != EAGAIN) && (errno != EWOULDBLOCK)
+             && (errno != EINTR)) {
+        connectionLost(); // the connection has failed
+    }
+    else {
+        // no input available at this time
     }
 }
 

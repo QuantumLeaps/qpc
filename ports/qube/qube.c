@@ -243,7 +243,7 @@ static char const* my_strtok(char* str, char delim) {
 #endif
 
 // QF functions ============================================================
-void QF_init(void) {
+void QF_INIT_CFGCHK_(void) {
 #ifdef _WIN32
     system("color"); // to support color output
 #endif
@@ -289,6 +289,7 @@ int_t QF_run(void) {
     QS_CRIT_EXIT();
 
     handle_evts(); // handle all events posted so far
+    QS_FLUSH(); // output the startup trace (e.g., initial tran.) now
 
     if (l_currAO == (QActive*)0) { // current AO not set?
         // take the highest-priority registered AO
@@ -328,6 +329,9 @@ int_t QF_run(void) {
             fputs(COLOR_APP, stdout);
             handle_evts();
             fputs(COLOR_DFLT "\n", stdout);
+        }
+        else { // end of input (e.g., input redirected from a file)
+            break;
         }
     }
     QF_onCleanup();

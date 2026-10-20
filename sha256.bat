@@ -33,6 +33,7 @@ goto end
     ports/posix/* ports/posix-qv/* ports/posix-qutest/* ^
     ports/win32/* ports/win32-qv/* ports/win32-qutest/* ^
     zephyr/* ^
+    CMakeLists.txt ^
     > %FNAME%
 qclean
 @echo done

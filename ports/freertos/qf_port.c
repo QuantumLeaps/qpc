@@ -817,7 +817,7 @@ void QMPool_putFromISR(
 #endif // (QF_MAX_EPOOL > 0U)
 
 //============================================================================
-void QF_init(void) {
+void QF_INIT_CFGCHK_(void) {
 #if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
 #endif
@@ -855,7 +855,7 @@ void QF_stop(void) {
 //
 // B. Explicitly as the higher-byte of the prioSpec parameter.
 //    This option is chosen when the prioSpec parameter is not-zero.
-//    For example, Q_PRIO(10U, 5U) will explicitly specify AO priority
+//    For example, QF_prioSpec(10U, 5U) will explicitly specify AO priority
 //    as 10 and FreeRTOS priority as 5.
 //
 // CAUTION: The explicit FreeRTOS priority is NOT sanity-checked, so it is the
