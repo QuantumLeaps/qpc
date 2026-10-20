@@ -312,7 +312,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 // QF customization
 
 //............................................................................
-void QF_init(void) {
+void QF_INIT_CFGCHK_(void) {
     OS_InitKern();   // initialize embOS
     OS_InitHW();     // initialize the hardware used by embOS
 #if (QF_MAX_TICK_RATE > 0U)

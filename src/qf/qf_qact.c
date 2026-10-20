@@ -143,6 +143,13 @@ void QActive_unregister_(QActive * const me) {
 }
 
 //----------------------------------------------------------------------------
+//! @static @public @memberof QF
+QPrioSpec QF_prioSpec(uint8_t const prio, uint8_t const pthre) {
+    // combine the QF prio. preemption-threshold pthre in the upper byte
+    return (QPrioSpec)((uint32_t)prio | ((uint32_t)pthre << 8U));
+}
+
+//----------------------------------------------------------------------------
 #ifndef QF_LOG2
 uint_fast8_t QF_LOG2(QPSetBits const bitmask) {
     // look-up table for log2(0..15)
@@ -213,10 +220,10 @@ bool QPSet_notEmpty(QPSet const * const me) {
 bool QPSet_hasElement(QPSet const * const me, uint_fast8_t const n) {
 #if (QF_MAX_ACTIVE <= 32U)
     // check the bit only in bitmask for elements 1..32
-    return (me->bits0 & ((QPSetBits)1U << (n - 1U))) != 0U;
+    return ((uint_fast32_t)me->bits0 & ((uint_fast32_t)1U << (n - 1U))) != 0U;
 #else
     return (n <= 32U) // which group of elements (1..32 or 33..64)?
-        ? ((me->bits0 & ((QPSetBits)1U << (n - 1U)))  != 0U)
+        ? (((uint_fast32_t)me->bits0 & ((uint_fast32_t)1U << (n - 1U)))  != 0U)
         : ((me->bits1 & ((QPSetBits)1U << (n - 33U))) != 0U);
 #endif
 }
@@ -225,10 +232,12 @@ bool QPSet_hasElement(QPSet const * const me, uint_fast8_t const n) {
 void QPSet_insert(QPSet * const me, uint_fast8_t const n) {
 #if (QF_MAX_ACTIVE <= 32U)
     // set the bit only in bitmask for elements 1..32
-    me->bits0 = (me->bits0 | ((QPSetBits)1U << (n - 1U)));
+    me->bits0 = (QPSetBits)((uint_fast32_t)me->bits0
+                             | ((uint_fast32_t)1U << (n - 1U)));
 #else
     if (n <= 32U) { // set the bit in the bitmask for elements 1..32?
-        me->bits0 = (me->bits0 | ((QPSetBits)1U << (n - 1U)));
+        me->bits0 = (QPSetBits)((uint_fast32_t)me->bits0
+                                 | ((uint_fast32_t)1U << (n - 1U)));
     }
     else { // set the bit in the bitmask for elements 33..64
         me->bits1 = (me->bits1 | ((QPSetBits)1U << (n - 33U)));
@@ -240,10 +249,12 @@ void QPSet_insert(QPSet * const me, uint_fast8_t const n) {
 void QPSet_remove(QPSet * const me, uint_fast8_t const n) {
 #if (QF_MAX_ACTIVE <= 32U)
     // clear the bit only in bitmask for elements 1..32
-    me->bits0 = (me->bits0 & (QPSetBits)(~((QPSetBits)1U << (n - 1U))));
+    me->bits0 = (QPSetBits)((uint_fast32_t)me->bits0
+                             & ~((uint_fast32_t)1U << (n - 1U)));
 #else
     if (n <= 32U) { // clear the bit in the bitmask for elements 1..32?
-        (me->bits0 = (me->bits0 & ~((QPSetBits)1U << (n - 1U))));
+        me->bits0 = (QPSetBits)((uint_fast32_t)me->bits0
+                                 & ~((uint_fast32_t)1U << (n - 1U)));
     }
     else { // clear the bit in the bitmask for elements 33..64
         (me->bits1 = (me->bits1 & ~((QPSetBits)1U << (n - 33U))));

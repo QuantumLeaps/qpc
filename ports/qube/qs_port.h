@@ -51,8 +51,7 @@
     #define QS_FUN_PTR_SIZE 4U
 #endif
 
-// flush the QS output buffer after each QS record
-#define QS_REC_DONE()  QS_onFlush()
+// NOTE: the QS output is flushed explicitly in qube.c (QS_FLUSH())
 
 //============================================================================
 // NOTE: QS might be used with or without other QP components, in which

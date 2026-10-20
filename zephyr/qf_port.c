@@ -296,7 +296,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 struct k_spinlock QF_spinlock = (struct k_spinlock){};
 
 //............................................................................
-void QF_init(void) {
+void QF_INIT_CFGCHK_(void) {
     k_sched_lock(); // lock the Zephyr scheduler until QF_run(), see NOTE4
 #if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
@@ -349,7 +349,7 @@ void QF_stop(void) {
 //
 // B. Explicitly as the higher-byte of the prioSpec parameter.
 //    This option is chosen when the prioSpec parameter is not-zero.
-//    For example, Q_PRIO(10U, -1U) will explicitly specify AO priority
+//    For example, QF_prioSpec(10U, -1U) will explicitly specify AO priority
 //    as 10 and Zephyr priority as -1.
 //
 // CAUTION: The explicit Zephyr priority is NOT sanity-checked, so it is the

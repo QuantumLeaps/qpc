@@ -311,7 +311,7 @@ void QActive_setAttr(QActive *const me, uint32_t attr1, void const *attr2) {
 //============================================================================
 
 //............................................................................
-void QF_init(void) {
+void QF_INIT_CFGCHK_(void) {
     OSInit();        // initialize uC-OS2
 #if (QF_MAX_TICK_RATE > 0U)
     QTimeEvt_init(); // initialize QTimeEvts
@@ -349,7 +349,7 @@ void QF_stop(void) {
 //
 // B. Explicitly as the higher-byte of the prioSpec parameter.
 //    This option is chosen when the prioSpec parameter is not-zero.
-//    For example, Q_PRIO(10U, 5U) will explicitly specify AO priority
+//    For example, QF_prioSpec(10U, 5U) will explicitly specify AO priority
 //    as 10 and uC-OS2 priority as 5.
 //
 // CAUTION: The explicit uC-OS2 priority is NOT sanity-checked, so it is the

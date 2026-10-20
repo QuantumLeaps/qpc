@@ -32,8 +32,8 @@
 //============================================================================
 #define QP_VERSION_STR  "8.1.6"
 #define QP_VERSION      816U
-// <VER>=816 <DATE>=261102
-#define QP_RELEASE      0x645EFBEFU
+// <VER>=816 <DATE>=261117
+#define QP_RELEASE      0x645CB1FFU
 
 //----------------------------------------------------------------------------
 // default configuration settings
@@ -72,6 +72,9 @@
 #endif
 
 //! @endcond
+
+//----------------------------------------------------------------------------
+#include "qp_cfgchk.h" // QP configuration check (link-time)
 
 //----------------------------------------------------------------------------
 // global types/utilities
@@ -655,8 +658,13 @@ void QTicker_trig_(QTicker * const me,
 //----------------------------------------------------------------------------
 // QF base facilities
 
+//! @static @private @memberof QF
+void QF_INIT_CFGCHK_(void); // configuration-specific name, see "qp_cfgchk.h"
+
 //! @static @public @memberof QF
-void QF_init(void);
+static inline void QF_init(void) {
+    QF_INIT_CFGCHK_(); // configuration-specific name, see "qp_cfgchk.h"
+}
 
 //! @static @public @memberof QF
 void QF_stop(void);
@@ -677,10 +685,8 @@ void QF_onCleanup(void);
         QActive * next);
 #endif // def QF_ON_CONTEXT_SW
 
-static inline QPrioSpec Q_PRIO(uint8_t const prio, uint8_t const pthre) {
-    // combine the QF prio. preemption-threshold pthre in the upper byte
-    return (QPrioSpec)((uint32_t)prio | ((uint32_t)pthre << 8U));
-}
+//! @static @public @memberof QF
+QPrioSpec QF_prioSpec(uint8_t const prio, uint8_t const pthre);
 
 #define QF_NO_MARGIN ((uint_fast16_t)0xFFFFU)
 
@@ -722,8 +728,10 @@ QEvt const * QF_newRef_(
 //! @static @private @memberof QF
 void QF_deleteRef_(void const * const evtRef);
 
+#ifdef QF_ISR_API
 //! @static @public @memberof QF
 void QF_gcFromISR(QEvt const * const e);
+#endif // def QF_ISR_API
 
 #ifdef QEVT_PAR_INIT
     #define Q_NEW(evtT_, sig_, ...) \
