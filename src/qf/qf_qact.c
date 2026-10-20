@@ -143,6 +143,13 @@ void QActive_unregister_(QActive * const me) {
 }
 
 //----------------------------------------------------------------------------
+//! @static @public @memberof QF
+QPrioSpec QF_prioSpec(uint8_t const prio, uint8_t const pthre) {
+    // combine the QF prio. preemption-threshold pthre in the upper byte
+    return (QPrioSpec)((uint32_t)prio | ((uint32_t)pthre << 8U));
+}
+
+//----------------------------------------------------------------------------
 #ifndef QF_LOG2
 uint_fast8_t QF_LOG2(QPSetBits const bitmask) {
     // look-up table for log2(0..15)

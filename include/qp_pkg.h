@@ -49,8 +49,9 @@ extern QTimeEvt QTimeEvt_timeEvtHead_[QF_MAX_TICK_RATE];
 
 
 // Bitmasks are for the QTimeEvt::flags attribute
-#define QTE_FLAG_IS_LINKED      (1U << 7U)
-#define QTE_FLAG_WAS_DISARMED   (1U << 6U)
+#define QTE_FLAG_IS_LINKED      (1U << 7U) // linked in its tick-rate list
+#define QTE_FLAG_WAS_DISARMED   (1U << 6U) // the next timeout is valid
+#define QTE_FLAG_POSTED         (1U << 5U) // timeout posted, not acknowledged
 
 // maximum number of time events linked at one tick rate (see code.dox)
 #if ((2U * QF_MAX_ACTIVE) > 8U)

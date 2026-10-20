@@ -299,6 +299,8 @@ void QF_init(void) {
 //............................................................................
 //! @static @public @memberof QF
 int_t QF_run(void) {
+    QS_FLUSH(); // flush the trace buffer produced during the startup
+
     QF_INT_DISABLE();
     // no AO may be scheduled before QF_run()
     Q_REQUIRE_INCRIT(610, QK_priv_.nextPrio == 0U);
@@ -365,14 +367,14 @@ void QActive_start(QActive * const me,
 
     QEQueue_init(&me->eQueue, qSto, qLen); // init the built-in queue
 
+    // lock the scheduler up to the priority of this AO, so that this AO
+    // cannot be activated before its top-most initial tran. completes
+    // (e.g., by an event it posts to itself) if QK is already running
+    QSchedStatus const lockStat = QK_schedLock(me->prio);
+
     // top-most initial tran. (virtual call)
     (*me->super.vptr->init)(&me->super, par, me->prio);
-    QS_FLUSH(); // flush the trace buffer to the host
 
-    // see if this AO needs to be scheduled if QK is already running
-    QF_CRIT_ENTRY();
-    if (QK_sched_() != 0U) { // activation needed?
-        QK_activate_();
-    }
-    QF_CRIT_EXIT();
+    // unlock the scheduler, which activates this AO if it is ready
+    QK_schedUnlock(lockStat);
 }

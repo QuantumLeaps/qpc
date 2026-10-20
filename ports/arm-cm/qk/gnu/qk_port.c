@@ -89,6 +89,7 @@ __asm volatile (
     "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
     "  CPSID   i                \n" // set PRIMASK
 #endif                  //--------- use PRIMASK for disabling interrupts
+#ifndef Q_UNSAFE        //--------- check (not in the Q_UNSAFE build)
     "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI == 0)
     "  BNE     QF_int_disable_error\n"
     "  BX      lr               \n"
@@ -104,6 +105,9 @@ __asm volatile (
     "  .WORD QF_port_module_    \n"
     "QF_int_disable_onError:    \n"
     "  .WORD Q_onError          \n"
+#else                   //--------- no check in the Q_UNSAFE build
+    "  BX      lr               \n"
+#endif                  //--------- Q_UNSAFE
     : : : "memory"); // explicit memory clobber, see NOTE1
 }
 //............................................................................
@@ -125,8 +129,10 @@ __asm volatile (
     "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
 #endif                  //--------- use PRIMASK for enabling interrupts
 
+#ifndef Q_UNSAFE        //--------- check (not in the Q_UNSAFE build)
     "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI != 0)
     "  BEQ     QF_int_enable_error\n"
+#endif                  //--------- check
 #ifdef QF_USE_BASEPRI   //--------- use BASEPRI for enabling interrupts?
     "  MOVS    r1,#0            \n"
     "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
@@ -134,6 +140,7 @@ __asm volatile (
     "  CPSIE   i                \n" // clear PRIMASK
 #endif                  //--------- use PRIMASK for enabling interrupts
     "  BX      lr               \n"
+#ifndef Q_UNSAFE        //--------- error path (not in the Q_UNSAFE build)
     "QF_int_enable_error:       \n"
     "  LDR     r0,QF_int_enable_module \n"
     "  MOVS    r1,#101          \n"
@@ -146,6 +153,7 @@ __asm volatile (
     "  .WORD QF_port_module_    \n"
     "QF_int_enable_onError:     \n"
     "  .WORD Q_onError          \n"
+#endif                  //--------- error path
     : : : "memory"); // explicit memory clobber, see NOTE1
 }
 //............................................................................
@@ -169,6 +177,7 @@ __asm volatile (
     "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
     "  CPSID   i                \n" // set PRIMASK
 #endif                  //--------- use PRIMASK for critical section
+#ifndef Q_UNSAFE        //--------- check (not in the Q_UNSAFE build)
     "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI == 0)
     "  BNE     QF_crit_entry_error\n"
     "  BX      lr               \n"
@@ -184,6 +193,9 @@ __asm volatile (
     "  .WORD QF_port_module_    \n"
     "QF_crit_entry_onError:     \n"
     "  .WORD Q_onError          \n"
+#else                   //--------- no check in the Q_UNSAFE build
+    "  BX      lr               \n"
+#endif                  //--------- Q_UNSAFE
     : : : "memory"); // explicit memory clobber, see NOTE1
 }
 //............................................................................
@@ -204,8 +216,10 @@ __asm volatile (
 #else                   //--------- use PRIMASK for critical section
     "  MRS     r0,PRIMASK       \n" // r0 <- previous PRIMASK
 #endif                  //--------- use PRIMASK for critical section
+#ifndef Q_UNSAFE        //--------- check (not in the Q_UNSAFE build)
     "  CMP     r0,#0            \n" // assert(PRIMASK/BASEPRI != 0)
     "  BEQ     QF_crit_exit_error\n"
+#endif                  //--------- check
 #ifdef QF_USE_BASEPRI   //--------- use BASEPRI for critical section?
     "  MOVS    r1,#0            \n"
     "  MSR     BASEPRI,r1       \n" // NOTE: Cortes-M7 erratum 837070 is OK
@@ -213,6 +227,7 @@ __asm volatile (
     "  CPSIE   i                \n" // clear PRIMASK
 #endif                  //--------- use PRIMASK
     "  BX      lr               \n"
+#ifndef Q_UNSAFE        //--------- error path (not in the Q_UNSAFE build)
     "QF_crit_exit_error:        \n"
     "  LDR     r0,QF_crit_exit_module \n"
     "  MOVS    r1,#111          \n"
@@ -225,6 +240,7 @@ __asm volatile (
     "  .WORD QF_port_module_    \n"
     "QF_crit_exit_onError:      \n"
     "  .WORD Q_onError          \n"
+#endif                  //--------- error path
     : : : "memory"); // explicit memory clobber, see NOTE1
 }
 

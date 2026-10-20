@@ -349,7 +349,7 @@ void QF_stop(void) {
 //
 // B. Explicitly as the higher-byte of the prioSpec parameter.
 //    This option is chosen when the prioSpec parameter is not-zero.
-//    For example, Q_PRIO(10U, -1U) will explicitly specify AO priority
+//    For example, QF_prioSpec(10U, -1U) will explicitly specify AO priority
 //    as 10 and Zephyr priority as -1.
 //
 // CAUTION: The explicit Zephyr priority is NOT sanity-checked, so it is the
