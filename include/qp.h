@@ -722,8 +722,10 @@ QEvt const * QF_newRef_(
 //! @static @private @memberof QF
 void QF_deleteRef_(void const * const evtRef);
 
+#ifdef QF_ISR_API
 //! @static @public @memberof QF
 void QF_gcFromISR(QEvt const * const e);
+#endif // def QF_ISR_API
 
 #ifdef QEVT_PAR_INIT
     #define Q_NEW(evtT_, sig_, ...) \
